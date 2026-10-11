@@ -14,7 +14,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
-from h3_runner.cli import build_from_args, main, parse_args, resolve_vram_gb  # noqa: E402
+from h3_runner.cli import build_from_args, main, parse_args, plans_from_lines, resolve_vram_gb, runner_argv  # noqa: E402
 from h3_runner.ffmpeg_join import clip_is_done, join_command, probe_text_is_done  # noqa: E402
 from h3_runner.loras import (  # noqa: E402
     CIVITAI_COMBAT_VERSION,
@@ -40,6 +40,7 @@ from h3_runner.official import (  # noqa: E402
     resolve_canvas_size,
 )
 from h3_runner.planner import (  # noqa: E402
+    load_key,
     choose_short_edges,
     orbis01_plan,
     sequence_proxy,
@@ -447,6 +448,10 @@ class WeightsTest(unittest.TestCase):
         self.assertIn('set_attention_backend("native")', text)
         self.assertIn("_align_rope_device", text)
         self.assertIn("local_encode_path", text)
+        take = text[text.index("def take"): text.index("def generate_clip")]
+        self.assertLess(take.index("モデルは載せたまま次の本へ進む"), take.index("load_pipeline"))
+        self.assertIn("holder=held", text)
+        self.assertIn("def run_plans", text)
         self.assertIn(".error.txt", text)
         self.assertIn("MiniMaxH3VideoReference.from_file", text)
         self.assertIn("ensure_reference_slice", text)
@@ -923,6 +928,37 @@ class SourceVideoTest(unittest.TestCase):
         self.assertEqual(aac[aac.index("-ar") + 1], "32000")
         with self.assertRaises(ValueError):
             join_command(parts, Path("/tmp/x.mp4"), audio="mp3")
+
+
+class BatchLoadTest(unittest.TestCase):
+    def _line(self, name: str, task: str = "t2va") -> str:
+        return (
+            "python3 h3-runner/run_h3.py --task "
+            + task
+            + " --prompt-file /tmp/p.txt --duration 6 --aspect 9:16 --seed 0 --steps 9 --out /tmp/"
+            + name
+            + ".mp4 --vram-gb 95 --host-ram-gb 176.9 --offload bf16 --video-shift 6 "
+            "--lora /tmp/turbo.safetensors:1 --lora /tmp/repair.safetensors:0.6"
+        )
+
+    def test_runner_argv_drops_the_python_prefix(self) -> None:
+        self.assertEqual(runner_argv(self._line("a")), runner_argv(" ".join(runner_argv(self._line("a")))))
+        self.assertEqual(runner_argv(self._line("a"))[:2], ["--task", "t2va"])
+
+    def test_two_clips_share_one_weight_key(self) -> None:
+        plans, cache = plans_from_lines([self._line("a"), self._line("b")])
+        self.assertIsNone(cache)
+        self.assertEqual([plan.jobs[0].out_path.name for plan in plans], ["a.mp4", "b.mp4"])
+        weights = Path("/content/drive/MyDrive/h3-weights/MiniMax-H3")
+        left = load_key(plans[0].jobs[0].task, plans[0].offload, plans[0].loras, plans[0].video_shift, weights)
+        right = load_key(plans[1].jobs[0].task, plans[1].offload, plans[1].loras, plans[1].video_shift, weights)
+        self.assertEqual(left, right)
+        other = load_key("fl2va", plans[0].offload, plans[0].loras, plans[0].video_shift, weights)
+        self.assertNotEqual(left, other)
+
+    def test_a_batch_refuses_weight_preparation(self) -> None:
+        with self.assertRaises(SystemExit):
+            plans_from_lines(["python3 h3-runner/run_h3.py --prepare-weights --cache-dir /tmp/h3 --vram-gb 95 --host-ram-gb 176.9"])
 
 
 if __name__ == "__main__":

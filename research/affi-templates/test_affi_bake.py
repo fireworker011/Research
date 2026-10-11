@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import ast
+import inspect
 import json
 import os
 import re
@@ -330,6 +331,7 @@ def test_reference_notebook_is_one_japanese_form_per_story() -> None:
     for src in code:
         ast.parse(src)
     bake_src = next(src for src in code if "#@title 焼く" in src)
+    assert "run_clip_batch" in bake_src
     assert bake_src.index("if not 焼く") < bake_src.index("google.colab")
     assert '焼く = True' in bake_src
     assert '最初の1本だけ = False' in bake_src
@@ -426,7 +428,10 @@ def test_reference_notebook_is_one_japanese_form_per_story() -> None:
     assert "speaker_gate_lines" not in run_src
     assert 'globals().get("HF_TOKEN")' in bake_src
     assert "skip_done=True" in bake_src
-    assert "measure_repro_clip" in bake_src
+    batch_src = inspect.getsource(bake.run_clip_batch)
+    assert "measure_repro_clip" in batch_src
+    assert "measure_homage_clip" in batch_src
+    assert "--batch-file" in batch_src
     assert "all_clips_made" in bake_src
     assert "not 最初の1本だけ" not in bake_src
     for name in ("reference_check.ipynb", "affi_genre_templates.ipynb"):
@@ -838,12 +843,111 @@ def test_commands_to_run_uses_the_written_job_and_stops_when_blocked(tmp_path: P
 
 
 def test_run_logged_shows_the_child_text(capsys, tmp_path: Path) -> None:
+    seen: list[str] = []
     code = bake.run_logged(
         [sys.executable, "-c", "import sys; print('visible-line'); sys.exit(1)"],
         tmp_path,
+        seen.append,
     )
     assert code == 1
     assert "visible-line" in capsys.readouterr().out
+    assert seen == ["visible-line\n"]
+
+
+def test_pending_clips_load_weights_once(tmp_path: Path, monkeypatch, capsys) -> None:
+    job = tmp_path / "affi-bake" / "sheet"
+    prompts = job / "prompts"
+    clips = job / "clips"
+    prompts.mkdir(parents=True)
+    clips.mkdir()
+    lines = []
+    outs = []
+    for name in ("01-s01-s04", "02-s05-s09"):
+        prompt = prompts / f"{name}.txt"
+        prompt.write_text("motion", encoding="utf-8")
+        out = clips / f"{name}.mp4"
+        outs.append(out)
+        lines.append(
+            " ".join(
+                [
+                    "python3",
+                    "h3-runner/run_h3.py",
+                    "--task",
+                    "t2va",
+                    "--prompt-file",
+                    str(prompt),
+                    "--duration",
+                    "13.528",
+                    "--out",
+                    str(out),
+                ]
+            )
+        )
+    calls: list[list[str]] = []
+
+    def fake(argv: list[str], cwd: Path, on_line=None) -> int:
+        calls.append(argv)
+        for out in outs:
+            out.write_bytes(b"mp4")
+            if on_line is not None:
+                on_line(f"wrote {out}\n")
+        return 0
+
+    monkeypatch.setattr(bake, "run_logged", fake)
+    made, finished = bake.run_clip_batch(
+        lines,
+        root=tmp_path,
+        job_dir=job,
+        vram_override=95.6,
+        on_colab=False,
+        repro=False,
+        homage=False,
+    )
+    assert made is True
+    assert finished is True
+    assert len(calls) == 1
+    assert calls[0][:3] == ["python3", "h3-runner/run_h3.py", "--batch-file"]
+    batch = Path(calls[0][3]).read_text(encoding="utf-8")
+    assert "--vram-gb" in batch
+    assert "01-s01-s04" in batch and "02-s05-s09" in batch
+    assert bake.clip_done(lines[0])
+    assert bake.clip_done(lines[1])
+    assert "1回だけ" in capsys.readouterr().out
+
+
+def test_a_failed_batch_keeps_the_clip_already_written(tmp_path: Path, monkeypatch) -> None:
+    job = tmp_path / "sheet"
+    clips = job / "clips"
+    clips.mkdir(parents=True)
+    first = clips / "01.mp4"
+    second = clips / "02.mp4"
+    lines = [
+        f"python3 h3-runner/run_h3.py --task t2va --prompt-file {job / 'a.txt'} --duration 6 --out {first}",
+        f"python3 h3-runner/run_h3.py --task t2va --prompt-file {job / 'b.txt'} --duration 6 --out {second}",
+    ]
+    (job / "a.txt").write_text("a", encoding="utf-8")
+    (job / "b.txt").write_text("b", encoding="utf-8")
+
+    def fake(argv: list[str], cwd: Path, on_line=None) -> int:
+        first.write_bytes(b"mp4")
+        if on_line is not None:
+            on_line(f"wrote {first}\n")
+        return 1
+
+    monkeypatch.setattr(bake, "run_logged", fake)
+    made, finished = bake.run_clip_batch(
+        lines,
+        root=tmp_path,
+        job_dir=job,
+        vram_override=None,
+        on_colab=False,
+        repro=False,
+        homage=False,
+    )
+    assert made is True
+    assert finished is False
+    assert bake.clip_done(lines[0])
+    assert bake.clip_done(lines[1]) is False
 
 
 def test_a_finished_clip_is_copied_onto_drive(tmp_path: Path) -> None:

@@ -8,13 +8,14 @@ from __future__ import annotations
 
 import argparse
 import os
+import shlex
 import subprocess
 import sys
 from pathlib import Path
 
 from h3_runner.loras import parse_lora_args
 from h3_runner.official import DEFAULT_STEPS, DEFAULT_VIDEO_SHIFT, ORBIS_STEPS, README_MAX_DURATION_S, README_MIN_DURATION_S
-from h3_runner.planner import orbis01_plan, single_plan
+from h3_runner.planner import Plan, orbis01_plan, single_plan
 from h3_runner.weights import disk_preview, model_dir_name, prepare_all
 
 # diffusers and torch are imported inside the generate step. A dry run only
@@ -148,6 +149,11 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     parser.add_argument("--offload", choices=["auto", "bf16", "int8"], default="auto")
     parser.add_argument("--force-one-shot", action="store_true")
     parser.add_argument("--dry-run", action="store_true")
+    parser.add_argument(
+        "--batch-file",
+        type=Path,
+        help="one run_h3 command per line. Load matching weights once and bake every line in this process.",
+    )
     parser.add_argument("--vram-gb", type=float)
     parser.add_argument("--host-ram-gb", type=float)
     parser.add_argument(
@@ -247,6 +253,73 @@ def build_from_args(args: argparse.Namespace):
     )
 
 
+def runner_argv(line: str) -> list[str]:
+    """Drop the ``python3 h3-runner/run_h3.py`` prefix. Leave the flags."""
+    argv = shlex.split(line.strip())
+    if not argv:
+        return []
+    if Path(argv[0]).name in {"python", "python3"}:
+        argv = argv[1:]
+    if argv and Path(argv[0]).name == "run_h3.py":
+        argv = argv[1:]
+    return argv
+
+
+def plans_from_lines(lines: list[str]) -> tuple[list[Plan], Path | None]:
+    """One plan per bake command. Preparation lines are refused."""
+    plans: list[Plan] = []
+    cache_path: Path | None = None
+    for line in lines:
+        argv = runner_argv(line)
+        if not argv:
+            continue
+        child = parse_args(argv)
+        if child.batch_file is not None:
+            raise SystemExit("バッチの行に --batch-file は書けない")
+        if child.prepare_weights:
+            raise SystemExit("バッチは焼く行だけ。重みの準備は別のコマンドです。")
+        plan = build_from_args(child)
+        plans.append(plan)
+        if child.cache_dir is not None:
+            cache_path = child.cache_dir
+    return plans, cache_path
+
+
+def _run_batch(args: argparse.Namespace) -> int:
+    text = Path(args.batch_file).read_text(encoding="utf-8")
+    lines = [line.strip() for line in text.splitlines() if line.strip() and not line.strip().startswith("#")]
+    if not lines:
+        print("バッチが空。焼くコマンドが無い。", file=sys.stderr, flush=True)
+        raise SystemExit(2)
+    try:
+        plans, cache_path = plans_from_lines(lines)
+    except ValueError as exc:
+        print(str(exc), file=sys.stderr, flush=True)
+        raise SystemExit(str(exc)) from exc
+    if not plans:
+        print("バッチが空。焼くコマンドが無い。", file=sys.stderr, flush=True)
+        raise SystemExit(2)
+    cache = model_dir(cache_path or args.cache_dir or default_cache_root())
+    tasks = [job.task for plan in plans for job in plan.jobs]
+    preview = disk_preview(cache, tasks)
+    print(preview.text, flush=True)
+    if not preview.ok:
+        print(preview.text, file=sys.stderr, flush=True)
+        raise SystemExit(preview.text)
+    if args.dry_run:
+        for plan in plans:
+            print(plan.report(), flush=True)
+        return 0
+    for plan in plans:
+        if plan.blocked:
+            print(plan.blocked, file=sys.stderr, flush=True)
+            raise SystemExit(plan.blocked)
+    print(f"{len(plans)} 本を1回の読み込みで焼く。", flush=True)
+    from h3_runner.generate import run_plans
+
+    return run_plans(plans, cache)
+
+
 def main(argv: list[str] | None = None) -> int:
     try:
         args = parse_args(argv)
@@ -256,6 +329,8 @@ def main(argv: list[str] | None = None) -> int:
         if code not in (0, None):
             print(f"引数エラー。終了コード {code}。", file=sys.stderr, flush=True)
         raise
+    if args.batch_file:
+        return _run_batch(args)
     try:
         plan = build_from_args(args)
     except ValueError as exc:

@@ -143,6 +143,18 @@ def offload_mode(host_ram_gb: float, requested: str = "auto") -> str:
     )
 
 
+def load_key(
+    task: str,
+    offload: str,
+    loras: list[LoraSpec],
+    video_shift: float,
+    model_dir: Path,
+) -> tuple[str, str, tuple[tuple[str, float, str], ...], float, str]:
+    """Identity of one loaded pipeline. The same key can bake the next clip without reading Drive again."""
+    stacked = tuple((str(item.path), float(item.scale), item.name) for item in loras)
+    return (task, offload, stacked, float(video_shift), str(model_dir))
+
+
 @dataclass
 class ClipJob:
     task: str

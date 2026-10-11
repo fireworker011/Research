@@ -697,8 +697,11 @@ def with_vram(line: str, override_gb: float | None) -> list[str]:
     return argv
 
 
-def run_logged(argv: list[str], cwd: Path) -> int:
-    """Run a command and print its output. Colab hides a child process's own output."""
+def run_logged(argv: list[str], cwd: Path, on_line=None) -> int:
+    """Run a command and print its output. Colab hides a child process's own output.
+
+    ``on_line`` sees each output line, including the newline, after it is printed.
+    """
     proc = subprocess.Popen(
         argv,
         cwd=str(cwd),
@@ -712,6 +715,8 @@ def run_logged(argv: list[str], cwd: Path) -> int:
         return proc.wait()
     for line in proc.stdout:
         print(line, end="", flush=True)
+        if on_line is not None:
+            on_line(line)
     return proc.wait()
 
 
@@ -3237,6 +3242,116 @@ def run_cell() -> str:
     )
 
 
+def clip_output_line(lines: list[str], out: Path) -> str | None:
+    """The bake command whose ``--out`` is this mp4."""
+    target = Path(out)
+    for line in lines:
+        found = _out_of(line)
+        if found is None:
+            continue
+        if found == target or found.name == target.name:
+            return line
+    return None
+
+
+def run_clip_batch(
+    lines: list[str],
+    *,
+    root: Path,
+    job_dir: Path,
+    vram_override: float | None,
+    on_colab: bool,
+    repro: bool,
+    homage: bool,
+) -> tuple[bool, bool]:
+    """Bake every pending clip in one process. Returns ``(made, finished)``.
+
+    The first clip reads the weights. Later clips with the same task and LoRA keep them loaded.
+    Each mp4 is marked and copied to Drive as soon as that clip's ``wrote`` line appears.
+    """
+    originals = list(lines)
+    adjusted = [" ".join(shlex.quote(part) for part in with_vram(line, vram_override)) for line in originals]
+    batch_path = Path(job_dir) / "batch.txt"
+    batch_path.parent.mkdir(parents=True, exist_ok=True)
+    batch_path.write_text("\n".join(adjusted) + "\n", encoding="utf-8")
+    for line in adjusted:
+        print(line)
+    if len(adjusted) > 1:
+        print(
+            f"{len(adjusted)} 本を、重みを1回だけ読んで焼く。"
+            "1本目は Drive から読むので数十分かかることがある。"
+            "2本目からはその読み直しが無い。行が増えている間は待つ。"
+            "止まったら、このセルの最後の「止まった:」の行をコピーする。"
+        )
+    else:
+        print("1本の範囲は数十分かかることがある。行が増えている間は待つ。止まったら、このセルの最後の「止まった:」の行をコピーする。")
+    made = False
+    seen: list[str] = []
+
+    def on_line(text: str) -> None:
+        nonlocal made
+        body = text.strip()
+        if body.startswith("wrote "):
+            marker = body[len("wrote ") :]
+        elif body.startswith("kept "):
+            marker = body[len("kept ") :]
+        else:
+            return
+        line = clip_output_line(originals, Path(marker.strip()))
+        if line is None or line in seen:
+            return
+        local_out = _out_of(line)
+        if local_out is None or not local_out.is_file():
+            return
+        print("書いた", local_out, local_out.stat().st_size, "bytes")
+        mark_done(line)
+        seen.append(line)
+        made = True
+        if repro:
+            try:
+                print(measure_repro_clip(job_dir, local_out))
+            except Exception as exc:
+                print("一致は測れなかった", exc)
+        if homage:
+            try:
+                print(measure_homage_clip(job_dir, local_out))
+            except Exception as exc:
+                print("構成の一致は測れなかった", exc)
+        if on_colab:
+            try:
+                saved = publish_job_dir(job_dir)
+            except Exception as exc:
+                print("マイドライブへのコピーに失敗した", exc)
+            else:
+                print("マイドライブにコピーした", saved)
+
+    code = run_logged(
+        ["python3", "h3-runner/run_h3.py", "--batch-file", str(batch_path)],
+        root,
+        on_line,
+    )
+    print(f"終了コード {code}")
+    if code != 0:
+        print(exit_reason(code))
+        for line in originals:
+            if line in seen:
+                continue
+            local_out = _out_of(line)
+            if local_out is not None:
+                err = local_out.with_suffix(".error.txt")
+                if err.is_file():
+                    print(err.read_text(encoding="utf-8"))
+                elif not local_out.is_file():
+                    request = local_out.with_suffix(".request.json")
+                    if request.is_file():
+                        print("mp4 は出ていない。あるのは", request)
+                    else:
+                        print("mp4 は出ていない。", local_out)
+            break
+        return made, False
+    return made, True
+
+
 def bake_cell() -> str:
     """One bake switch. Off by default, so Run all does not start a GPU job."""
     return """#@title 焼く { display-mode: "form" }
@@ -3376,8 +3491,6 @@ else:
                                 print("マイドライブから、同じ内容で焼いてある範囲を戻した", len(back), "本")
                         lines, note = affi_bake.commands_to_run(path, first_only=bool(最初の1本だけ), skip_done=True)
                         print(note)
-                        if lines:
-                            print("1本の範囲は数十分かかることがある。行が増えている間は待つ。止まったら、このセルの最後の「止まった:」の行をコピーする。")
                         if lines and missing:
                             token = str(globals().get("HF_TOKEN") or "").strip()
                             if not token and userdata is not None:
@@ -3405,49 +3518,16 @@ else:
                         homage = affi_bake.resolve_task(task) == "homage"
                         made = False
                         finished = True
-                        for line in lines:
-                            print(line)
-                            code = affi_bake.run_logged(affi_bake.with_vram(line, vram_override), root)
-                            print(f"終了コード {code}")
-                            local_out = affi_bake._out_of(line)
-                            if code != 0:
-                                print(affi_bake.exit_reason(code))
-                                if local_out is not None:
-                                    err = local_out.with_suffix(".error.txt")
-                                    if err.is_file():
-                                        print(err.read_text(encoding="utf-8"))
-                                finished = False
-                                break
-                            if local_out is None:
-                                continue
-                            if not local_out.is_file():
-                                request = local_out.with_suffix(".request.json")
-                                if request.is_file():
-                                    print("mp4 は出ていない。あるのは", request)
-                                else:
-                                    print("mp4 は出ていない。", local_out)
-                                finished = False
-                                continue
-                            print("書いた", local_out, local_out.stat().st_size, "bytes")
-                            affi_bake.mark_done(line)
-                            made = True
-                            if repro:
-                                try:
-                                    print(affi_bake.measure_repro_clip(path.parent, local_out))
-                                except Exception as exc:
-                                    print("一致は測れなかった", exc)
-                            if homage:
-                                try:
-                                    print(affi_bake.measure_homage_clip(path.parent, local_out))
-                                except Exception as exc:
-                                    print("構成の一致は測れなかった", exc)
-                            if on_colab:
-                                try:
-                                    saved = affi_bake.publish_job_dir(path.parent)
-                                except Exception as exc:
-                                    print("マイドライブへのコピーに失敗した", exc)
-                                else:
-                                    print("マイドライブにコピーした", saved)
+                        if lines:
+                            made, finished = affi_bake.run_clip_batch(
+                                lines,
+                                root=root,
+                                job_dir=path.parent,
+                                vram_override=vram_override,
+                                on_colab=on_colab,
+                                repro=repro,
+                                homage=homage,
+                            )
                         if finished and affi_bake.all_clips_made(path.parent):
                             if on_colab and affi_bake.needs_caption_font(path.parent):
                                 affi_bake.run_step(["apt-get", "update", "-qq"], "フォントの更新")
