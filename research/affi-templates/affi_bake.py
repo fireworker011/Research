@@ -3178,7 +3178,7 @@ def sheet_form_cell() -> str:
     body = "\n".join(guide)
     return f"""#@title この1本 {{ display-mode: "form" }}
 #@markdown 「選ぶ」で構成のまま1本を選んだときだけ使う。人、動物、セリフ、場所だけ書く。
-#@markdown 構成が空なら 71.552秒。ペットシーツは stories/pet_sheet.yaml（URL でも可）。セリフは stories/pet_sheet_lines.txt のパスか、その中身。
+#@markdown 構成が空なら 71.552秒。ペットシーツは stories/pet_sheet.yaml。ふみふみは stories/paw_stamp.yaml。セリフは、それぞれの _lines.txt のパスか、その中身。
 #@markdown 空は入力のまま。元の顔、元の動物、元のセリフは書かない。ここは焼かない。
 {body}
 構成 = "" #@param {{type:"string"}}
@@ -3332,6 +3332,13 @@ def _intro() -> str:
         "3. **この1本** で、構成に `stories/pet_sheet.yaml`。人は「20代後半の成人の女性。ゆるい部屋着。髪はひとつ結び」。客の動物は「出さない」。ツッコミの動物は「グレーのマンチカン」。丁寧の動物は「白いスコティッシュフォールド」。場所は「真夏の庭。空の水入れと小さなビニールプール」。セリフは `stories/pet_sheet_lines.txt` のパスか、その中身",
         "4. **実行**。ready なら **焼く**（チェックを入れる。マイドライブに MiniMax-H3 が無いときは「重みが無いとき落とす」も入れる。オフだと mp4 は出ない）。絵のあと **仕上げ**。止まったら、そのセルの最後の「止まった:」の行をコピーする。H3 は絵だけ。話者の口の開閉は絵に書いてある。せりふの文字はプロンプトに入らない",
         "",
+        "**ふみふみ1本** も、同じ構成のまま1本の入力です。新しい焼き方はありません。",
+        "",
+        "1. **読み込み**",
+        "2. **選ぶ** で「構成のまま1本」を実行",
+        "3. **この1本** で、構成に `stories/paw_stamp.yaml`。人は「出さない」。客の動物は「短い足の茶色い犬」。ツッコミの動物は「グレーのマンチカン」。丁寧の動物は「白いスコティッシュフォールド」。場所は「昼のリビング。ソファの薄い毛布。床におやつ皿」。セリフは `stories/paw_stamp_lines.txt` のパスか、その中身。ピチカート系の曲ファイルがあれば「選ぶ」の曲欄。無ければ空",
+        "4. **実行**。ready なら **焼く**。絵のあと **仕上げ**。H3 は絵だけ。話している役だけ口が開閉する。せりふの文字はプロンプトに入らない",
+        "",
         "## 押す順番",
         "",
         "ランタイムは最初から **GPU** にします。途中で変えない。変えると、ここまでのファイルが消えます。",
@@ -3416,6 +3423,8 @@ def _loader_cell() -> str:
         "reference-accounts/source/repro/junjun_825k.yaml",
         "stories/pet_sheet.yaml",
         "stories/pet_sheet_lines.txt",
+        "stories/paw_stamp.yaml",
+        "stories/paw_stamp_lines.txt",
         "affi_bake.py",
         "reference-accounts/hypotheses.yaml",
         "reference-accounts/results.csv",
@@ -3542,7 +3551,7 @@ def reference_notebook() -> dict[str, Any]:
                     "",
                     "空欄は入力のまま残ります。証拠の文は欄に出ません。ここに書いても、H3 のプロンプトには入れません。",
                     "",
-                    "構成欄が空なら 71.552秒です。ペットシーツは `stories/pet_sheet.yaml` と、セリフファイルのパスか中身です。",
+                    "構成欄が空なら 71.552秒です。ペットシーツは `stories/pet_sheet.yaml`、ふみふみは `stories/paw_stamp.yaml` です。セリフはそれぞれのファイルのパスか中身です。",
                     "",
                     "H3 は絵だけ焼きます。声、口、字幕、曲は、絵ができたあとの「仕上げ」です。",
                     "",

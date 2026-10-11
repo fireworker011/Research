@@ -144,3 +144,36 @@ def test_fill_changes_only_the_four_slots() -> None:
     assert "おい、そこのデブ" not in text
     with pytest.raises(ValueError, match="元のセリフは入れない"):
         structure.fill(pack, lines={"c01": "おい、そこのデブ"})
+
+
+def test_paw_stamp_is_another_pack_of_the_same_sheet() -> None:
+    path = ROOT / "stories" / "paw_stamp.yaml"
+    pack = structure.load(path)
+    assert pack["source_id"] == "paw-stamp-living-room"
+    assert pack["duration_s"] == 50.556
+    assert 45 <= pack["duration_s"] <= 60
+    assert len(pack["shots"]) == 14
+    assert len(pack["captions"]) == 10
+    lines_text = (ROOT / "stories" / "paw_stamp_lines.txt").read_text(encoding="utf-8")
+    spoken = structure.parse_lines(lines_text, [row["id"] for row in pack["captions"]])
+    assert len(spoken) == 10
+    filled = structure.fill(
+        pack,
+        person="出さない",
+        animals={"guest": "短い足の茶色い犬", "retort": "グレーのマンチカン", "polite": "白いスコティッシュフォールド"},
+        place="昼のリビング。ソファの薄い毛布。床におやつ皿",
+        lines=spoken,
+    )
+    assert structure.blocked(filled) == []
+    text = structure.picture_prompt(filled, 0.0, float(filled["duration_s"]))
+    for line in spoken.values():
+        assert line not in text
+    assert "口が開閉" in text
+    assert "グレーのマンチカン" in text
+    assert "短い足の茶色い犬" in text
+    assert "名刺" not in text
+    assert "お尻" not in text
+    assert "猫" not in text
+    assert "<d>" not in text
+    assert "No one speaks." in text
+    assert structure.load()["duration_s"] == 71.552

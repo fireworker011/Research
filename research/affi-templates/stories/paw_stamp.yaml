@@ -1,0 +1,222 @@
+schema: affi-repro-structure/v1
+source_id: paw-stamp-living-room
+pattern: junjun_ranran
+duration_s: 50.556
+canvas: "1080x1920"
+fps: 30
+file_in_repo: false
+cuts_s:
+  - 5.824
+  - 10.088
+  - 15.144
+  - 18.144
+  - 22.048
+  - 27.824
+  - 30.324
+  - 32.812
+  - 35.612
+  - 39.396
+  - 41.908
+  - 44.996
+  - 47.556
+silences_s: []
+measure:
+  cuts: せりふの秒は edge-tts の長さに 0.4 秒を足した。動作のカットは絵の長さ。
+  silences: この入力では測っていない。
+  captions: せりふは stories/paw_stamp_lines.txt。絵のプロンプトには入れない。
+  music: 仕上げの曲はピチカート系。ファイルは選ぶの曲欄。H3 には作らせない。
+  caption_y: 仕様の「下から約30%」を使う。
+change_only:
+  - person
+  - animals
+  - lines
+  - place
+slots:
+  person: 入力
+  animals:
+    guest: 入力
+    retort: 入力
+    polite: 入力
+  place: 入力
+narration: 独立した語りは無い。声はせりふ。
+registers:
+  guest: 定番の休業の言い訳。短い足の犬。
+  retort: 方言のツッコミ。低い口調。
+  polite: 丁寧語。
+  owner: この話には出さない。
+  indoor_pair: この話では使わない。
+subtitle:
+  font: 白ゴシック
+  edge: 細い影
+  lines: 1
+  box: false
+  place: 中央やや下
+  content: その場のせりふ。差し替えた文を出す。
+watermark:
+  places: 上と中段
+  text: 自分のアカウント名
+punch:
+  - 前足の粉で、昼の分を食べたことが分かる
+  - 犬は前足をしまって休業と言い逃げる
+  - ツッコミが同じ休業を言うが、まだ踏んでいる
+  - 前足が止まって出荷停止
+shots:
+  - id: s01
+    start_s: 0.0
+    end_s: 5.824
+    place_part: sofa
+    on_screen: [retort, polite, guest]
+    camera: 低い位置から毛布へ寄る。
+    picture: ツッコミが薄い毛布を前足で踏む。口が開閉する。丁寧は横で口を閉じている。短い足の茶色い犬は床のラグで口を閉じている。昼のリビング。
+  - id: s02
+    start_s: 5.824
+    end_s: 10.088
+    place_part: sofa
+    on_screen: [polite, retort, guest]
+    camera: 丁寧の顔へ寄る。
+    picture: 丁寧が手前で口を開閉する。ツッコミの口は閉じている。犬の口は閉じている。
+  - id: s03
+    start_s: 10.088
+    end_s: 15.144
+    place_part: sofa
+    on_screen: [retort, polite, guest]
+    camera: 上げた前足へ寄る。
+    picture: ツッコミが前足を一本上げて口を開閉する。丁寧と犬の口は閉じている。
+  - id: s04
+    start_s: 15.144
+    end_s: 18.144
+    place_part: sofa
+    on_screen: [retort, polite, guest]
+    camera: 前足と毛布を横から見る。
+    picture: ツッコミが毛布を二回、それからもう一回踏む。全員の口は閉じている。
+  - id: s05
+    start_s: 18.144
+    end_s: 22.048
+    place_part: sofa
+    on_screen: [polite, retort, guest]
+    camera: 前足へ寄る。
+    picture: 丁寧がツッコミの前足を見て口を開閉する。前足に粉がついている。文字は無い。ツッコミと犬の口は閉じている。
+  - id: s06
+    start_s: 22.048
+    end_s: 27.824
+    place_part: sofa
+    on_screen: [polite, retort, guest]
+    camera: めくった毛布を上から見る。
+    picture: 丁寧が毛布の端を少しめくる。粉が二つある。口が開閉する。文字は無い。ツッコミと犬の口は閉じている。
+  - id: s07
+    start_s: 27.824
+    end_s: 30.324
+    place_part: sofa
+    on_screen: [retort, polite, guest]
+    camera: ツッコミの顔と前足。
+    picture: ツッコミが自分の前足を見る。全員の口は閉じている。
+  - id: s08
+    start_s: 30.324
+    end_s: 32.812
+    place_part: sofa
+    on_screen: [retort, polite, guest]
+    camera: ツッコミの顔へ寄る。
+    picture: ツッコミが口を開閉する。前足は止まったまま。丁寧と犬の口は閉じている。
+  - id: s09
+    start_s: 32.812
+    end_s: 35.612
+    place_part: rug
+    on_screen: [guest, retort, polite]
+    camera: 犬の全身へ少し引く。
+    picture: 犬が前足を体の下にしまう。口は閉じている。ツッコミと丁寧の口も閉じている。
+  - id: s10
+    start_s: 35.612
+    end_s: 39.396
+    place_part: rug
+    on_screen: [guest, retort, polite]
+    camera: 犬の顔へ寄る。
+    picture: 犬が口を開閉する。前足はしまったまま。ツッコミと丁寧の口は閉じている。
+  - id: s11
+    start_s: 39.396
+    end_s: 41.908
+    place_part: sofa
+    on_screen: [retort, polite, guest]
+    camera: 踏んでいる前足と顔。
+    picture: ツッコミが毛布を踏みながら口を開閉する。丁寧と犬の口は閉じている。
+  - id: s12
+    start_s: 41.908
+    end_s: 44.996
+    place_part: sofa
+    on_screen: [polite, retort, guest]
+    camera: 丁寧の視線の先の前足。
+    picture: 丁寧が踏んでいる前足を見て口を開閉する。ツッコミと犬の口は閉じている。
+  - id: s13
+    start_s: 44.996
+    end_s: 47.556
+    place_part: sofa
+    on_screen: [retort, polite, guest]
+    camera: ツッコミの顔へ寄る。
+    picture: ツッコミが口を開閉する。前足は毛布の上。丁寧と犬の口は閉じている。
+  - id: s14
+    start_s: 47.556
+    end_s: 50.556
+    place_part: sofa
+    on_screen: [retort, polite, guest]
+    camera: 止まった前足へ寄る。
+    picture: ツッコミの前足が毛布の上で止まる。全員の口は閉じている。文字は無い。
+captions:
+  - id: c01
+    shot: s01
+    role: retort
+    source_line: e-01
+    seen_s: [0.2]
+    line: 入力
+  - id: c02
+    shot: s02
+    role: polite
+    source_line: e-02
+    seen_s: [6.024]
+    line: 入力
+  - id: c03
+    shot: s03
+    role: retort
+    source_line: e-03
+    seen_s: [10.288]
+    line: 入力
+  - id: c04
+    shot: s05
+    role: polite
+    source_line: e-04
+    seen_s: [18.344]
+    line: 入力
+  - id: c05
+    shot: s06
+    role: polite
+    source_line: e-05
+    seen_s: [22.248]
+    line: 入力
+  - id: c06
+    shot: s08
+    role: retort
+    source_line: e-06
+    seen_s: [30.524]
+    line: 入力
+  - id: c07
+    shot: s10
+    role: guest
+    source_line: e-07
+    seen_s: [35.812]
+    line: 入力
+  - id: c08
+    shot: s11
+    role: retort
+    source_line: e-08
+    seen_s: [39.596]
+    line: 入力
+  - id: c09
+    shot: s12
+    role: polite
+    source_line: e-09
+    seen_s: [42.108]
+    line: 入力
+  - id: c10
+    shot: s13
+    role: retort
+    source_line: e-10
+    seen_s: [45.196]
+    line: 入力

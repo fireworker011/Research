@@ -1163,3 +1163,63 @@ def test_sync_repo_moves_a_shallow_checkout(tmp_path: Path) -> None:
         bake.sync_repo(tmp_path / "missing", "no-such-branch", str(origin))
 
 
+def test_paw_stamp_reaches_commands_before_bake(tmp_path: Path) -> None:
+    lines_text = (ROOT / "stories" / "paw_stamp_lines.txt").read_text(encoding="utf-8")
+    shown = bake.run_choice(
+        "構成のまま1本",
+        sheet_person="出さない",
+        sheet_animals={"guest": "短い足の茶色い犬", "retort": "グレーのマンチカン", "polite": "白いスコティッシュフォールド"},
+        sheet_place="昼のリビング。ソファの薄い毛布。床におやつ皿",
+        sheet_lines="stories/paw_stamp_lines.txt",
+        sheet_pack="stories/paw_stamp.yaml",
+        out_dir=tmp_path / "paws",
+    )
+    assert "status=ready" in shown
+    assert "50.556秒" in shown
+    assert "ショット14" in shown
+    assert "セリフ10" in shown
+    assert "焼かない" not in shown
+    job = json.loads((tmp_path / "paws" / "sheet" / "job.json").read_text(encoding="utf-8"))
+    assert job["task"] == "t2va"
+    assert job["posts"] is False
+    assert job["captions_on_join"] is False
+    assert job["duration_s"] == 50.556
+    blob = "\n".join(clip["prompt"] for clip in job["clips"])
+    for line in lines_text.splitlines():
+        spoken = line.split(" ", 1)[1]
+        assert spoken not in blob
+    assert "口が開閉" in blob
+    assert "名刺" not in blob
+    assert "お尻" not in blob
+    assert "<d>" not in blob
+    pending, note = bake.commands_to_run(tmp_path / "paws" / "sheet" / "commands.txt", first_only=False)
+    assert pending
+    assert "焼きます" in note
+    assert all("--task t2va" in line for line in pending)
+    covered = 0.0
+    for line in pending:
+        argv = shlex.split(line)
+        loras = [argv[index + 1] for index, part in enumerate(argv) if part == "--lora"]
+        plan = single_plan(
+            task="t2va",
+            prompt_path=Path(argv[argv.index("--prompt-file") + 1]),
+            image_path=None,
+            duration_s=float(argv[argv.index("--duration") + 1]),
+            aspect="9:16",
+            seed=0,
+            steps=int(argv[argv.index("--steps") + 1]),
+            out_path=Path(argv[argv.index("--out") + 1]),
+            short_edge=None,
+            width=None,
+            height=None,
+            vram_gb=95.6,
+            host_ram_gb=176.9,
+            offload="auto",
+            force=False,
+            loras=parse_lora_args(loras),
+        )
+        assert plan.blocked is None
+        covered += float(argv[argv.index("--duration") + 1])
+    assert covered >= 45
+
+
