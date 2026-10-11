@@ -687,6 +687,286 @@ def parse_lines(text: str, ids: Sequence[str]) -> dict[str, str]:
     return out
 
 
+# Longer phrases first. A hit consumes those characters so a shorter phrase cannot fire inside it.
+_CAMERA_MOTION = (
+    ("カメラの動きは測っていない", "The camera path was not measured. The camera holds."),
+    ("黒で切れる", "The picture cuts to black and holds black."),
+    ("低い位置から寄る", "The camera pushes in from a low height."),
+    ("低い位置から追う", "The camera tracks the moving body from a low height."),
+    ("肩越しに少し寄る", "The camera pushes in over the shoulder with small amplitude."),
+    ("家の方へ少し傾く", "The camera tilts toward the house with small amplitude."),
+    ("視線に合わせて横へ振る", "The camera pans sideways along the gaze."),
+    ("引きながら少し下がる", "The camera pulls out and shifts back with small amplitude."),
+    ("上から水面へ見下ろす", "The camera tilts down toward the water from above."),
+    ("上から見る", "The camera tilts down from above."),
+    ("下から見上げる", "The camera tilts up from below."),
+    ("顔へ少し寄る", "The camera pushes in on the face with small amplitude."),
+    ("顔の寄り", "The camera holds a close-up on the face."),
+    ("顔へ寄る", "The camera pushes in on the face."),
+    ("横から寄る", "The camera pushes in from the side."),
+    ("横から追う", "The camera tracks the moving body from the side."),
+    ("少し寄る", "The camera pushes in with small amplitude."),
+    ("へ寄る", "The camera pushes in."),
+    ("ガラス越し", "The camera looks through glass."),
+    ("横から見る", "The camera holds a side view."),
+    ("横顔", "The camera holds a profile."),
+    ("立ち姿", "The camera holds a standing view."),
+    ("背中", "The camera holds on the backs."),
+    ("正面", "The camera holds a front view."),
+    ("動きは少ない", "The camera move stays small."),
+    ("床の高さ", "The camera holds at floor height."),
+    ("少し引く", "The camera pulls out with small amplitude."),
+    ("寄る", "The camera pushes in."),
+    ("寄り", "The camera holds a close-up."),
+    ("引き", "The camera pulls out."),
+    ("低い", "The camera stays low."),
+)
+_JAW_OPENS = "The lower jaw drops and rises, more than once, and does not shape words."
+_MOUTH_CLOSED = "The mouth stays closed. The jaw does not travel."
+_MOUTH_CLOSED_THAT = "That mouth stays closed. The jaw does not travel."
+_MOUTH_OPEN = "The mouth stays open. The jaw does not travel."
+_MOUTH_UP = "The mouth points upward and stays open. The jaw does not travel."
+_MOUTH_PAD = "The mouth keeps hold of the pad. The jaw does not travel and does not shape words."
+_EVERY_MOUTH = "Every mouth stays closed. Those jaws do not travel."
+_OTHER_MOUTHS = "The other mouths stay closed. Those jaws do not travel."
+_STAND_THEN_SIT = "The weight moves onto the hind legs and the torso rises, then the hind legs fold and the body sits."
+_STAND = "The weight moves onto the hind legs and the torso rises until the body is standing."
+_SIT = "The body stays seated."
+_STEP_BACK = "The bodies step backward."
+_MOVE_IN = "The body moves in through the opening."
+_BINDABLE = frozenset({_JAW_OPENS, _MOUTH_CLOSED, _MOUTH_CLOSED_THAT, _MOUTH_OPEN, _MOUTH_UP, _MOUTH_PAD})
+_PLURAL_ROLES = frozenset({"two animals"})
+_ROLE_MARK = (
+    ("ツッコミ役", "retort"),
+    ("ツッコミ", "retort"),
+    ("丁寧役", "polite one"),
+    ("丁寧", "polite one"),
+    ("飼い主", "person"),
+    ("動物2匹", "two animals"),
+    ("片方の動物", "one animal"),
+    ("2匹", "two animals"),
+    ("客", "guest"),
+    ("犬", "dog"),
+    ("人", "person"),
+)
+_BODY_MOTION = (
+    ("口を開閉しながら", _JAW_OPENS),
+    ("口が開閉する", _JAW_OPENS),
+    ("口を開閉する", _JAW_OPENS),
+    ("口はパッドをくわえたまま喋らない", _MOUTH_PAD),
+    ("ほかの口は閉じている", _OTHER_MOUTHS),
+    ("誰も口を開かない", _EVERY_MOUTH),
+    ("全員の口は閉じている", _EVERY_MOUTH),
+    ("口が開いている", _MOUTH_OPEN),
+    ("口が上を向く", _MOUTH_UP),
+    ("口は喋らない", _MOUTH_CLOSED),
+    ("口も閉じている", _MOUTH_CLOSED_THAT),
+    ("口は閉じている", _MOUTH_CLOSED),
+    ("口を閉じている", _MOUTH_CLOSED),
+    ("口は閉じ", _MOUTH_CLOSED),
+    ("口は無い", "No mouth is in the frame."),
+    ("前足は止まったまま", "That forepaw stays still and does not travel."),
+    ("前足はしまったまま", "The forepaws stay folded under the chest and do not travel."),
+    ("後ろ脚で立ち、あとで座る", _STAND_THEN_SIT),
+    ("後ろ脚で立つ", _STAND),
+    ("立ち上がる", _STAND),
+    ("前足でプールの水面を叩く", "The forepaw lifts, strikes the water, and returns."),
+    ("前足を体の下にしまう", "The forepaws fold back under the chest."),
+    ("前足を一本上げて", "One forepaw lifts and stays raised."),
+    ("二回、それからもう一回踏む", "The forepaw presses down twice, then once more."),
+    ("毛布の端を少しめくる", "One paw lifts the blanket edge a short way."),
+    ("くわえて歩く", "The mouth keeps hold of the object while the legs step forward."),
+    ("パッドが水面に落ち", "The pad drops onto the water."),
+    ("水が渦を巻いてプールから無くなり", "The water turns in a vortex until the pool is empty."),
+    ("底の地面がひび割れる", "The ground at the bottom splits into cracks."),
+    ("芝生をプールへ走る", "The legs cycle and the body travels forward across the grass."),
+    ("庭を走る", "The legs cycle and the body travels forward across the yard."),
+    ("走る", "The legs cycle and the body travels forward."),
+    ("画面に向かう", "The body turns to face the lens."),
+    ("上を見る", "The head tilts upward."),
+    ("座って", _SIT),
+    ("座る", _SIT),
+    ("黒画面", "The frame stays black."),
+    ("平らにある", "The pad lies flat and does not move."),
+    ("網目", "A mesh stays between the lens and the face."),
+    ("仕切りが開く", "The partition swings open."),
+    ("身を引く", _STEP_BACK),
+    ("中へ入る", _MOVE_IN),
+    ("小さい袋を持つ", "One hand keeps hold of a small bag."),
+    ("羽が少し開く", "The wings open a little."),
+    ("前足が毛布の上で止まる", "The forepaw comes down on the blanket and stays there."),
+    ("踏みながら", "The forepaw keeps pressing down."),
+    ("踏む", "The forepaw presses down."),
+)
+
+
+def _covered_phrases(text: str, table: Sequence[tuple[str, str]]) -> list[str]:
+    """English for phrases already written. Unlisted words are not expanded."""
+    used = [False] * len(text)
+    found: list[tuple[int, str]] = []
+    for phrase, english in sorted(table, key=lambda item: len(item[0]), reverse=True):
+        start = 0
+        while True:
+            at = text.find(phrase, start)
+            if at < 0:
+                break
+            end = at + len(phrase)
+            if any(used[at:end]):
+                start = at + 1
+                continue
+            for index in range(at, end):
+                used[index] = True
+            found.append((at, english))
+            start = end
+    found.sort()
+    out: list[str] = []
+    for _at, english in found:
+        if english not in out:
+            out.append(english)
+    return out
+
+
+def _clauses(text: str) -> list[str]:
+    return [part.strip() for part in re.split(r"[。．]", text) if part.strip()]
+
+
+def _role_hits(clause: str, marks: Sequence[str]) -> list[str]:
+    """Roles already named in this clause. 人 inside 成人 is not a role."""
+    used = [False] * len(clause)
+    found: list[tuple[int, str]] = []
+    ordered = sorted(_ROLE_MARK, key=lambda item: len(item[0]), reverse=True)
+    mark_order = sorted(marks, key=len, reverse=True)
+    for word, label in ordered:
+        start = 0
+        while True:
+            at = clause.find(word, start)
+            if at < 0:
+                break
+            end = at + len(word)
+            if any(used[at:end]):
+                start = at + 1
+                continue
+            if word == "人" and at > 0 and clause[at - 1] not in "。、 　\n":
+                start = at + 1
+                continue
+            mark_len = 0
+            if mark_order:
+                matched = next((mark for mark in mark_order if clause.startswith(mark, end)), "")
+                if not matched:
+                    start = at + 1
+                    continue
+                mark_len = len(matched)
+            for index in range(at, end):
+                used[index] = True
+            found.append((at, label))
+            start = end + mark_len
+    found.sort()
+    out: list[str] = []
+    for _at, label in found:
+        if label not in out:
+            out.append(label)
+    return out
+
+
+def _possessive(who: Sequence[str]) -> str:
+    bits: list[str] = []
+    for name in who:
+        if name == "two animals":
+            bits.append("the two animals'")
+        elif name == "one animal":
+            bits.append("one animal's")
+        else:
+            bits.append(f"the {name}'s")
+    if len(bits) == 1:
+        return bits[0][0].upper() + bits[0][1:]
+    head = bits[0][0].upper() + bits[0][1:]
+    if len(bits) == 2:
+        return f"{head} and {bits[1]}"
+    return f"{head}, {', '.join(bits[1:-1])}, and {bits[-1]}"
+
+
+def _bind_mouth(english: str, who: Sequence[str]) -> str:
+    """Keep a shut jaw from cancelling the jaw that this clause names."""
+    if not who or english not in _BINDABLE:
+        return english
+    plural = len(who) > 1 or any(name in _PLURAL_ROLES for name in who)
+    name = _possessive(who)
+    if english == _JAW_OPENS:
+        if plural:
+            return f"{name} lower jaws drop and rise, more than once, and do not shape words."
+        return f"{name} lower jaw drops and rises, more than once, and does not shape words."
+    if english == _MOUTH_OPEN:
+        if plural:
+            return f"{name} mouths stay open. Those jaws do not travel."
+        return f"{name} mouth stays open. That jaw does not travel."
+    if english == _MOUTH_UP:
+        if plural:
+            return f"{name} mouths point upward and stay open. Those jaws do not travel."
+        return f"{name} mouth points upward and stays open. That jaw does not travel."
+    if english == _MOUTH_PAD:
+        if plural:
+            return f"{name} mouths keep hold of the pad. Those jaws do not travel and do not shape words."
+        return f"{name} mouth keeps hold of the pad. That jaw does not travel and does not shape words."
+    if plural:
+        return f"{name} mouths stay closed. Those jaws do not travel."
+    return f"{name} mouth stays closed. That jaw does not travel."
+
+
+def _bind_actor(english: str, who: Sequence[str]) -> str:
+    """Stand, sit, enter, and step back stay with the role that clause names."""
+    if not who or english not in {_STAND_THEN_SIT, _STAND, _SIT, _STEP_BACK, _MOVE_IN}:
+        return english
+    name = _possessive(who)
+    plural = len(who) > 1 or any(role in _PLURAL_ROLES for role in who)
+    if english == _STAND_THEN_SIT:
+        if plural:
+            return (
+                f"{name} weight moves onto the hind legs and the torsos rise, "
+                "then the hind legs fold and the bodies sit."
+            )
+        return (
+            f"{name} weight moves onto the hind legs and the torso rises, "
+            "then the hind legs fold and the body sits."
+        )
+    if english == _STAND:
+        if plural:
+            return f"{name} weight moves onto the hind legs and the torsos rise until the bodies are standing."
+        return f"{name} weight moves onto the hind legs and the torso rises until the body is standing."
+    if english == _SIT:
+        if plural:
+            return f"{name} bodies stay seated."
+        return f"{name} body stays seated."
+    if english == _STEP_BACK:
+        if plural:
+            return f"{name} bodies step backward."
+        return f"{name} body steps backward."
+    if plural:
+        return f"{name} bodies move in through the opening."
+    return f"{name} body moves in through the opening."
+
+
+def _body_lines(picture: str, camera: str, timed_jaw: bool) -> list[str]:
+    """Motion already written, one clause at a time, with the role that clause names."""
+    last: list[str] = []
+    out: list[str] = []
+    for clause in _clauses(picture) + _clauses(camera):
+        owners = _role_hits(clause, ("が", "は", "も", "と", "の口"))
+        if owners:
+            last = owners
+        else:
+            mentioned = _role_hits(clause, ())
+            if mentioned:
+                last = mentioned
+        who = owners or last
+        for english in _covered_phrases(clause, _BODY_MOTION):
+            if timed_jaw and english == _JAW_OPENS:
+                continue
+            line = _bind_mouth(english, who) if english in _BINDABLE else _bind_actor(english, who)
+            if line not in out:
+                out.append(line)
+    return out
+
+
 def _measured_jaw(pack: Mapping[str, Any], shot_id: str, origin: float, stop: float) -> list[str]:
     """Speech windows that were measured. Sheets without fit_s stay as written."""
     lines = []
@@ -702,8 +982,8 @@ def _measured_jaw(pack: Mapping[str, Any], shot_id: str, origin: float, stop: fl
             continue
         role = ROLE_JA.get(str(row.get("role")), str(row.get("role")))
         lines.append(
-            f"From {_num(left)} to {_num(right)}, the {role} jaw opens and closes. "
-            "Outside that interval that jaw stays closed."
+            f"From {_num(left)} to {_num(right)}, the {role} lower jaw drops and rises. "
+            "Outside that interval that jaw stays closed and does not travel."
         )
     return lines
 
@@ -729,7 +1009,7 @@ def picture_prompt(pack: Mapping[str, Any], start_s: float, end_s: float) -> str
             f"Person: {named(slots['person'])}."
         ),
         "Adults only. Do not resemble a real person or the source account.",
-        "No one speaks. A jaw opens and closes only where that shot says it does, and it does not shape words. No writing. No music. No logo.",
+        "No one speaks. Jaws do not shape words. No writing. No music. No logo.",
         "",
     ]
     origin = float(start_s)
@@ -745,7 +1025,20 @@ def picture_prompt(pack: Mapping[str, Any], start_s: float, end_s: float) -> str
         lines.append(
             f"[Shot] {_num(left)} to {_num(right)}. {shot['camera']} {shot['picture']} On screen: {who}."
         )
-        lines.extend(_measured_jaw(pack, str(shot["id"]), origin, stop))
+        camera_text = str(shot.get("camera") or "")
+        camera_en = _covered_phrases(camera_text, _CAMERA_MOTION)
+        camera_has_body = any(
+            _covered_phrases(clause, _BODY_MOTION) for clause in _clauses(camera_text)
+        )
+        if camera_text.strip() and not camera_en and not camera_has_body:
+            camera_en = ["The camera holds."]
+        jaw = _measured_jaw(pack, str(shot["id"]), origin, stop)
+        body_en = _body_lines(str(shot.get("picture") or ""), camera_text, timed_jaw=bool(jaw))
+        if camera_en:
+            lines.append("Camera: " + " ".join(camera_en))
+        if body_en:
+            lines.append("Body: " + " ".join(body_en))
+        lines.extend(jaw)
     text = "\n".join(lines) + "\n"
     for row in pack["captions"]:
         source = str(row["source_line"])
