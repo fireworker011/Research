@@ -170,6 +170,8 @@ def test_pet_sheet_is_another_pack_of_the_same_sheet() -> None:
     assert index[0]["pattern"] == "junjun_ranran"
     assert index[1]["baked"] == "まだ"
     assert structure.pack_file("pet_sheet") == path
+    assert structure.pack_file("給水") == path
+    assert structure.stock_lines("給水", "").startswith("c01")
     assert structure.pack_file("paw_stamp") == ROOT / "stories" / "paw_stamp.yaml"
     assert structure.pack_file("71.552秒") is None
     assert structure.stock_lines("paw_stamp", "").startswith("c01")

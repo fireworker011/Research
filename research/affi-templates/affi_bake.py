@@ -3091,8 +3091,8 @@ def choice_cell() -> str:
     return "\n".join(
         [
             '#@title 選ぶ { display-mode: "form" }',
-            "#@markdown やりたいことを1つ選んで、このセルを実行する。上の「すべてのセルを実行」は押さない。",
-            f"何をする = {_py(tasks[1])} #@param {_param_list(tasks)}",
+            "#@markdown スマホは上の「すべてのセルを実行」を1回押す。給水、人、セリフは入っている。変えるときだけ、ここを選ぶ。",
+            f"何をする = {_py('構成のまま1本')} #@param {_param_list(tasks)}",
             "#@markdown 話でジョブを書くときだけ、下の話・型・中身・台詞を使う。表を見る、自分の文、元動画を再現、構成のまま1本、mp4の構成で差し替える、では無視する。",
             f"話 = {_py(labels[1])} #@param {_param_list(labels)}",
             "#@markdown ドッグフードだけ下を使う。インタビューは人がマイクを向ける8秒。咀嚼は8秒を4回。ダンスは全身で10秒。会話は吹き出し。ほかの話では無視する。",
@@ -3186,6 +3186,8 @@ def run_cell() -> str:
             '                    print("pyannote は入れられなかった。話者は1人として並べる。", exc)',
             "        else:",
             '            print("このセルの HF_TOKEN 欄が空なので話者は分けない。")',
+            '    raw_sheet = str(globals().get("構成") or "")',
+            '    sheet_name = {"給水": "pet_sheet"}.get(raw_sheet, raw_sheet)',
             "    text = affi_bake.run_choice(",
             "        何をする,",
             '        handle=globals().get("HANDLE"),',
@@ -3214,7 +3216,7 @@ def run_cell() -> str:
             '        sheet_animals={"guest": globals().get("客の動物", ""), "retort": globals().get("ツッコミの動物", ""), "polite": globals().get("丁寧の動物", "")},',
             '        sheet_place=globals().get("場所", ""),',
             '        sheet_lines=globals().get("セリフ", ""),',
-            '        sheet_pack=globals().get("構成", ""),',
+            "        sheet_pack=sheet_name,",
             "        sheet_images={",
             '            "guest": globals().get("客の静止画", ""),',
             '            "retort": globals().get("ツッコミの静止画", ""),',
@@ -3234,14 +3236,13 @@ def run_cell() -> str:
 def bake_cell() -> str:
     """One bake switch. Off by default, so Run all does not start a GPU job."""
     return """#@title 焼く { display-mode: "form" }
-#@markdown ready のあと、焼くにチェックを入れてこのセルを押す。別のノートは開かない。投稿しない。
-#@markdown チェックを入れると、残っている範囲を続けて焼いて、全部そろったら1本につなぐ。1本だけ見たいときは「最初の1本だけ」をオン。
-#@markdown 同じ内容で焼いた範囲は焼き直さない。ランタイムが切れても、マイドライブに同じ内容があれば戻して続きから焼く。
+#@markdown 焼くはオン。すべてのセルを実行で、残っている範囲を続けて焼いて、そろったら1本につなぐ。投稿しない。
+#@markdown 1本だけ見たいときは「最初の1本だけ」をオン。同じ内容で焼いた範囲は焼き直さない。ランタイムが切れても、マイドライブに同じ内容があれば戻して続きから焼く。
 #@markdown 全部の範囲がそろったら、音は PCM のままつなぎ、mp4 を最後に1回だけ作る。元動画の再現は、範囲ごとに音のずれ、カット、せりふを測って出す。
-#@markdown 重みが無いとき落とすは、マイドライブに MiniMax-H3 が無いときだけ。プレビューは 144.1GB。オフなら落とさない。
-焼く = False #@param {type:"boolean"}
+#@markdown 重みが無いとき落とすはオン。マイドライブに MiniMax-H3 が無いときだけ落とす。プレビューは 144.1GB。
+焼く = True #@param {type:"boolean"}
 最初の1本だけ = False #@param {type:"boolean"}
-重みが無いとき落とす = False #@param {type:"boolean"}
+重みが無いとき落とす = True #@param {type:"boolean"}
 
 import os
 import shlex
@@ -3478,27 +3479,30 @@ else:
 
 
 def sheet_form_cell() -> str:
-    """The four slots for the locked 71.552s sheet. Empty stays 入力. Evidence is not shown."""
+    """The four slots. The phone default is 給水, with person and lines already filled."""
     pack = structure.load()
     guide = ["#@markdown セリフは c01 から順に1行。空行は入力のまま。証拠の文は書かない。"]
     for row in pack["captions"]:
         guide.append(f"#@markdown {row['id']} {structure.ROLE_JA[row['role']]}")
     body = "\n".join(guide)
-    menu = _param_list(["71.552秒", *[row["name"] for row in structure.story_index()]])
+    labels = [{"pet_sheet": "給水"}.get(row["name"], row["name"]) for row in structure.story_index()]
+    menu = _param_list(["71.552秒", *labels])
+    lines = (structure.ROOT / "stories" / "pet_sheet_lines.txt").read_text(encoding="utf-8").strip()
     return f"""#@title この1本 {{ display-mode: "form" }}
 #@markdown 「選ぶ」で構成のまま1本、または mp4の構成で差し替える、を選んだとき使う。人、動物、セリフ、場所だけ書く。
+#@markdown 初期値は給水。人、動物、場所、セリフは入っている。給水は stories/pet_sheet.yaml。
 #@markdown 構成は stories/INDEX.md の名前。71.552秒は固定のシート。パスも書ける。行を足してノートを作り直すと、この欄に増える。mp4の構成で差し替えるときは、構成欄は使わない。
 #@markdown セリフが空で、構成が台本の名前なら、その _lines.txt を読む。書いたセリフが優先。mp4の構成では、空のセリフは読まない。
 #@markdown 静止画は役ごと。空ならその役は文章から焼く。H3 の画像は1枚なので、話している役の画像だけをその範囲に使う。
 #@markdown 空は入力のまま。元の顔、元の動物、元のセリフは書かない。ここは焼かない。
 {body}
-構成 = "71.552秒" #@param {menu} {{allow-input: true}}
-人 = "入力" #@param {{type:"string"}}
-客の動物 = "入力" #@param {{type:"string"}}
-ツッコミの動物 = "入力" #@param {{type:"string"}}
-丁寧の動物 = "入力" #@param {{type:"string"}}
-場所 = "入力" #@param {{type:"string"}}
-セリフ = "" #@param {{type:"raw"}}
+構成 = "給水" #@param {menu} {{allow-input: true}}
+人 = "20代後半の成人の女性。ゆるい部屋着。髪はひとつ結び" #@param {{type:"string"}}
+客の動物 = "出さない" #@param {{type:"string"}}
+ツッコミの動物 = "グレーのマンチカン" #@param {{type:"string"}}
+丁寧の動物 = "白いスコティッシュフォールド" #@param {{type:"string"}}
+場所 = "真夏の庭。空の水入れと小さなビニールプール" #@param {{type:"string"}}
+セリフ = {_py(lines)} #@param {{type:"raw"}}
 客の静止画 = "" #@param {{type:"string"}}
 ツッコミの静止画 = "" #@param {{type:"string"}}
 丁寧の静止画 = "" #@param {{type:"string"}}
@@ -3507,13 +3511,14 @@ def sheet_form_cell() -> str:
 import affi_structure as structure
 
 try:
-    pack = structure.load(structure.pack_file(構成))
+    _sheet = {{"給水": "pet_sheet"}}.get(構成, 構成)
+    pack = structure.load(structure.pack_file(_sheet))
     filled = structure.fill(
         pack,
         person=人,
         animals={{"guest": 客の動物, "retort": ツッコミの動物, "polite": 丁寧の動物}},
         place=場所,
-        lines=structure.parse_lines(structure.stock_lines(構成, セリフ), [row["id"] for row in pack["captions"]]),
+        lines=structure.parse_lines(structure.stock_lines(_sheet, セリフ), [row["id"] for row in pack["captions"]]),
     )
 except ValueError as exc:
     print("止まった:", exc)
@@ -3532,11 +3537,11 @@ else:
 def post_cell() -> str:
     """Voice fitted to the baked mouth, captions, and an own music file. Off by default."""
     return """#@title 仕上げ { display-mode: "form" }
-#@markdown 絵ができたあと、仕上げにチェックを入れてこのセルを押す。H3 は呼ばない。投稿しない。
+#@markdown 仕上げはオン。絵ができたあと、声、字幕、曲を足す。H3 は呼ばない。投稿しない。
 #@markdown 焼いた絵の、そのせりふの秒の中で、画面の一部だけが動いた区間を口の開閉として測る。声はその秒に合わせる。絵の口は変えない。
 #@markdown captions.json の空でないせりふだけを声にする。入力、台詞は入力、burn が false の行は読まない。
 #@markdown 字幕は白ゴシック、下から約30%。曲は「選ぶ」の曲。空ならジョブの曲ファイル。
-仕上げ = False #@param {type:"boolean"}
+仕上げ = True #@param {type:"boolean"}
 
 import importlib
 import json
@@ -3636,6 +3641,8 @@ def _intro() -> str:
         "",
         "開くのはこのページだけです。ほかのノートは開かない。",
         "",
+        "スマホは、ランタイムを **GPU** にしてから、上のメニューの「すべてのセルを実行」を1回押す。構成は **給水**。人、動物、場所、セリフは入っている。焼く、仕上げ、重みが無いとき落とす、はオン。絵のあと声と字幕まで進む。投稿しない。",
+        "",
         "表は動画になりません。動画は一番下の **焼く** です。投稿しません。",
         "",
         "**構成のまま1本** が、71.552秒の完全な手順です。選ぶでそれを選び、この1本で人、動物、セリフ、場所を書く。実行。焼く。仕上げ。H3 は絵だけ。声、口、字幕、曲は仕上げ。欄が入力のままなら焼かない。構成欄が空なら、この71.552秒のままです。",
@@ -3666,7 +3673,7 @@ def _intro() -> str:
         "",
         "見た目を変えるときだけ、2と3のあいだに、話の名前が同じ見た目のセルを1つ実行します。変えないときは飛ばします。初期値です。",
         "",
-        "上のメニューの「すべてのセルを実行」は押しません。焼くと仕上げはオフのままなので、全部実行しても動画も声も始まりません。",
+        "給水以外にするときは、すべてのセルを実行の前に「選ぶ」と「この1本」だけ変える。",
         "",
         "## 選び方",
         "",
@@ -3963,7 +3970,7 @@ def reference_notebook() -> dict[str, Any]:
                     "",
                     "別のノートは開かない。最初にランタイムを GPU にする。途中で変えない。",
                     "",
-                    "上の「実行」が ready になってから、焼くにチェックを入れてこのセルを押す。",
+                    "焼くはオンです。すべてのセルを実行で、このセルまで進みます。",
                     "",
                     "残っている範囲を続けて焼きます。全部そろったら、その場で1本につなぎます。1本だけ見たいときは「最初の1本だけ」をオンにします。",
                     "",

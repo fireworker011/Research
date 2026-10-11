@@ -315,7 +315,8 @@ def test_reference_notebook_is_one_japanese_form_per_story() -> None:
     code = [_cell_source(cell) for cell in disk["cells"] if cell["cell_type"] == "code"]
     assert len(code) == 10
     assert "すべてのセルを実行" in blob
-    assert "押しません" in blob
+    assert "1回押す" in blob
+    assert "押しません" not in blob
     assert "読み込み" in blob
     assert "実行" in blob
     assert "#@title 焼く" in blob
@@ -330,12 +331,10 @@ def test_reference_notebook_is_one_japanese_form_per_story() -> None:
         ast.parse(src)
     bake_src = next(src for src in code if "#@title 焼く" in src)
     assert bake_src.index("if not 焼く") < bake_src.index("google.colab")
-    quiet: dict = {}
-    exec(bake_src, quiet)
-    assert quiet["焼く"] is False
-    assert quiet["最初の1本だけ"] is False
+    assert '焼く = True' in bake_src
+    assert '最初の1本だけ = False' in bake_src
     assert "残っている範囲を続けて焼いて" in bake_src
-    assert quiet["重みが無いとき落とす"] is False
+    assert '重みが無いとき落とす = True' in bake_src
     post_src = next(src for src in code if "#@title 仕上げ" in src)
     assert post_src.index("if not 仕上げ") < post_src.index("pip")
     assert post_src.index("if not 仕上げ") < post_src.index("google.colab")
@@ -346,21 +345,22 @@ def test_reference_notebook_is_one_japanese_form_per_story() -> None:
     assert 'out = job_dir / "post.mp4"' in post_src
     assert "上書きしません" in blob
     assert "絵の口は変えない" in post_src
-    posted: dict = {}
-    exec(post_src, posted)
-    assert posted["仕上げ"] is False
+    assert '仕上げ = True' in post_src
     sheet_src = next(src for src in code if "#@title この1本" in src)
     assert "構成のまま1本" in blob
     assert "おい、そこのデブ" not in sheet_src
     sheet_ns: dict = {}
     exec(sheet_src, sheet_ns)
-    assert sheet_ns["人"] == "入力"
-    assert sheet_ns["客の動物"] == "入力"
-    assert sheet_ns["セリフ"] == ""
-    assert sheet_ns["構成"] == "71.552秒"
+    assert sheet_ns["人"] == "20代後半の成人の女性。ゆるい部屋着。髪はひとつ結び"
+    assert sheet_ns["客の動物"] == "出さない"
+    assert sheet_ns["ツッコミの動物"] == "グレーのマンチカン"
+    assert sheet_ns["丁寧の動物"] == "白いスコティッシュフォールド"
+    assert sheet_ns["場所"] == "真夏の庭。空の水入れと小さなビニールプール"
+    assert sheet_ns["セリフ"] == (ROOT / "stories" / "pet_sheet_lines.txt").read_text(encoding="utf-8").strip()
+    assert sheet_ns["構成"] == "給水"
     assert sheet_ns["客の静止画"] == ""
     assert sheet_ns["人の静止画"] == ""
-    assert "pet_sheet" in sheet_src and "paw_stamp" in sheet_src
+    assert "pet_sheet" in sheet_src and "paw_stamp" in sheet_src and "給水" in sheet_src
     assert "mp4の構成で差し替える" in blob
 
     forms = [src for src in code if "look_from_form" in src]

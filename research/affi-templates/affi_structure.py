@@ -22,6 +22,8 @@ PACK_PATH = ROOT / "reference-accounts" / "source" / "repro" / "junjun_825k.yaml
 SHEET_PATH = ROOT / "reference-accounts" / "source" / "repro" / "junjun_825k.md"
 INDEX_PATH = ROOT / "stories" / "INDEX.md"
 LOCKED_SHEET = "71.552秒"
+# Phone menu name. The file stays pet_sheet.yaml.
+_PACK_ALIAS = {"給水": "pet_sheet"}
 
 SLOT = "入力"
 ROLES = ("guest", "retort", "polite", "owner", "indoor_pair")
@@ -108,6 +110,7 @@ def pack_file(raw: str | Path | None = None) -> Path | None:
     A written path, or a GitHub URL that contains ``stories/<name>.yaml``, is that file.
     """
     text = "" if raw is None else str(raw).strip()
+    text = _PACK_ALIAS.get(text, text)
     if text in {"", LOCKED_SHEET}:
         return None
     for candidate in [*_PACK_TAIL.findall(text), text]:
