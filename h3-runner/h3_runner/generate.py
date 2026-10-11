@@ -37,6 +37,7 @@ from h3_runner.loras import LoraSpec, reject_pruned_adaln
 from h3_runner.official import AUDIO_FLOW_SHIFT, FPS, pipeline_workflow
 from h3_runner.planner import ClipJob, Plan
 from h3_runner.slice_media import ensure_reference_slice
+from h3_runner.stage_time import attach_forward_timer
 from h3_runner.weights import failure_text, local_encode_path, require_present
 
 _TRANSFORMER_SKIP = [
@@ -304,30 +305,18 @@ def _attach_stage_timers(pipe: ModularPipeline, task: str) -> dict[str, float]:
     """Wall time of text-encoder, denoiser, and VAE forwards, after CUDA sync."""
     totals = {"text": 0.0, "denoise": 0.0, "vae": 0.0}
 
-    def wrap(module, key: str) -> None:
-        original = module.forward
-
-        def wrapped(*args, **kwargs):
-            if torch.cuda.is_available():
-                torch.cuda.synchronize()
-            start = time.perf_counter()
-            try:
-                return original(*args, **kwargs)
-            finally:
-                if torch.cuda.is_available():
-                    torch.cuda.synchronize()
-                totals[key] += time.perf_counter() - start
-
-        module.forward = wrapped
+    def sync() -> None:
+        if torch.cuda.is_available():
+            torch.cuda.synchronize()
 
     text = getattr(pipe, "text_encoder", None)
     if text is not None:
-        wrap(text, "text")
-    wrap(_denoiser(pipe, task), "denoise")
+        attach_forward_timer(text, totals, "text", sync)
+    attach_forward_timer(_denoiser(pipe, task), totals, "denoise", sync)
     for name in ("vae", "audio_vae"):
         module = getattr(pipe, name, None)
         if module is not None:
-            wrap(module, "vae")
+            attach_forward_timer(module, totals, "vae", sync)
     return totals
 
 
