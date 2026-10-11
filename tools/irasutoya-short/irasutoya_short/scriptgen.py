@@ -6,6 +6,7 @@ import re
 
 from irasutoya_short.catalog import ASSET_CATALOG, VOICES
 from irasutoya_short.constants import MAX_SCENES, MIN_SCENES
+from irasutoya_short.imagine import attach_imagine
 from irasutoya_short.textutil import spoken, wrap_telop
 
 
@@ -226,6 +227,7 @@ def generate_caption_script(brief: dict) -> dict:
             )
     used = _credits_used(scenes)
     scenes.append(_caption_credit(len(scenes) + 1, used))
+    attach_imagine(scenes)
     _validate_caption(scenes, punch_bits[0] if punch_bits else punch_quotes[0], closing)
     return {
         "title": hook,

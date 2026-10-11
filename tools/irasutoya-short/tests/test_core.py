@@ -3,11 +3,13 @@
 from __future__ import annotations
 
 import unittest
+from pathlib import Path
 
 import numpy as np
 
 from irasutoya_short.audio import mix_tracks
 from irasutoya_short.bubbles import render_bubble
+from irasutoya_short.imagine import find_plates, write_bot_order
 from irasutoya_short.lipsync import mouth_envelope
 from irasutoya_short.qa import body_count, title_rejection
 from irasutoya_short.render import mouth_should_move
@@ -89,6 +91,11 @@ class ScriptTests(unittest.TestCase):
         plain = generate_script(BRIEF)
         self.assertNotIn("format", plain)
         self.assertEqual(len(plain["scenes"]), 14)
+        self.assertTrue(all("imagine" in s for s in script["scenes"] if s["role"] != "credit"))
+        self.assertNotIn("imagine", script["scenes"][-1])
+        self.assertNotIn("imagine", plain["scenes"][0])
+        self.assertNotIn("村井", script["scenes"][0]["imagine"])
+        self.assertIn("文字", script["scenes"][0]["imagine"])
 
     def test_punchline_required(self) -> None:
         bad = dict(BRIEF)
@@ -166,6 +173,22 @@ class AudioTests(unittest.TestCase):
         mixed = mix_tracks(voice, sfx, 0.22, None, 0.0)
         self.assertGreater(float(np.max(np.abs(mixed[: len(sfx)]))), float(np.max(np.abs(voice[: len(sfx)]))))
         self.assertLess(float(np.max(np.abs(mixed))), 1.05)
+
+
+class ImagineOrderTests(unittest.TestCase):
+    def test_bot_order_names_files_and_skips_the_reference_story(self) -> None:
+        script = generate_script(CAPTION_BRIEF)
+        dest = Path("/tmp/shitagaki-imagine.txt")
+        write_bot_order(script["title"], script["scenes"], dest)
+        text = dest.read_text(encoding="utf-8")
+        self.assertIn("scene_01.png", text)
+        self.assertIn("Grok Imagine", text)
+        self.assertIn("下書き", text)
+        self.assertNotIn("98万", text)
+        self.assertNotIn("村井", text)
+        found, missing = find_plates(Path("/tmp/no-such-imagine-dir"), script["scenes"])
+        self.assertEqual(found, {})
+        self.assertIn("scene_01", missing)
 
 
 class BubbleTests(unittest.TestCase):

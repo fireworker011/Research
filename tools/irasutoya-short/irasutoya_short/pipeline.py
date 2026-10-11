@@ -20,6 +20,7 @@ from irasutoya_short.constants import (
     SAMPLE_RATE,
     WIDTH,
 )
+from irasutoya_short.imagine import find_plates, write_bot_order
 from irasutoya_short.irasutoya import collect_assets
 from irasutoya_short.layout import analyze_screenshots, default_layout
 from irasutoya_short.lipsync import mouth_envelope
@@ -58,15 +59,46 @@ def default_settings() -> dict:
     }
 
 
-def make(brief_path: Path, work_dir: Path, out_path: Path, screenshots: list[Path] | None = None, bgm: bool = True) -> dict:
+def make(
+    brief_path: Path,
+    work_dir: Path,
+    out_path: Path,
+    screenshots: list[Path] | None = None,
+    bgm: bool = True,
+    images: Path | None = None,
+) -> dict:
     brief = json.loads(Path(brief_path).read_text(encoding="utf-8"))
     work_dir.mkdir(parents=True, exist_ok=True)
     script = generate_script(brief)
+    fmt = "caption" if str(brief.get("format") or "").strip() == "caption" else "sukatto"
     shots = list(screenshots or [])
     layout = analyze_screenshots(shots) if shots else default_layout()
-    asset_dir = work_dir / "assets"
-    report = collect_assets(script["asset_ids"], asset_dir, brief.get("asset_urls"))
-    _debug_mouths(report["accepted"], asset_dir / "debug_mouth")
+    if fmt == "caption":
+        order = write_bot_order(script["title"], script["scenes"], work_dir / "imagine-bot.txt")
+        plates, missing = find_plates(images or Path(), script["scenes"])
+        if images is None or missing:
+            raise RuntimeError(
+                "吹き出し型の絵は Grok Imagine が作る。"
+                f"Imagine ボットへの指示は {order} 。"
+                "返ってきた scene_01.png 以降を --images に置く。"
+                + (f" 足りない: {', '.join(missing)}。" if missing else "")
+            )
+        for scene in script["scenes"]:
+            plate = plates.get(int(scene["id"]))
+            if plate is not None:
+                scene["plate"] = str(plate.resolve())
+        report = {
+            "accepted": [],
+            "rejected": [],
+            "count": 0,
+            "limit": 20,
+            "within_limit": True,
+            "source": "grok-imagine",
+        }
+    else:
+        asset_dir = work_dir / "assets"
+        report = collect_assets(script["asset_ids"], asset_dir, brief.get("asset_urls"))
+        _debug_mouths(report["accepted"], asset_dir / "debug_mouth")
     project = {
         "brief": brief,
         "title": script["title"],
@@ -80,7 +112,6 @@ def make(brief_path: Path, work_dir: Path, out_path: Path, screenshots: list[Pat
         "settings": default_settings(),
         "terms": TERMS,
     }
-    fmt = "caption" if str(brief.get("format") or "").strip() == "caption" else "sukatto"
     project["format"] = fmt
     project["width"] = CAPTION_WIDTH if fmt == "caption" else WIDTH
     project["height"] = CAPTION_HEIGHT if fmt == "caption" else HEIGHT

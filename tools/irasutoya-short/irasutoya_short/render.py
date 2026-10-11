@@ -236,13 +236,25 @@ def _place_props(frame, scene, book: SpriteBook) -> None:
         blit(frame, sprite, x, y)
 
 
-def compose_frame(scene, book, bg, lines, telop, openness, mouth_gain, layout, local_t) -> np.ndarray:
-    frame = bg.copy()
-    if scene["effect"] == "lines" or scene["bg"] == "lines":
-        blit(frame, lines, 0, 0)
-    _draw_papers(frame, scene)
-    _place_props(frame, scene, book)
-    _place_characters(frame, scene, book, openness, mouth_gain, layout)
+def cover_plate(path: str, width: int, height: int) -> np.ndarray:
+    im = Image.open(path).convert("RGB")
+    scale = max(width / im.width, height / im.height)
+    resized = im.resize((max(width, int(im.width * scale)), max(height, int(im.height * scale))), Image.Resampling.BILINEAR)
+    left = max(0, (resized.width - width) // 2)
+    top = max(0, (resized.height - height) // 2)
+    return np.array(resized.crop((left, top, left + width, top + height)))
+
+
+def compose_frame(scene, book, bg, lines, telop, openness, mouth_gain, layout, local_t, plate=None) -> np.ndarray:
+    if plate is not None:
+        frame = plate.copy()
+    else:
+        frame = bg.copy()
+        if scene["effect"] == "lines" or scene["bg"] == "lines":
+            blit(frame, lines, 0, 0)
+        _draw_papers(frame, scene)
+        _place_props(frame, scene, book)
+        _place_characters(frame, scene, book, openness, mouth_gain, layout)
     zoom = 1.0
     if scene["effect"] == "kenburns":
         p = min(1.0, local_t / max(float(scene["duration"]), 0.01))
@@ -270,6 +282,7 @@ def render_movie(project: dict, out_path: Path, preview_dir: Path | None = None)
     width = int(project.get("width") or WIDTH)
     height = int(project.get("height") or HEIGHT)
     book = SpriteBook(project["asset_paths"])
+    plates = {s["id"]: cover_plate(s["plate"], width, height) for s in scenes if s.get("plate")}
     bgs = {name: render_bg(name, width, height) for name in {s["bg"] for s in scenes}}
     lines = concentration(width, height)
     telops = [_scene_overlay(s, width, height, settings, layout) for s in scenes]
@@ -301,6 +314,7 @@ def render_movie(project: dict, out_path: Path, preview_dir: Path | None = None)
             frame = compose_frame(
                 scene, book, bgs[scene["bg"]], lines, telops[scene_i],
                 openness, settings["mouth_gain"], layout, local_t,
+                plates.get(scene["id"]),
             )
             peak = int(np.argmax(env)) if len(env) else 0
             if preview_dir is not None and scene_frame == peak:

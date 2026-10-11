@@ -93,14 +93,20 @@ PYTHONPATH=. python -m irasutoya_short make examples/oshitsuke.json \
 
 ## 吹き出し型（横長）
 
-`format` を `caption` にすると、縦ショートとは別の型になる。16:9、地の文は端の縦書き四角枠（しっぽなし）、`「」` は話者の声としっぽ付き吹き出し。ナレーションは四国めたん、会話は白上虎太郎。地の文では口を動かさない。ゆっくり寄るズームを入れる。既存のスカッと（`format` 無し）は 9:16 の下テロップのまま。
+`format` を `caption` にすると、縦ショートとは別の型になる。16:9、地の文は端の縦書き四角枠（しっぽなし）、`「」` は話者の声としっぽ付き吹き出し。ナレーションは四国めたん、会話は白上虎太郎。地の文では口を動かさない。ゆっくり寄るズームを入れる。既存のスカッと（`format` 無し）は 9:16 の下テロップと、いらすとやのキャラのまま。
+
+吹き出し型の絵は Grok Imagine が作る。Cursor は描かない。Imagine ボットに指示を渡し、返ってきた `scene_01.png` 以降を `--images` に置く。
 
 箇条書きは地の文を3本。会話は `「」` で1つ以上。オチにも地の文か `「」` を入れる。
 
 ```bash
+PYTHONPATH=. python -m irasutoya_short imagine examples/shitagaki.json \
+  --out examples/shitagaki-imagine.txt
+
 PYTHONPATH=. python -m irasutoya_short make examples/shitagaki.json \
   --work work/shitagaki \
-  --out work/shitagaki/out.mp4
+  --out work/shitagaki/out.mp4 \
+  --images path/to/grok-imagine-pngs
 ```
 
 ## 口語で直す
