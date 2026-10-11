@@ -362,6 +362,11 @@ def test_reference_notebook_is_one_japanese_form_per_story() -> None:
     assert sheet_ns["人の静止画"] == ""
     assert "pet_sheet" in sheet_src and "paw_stamp" in sheet_src and "給水" in sheet_src
     assert "mp4の構成で差し替える" in blob
+    assert 'BRANCH = "cursor/affi-sheet-bugs-44d6"' in blob
+    assert "inspect.signature(affi_bake.run_choice)" in blob
+    run_src = next(src for src in code if "#@title 実行" in src)
+    assert "sheet_images" in run_src
+    assert "if key in known" in run_src
 
     forms = [src for src in code if "look_from_form" in src]
     ns: dict = {"HANDLE": "junjun_ranran", "MODE": None}
