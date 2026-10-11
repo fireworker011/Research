@@ -6,6 +6,7 @@ import sys
 from pathlib import Path
 
 import pytest
+import yaml
 
 ROOT = Path(__file__).resolve().parent
 sys.path.insert(0, str(ROOT))
@@ -200,3 +201,52 @@ def test_paw_stamp_is_another_pack_of_the_same_sheet() -> None:
     broken = {**voices, "owner": voices["guest"]}
     with pytest.raises(ValueError, match="同じ声が2役に当たっている"):
         structure.check_voices({**pack, "voices": broken})
+
+
+def _homage_lines() -> list[dict[str, float | str]]:
+    return [
+        {"start_s": 0.2, "end_s": 1.0, "speaker": "A"},
+        {"start_s": 4.2, "end_s": 5.2, "speaker": "A"},
+    ]
+
+
+def test_homage_pack_keeps_measured_times_and_drops_the_words(tmp_path: Path) -> None:
+    pack = structure.homage_pack(duration_s=6, cuts=[2.0, 4.0], lines=_homage_lines())
+    path = tmp_path / "homage.yaml"
+    path.write_text(yaml.safe_dump(pack, allow_unicode=True, sort_keys=False), encoding="utf-8")
+    loaded = structure.load(path)
+    assert loaded["line_must_fit"] is True
+    assert loaded["duration_s"] == 6
+    assert loaded["cuts_s"] == [2.0, 4.0]
+    assert [shot["camera"] for shot in loaded["shots"]] == ["カメラの動きは測っていない。"] * 3
+    assert loaded["shots"][0]["on_screen"] == ["guest"]
+    assert loaded["shots"][1]["on_screen"] == []
+    assert loaded["shots"][1]["picture"].startswith("誰も口を開かない")
+    assert loaded["shots"][2]["on_screen"] == ["guest"]
+    assert all(row["line"] == "入力" for row in loaded["captions"])
+    assert [row["source_line"] for row in loaded["captions"]] == ["e-01", "e-02"]
+    assert loaded["slots"]["place"] == "入力"
+    text = structure.picture_prompt(loaded, 0, 6)
+    assert "砂漠" not in text
+    assert "オアシス" not in text
+    assert "e-01" not in text
+    with pytest.raises(ValueError, match="せりふが読めない"):
+        structure.homage_pack(duration_s=6, cuts=[], lines=[])
+    with pytest.raises(ValueError, match="カットが測れない"):
+        structure.homage_pack(duration_s=6, cuts=None, lines=_homage_lines())
+    many = [{"start_s": index, "end_s": index + 0.4, "speaker": str(index)} for index in range(6)]
+    with pytest.raises(ValueError, match="5役より多い"):
+        structure.homage_pack(duration_s=8, cuts=[], lines=many)
+
+
+def test_line_fit_stops_only_when_the_sheet_asks() -> None:
+    pack = structure.homage_pack(duration_s=6, cuts=[2.5], lines=[{"start_s": 0.2, "end_s": 1.0, "speaker": "A"}])
+    filled = structure.fill(pack, lines={"c01": "長い一文"})
+    assert structure.line_fit_reasons(filled, lambda _text, _role: None) == ["c01 の秒が測れない"]
+    blocked = structure.line_fit_reasons(filled, lambda _text, _role: 5)
+    assert blocked == ["c01 は 5 秒。ショットは 0.8 秒。カットは動かさない。"]
+    assert structure.line_fit_reasons(filled, lambda _text, _role: 0.5) == []
+    pet = structure.load(ROOT / "stories" / "pet_sheet.yaml")
+    assert not pet.get("line_must_fit")
+    pet_filled = structure.fill(pet, lines={"c01": "短い"})
+    assert structure.line_fit_reasons(pet_filled, lambda _text, _role: 99) == []

@@ -14,6 +14,7 @@ from __future__ import annotations
 import inspect
 import subprocess
 import sys
+import tempfile
 from pathlib import Path
 from typing import Any, Callable, Mapping, Sequence
 
@@ -167,6 +168,17 @@ def picture_in(job_dir: Path) -> Path | None:
     if len(clips) == 1:
         return clips[0]
     return None
+
+
+def speak_seconds(text: str, role: str, voices: Mapping[str, Any] | None = None) -> float | None:
+    """How long this line takes in its role voice. None when that cannot be measured."""
+    try:
+        with tempfile.TemporaryDirectory() as tmp:
+            dest = Path(tmp) / "line.wav"
+            synth_edge(text, role, dest, voice=voice_for(role, voices))
+            return probe_audio(dest)
+    except Exception:
+        return None
 
 
 def voice_for(role: str, voices: Mapping[str, Any] | None = None) -> str:
