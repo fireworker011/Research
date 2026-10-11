@@ -73,6 +73,9 @@ def test_picture_prompt_leaves_the_spoken_line_out() -> None:
     assert "小さい鳥" in text
     assert "別の部屋" in text
     assert "No one speaks." in text
+    assert "Mouths do not form words." not in text
+    assert "does not shape words." in text
+    assert "From " not in text
     assert filled["shots"][0]["source_seen"] not in text
 
 
@@ -230,6 +233,10 @@ def test_homage_pack_keeps_measured_times_and_drops_the_words(tmp_path: Path) ->
     assert "砂漠" not in text
     assert "オアシス" not in text
     assert "e-01" not in text
+    assert "Mouths do not form words." not in text
+    assert "From 0.2 to 1, the 客 jaw opens and closes." in text
+    assert "From 4.2 to 5.2, the 客 jaw opens and closes." in text
+    assert "カメラの動きは測っていない。" in text
     with pytest.raises(ValueError, match="せりふが読めない"):
         structure.homage_pack(duration_s=6, cuts=[], lines=[])
     with pytest.raises(ValueError, match="カットが測れない"):
@@ -244,7 +251,7 @@ def test_line_fit_stops_only_when_the_sheet_asks() -> None:
     filled = structure.fill(pack, lines={"c01": "長い一文"})
     assert structure.line_fit_reasons(filled, lambda _text, _role: None) == ["c01 の秒が測れない"]
     blocked = structure.line_fit_reasons(filled, lambda _text, _role: 5)
-    assert blocked == ["c01 は 5 秒。ショットは 0.8 秒。カットは動かさない。"]
+    assert blocked == ["c01 は 5 秒。せりふの秒は 0.8 秒。カットは動かさない。"]
     assert structure.line_fit_reasons(filled, lambda _text, _role: 0.5) == []
     pet = structure.load(ROOT / "stories" / "pet_sheet.yaml")
     assert not pet.get("line_must_fit")

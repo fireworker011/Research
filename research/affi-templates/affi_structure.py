@@ -381,7 +381,7 @@ def line_fit_reasons(pack: Mapping[str, Any], probe: Any) -> list[str]:
             reasons.append(f"{row['id']} の秒が測れない")
             continue
         if spoken > span + 0.05:
-            reasons.append(f"{row['id']} は {_num(spoken)} 秒。ショットは {_num(span)} 秒。カットは動かさない。")
+            reasons.append(f"{row['id']} は {_num(spoken)} 秒。せりふの秒は {_num(span)} 秒。カットは動かさない。")
     return reasons
 
 
@@ -687,6 +687,27 @@ def parse_lines(text: str, ids: Sequence[str]) -> dict[str, str]:
     return out
 
 
+def _measured_jaw(pack: Mapping[str, Any], shot_id: str, origin: float, stop: float) -> list[str]:
+    """Speech windows that were measured. Sheets without fit_s stay as written."""
+    lines = []
+    for row in pack["captions"]:
+        if str(row.get("shot")) != shot_id:
+            continue
+        fit = row.get("fit_s")
+        if not fit or len(fit) != 2:
+            continue
+        left = max(float(fit[0]), origin) - origin
+        right = min(float(fit[1]), stop) - origin
+        if right - left < 0.05:
+            continue
+        role = ROLE_JA.get(str(row.get("role")), str(row.get("role")))
+        lines.append(
+            f"From {_num(left)} to {_num(right)}, the {role} jaw opens and closes. "
+            "Outside that interval that jaw stays closed."
+        )
+    return lines
+
+
 def picture_prompt(pack: Mapping[str, Any], start_s: float, end_s: float) -> str:
     """English picture for one range. Spoken lines and the source cast stay out."""
     slots = pack["slots"]
@@ -708,7 +729,7 @@ def picture_prompt(pack: Mapping[str, Any], start_s: float, end_s: float) -> str
             f"Person: {named(slots['person'])}."
         ),
         "Adults only. Do not resemble a real person or the source account.",
-        "No one speaks. Mouths do not form words. No writing. No music. No logo.",
+        "No one speaks. A jaw opens and closes only where that shot says it does, and it does not shape words. No writing. No music. No logo.",
         "",
     ]
     origin = float(start_s)
@@ -724,6 +745,7 @@ def picture_prompt(pack: Mapping[str, Any], start_s: float, end_s: float) -> str
         lines.append(
             f"[Shot] {_num(left)} to {_num(right)}. {shot['camera']} {shot['picture']} On screen: {who}."
         )
+        lines.extend(_measured_jaw(pack, str(shot["id"]), origin, stop))
     text = "\n".join(lines) + "\n"
     for row in pack["captions"]:
         source = str(row["source_line"])

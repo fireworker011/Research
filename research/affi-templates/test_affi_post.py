@@ -91,6 +91,20 @@ def test_compact_change_is_a_small_region() -> None:
     mouth = still.copy()
     mouth[40:48, 10:18] = 255
     assert affi_post._compact_change(still, mouth) is True
+    wide = np.zeros((960, 544, 3), np.uint8)
+    jaw = wide.copy()
+    jaw[400:420, 250:270] = 255
+    assert affi_post._compact_change(wide, jaw) is True
+
+
+def test_missing_gtts_stops_in_japanese(tmp_path: Path) -> None:
+    saved = affi_post.gTTS
+    affi_post.gTTS = None
+    try:
+        with pytest.raises(ValueError, match="gTTS"):
+            affi_post.synth_edge("あ", "owner", tmp_path / "line.wav", voice="gtts:ja")
+    finally:
+        affi_post.gTTS = saved
 
 
 def test_a_missing_picture_or_music_file_blocks(tmp_path: Path) -> None:

@@ -3538,6 +3538,7 @@ def post_cell() -> str:
 #@markdown 字幕は白ゴシック、下から約30%。曲は「選ぶ」の曲。空ならジョブの曲ファイル。
 仕上げ = False #@param {type:"boolean"}
 
+import importlib
 import json
 import shutil
 import subprocess
@@ -3559,6 +3560,7 @@ else:
             import affi_bake
             import affi_finish
             import affi_post
+            importlib.reload(affi_post)
         except ImportError:
             print("先に「読み込み」を押してください。")
         else:
@@ -3708,7 +3710,7 @@ def _intro() -> str:
         "役ごとの静止画を書くと、その役が話す範囲の最初のコマに使います。H3 の画像は1枚なので、同時にいるほかの顔は固定できません。",
         "H3 は口の開閉の絵だけです。声、字幕、曲は「仕上げ」で、焼いた口の秒に合わせます。",
         "焼いたあとに比べるのは、カットの秒、ショットの順、誰がいつ話すかです。全体の割合は出しません。元のせりふとは比べません。",
-        "このメニューは、読み込みが取る `cursor/affi-template-bake-44d6` にこのコードが入ってから Colab で動きます。",
+        "読み込みと焼くは `cursor/affi-template-bake-44d6` を取り直す。古いノートを開いているときは、このブランチのノートを開き直してから読み込みを押す。",
         "",
         "## 4つの話",
         "",
@@ -3766,9 +3768,15 @@ def _loader_cell() -> str:
             'DATE = "2026-10-07"  #@param {type:"string"}',
             "",
             "from pathlib import Path",
+            "import subprocess",
             "import sys",
             "import urllib.error",
             "import urllib.request",
+            "",
+            "try:",
+            '    subprocess.check_call([sys.executable, "-m", "pip", "install", "-q", "edge-tts", "gTTS"])',
+            "except subprocess.CalledProcessError as exc:",
+            '    print(f"止まった: 声のパッケージに失敗した。終了コード {exc.returncode}。")',
             "",
             'BRANCH = "cursor/affi-template-bake-44d6"',
             'REPO = "fireworker011/Research"',
@@ -3777,6 +3785,7 @@ def _loader_cell() -> str:
             "COMPARE_MIN = 3",
             "THIN_BELOW = 10",
             "MIN_GAP_PT = 10",
+            "missing_py = False",
             'LOCAL = Path("research/affi-templates")',
             'if not (LOCAL / "affi_bake.py").is_file():',
             "    here = Path.cwd()",
@@ -3798,11 +3807,13 @@ def _loader_cell() -> str:
             "        except urllib.error.HTTPError as exc:",
             '            print(f"止まった: {rel} が取れない（{exc.code}）。")',
             "            if rel.endswith('.py'):",
+            "                missing_py = True",
             "                break",
             "            continue",
             "        except Exception as exc:",
             '            print(f"止まった: {rel} が取れない（{type(exc).__name__}）。")',
             "            if rel.endswith('.py'):",
+            "                missing_py = True",
             "                break",
             "            continue",
             '        print("取りました", rel)',
@@ -3829,17 +3840,20 @@ def _loader_cell() -> str:
             '                    print("取りました", rel)',
             "                except Exception:",
             '                    print("取り込めなかった", rel)',
-            "sys.path.insert(0, str(LOCAL))",
-            "import affi_reference as ref",
-            "ref.ROOT = LOCAL",
-            'ref.TEMPLATES = LOCAL / "reference-accounts" / "templates"',
-            'ref.HYPOTHESES = LOCAL / "reference-accounts" / "hypotheses.yaml"',
-            'ref.RESULTS = LOCAL / "reference-accounts" / "results.csv"',
-            'ref.LOOKS = LOCAL / "reference-accounts" / "looks.yaml"',
-            'DATA_DIR = LOCAL / "data" / DATE',
-            'TABLE_OUT = LOCAL / "templates"',
-            'print("読みました", LOCAL)',
-            'print("次は「選ぶ」を実行してください。")',
+            'if missing_py or not (LOCAL / "affi_bake.py").is_file():',
+            '    print("py が無いので、ここで止める。")',
+            "else:",
+            "    sys.path.insert(0, str(LOCAL))",
+            "    import affi_reference as ref",
+            "    ref.ROOT = LOCAL",
+            '    ref.TEMPLATES = LOCAL / "reference-accounts" / "templates"',
+            '    ref.HYPOTHESES = LOCAL / "reference-accounts" / "hypotheses.yaml"',
+            '    ref.RESULTS = LOCAL / "reference-accounts" / "results.csv"',
+            '    ref.LOOKS = LOCAL / "reference-accounts" / "looks.yaml"',
+            '    DATA_DIR = LOCAL / "data" / DATE',
+            '    TABLE_OUT = LOCAL / "templates"',
+            '    print("読みました", LOCAL)',
+            '    print("次は「選ぶ」を実行してください。")',
             "",
         ]
     )

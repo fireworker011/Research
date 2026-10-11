@@ -19,9 +19,14 @@ from pathlib import Path
 from typing import Any, Callable, Mapping, Sequence
 
 import numpy as np
-from gtts import gTTS
 
 import affi_finish
+
+try:
+    from gtts import gTTS
+except ImportError:
+    # The loader installs this before 選ぶ. A missing package must not stop the sheet.
+    gTTS = None
 
 SLOT = "入力"
 SKIP_LINES = {SLOT, "台詞は入力", ""}
@@ -34,7 +39,8 @@ VOICES = {
 }
 DEFAULT_VOICE = "ja-JP-NanamiNeural"
 MOUTH_PIXEL = 18
-MOUTH_MIN_FRACTION = 0.0015
+# 0.15% of a 544x960 frame is about 800 pixels and drops a small jaw.
+MOUTH_MIN_FRACTION = 0.00008
 MOUTH_MAX_FRACTION = 0.12
 MOUTH_MAX_BOX = 0.35
 SAMPLE_RATE = 44100
@@ -197,6 +203,8 @@ def synth_edge(text: str, role: str, dest: Path, voice: str | None = None) -> No
         subprocess.check_call(["espeak-ng", "-v", name, "-w", str(dest), text])
         return
     if chosen.startswith("gtts:"):
+        if gTTS is None:
+            raise ValueError("gTTS が無い。読み込みをやり直す。")
         lang = chosen.split(":", 1)[1].strip() or "ja"
         gTTS(text, lang=lang).save(str(dest))
         return
@@ -368,7 +376,7 @@ def mouths_for_cues(
         buf = decode.stdout.read(frame_bytes)
         if len(buf) < frame_bytes:
             break
-        frame = np.frombuffer(buf, dtype=np.uint8).reshape((height, width, 3))
+        frame = np.frombuffer(buf, dtype=np.uint8).reshape((height, width, 3)).copy()
         if prev is not None:
             stamp = index / fps
             changed = _compact_change(prev, frame)
@@ -406,6 +414,8 @@ def mouths_for_cues(
         row = dict(cue)
         row["start_s"] = round(open_s, 3)
         row["end_s"] = round(close_s, 3)
+        if row["end_s"] <= row["start_s"]:
+            raise ValueError(f"絵から口の開閉が測れない: {cue['id']}")
         fitted.append(row)
     return fitted
 
