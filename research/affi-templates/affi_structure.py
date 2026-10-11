@@ -688,9 +688,10 @@ def parse_lines(text: str, ids: Sequence[str]) -> dict[str, str]:
 
 
 # Longer phrases first. A hit consumes those characters so a shorter phrase cannot fire inside it.
+_STATIC = "The camera holds a static shot"
 _CAMERA_MOTION = (
-    ("カメラの動きは測っていない", "The camera path was not measured. The camera holds."),
-    ("黒で切れる", "The picture cuts to black and holds black."),
+    ("カメラの動きは測っていない", "The camera path was not measured. The camera holds a static shot."),
+    ("黒で切れる", "The picture cuts to black and the camera holds that black frame."),
     ("低い位置から寄る", "The camera pushes in from a low height."),
     ("低い位置から追う", "The camera tracks the moving body from a low height."),
     ("肩越しに少し寄る", "The camera pushes in over the shoulder with small amplitude."),
@@ -698,28 +699,37 @@ _CAMERA_MOTION = (
     ("視線に合わせて横へ振る", "The camera pans sideways along the gaze."),
     ("引きながら少し下がる", "The camera pulls out and shifts back with small amplitude."),
     ("上から水面へ見下ろす", "The camera tilts down toward the water from above."),
+    ("視線の先", "The camera holds a static shot where the gaze lands."),
+    ("顔と前足", "The camera holds a static shot on the face and the forepaw."),
+    ("前足と顔", "The camera holds a static shot on the forepaw and the face."),
     ("上から見る", "The camera tilts down from above."),
     ("下から見上げる", "The camera tilts up from below."),
+    ("下から見る", "The camera tilts up from below."),
     ("顔へ少し寄る", "The camera pushes in on the face with small amplitude."),
-    ("顔の寄り", "The camera holds a close-up on the face."),
+    ("顔の寄り", "The camera holds a static shot on the face at close range."),
     ("顔へ寄る", "The camera pushes in on the face."),
     ("横から寄る", "The camera pushes in from the side."),
     ("横から追う", "The camera tracks the moving body from the side."),
     ("少し寄る", "The camera pushes in with small amplitude."),
     ("へ寄る", "The camera pushes in."),
-    ("ガラス越し", "The camera looks through glass."),
-    ("横から見る", "The camera holds a side view."),
-    ("横顔", "The camera holds a profile."),
-    ("立ち姿", "The camera holds a standing view."),
-    ("背中", "The camera holds on the backs."),
-    ("正面", "The camera holds a front view."),
-    ("動きは少ない", "The camera move stays small."),
-    ("床の高さ", "The camera holds at floor height."),
+    ("ガラス越し", "The camera holds a static shot through the glass."),
+    ("網目越し", "The camera holds a static shot through the mesh."),
+    ("仕切り越し", "The camera holds a static shot through the partition."),
+    ("横から見る", "The camera holds a static shot from the side."),
+    ("横顔", "The camera holds a static shot aimed at the side of the face."),
+    ("立ち姿", "The camera holds a static shot aimed at the standing body."),
+    ("背中", "The camera holds a static shot aimed at the backs."),
+    ("正面", "The camera holds a static shot aimed at the front."),
+    ("動きは少ない", "The camera travels only a small distance."),
+    ("床の高さ", "The camera holds a static shot at floor height."),
     ("少し引く", "The camera pulls out with small amplitude."),
+    ("奥に建物", "A building stays in the distance."),
     ("寄る", "The camera pushes in."),
-    ("寄り", "The camera holds a close-up."),
+    ("寄り", "The camera holds a static shot at close range."),
     ("引き", "The camera pulls out."),
-    ("低い", "The camera stays low."),
+    ("低い", "The camera holds a static shot from a low height."),
+    ("同じ向き", "The facing stays the same as the earlier shot."),
+    ("手すり", "A rail stays in the frame."),
 )
 _JAW_OPENS = "The lower jaw drops and rises, more than once, and does not shape words."
 _MOUTH_CLOSED = "The mouth stays closed. The jaw does not travel."
@@ -783,7 +793,54 @@ _BODY_MOTION = (
     ("庭を走る", "The legs cycle and the body travels forward across the yard."),
     ("走る", "The legs cycle and the body travels forward."),
     ("画面に向かう", "The body turns to face the lens."),
+    ("正面を向いて", "The body turns to face the lens."),
+    ("家の方を見て", "The head turns toward the house."),
+    ("庭の端のビニールプールを見る", "The head turns toward the pool at the edge of the yard."),
+    ("ひび割れた底を見て", "The head tilts down toward the cracked ground."),
+    ("踏んでいる前足を見て", "The head turns toward the forepaw that is pressing down."),
+    ("自分の前足を見る", "The head turns down toward that one's own forepaw."),
+    ("ツッコミの前足を見て", "The head turns toward the retort's forepaw."),
+    ("水面を見て", "The head tilts down toward the water."),
+    ("パッドを見て", "The head turns toward the pad."),
+    ("前足を見て", "The head turns toward the forepaw."),
     ("上を見る", "The head tilts upward."),
+    ("後ろから見る", "The view stays from behind the two animals."),
+    ("空の水入れの横にいる", "The body stays beside the empty water bowl."),
+    ("短い足の茶色い犬は床のラグで", "The short-legged brown dog stays on the floor rug."),
+    ("外に小さくいる", "The body stays small in the distance outside."),
+    ("戸口に小さくいる", "The body stays small in the doorway."),
+    ("戸口に立って", "The weight stays on both feet in the doorway."),
+    ("手すりにいる", "The body stays at the rail."),
+    ("人の顔は出さない", "The person's face stays out of frame."),
+    ("並んでいる", "The bodies stay side by side."),
+    ("並んで", "The bodies stay side by side."),
+    ("が手前", "The body stays closer to the lens."),
+    ("は端", "The body stays at the edge."),
+    ("客の寄り", "The guest stays in the close framing."),
+    ("が入る", _MOVE_IN),
+    ("袋を持つ", "The hand keeps hold of the bag."),
+    ("仕切りの向こうで", "The body stays on the far side of the partition."),
+    ("前足は毛布の上", "The forepaw rests on the blanket."),
+    ("丁寧役の顔", "The face stays toward the lens."),
+    ("飼い主の顔", "The face stays toward the lens."),
+    ("空", "The sky stays in the background."),
+    ("動物2匹の横顔", "The heads stay in profile."),
+    ("の背中", "The backs stay toward the lens."),
+    ("飼い主の脚", "The person's legs stay in the frame."),
+    ("飼い主の腕", "The person's arm stays in the frame."),
+    ("植物がある", "A plant stays in the frame."),
+    ("前足に粉がついている", "Powder stays on the forepaw."),
+    ("粉が二つある", "Two patches of powder stay where they are."),
+    ("窓の光", "Window light falls across the room."),
+    ("昼のリビング", "This shot stays in the living room in daylight."),
+    ("背景は場所の欄", "The background stays the place named above."),
+    ("ゆるい部屋着", "The person wears loose indoor clothes."),
+    ("髪はひとつ結び", "The person's hair stays tied in one knot."),
+    ("屋外", "This shot stays outdoors."),
+    ("室内", "This shot stays indoors."),
+    ("リビング", "This shot stays in the living room."),
+    ("庭", "This shot stays in the yard."),
+    ("昼", "This shot stays in daylight."),
     ("座って", _SIT),
     ("座る", _SIT),
     ("黒画面", "The frame stays black."),
@@ -912,37 +969,171 @@ def _bind_mouth(english: str, who: Sequence[str]) -> str:
     return f"{name} mouth stays closed. That jaw does not travel."
 
 
+def _noun(single: str, plural: str, rest: str) -> tuple[str, str]:
+    return (f"{{name}} {single} {rest}", f"{{name}} {plural} {rest}")
+
+
+_NAMED = {
+    _STAND_THEN_SIT: (
+        "{name} weight moves onto the hind legs and the torso rises, then the hind legs fold and the body sits.",
+        "{name} weight moves onto the hind legs and the torsos rise, then the hind legs fold and the bodies sit.",
+    ),
+    _STAND: _noun("weight moves onto the hind legs and the torso rises until the body is standing.", "weight moves onto the hind legs and the torsos rise until the bodies are standing.", ""),
+    _SIT: _noun("body stays seated.", "bodies stay seated.", ""),
+    _STEP_BACK: _noun("body steps backward.", "bodies step backward.", ""),
+    _MOVE_IN: _noun("body moves in through the opening.", "bodies move in through the opening.", ""),
+    "The legs cycle and the body travels forward across the grass.": _noun(
+        "legs cycle and the body travels forward across the grass.",
+        "legs cycle and the bodies travel forward across the grass.",
+        "",
+    ),
+    "The legs cycle and the body travels forward across the yard.": _noun(
+        "legs cycle and the body travels forward across the yard.",
+        "legs cycle and the bodies travel forward across the yard.",
+        "",
+    ),
+    "The legs cycle and the body travels forward.": _noun(
+        "legs cycle and the body travels forward.",
+        "legs cycle and the bodies travel forward.",
+        "",
+    ),
+    "The mouth keeps hold of the object while the legs step forward.": _noun(
+        "mouth keeps hold of the object while the legs step forward.",
+        "mouths keep hold of the object while the legs step forward.",
+        "",
+    ),
+    "The head tilts upward.": _noun("head tilts upward.", "heads tilt upward.", ""),
+    "The head turns toward the house.": _noun("head turns toward the house.", "heads turn toward the house.", ""),
+    "The head turns toward the pool at the edge of the yard.": _noun(
+        "head turns toward the pool at the edge of the yard.",
+        "heads turn toward the pool at the edge of the yard.",
+        "",
+    ),
+    "The head tilts down toward the cracked ground.": _noun(
+        "head tilts down toward the cracked ground.",
+        "heads tilt down toward the cracked ground.",
+        "",
+    ),
+    "The head turns toward the forepaw that is pressing down.": _noun(
+        "head turns toward the forepaw that is pressing down.",
+        "heads turn toward the forepaw that is pressing down.",
+        "",
+    ),
+    "The head turns down toward that one's own forepaw.": _noun(
+        "head turns down toward that one's own forepaw.",
+        "heads turn down toward that one's own forepaw.",
+        "",
+    ),
+    "The head turns toward the retort's forepaw.": _noun(
+        "head turns toward the retort's forepaw.",
+        "heads turn toward the retort's forepaw.",
+        "",
+    ),
+    "The head tilts down toward the water.": _noun(
+        "head tilts down toward the water.",
+        "heads tilt down toward the water.",
+        "",
+    ),
+    "The head turns toward the pad.": _noun("head turns toward the pad.", "heads turn toward the pad.", ""),
+    "The head turns toward the forepaw.": _noun("head turns toward the forepaw.", "heads turn toward the forepaw.", ""),
+    "The body turns to face the lens.": _noun("body turns to face the lens.", "bodies turn to face the lens.", ""),
+    "The body stays beside the empty water bowl.": _noun(
+        "body stays beside the empty water bowl.",
+        "bodies stay beside the empty water bowl.",
+        "",
+    ),
+    "The body stays small in the distance outside.": _noun(
+        "body stays small in the distance outside.",
+        "bodies stay small in the distance outside.",
+        "",
+    ),
+    "The body stays small in the doorway.": _noun(
+        "body stays small in the doorway.",
+        "bodies stay small in the doorway.",
+        "",
+    ),
+    "The weight stays on both feet in the doorway.": _noun(
+        "weight stays on both feet in the doorway.",
+        "weight stays on both feet in the doorway.",
+        "",
+    ),
+    "The body stays at the rail.": _noun("body stays at the rail.", "bodies stay at the rail.", ""),
+    "The bodies stay side by side.": _noun("body stays side by side.", "bodies stay side by side.", ""),
+    "The body stays closer to the lens.": _noun("body stays closer to the lens.", "bodies stay closer to the lens.", ""),
+    "The body stays at the edge.": _noun("body stays at the edge.", "bodies stay at the edge.", ""),
+    "The heads stay in profile.": _noun("head stays in profile.", "heads stay in profile.", ""),
+    "The backs stay toward the lens.": _noun("back stays toward the lens.", "backs stay toward the lens.", ""),
+    "The forepaw lifts, strikes the water, and returns.": _noun(
+        "forepaw lifts, strikes the water, and returns.",
+        "forepaws lift, strike the water, and return.",
+        "",
+    ),
+    "The forepaws fold back under the chest.": _noun(
+        "forepaws fold back under the chest.",
+        "forepaws fold back under the chest.",
+        "",
+    ),
+    "One forepaw lifts and stays raised.": _noun(
+        "forepaw lifts and stays raised.",
+        "forepaws lift and stay raised.",
+        "",
+    ),
+    "The forepaw presses down twice, then once more.": _noun(
+        "forepaw presses down twice, then once more.",
+        "forepaws press down twice, then once more.",
+        "",
+    ),
+    "One paw lifts the blanket edge a short way.": _noun(
+        "paw lifts the blanket edge a short way.",
+        "paws lift the blanket edge a short way.",
+        "",
+    ),
+    "The forepaw comes down on the blanket and stays there.": _noun(
+        "forepaw comes down on the blanket and stays there.",
+        "forepaws come down on the blanket and stay there.",
+        "",
+    ),
+    "The forepaw keeps pressing down.": _noun("forepaw keeps pressing down.", "forepaws keep pressing down.", ""),
+    "The forepaw presses down.": _noun("forepaw presses down.", "forepaws press down.", ""),
+    "That forepaw stays still and does not travel.": _noun(
+        "forepaw stays still and does not travel.",
+        "forepaws stay still and do not travel.",
+        "",
+    ),
+    "The forepaws stay folded under the chest and do not travel.": _noun(
+        "forepaws stay folded under the chest and do not travel.",
+        "forepaws stay folded under the chest and do not travel.",
+        "",
+    ),
+    "The wings open a little.": _noun("wings open a little.", "wings open a little.", ""),
+    "One hand keeps hold of a small bag.": _noun(
+        "hand keeps hold of a small bag.",
+        "hands keep hold of a small bag.",
+        "",
+    ),
+    "The hand keeps hold of the bag.": _noun("hand keeps hold of the bag.", "hands keep hold of the bag.", ""),
+    "The body stays on the far side of the partition.": _noun(
+        "body stays on the far side of the partition.",
+        "bodies stay on the far side of the partition.",
+        "",
+    ),
+    "The forepaw rests on the blanket.": _noun(
+        "forepaw rests on the blanket.",
+        "forepaws rest on the blanket.",
+        "",
+    ),
+    "The face stays toward the lens.": _noun("face stays toward the lens.", "faces stay toward the lens.", ""),
+}
+
+
 def _bind_actor(english: str, who: Sequence[str]) -> str:
-    """Stand, sit, enter, and step back stay with the role that clause names."""
-    if not who or english not in {_STAND_THEN_SIT, _STAND, _SIT, _STEP_BACK, _MOVE_IN}:
+    """A written move stays with the role named in that clause."""
+    pair = _NAMED.get(english)
+    if pair is None or not who:
         return english
-    name = _possessive(who)
     plural = len(who) > 1 or any(role in _PLURAL_ROLES for role in who)
-    if english == _STAND_THEN_SIT:
-        if plural:
-            return (
-                f"{name} weight moves onto the hind legs and the torsos rise, "
-                "then the hind legs fold and the bodies sit."
-            )
-        return (
-            f"{name} weight moves onto the hind legs and the torso rises, "
-            "then the hind legs fold and the body sits."
-        )
-    if english == _STAND:
-        if plural:
-            return f"{name} weight moves onto the hind legs and the torsos rise until the bodies are standing."
-        return f"{name} weight moves onto the hind legs and the torso rises until the body is standing."
-    if english == _SIT:
-        if plural:
-            return f"{name} bodies stay seated."
-        return f"{name} body stays seated."
-    if english == _STEP_BACK:
-        if plural:
-            return f"{name} bodies step backward."
-        return f"{name} body steps backward."
-    if plural:
-        return f"{name} bodies move in through the opening."
-    return f"{name} body moves in through the opening."
+    text = pair[1 if plural else 0].format(name=_possessive(who))
+    return " ".join(text.split())
 
 
 def _body_lines(picture: str, camera: str, timed_jaw: bool) -> list[str]:
@@ -965,6 +1156,77 @@ def _body_lines(picture: str, camera: str, timed_jaw: bool) -> list[str]:
             if line not in out:
                 out.append(line)
     return out
+
+
+_TRAVEL = ("pushes in", "pulls out", "pans ", "tilts ", "tracks ")
+
+
+def _aim(tail: str) -> str:
+    if tail.startswith("through "):
+        return f"The lens looks {tail}."
+    return f"The lens stays {tail}."
+
+
+def _merge_camera(parts: Sequence[str]) -> list[str]:
+    """A held frame stays one static sentence. A written move is not also called static."""
+    tails: list[str] = []
+    rest: list[str] = []
+    for part in parts:
+        if part.startswith(_STATIC):
+            tail = part[len(_STATIC) :].strip(" .")
+            if tail and tail not in tails:
+                tails.append(tail)
+            elif not tail and not tails:
+                tails.append("")
+        else:
+            rest.append(part)
+    travels = [part for part in rest if any(kind in part for kind in _TRAVEL)]
+    extras = [part for part in rest if part not in travels]
+    usable = [tail for tail in tails if tail]
+    if travels and usable:
+        moves: list[str] = []
+        for move in travels:
+            if usable and move.startswith("The camera pushes in") and usable[0].startswith("from "):
+                moves.append(move[:-1] + " " + usable.pop(0) + ".")
+            else:
+                moves.append(move)
+        return [_aim(tail) for tail in usable] + moves + extras
+    merged: list[str] = []
+    if usable:
+        merged.append(f"{_STATIC} {', '.join(usable)}.")
+    elif tails:
+        merged.append(f"{_STATIC}.")
+    merged.extend(rest)
+    return merged
+
+
+def _stamp(seconds: float) -> str:
+    whole = max(0.0, float(seconds))
+    minutes = int(whole // 60)
+    rem = whole - minutes * 60
+    return f"{minutes:02d}:{rem:06.3f}"
+
+
+_ON_EN = {
+    "guest": "the guest",
+    "retort": "the retort",
+    "polite": "the polite one",
+    "owner": "the person",
+    "indoor_pair": "the two animals",
+}
+
+
+def _frame_line(roles: Sequence[str]) -> str:
+    names = [_ON_EN[role] for role in roles if role in _ON_EN]
+    if not names:
+        return ""
+    if len(names) == 1:
+        listed = names[0]
+    elif len(names) == 2:
+        listed = f"{names[0]} and {names[1]}"
+    else:
+        listed = ", ".join(names[:-1]) + f", and {names[-1]}"
+    return f"In frame: {listed}."
 
 
 def _measured_jaw(pack: Mapping[str, Any], shot_id: str, origin: float, stop: float) -> list[str]:
@@ -1000,7 +1262,7 @@ def picture_prompt(pack: Mapping[str, Any], start_s: float, end_s: float) -> str
         return text
 
     lines = [
-        "Vertical 9:16. The picture follows the shots below. No title card.",
+        "Vertical 9:16. Live-action. The picture follows the shots below. No title card.",
         f"Place: {named(slots['place'])}.",
         (
             f"Guest: {named(animals['guest'])}. "
@@ -1014,31 +1276,36 @@ def picture_prompt(pack: Mapping[str, Any], start_s: float, end_s: float) -> str
     ]
     origin = float(start_s)
     stop = float(end_s)
+    shot_no = 0
     for shot in pack["shots"]:
         begin = float(shot["start_s"])
         end = float(shot["end_s"])
         if end <= origin + 1e-6 or begin >= stop - 1e-6:
             continue
         left = max(begin, origin) - origin
-        right = min(end, stop) - origin
-        who = ", ".join(ROLE_JA[role] for role in shot["on_screen"]) or "none"
-        lines.append(
-            f"[Shot] {_num(left)} to {_num(right)}. {shot['camera']} {shot['picture']} On screen: {who}."
-        )
         camera_text = str(shot.get("camera") or "")
-        camera_en = _covered_phrases(camera_text, _CAMERA_MOTION)
-        camera_has_body = any(
-            _covered_phrases(clause, _BODY_MOTION) for clause in _clauses(camera_text)
-        )
+        camera_en = _merge_camera(_covered_phrases(camera_text, _CAMERA_MOTION))
+        camera_has_body = any(_covered_phrases(clause, _BODY_MOTION) for clause in _clauses(camera_text))
         if camera_text.strip() and not camera_en and not camera_has_body:
-            camera_en = ["The camera holds."]
+            camera_en = [f"{_STATIC}."]
         jaw = _measured_jaw(pack, str(shot["id"]), origin, stop)
         body_en = _body_lines(str(shot.get("picture") or ""), camera_text, timed_jaw=bool(jaw))
-        if camera_en:
-            lines.append("Camera: " + " ".join(camera_en))
-        if body_en:
-            lines.append("Body: " + " ".join(body_en))
-        lines.extend(jaw)
+        bits: list[str] = []
+        for part in [*camera_en, *body_en, *jaw]:
+            if part not in bits:
+                bits.append(part)
+        if not bits:
+            bits = [f"{_STATIC}."]
+        shot_no += 1
+        motion = " ".join(bits)
+        if shot_no == 1:
+            line = f"[Shot 1] {motion}"
+        else:
+            line = f"[Shot {shot_no}] At {_stamp(left)}, the camera cuts. {motion}"
+        frame = _frame_line(shot.get("on_screen") or [])
+        if frame:
+            line += " " + frame
+        lines.append(line)
     text = "\n".join(lines) + "\n"
     for row in pack["captions"]:
         source = str(row["source_line"])
@@ -1048,7 +1315,11 @@ def picture_prompt(pack: Mapping[str, Any], start_s: float, end_s: float) -> str
         seen = str(shot.get("source_seen") or "")
         if seen and seen in text:
             raise ValueError(f"元の画面がプロンプトに入った: {shot['id']}")
-    return text
+    return (
+        "integrated_multimodal_description: "
+        + text.strip()
+        + "\n\noverall_soundscape: Ambient sound was not measured.\n\nnon_diegetic_music: N/A\n"
+    )
 
 
 def prepare(path: Path | None = None) -> dict[str, Any]:

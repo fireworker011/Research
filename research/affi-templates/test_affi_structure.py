@@ -55,12 +55,15 @@ def test_written_moves_become_paths_and_unmeasured_times_stay_out() -> None:
     assert "The polite one's body stays seated." in text
     assert "The guest's body moves in through the opening." in text
     assert "The two animals' bodies step backward." in text
+    assert "The two animals' heads stay in profile." in text
+    assert "The camera holds a static shot aimed at the side of the face, through the glass." in text
     assert "30.6" not in text
     assert "38.8" not in text
     pet = structure.load(ROOT / "stories" / "pet_sheet.yaml")
     pet_text = structure.picture_prompt(pet, 0.0, float(pet["duration_s"]))
-    assert "The legs cycle and the body travels forward across the grass." in pet_text
-    assert "The forepaw lifts, strikes the water, and returns." in pet_text
+    assert "The two animals' legs cycle and the bodies travel forward across the grass." in pet_text
+    assert "The retort's head turns toward the house." in pet_text
+    assert "The retort's forepaw lifts, strikes the water, and returns." in pet_text
     assert "The water turns in a vortex until the pool is empty." in pet_text
     assert "The retort's lower jaw drops and rises, more than once, and does not shape words." in pet_text
     assert "The polite one's mouth stays closed. That jaw does not travel." in pet_text
@@ -69,9 +72,9 @@ def test_written_moves_become_paths_and_unmeasured_times_stay_out() -> None:
     assert "The lower jaw drops and rises, more than once, and does not shape words." not in pet_text
     paw = structure.load(ROOT / "stories" / "paw_stamp.yaml")
     paw_text = structure.picture_prompt(paw, 0.0, float(paw["duration_s"]))
-    assert "The forepaw presses down twice, then once more." in paw_text
-    assert "The forepaws fold back under the chest." in paw_text
-    assert "The forepaws stay folded under the chest and do not travel." in paw_text
+    assert "The retort's forepaw presses down twice, then once more." in paw_text
+    assert "The dog's forepaws fold back under the chest." in paw_text
+    assert "The dog's forepaws stay folded under the chest and do not travel." in paw_text
     assert "The polite one's and the dog's mouths stay closed. Those jaws do not travel." in paw_text
     assert "Every mouth stays closed. Those jaws do not travel." in paw_text
     assert "The lower jaw drops and rises, more than once, and does not shape words." not in paw_text
@@ -104,7 +107,8 @@ def test_picture_prompt_leaves_the_spoken_line_out() -> None:
     assert "No one speaks." in text
     assert "Mouths do not form words." not in text
     assert "Jaws do not shape words." in text
-    assert "The camera holds a close-up." in text
+    assert "The camera holds a static shot at close range" in text
+    assert "口が開閉" not in text
     assert "The guest's mouth stays open. That jaw does not travel." in text
     assert "A jaw opens and closes" not in text
     assert "From " not in text
@@ -133,7 +137,8 @@ def test_pet_sheet_is_another_pack_of_the_same_sheet() -> None:
     text = structure.picture_prompt(filled, 0.0, float(filled["duration_s"]))
     for line in spoken.values():
         assert line not in text
-    assert "口が開閉" in text
+    assert "lower jaw drops and rises" in text
+    assert "口が開閉" not in text
     assert "砂漠" not in text
     assert "オアシス" not in text
     assert "ナプキン" not in text
@@ -218,7 +223,8 @@ def test_paw_stamp_is_another_pack_of_the_same_sheet() -> None:
     text = structure.picture_prompt(filled, 0.0, float(filled["duration_s"]))
     for line in spoken.values():
         assert line not in text
-    assert "口が開閉" in text
+    assert "lower jaw drops and rises" in text
+    assert "口が開閉" not in text
     assert "グレーのマンチカン" in text
     assert "短い足の茶色い犬" in text
     assert "名刺" not in text
@@ -271,8 +277,8 @@ def test_homage_pack_keeps_measured_times_and_drops_the_words(tmp_path: Path) ->
     assert "The other mouths stay closed. Those jaws do not travel." in text
     assert "Every mouth stays closed. Those jaws do not travel." in text
     assert "The lower jaw drops and rises, more than once" not in text
-    assert "The camera path was not measured. The camera holds." in text
-    assert "カメラの動きは測っていない。" in text
+    assert "The camera path was not measured. The camera holds a static shot." in text
+    assert "カメラの動きは測っていない" not in text
     with pytest.raises(ValueError, match="せりふが読めない"):
         structure.homage_pack(duration_s=6, cuts=[], lines=[])
     with pytest.raises(ValueError, match="カットが測れない"):

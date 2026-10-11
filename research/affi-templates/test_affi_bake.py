@@ -1063,7 +1063,8 @@ def test_the_locked_sheet_bakes_a_picture_and_leaves_speech_for_later(tmp_path: 
     assert "からっぽやん" not in blob
     assert "吸水力" not in blob
     assert "イメージです" not in blob
-    assert "口が開閉" in blob
+    assert "lower jaw drops and rises" in blob
+    assert "口が開閉" not in blob
     assert "グレーのマンチカン" in blob
     assert "<d>" not in blob
     url = (
@@ -1213,7 +1214,8 @@ def test_paw_stamp_reaches_commands_before_bake(tmp_path: Path) -> None:
     for line in lines_text.splitlines():
         spoken = line.split(" ", 1)[1]
         assert spoken not in blob
-    assert "口が開閉" in blob
+    assert "lower jaw drops and rises" in blob
+    assert "口が開閉" not in blob
     assert "名刺" not in blob
     assert "お尻" not in blob
     assert "<d>" not in blob

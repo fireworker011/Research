@@ -595,7 +595,8 @@ def test_homage_builds_the_sheet_from_measured_cuts(tmp_path: Path) -> None:
     assert [row["end_s"] for row in job["cuts"]] == [3.0, 6.0]
     assert len(job["clips"]) == 2
     blob = "\n".join(clip["prompt"] for clip in job["clips"])
-    assert "カメラの動きは測っていない" in blob
+    assert "The camera path was not measured. The camera holds a static shot." in blob
+    assert "カメラの動きは測っていない" not in blob
     assert "砂漠" not in blob
     assert job["clips"][0]["task"] == "t2va"
 
