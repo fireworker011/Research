@@ -144,41 +144,32 @@ def _face_box(rgba: np.ndarray) -> dict | None:
     return max(near, key=lambda blob: blob["area"])
 
 
-def _chin_y(skin: np.ndarray, box: dict) -> int:
-    """肌の幅が細る行。首・襟・手元はこの下に落ちる。"""
+def _jaw_y(skin: np.ndarray, box: dict) -> int:
+    """顔の中央で、肌が最後まで残る行。口の穴で切らない。"""
     left, right = box["left"], box["right"]
-    top, bot = box["top"], box["bot"]
-    widths = np.array([int(skin[y, left : right + 1].sum()) for y in range(top, bot + 1)], dtype=np.int32)
-    if len(widths) < 12:
-        return bot
-    peak_i = int(np.argmax(widths[: max(1, int(len(widths) * 0.8))]))
-    peak = int(widths[peak_i])
-    run = 0
-    for index in range(peak_i + 6, len(widths)):
-        if widths[index] < peak * 0.42:
-            run += 1
-            if run >= 4:
-                return top + index - 3
-        else:
-            run = 0
-    return bot
+    span = max(1, right - left)
+    mid0 = left + span // 4
+    mid1 = right - span // 4
+    rows = np.where(skin[:, mid0:mid1].any(axis=1))[0]
+    if rows.size == 0:
+        return box["bot"]
+    return int(rows.max())
 
 
-def _horizontal_ink(rgba: np.ndarray, box: dict, chin: int) -> list[dict]:
-    """顔の下半分、あごより上にある横長の線。"""
+def _horizontal_ink(rgba: np.ndarray, box: dict, skin: np.ndarray, jaw: int) -> list[dict]:
+    """肌に挟まれた横長の線。あごの最初のくびれでは切らない。"""
     red = rgba[:, :, 0].astype(np.int16)
     green = rgba[:, :, 1].astype(np.int16)
     blue = rgba[:, :, 2].astype(np.int16)
     alpha = rgba[:, :, 3] > 40
     lum = (red + green + blue) / 3
-    ink = alpha & (lum < 130) & ((red > green + 18) | (lum < 90))
+    ink = alpha & (lum < 140) & ((red > green + 25) | (lum < 80))
     face_h = max(1, box["bot"] - box["top"])
     face_w = max(1, box["right"] - box["left"])
-    top = box["top"] + int(face_h * 0.40)
-    bot = min(box["bot"], chin - 4)
+    top = box["top"] + int(face_h * 0.35)
     left, right = box["left"], box["right"]
     ink[: max(0, top), :] = False
-    ink[max(0, bot) :, :] = False
+    ink[jaw + 1 :, :] = False
     ink[:, :left] = False
     ink[:, right + 1 :] = False
     height, width = ink.shape
@@ -212,7 +203,15 @@ def _horizontal_ink(rgba: np.ndarray, box: dict, chin: int) -> list[dict]:
         if part_w < face_w * 0.08 or part_w > face_w * 0.55:
             continue
         mid_x = float(px.mean())
-        if abs(mid_x - center) > face_w * 0.22:
+        if abs(mid_x - center) > face_w * 0.25:
+            continue
+        y0, y1 = int(py.min()), int(py.max())
+        x0, x1 = int(px.min()), int(px.max())
+        above = skin[max(0, y0 - 6) : y0, x0 : x1 + 1]
+        below = skin[y1 + 1 : y1 + 8, x0 : x1 + 1]
+        if above.size == 0 or below.size == 0:
+            continue
+        if float(above.mean()) < 0.75 or float(below.mean()) < 0.75:
             continue
         parts.append(
             {
@@ -244,10 +243,11 @@ def mouth_anchor(rgba: np.ndarray) -> MouthAnchor | None:
     box = _face_box(rgba)
     if box is None:
         return None
-    chin = _chin_y(_skin_mask(rgba), box)
+    skin = _skin_mask(rgba)
+    jaw = _jaw_y(skin, box)
     face_w = max(1, box["right"] - box["left"])
     face_h = max(1, box["bot"] - box["top"])
-    singles = _unpaired(_horizontal_ink(rgba, box, chin), face_w)
+    singles = _unpaired(_horizontal_ink(rgba, box, skin, jaw), face_w)
     if not singles:
         return None
     mouth = max(singles, key=lambda part: part["width"])
@@ -262,14 +262,14 @@ def mouth_problem(rgba: np.ndarray) -> str | None:
     box = _face_box(rgba)
     if box is None:
         return "口の線が見えない"
-    chin = _chin_y(_skin_mask(rgba), box)
+    jaw = _jaw_y(_skin_mask(rgba), box)
     skin = skin_color(rgba, anchor.x, anchor.y, anchor.width)
     opened = draw_mouth(rgba, anchor, 1.0, skin)
     diff = np.abs(opened[:, :, :3].astype(np.int16) - rgba[:, :, :3].astype(np.int16)).sum(axis=2) > 30
     ys = np.where(diff)[0]
     if ys.size == 0:
         return "口が開かない"
-    if float((ys > chin + 8).mean()) > 0.5:
+    if float((ys > jaw + 4).mean()) > 0.5:
         return "開いた口があごの下に出る"
     return None
 
@@ -327,8 +327,9 @@ def draw_mouth(rgba: np.ndarray, anchor: MouthAnchor, openness: float, skin: np.
     mx, my = float(anchor.x), float(anchor.y)
     talk_w = _talk_width(anchor)
     open_amt = float(np.clip(openness, 0.0, 1.0))
-    cover_rx = max(talk_w * 0.58, float(anchor.width) * 0.75)
-    cover_ry = max(talk_w * 0.20, float(anchor.height) * 0.85, 4.0)
+    # 楕円は四隅が抜ける。描いてある口の箱が収まる大きさで肌を塗る。
+    cover_rx = max(float(anchor.width) * 0.78, talk_w * 0.55)
+    cover_ry = max(float(anchor.height) * 0.78, 4.0)
     _fill_ellipse(out, mx, my, cover_rx, cover_ry, skin_px)
     if open_amt < 0.10:
         _fill_ellipse(out, mx, my, talk_w * 0.42, max(1.8, talk_w * 0.045), (110, 52, 52, 255))

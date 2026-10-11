@@ -270,6 +270,23 @@ class FrameTests(unittest.TestCase):
         below = int((open_rows > anchor.y).sum())
         self.assertGreater(below, above)
 
+    def test_closed_mouth_erases_the_painted_line(self) -> None:
+        img = np.zeros((220, 180, 4), dtype=np.uint8)
+        img[:, :, 0] = 230
+        img[:, :, 1] = 190
+        img[:, :, 2] = 160
+        img[:, :, 3] = 255
+        img[118:156, 48:132] = (190, 40, 76, 255)
+        anchor = mouth_anchor(img)
+        self.assertIsNotNone(anchor)
+        assert anchor is not None
+        skin = skin_color(img, anchor.x, anchor.y, anchor.width)
+        shut = draw_mouth(img, anchor, 0.0, skin)
+        red = shut[:, :, 0].astype(np.int16)
+        green = shut[:, :, 1].astype(np.int16)
+        leftover = (shut[:, :, 3] > 40) & (red > green + 40) & (red > 120) & (green < 90)
+        self.assertLess(int(leftover.sum()), 8)
+
 
 class AudioTests(unittest.TestCase):
     def test_mouth_follows_loudness(self) -> None:
