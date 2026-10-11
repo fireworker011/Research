@@ -52,6 +52,8 @@ def _blend(rgb: np.ndarray, overlay: np.ndarray, strength: float) -> np.ndarray:
 
 
 def _office(width: int, height: int, night: bool) -> np.ndarray:
+    if width > height:
+        return _office_wide(width, height, night)
     wall = (32, 40, 64) if night else (244, 236, 220)
     floor = (48, 42, 38) if night else (196, 164, 112)
     img = Image.new("RGB", (width, height), wall)
@@ -82,6 +84,37 @@ def _office(width: int, height: int, night: bool) -> np.ndarray:
     draw.ellipse((cx - r, cy - r, cx + r, cy + r), fill=(255, 255, 255), outline=(40, 40, 40), width=6)
     draw.line((cx, cy, cx, cy - 30), fill=(20, 20, 20), width=4)
     draw.line((cx, cy, cx + 22, cy + 8), fill=(180, 40, 40), width=4)
+    return np.array(img)
+
+
+def _office_wide(width: int, height: int, night: bool) -> np.ndarray:
+    """横長のときだけ。縦9:16のオフィスはそのまま。"""
+    wall = (32, 40, 64) if night else (244, 236, 220)
+    floor = (48, 42, 38) if night else (196, 164, 112)
+    img = Image.new("RGB", (width, height), wall)
+    draw = ImageDraw.Draw(img)
+    floor_y = int(height * 0.78)
+    draw.rectangle((0, floor_y, width, height), fill=floor)
+    draw.rectangle((0, floor_y, width, floor_y + 14), fill=(90, 70, 48) if not night else (20, 20, 28))
+    win = (int(width * 0.06), int(height * 0.08), int(width * 0.34), int(height * 0.46))
+    draw.rounded_rectangle(win, radius=12, fill=(18, 28, 48) if night else (198, 228, 255), outline=(80, 80, 90), width=8)
+    if night:
+        rng = np.random.default_rng(3)
+        for _ in range(14):
+            x = int(rng.integers(win[0] + 24, win[2] - 40))
+            y = int(rng.integers(win[1] + 24, win[3] - 30))
+            draw.rectangle((x, y, x + 16, y + 10), fill=(255, 214, 90))
+    else:
+        draw.rectangle((win[0] + 24, win[1] + 24, win[0] + int((win[2] - win[0]) * 0.42), win[3] - 30), fill=(255, 255, 255))
+        draw.rectangle((win[0] + int((win[2] - win[0]) * 0.52), win[1] + 40, win[2] - 24, win[3] - 24), fill=(170, 190, 210))
+    light = (255, 244, 210) if not night else (90, 110, 150)
+    draw.rounded_rectangle((int(width * 0.42), 28, int(width * 0.62), 52), radius=8, fill=light)
+    desk_y = int(height * 0.82)
+    draw.rectangle((int(width * 0.08), desk_y, int(width * 0.92), desk_y + 28), fill=(150, 110, 70) if not night else (70, 54, 40))
+    cx, cy, r = int(width * 0.88), int(height * 0.16), 42
+    draw.ellipse((cx - r, cy - r, cx + r, cy + r), fill=(255, 255, 255), outline=(40, 40, 40), width=5)
+    draw.line((cx, cy, cx, cy - 22), fill=(20, 20, 20), width=4)
+    draw.line((cx, cy, cx + 16, cy + 6), fill=(180, 40, 40), width=4)
     return np.array(img)
 
 

@@ -11,6 +11,7 @@ from PIL import Image, ImageDraw, ImageFont
 
 from irasutoya_short.audio import write_wav
 from irasutoya_short.backgrounds import concentration, render_bg
+from irasutoya_short.bubbles import character_x_ratio, render_bubble
 from irasutoya_short.constants import FONT_CANDIDATES, FPS, HEIGHT, SAMPLE_RATE, WIDTH
 from irasutoya_short.sprites import load_rgba, mouth_levels, scale_rgba
 
@@ -155,12 +156,30 @@ def _char_height(scene: dict, frame_h: int) -> int:
     return int(frame_h * 0.60)
 
 
+def mouth_should_move(scene: dict, who: str, index: int) -> bool:
+    """地の文はナレーションなので口を動かさない。会話だけ口パクする。"""
+    bubble = scene.get("bubble") or {}
+    if bubble.get("kind") == "caption":
+        return False
+    if scene.get("speaker") == "narrator":
+        return index == 0
+    return who == scene.get("speaker")
+
+
 def _place_characters(frame, scene, book: SpriteBook, openness: float, mouth_gain: float, layout: dict) -> None:
     chars = scene["characters"]
     if not chars:
         return
-    height = _char_height(scene, frame.shape[0])
-    foot = int(frame.shape[0] * (0.70 if scene["bg"] == "chat" else 0.76))
+    bubble = scene.get("bubble") or {}
+    if bubble:
+        height = int(frame.shape[0] * 0.58)
+        foot = int(frame.shape[0] * 0.94)
+        layout = dict(layout)
+        if len(chars) == 1:
+            layout["character_x_ratio"] = character_x_ratio(str(bubble.get("kind") or "caption"), str(bubble.get("side") or "right"))
+    else:
+        height = _char_height(scene, frame.shape[0])
+        foot = int(frame.shape[0] * (0.70 if scene["bg"] == "chat" else 0.76))
     xs = _xs(len(chars), frame.shape[1], layout, scene["bg"])
     for index, ch in enumerate(chars):
         talking = _talking(ch, scene, index)
@@ -179,9 +198,7 @@ def _place_characters(frame, scene, book: SpriteBook, openness: float, mouth_gai
 
 
 def _talking(ch: dict, scene: dict, index: int) -> bool:
-    if scene["speaker"] == "narrator":
-        return index == 0
-    return ch.get("who") == scene["speaker"]
+    return mouth_should_move(scene, str(ch.get("who") or ""), index)
 
 
 def _xs(count: int, width: int, layout: dict, bg: str) -> list[int]:
@@ -219,35 +236,56 @@ def _place_props(frame, scene, book: SpriteBook) -> None:
         blit(frame, sprite, x, y)
 
 
-def compose_frame(scene, book, bg, lines, telop, openness, mouth_gain, layout, local_t) -> np.ndarray:
-    frame = bg.copy()
-    if scene["effect"] == "lines" or scene["bg"] == "lines":
-        blit(frame, lines, 0, 0)
-    _draw_papers(frame, scene)
-    _place_props(frame, scene, book)
-    _place_characters(frame, scene, book, openness, mouth_gain, layout)
-    slide = int(30 * max(0.0, 1.0 - local_t / 0.16))
-    blit(frame, telop, 0, slide)
+def cover_plate(path: str, width: int, height: int) -> np.ndarray:
+    im = Image.open(path).convert("RGB")
+    scale = max(width / im.width, height / im.height)
+    resized = im.resize((max(width, int(im.width * scale)), max(height, int(im.height * scale))), Image.Resampling.BILINEAR)
+    left = max(0, (resized.width - width) // 2)
+    top = max(0, (resized.height - height) // 2)
+    return np.array(resized.crop((left, top, left + width, top + height)))
+
+
+def compose_frame(scene, book, bg, lines, telop, openness, mouth_gain, layout, local_t, plate=None) -> np.ndarray:
+    if plate is not None:
+        frame = plate.copy()
+    else:
+        frame = bg.copy()
+        if scene["effect"] == "lines" or scene["bg"] == "lines":
+            blit(frame, lines, 0, 0)
+        _draw_papers(frame, scene)
+        _place_props(frame, scene, book)
+        _place_characters(frame, scene, book, openness, mouth_gain, layout)
     zoom = 1.0
-    if scene["effect"] in ("zoom", "zoom_shake"):
+    if scene["effect"] == "kenburns":
+        p = min(1.0, local_t / max(float(scene["duration"]), 0.01))
+        zoom = 1.0 + 0.07 * p
+    elif scene["effect"] in ("zoom", "zoom_shake"):
         p = min(1.0, local_t / max(scene["duration"], 0.01))
         zoom = 1.0 + 0.08 * np.sin(p * np.pi)
     amp = 12 if scene["effect"] in ("shake", "zoom_shake") else 0
+    # 吹き出しはズームの後に乗せる。端の枠が切れず、文字だけ止まって見える。
+    pin_text = bool(scene.get("bubble")) or scene["effect"] == "kenburns"
+    slide = int(30 * max(0.0, 1.0 - local_t / 0.16))
+    if not pin_text:
+        blit(frame, telop, 0, slide)
     frame = _shake(frame, amp, local_t)
-    return _zoom(frame, float(zoom))
+    frame = _zoom(frame, float(zoom))
+    if pin_text:
+        blit(frame, telop, 0, slide)
+    return frame
 
 
 def render_movie(project: dict, out_path: Path, preview_dir: Path | None = None) -> None:
     scenes = project["scenes"]
     settings = project["settings"]
     layout = project["layout"]
+    width = int(project.get("width") or WIDTH)
+    height = int(project.get("height") or HEIGHT)
     book = SpriteBook(project["asset_paths"])
-    bgs = {name: render_bg(name) for name in {s["bg"] for s in scenes}}
-    lines = concentration()
-    telops = [
-        render_telop(s["telop"], s["role"], WIDTH, HEIGHT, settings["telop_scale"], layout["telop_y_ratio"] if s["role"] != "credit" else 0.5)
-        for s in scenes
-    ]
+    plates = {s["id"]: cover_plate(s["plate"], width, height) for s in scenes if s.get("plate")}
+    bgs = {name: render_bg(name, width, height) for name in {s["bg"] for s in scenes}}
+    lines = concentration(width, height)
+    telops = [_scene_overlay(s, width, height, settings, layout) for s in scenes]
     nframes = sum(int(round(s["duration"] * FPS)) for s in scenes)
     audio = project["audio"]
     if preview_dir is not None:
@@ -276,6 +314,7 @@ def render_movie(project: dict, out_path: Path, preview_dir: Path | None = None)
             frame = compose_frame(
                 scene, book, bgs[scene["bg"]], lines, telops[scene_i],
                 openness, settings["mouth_gain"], layout, local_t,
+                plates.get(scene["id"]),
             )
             peak = int(np.argmax(env)) if len(env) else 0
             if preview_dir is not None and scene_frame == peak:
@@ -284,7 +323,7 @@ def render_movie(project: dict, out_path: Path, preview_dir: Path | None = None)
             scene_frame += 1
         audio_slice = _slice_audio(audio, start, end)
         chunk_path = chunk_dir / f"chunk_{start:05d}.mp4"
-        _encode(frames, audio_slice, chunk_path)
+        _encode(frames, audio_slice, chunk_path, width, height)
         paths.append(chunk_path)
         print(f"chunk {len(paths)}: frames {start}-{end}", flush=True)
     _concat(paths, out_path)
@@ -296,12 +335,28 @@ def _slice_audio(audio: np.ndarray, start: int, end: int) -> np.ndarray:
     return audio[a:b]
 
 
-def _encode(frames: list[np.ndarray], audio: np.ndarray, path: Path) -> None:
+def _scene_overlay(scene: dict, width: int, height: int, settings: dict, layout: dict) -> np.ndarray:
+    bubble = scene.get("bubble")
+    scale = float(settings["telop_scale"])
+    if bubble:
+        return render_bubble(
+            str(scene.get("telop") or scene.get("text") or ""),
+            str(bubble["kind"]),
+            str(bubble["side"]),
+            width,
+            height,
+            scale,
+        )
+    y_ratio = 0.5 if scene["role"] == "credit" else layout["telop_y_ratio"]
+    return render_telop(scene["telop"], scene["role"], width, height, scale, y_ratio)
+
+
+def _encode(frames: list[np.ndarray], audio: np.ndarray, path: Path, width: int = WIDTH, height: int = HEIGHT) -> None:
     wav_path = path.with_suffix(".wav")
     write_wav(wav_path, audio)
     cmd = [
         "ffmpeg", "-y", "-loglevel", "error",
-        "-f", "rawvideo", "-pix_fmt", "rgb24", "-s", f"{WIDTH}x{HEIGHT}", "-r", str(FPS),
+        "-f", "rawvideo", "-pix_fmt", "rgb24", "-s", f"{width}x{height}", "-r", str(FPS),
         "-i", "pipe:0",
         "-i", str(wav_path),
         "-c:v", "libx264", "-preset", "veryfast", "-crf", "20",
@@ -326,7 +381,7 @@ def _concat(paths: list[Path], out_path: Path) -> None:
         paths[0].replace(out_path)
         return
     listing = out_path.with_suffix(".txt")
-    listing.write_text("".join(f"file '{p}'\n" for p in paths), encoding="utf-8")
+    listing.write_text("".join(f"file '{p.resolve()}'\n" for p in paths), encoding="utf-8")
     cmd = [
         "ffmpeg", "-y", "-loglevel", "error",
         "-f", "concat", "-safe", "0", "-i", str(listing),

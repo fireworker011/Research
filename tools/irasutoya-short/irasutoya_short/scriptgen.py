@@ -6,6 +6,7 @@ import re
 
 from irasutoya_short.catalog import ASSET_CATALOG, VOICES
 from irasutoya_short.constants import MAX_SCENES, MIN_SCENES
+from irasutoya_short.imagine import attach_imagine
 from irasutoya_short.textutil import spoken, wrap_telop
 
 
@@ -30,7 +31,9 @@ def _bullet(bullets: list[str], index: int, default: str) -> str:
 
 
 def generate_script(brief: dict) -> dict:
-    """箇条書きとオチから 14 シーンの台本を作る。"""
+    """箇条書きとオチから 14 シーンの台本を作る。format=caption は吹き出し型。"""
+    if str(brief.get("format") or "").strip() == "caption":
+        return generate_caption_script(brief)
     punchline = str(brief.get("punchline") or "").strip()
     if not punchline:
         raise ValueError("オチ（punchline）が空です。締めがフワッとするので必須です。")
@@ -129,14 +132,15 @@ def _scene(
     code_props: list[str] | None = None,
     label: str = "",
     emotion: str = "",
+    telop_width: int = 12,
+    max_lines: int = 2,
+    bubble: dict | None = None,
 ) -> dict:
     voice = VOICES[speaker]
     style = voice["style_id"]
     if emotion == "angry" and "angry_style_id" in voice:
         style = voice["angry_style_id"]
-    telop_width = 12
-    max_lines = 2
-    return {
+    scene = {
         "id": sid,
         "role": role,
         "speaker": speaker,
@@ -155,6 +159,146 @@ def _scene(
         "sfx": sfx,
         "duration_hint": hint,
     }
+    if bubble is not None:
+        scene["bubble"] = {"kind": bubble["kind"], "side": bubble["side"]}
+    return scene
+
+
+def generate_caption_script(brief: dict) -> dict:
+    """横長の独白枠と、しっぽ付き吹き出し。ナレーションと会話で声を分ける。"""
+    punchline = str(brief.get("punchline") or "").strip()
+    if not punchline:
+        raise ValueError("オチ（punchline）が空です。締めがフワッとするので必須です。")
+    bullets = [str(b).strip() for b in brief.get("bullets") or [] if str(b).strip()]
+    if len(bullets) < 3:
+        raise ValueError("吹き出し型は箇条書き（bullets）が3本以上要ります。")
+    hook = str(brief.get("hook") or brief.get("title") or "").strip()
+    if not hook:
+        raise ValueError("フック（hook）が空です。")
+    closing = str(brief.get("closing") or "あなたならどうする？").strip()
+    narration_bits, speech_lines = _split_quotes(bullets)
+    _, punch_quotes = _split_quotes([punchline])
+    punch_plain = re.sub(r"「[^」]*」", "", punchline)
+    punch_plain = re.sub(r"[、。]{2,}", "、", punch_plain).strip(" 、。")
+    punch_bits = _sentences(punch_plain) if punch_plain else []
+    if not speech_lines and not punch_quotes:
+        raise ValueError("吹き出し型は会話の「」が1つ以上要ります。ナレーションと声を分けます。")
+    if not punch_bits and not punch_quotes:
+        raise ValueError("オチの文言が空です。")
+
+    beats: list[tuple] = [
+        ("hook", "narration", hook, "office", ["hero_trouble"], "none", []),
+    ]
+    if narration_bits:
+        beats.append(("develop", "narration", narration_bits[0], "office", ["hero_trouble"], "paper", ["papers"]))
+    if speech_lines:
+        beats.append(("develop", "speech", speech_lines[0], "office", ["hero_tired"], "none", []))
+    for index, bit in enumerate(narration_bits[1:3]):
+        if index == 0:
+            beats.append(("develop", "narration", bit, "office", ["rival_smug"], "none", []))
+        else:
+            beats.append(("develop", "narration", bit, "lines", ["hero_trouble"], "none", []))
+    if punch_bits:
+        beats.append(("punch", "narration", punch_bits[0], "office", ["hero_tired"], "none", []))
+    for line in punch_quotes[:2]:
+        beats.append(("punch", "speech", line, "office", ["hero_tired"], "none", []))
+    for bit in punch_bits[1:2]:
+        beats.append(("punch", "narration", bit, "office", ["hero_tired"], "none", []))
+    beats.append(("close", "narration", closing, "lines", ["hero_trouble"], "none", []))
+
+    scenes: list[dict] = []
+    for index, (role, mode, text, bg, chars, sfx, props) in enumerate(beats):
+        side = "right" if index % 2 == 0 else "left"
+        if mode == "speech":
+            scenes.append(
+                _scene(
+                    index + 1, role, "hero", text, bg, chars, "kenburns", sfx, 2.4,
+                    code_props=props, bubble={"kind": "speech", "side": side},
+                    telop_width=12, max_lines=3,
+                )
+            )
+        else:
+            scenes.append(
+                _scene(
+                    index + 1, role, "narrator", text, bg, chars, "kenburns", sfx, 3.0,
+                    code_props=props, bubble={"kind": "caption", "side": side},
+                    telop_width=10, max_lines=4,
+                )
+            )
+    used = _credits_used(scenes)
+    scenes.append(_caption_credit(len(scenes) + 1, used))
+    attach_imagine(scenes)
+    _validate_caption(scenes, punch_bits[0] if punch_bits else punch_quotes[0], closing)
+    return {
+        "title": hook,
+        "format": "caption",
+        "punchline": punchline,
+        "closing": closing,
+        "scenes": scenes,
+        "credits": used,
+        "asset_ids": _asset_ids(scenes),
+    }
+
+
+def _split_quotes(chunks: list[str]) -> tuple[list[str], list[str]]:
+    narration: list[str] = []
+    speech: list[str] = []
+    for chunk in chunks:
+        speech.extend(q.strip() for q in re.findall(r"「([^」]+)」", chunk) if q.strip())
+        rest = re.sub(r"「[^」]*」", "", chunk)
+        rest = re.sub(r"[、。]{2,}", "、", rest).strip(" 、。")
+        if rest:
+            narration.append(rest)
+    return narration, speech
+
+
+def _caption_credit(sid: int, credits: list[str]) -> dict:
+    voice = VOICES["narrator"]
+    return {
+        "id": sid,
+        "role": "credit",
+        "speaker": "narrator",
+        "style_id": voice["style_id"],
+        "credit": voice["credit"],
+        "text": "",
+        "telop": "\n".join(credits),
+        "bg": "credit",
+        "characters": [],
+        "props": [],
+        "code_props": [],
+        "effect": "none",
+        "sfx": "none",
+        "duration_hint": 2.0,
+    }
+
+
+def _credits_used(scenes: list[dict]) -> list[str]:
+    found: list[str] = []
+    for scene in scenes:
+        credit = scene.get("credit") or ""
+        if credit and credit not in found and scene["role"] != "credit":
+            found.append(credit)
+    return found
+
+
+def _validate_caption(scenes: list[dict], punch_token_src: str, closing: str) -> None:
+    if not (8 <= len(scenes) <= 12):
+        raise ValueError(f"吹き出し型のシーン数は8〜12です。今は{len(scenes)}です。箇条書きの本数を揃えてください。")
+    roles = [s["role"] for s in scenes]
+    if roles.index("hook") > roles.index("punch") or roles.index("punch") > roles.index("close"):
+        raise ValueError("並びはフック→展開→オチ→締めです。")
+    kinds = [s.get("bubble", {}).get("kind") for s in scenes if s["role"] != "credit"]
+    if "caption" not in kinds or "speech" not in kinds:
+        raise ValueError("地の文の枠と、会話の吹き出しが両方要ります。")
+    punch_text = " ".join(s["text"] + s["telop"] for s in scenes if s["role"] == "punch")
+    token = punch_token_src[:8]
+    if token and token not in punch_text:
+        raise ValueError("オチの文言がオチシーンに入っていません。")
+    close_text = " ".join(s["text"] + s["telop"] for s in scenes if s["role"] == "close")
+    if closing[:6] not in close_text:
+        raise ValueError("締めの一言が入っていません。")
+    if len(_asset_ids(scenes)) > 20:
+        raise ValueError("いらすとや素材が20点を超えます。背景はコードで描いてください。")
 
 
 def _credit_scene(series: str) -> dict:
