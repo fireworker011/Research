@@ -43,6 +43,8 @@ class ScriptTests(unittest.TestCase):
         self.assertEqual(hook["speaker"], "rival")
         card = script["scenes"][2]
         self.assertNotIn("お前の方が早いだろ", card["text"])
+        self.assertEqual(card["bg"], "card")
+        self.assertEqual(card["characters"], [])
         punch = " ".join(s["text"] for s in script["scenes"] if s["role"] == "punch")
         self.assertIn("全体送信", punch)
         spoken = "\n".join(s["text"] for s in script["scenes"])
@@ -200,6 +202,28 @@ class MouthTests(unittest.TestCase):
         self.assertLess(anchor.x, 110)
         self.assertFalse(abs(anchor.x - 49) < 18 and abs(anchor.y - 126) < 16)
         self.assertFalse(abs(anchor.x - 131) < 18 and abs(anchor.y - 126) < 16)
+
+    def test_neck_shadow_is_not_the_mouth(self) -> None:
+        img = np.zeros((280, 180, 4), dtype=np.uint8)
+        yy, xx = np.ogrid[:280, :180]
+        head = ((yy - 90) ** 2) / 70**2 + ((xx - 90) ** 2) / 58**2 <= 1
+        neck = (yy > 155) & (yy < 230) & (xx > 68) & (xx < 112)
+        skin = head | neck
+        img[skin, 0] = 230
+        img[skin, 1] = 190
+        img[skin, 2] = 160
+        img[skin, 3] = 255
+        img[70:82, 62:78] = (20, 20, 20, 255)
+        img[70:82, 102:118] = (20, 20, 20, 255)
+        img[128:138, 74:106] = (40, 20, 20, 255)
+        img[188:200, 96:130] = (30, 20, 20, 255)
+        anchor = mouth_anchor(img)
+        self.assertIsNotNone(anchor)
+        assert anchor is not None
+        self.assertGreater(anchor.y, 120)
+        self.assertLess(anchor.y, 155)
+        self.assertGreater(anchor.x, 70)
+        self.assertLess(anchor.x, 115)
 
     def test_open_mouth_drops_below_the_lip(self) -> None:
         img = np.zeros((220, 160, 4), dtype=np.uint8)

@@ -20,6 +20,9 @@ def render_bg(name: str, width: int = WIDTH, height: int = HEIGHT) -> np.ndarray
     if name == "lines":
         base = _office(width, height, night=False)
         return _blend(base, concentration(width, height), 0.55)
+    if name == "card":
+        # 一文だけの黒カード。オフィスや集中線の穴は出さない。
+        return np.array(Image.new("RGB", (width, height), (0, 0, 0)))
     if name == "credit":
         img = Image.new("RGB", (width, height), (18, 22, 32))
         return np.array(img)

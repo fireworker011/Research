@@ -70,7 +70,7 @@ def generate_script(brief: dict) -> dict:
         ),
         _scene(
             3, "develop", "narrator", _bullet(bullets, 1, bullets[1]),
-            "lines", [], "none", "whoosh", BEAT_SECONDS[2],
+            "card", [], "none", "whoosh", BEAT_SECONDS[2],
         ),
         _scene(
             4, "develop", "hero", _from(bullets, 2),

@@ -311,6 +311,19 @@ def _lower_face_anchor(skin: np.ndarray, box: dict) -> MouthAnchor:
     return MouthAnchor(x, y, width, 4, face_w, face_h)
 
 
+def _choose_mouth(singles: list[dict], box: dict, chin: int) -> dict | None:
+    """あごの下の影より、顔にある太い線を口にする。"""
+    if not singles:
+        return None
+    face_h = max(1, box["bot"] - box["top"])
+    lower = box["top"] + int(face_h * 0.42)
+    on_face = [part for part in singles if part["y"] < chin - 6 and part["y"] > lower]
+    if not on_face:
+        on_face = [part for part in singles if part["y"] < chin - 6]
+    pool = on_face or singles
+    return max(pool, key=lambda part: (part["width"], part["bottom"]))
+
+
 def mouth_anchor(rgba: np.ndarray) -> MouthAnchor | None:
     """顔の中央、鼻より下の口を返す。左右に並ぶ目や手は使わない。"""
     box = _face_box(rgba)
@@ -325,8 +338,8 @@ def mouth_anchor(rgba: np.ndarray) -> MouthAnchor | None:
     center = (box["left"] + box["right"]) / 2
     parts = [part for part in _dark_parts(lum, alpha, box, chin + 12) if part["y"] <= chin + 8]
     singles = _single_mouths(parts, face_w, center)
-    if singles:
-        mouth = max(singles, key=lambda part: (part["bottom"], part["width"]))
+    mouth = _choose_mouth(singles, box, chin)
+    if mouth is not None:
         return MouthAnchor(mouth["x"], mouth["y"], mouth["width"], mouth["height"], face_w, face_h)
     below = _mouth_below_eyes(parts, box)
     if below is not None:

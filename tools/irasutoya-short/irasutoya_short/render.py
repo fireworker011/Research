@@ -59,12 +59,25 @@ def _text_size(font: ImageFont.ImageFont, text: str) -> tuple[int, int]:
     return box[2] - box[0], box[3] - box[1]
 
 
-def render_telop(text: str, role: str, width: int, height: int, scale: float, y_ratio: float) -> np.ndarray:
+def render_telop(
+    text: str,
+    role: str,
+    width: int,
+    height: int,
+    scale: float,
+    y_ratio: float,
+    plain: bool = False,
+) -> np.ndarray:
     overlay = np.zeros((height, width, 4), dtype=np.uint8)
     if not text.strip():
         return overlay
     max_w = int(width * 0.88)
-    start = 64 if role == "credit" else 78
+    if plain:
+        start = 150
+    elif role == "credit":
+        start = 64
+    else:
+        start = 78
     size = max(28, int(start * scale))
     font = find_font(size)
     while size > 28:
@@ -83,8 +96,9 @@ def render_telop(text: str, role: str, width: int, height: int, scale: float, y_
     top = int(height * y_ratio - bar_h / 2)
     top = max(8, min(height - bar_h - 8, top))
     left = cx - bar_w // 2
-    draw.rounded_rectangle((left, top, left + bar_w, top + bar_h), radius=22, fill=(0, 0, 0, 170))
-    fill = TELOP_COLORS.get(role, (255, 255, 255, 255))
+    if not plain:
+        draw.rounded_rectangle((left, top, left + bar_w, top + bar_h), radius=22, fill=(0, 0, 0, 170))
+    fill = (255, 255, 255, 255) if plain else TELOP_COLORS.get(role, (255, 255, 255, 255))
     tx = cx - tw // 2
     ty = top + pad_y - 4
     stroke = 5 if role != "credit" else 3
@@ -245,7 +259,15 @@ def render_movie(project: dict, out_path: Path, preview_dir: Path | None = None)
     bgs = {name: render_bg(name) for name in {s["bg"] for s in scenes}}
     lines = concentration()
     telops = [
-        render_telop(s["telop"], s["role"], WIDTH, HEIGHT, settings["telop_scale"], layout["telop_y_ratio"] if s["role"] != "credit" else 0.5)
+        render_telop(
+            s["telop"],
+            s["role"],
+            WIDTH,
+            HEIGHT,
+            1.0 if s["bg"] == "card" else settings["telop_scale"],
+            0.46 if s["bg"] == "card" else (0.5 if s["role"] == "credit" else layout["telop_y_ratio"]),
+            plain=s["bg"] == "card",
+        )
         for s in scenes
     ]
     nframes = sum(int(round(s["duration"] * FPS)) for s in scenes)
