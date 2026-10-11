@@ -339,13 +339,16 @@ def test_reference_notebook_is_one_japanese_form_per_story() -> None:
     post_src = next(src for src in code if "#@title 仕上げ" in src)
     assert post_src.index("if not 仕上げ") < post_src.index("pip")
     assert post_src.index("if not 仕上げ") < post_src.index("google.colab")
-    assert "edge-tts" in post_src and "opencv-python-headless" in post_src
+    assert "edge-tts" in post_src and "gTTS" in post_src and "espeak-ng" in post_src
+    assert "opencv-python-headless" not in post_src
+    assert "口のコマンド" not in post_src
+    assert "声の大きさ" not in blob
     assert 'out = job_dir / "post.mp4"' in post_src
     assert "上書きしません" in blob
+    assert "絵の口は変えない" in post_src
     posted: dict = {}
     exec(post_src, posted)
     assert posted["仕上げ"] is False
-    assert posted["口のコマンド"] == ""
     sheet_src = next(src for src in code if "#@title この1本" in src)
     assert "構成のまま1本" in blob
     assert "おい、そこのデブ" not in sheet_src
@@ -354,6 +357,8 @@ def test_reference_notebook_is_one_japanese_form_per_story() -> None:
     assert sheet_ns["人"] == "入力"
     assert sheet_ns["客の動物"] == "入力"
     assert sheet_ns["セリフ"] == ""
+    assert sheet_ns["構成"] == "71.552秒"
+    assert "pet_sheet" in sheet_src and "paw_stamp" in sheet_src
 
     forms = [src for src in code if "look_from_form" in src]
     ns: dict = {"HANDLE": "junjun_ranran", "MODE": None}
@@ -1184,6 +1189,22 @@ def test_paw_stamp_reaches_commands_before_bake(tmp_path: Path) -> None:
     assert job["posts"] is False
     assert job["captions_on_join"] is False
     assert job["duration_s"] == 50.556
+    captions = json.loads((tmp_path / "paws" / "sheet" / "captions.json").read_text(encoding="utf-8"))
+    spoken_voices = {row["role"]: row["voice"] for row in captions if row["burn"]}
+    assert spoken_voices["guest"] == "espeak:ja"
+    assert spoken_voices["retort"] == "ja-JP-KeitaNeural"
+    assert spoken_voices["polite"] == "ja-JP-NanamiNeural"
+    assert len(set(spoken_voices.values())) == len(spoken_voices)
+    from_name = bake.run_choice(
+        "構成のまま1本",
+        sheet_person="出さない",
+        sheet_animals={"guest": "短い足の茶色い犬", "retort": "グレーのマンチカン", "polite": "白いスコティッシュフォールド"},
+        sheet_place="昼のリビング。ソファの薄い毛布。床におやつ皿",
+        sheet_lines="",
+        sheet_pack="paw_stamp",
+        out_dir=tmp_path / "paws-name",
+    )
+    assert "status=ready" in from_name
     blob = "\n".join(clip["prompt"] for clip in job["clips"])
     for line in lines_text.splitlines():
         spoken = line.split(" ", 1)[1]

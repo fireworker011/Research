@@ -1,22 +1,24 @@
-"""After the picture exists: narration, mouth, captions, and an own music file.
+"""After the picture exists: narration fitted to the baked mouth, captions, and music.
 
-H3 is not asked to speak, draw text, or compose music. Narration is edge-tts
-(ja-JP-NanamiNeural and ja-JP-KeitaNeural, the two Japanese voices that tool
-lists). The mouth opens with the loudness of that voice when a face box is
-known. Captions and the music file are the same ffmpeg step as affi_finish.
+H3 is not asked to speak, draw text, or compose music. The baked picture already
+moves the speaker's mouth. This module measures those open and close times and
+fits each line's voice into that span. It does not redraw the mouth from the
+audio. A story may name one voice per role. Without that map, guest and retort
+share ja-JP-KeitaNeural and polite and owner share ja-JP-NanamiNeural.
+Captions and the music file are the same ffmpeg step as affi_finish.
 Empty lines stay empty. This module does not render H3 and does not post.
 """
 
 from __future__ import annotations
 
-import os
-import shlex
+import inspect
 import subprocess
 import sys
 from pathlib import Path
 from typing import Any, Callable, Mapping, Sequence
 
 import numpy as np
+from gtts import gTTS
 
 import affi_finish
 
@@ -30,9 +32,10 @@ VOICES = {
     "indoor_pair": "ja-JP-KeitaNeural",
 }
 DEFAULT_VOICE = "ja-JP-NanamiNeural"
-MOUTH_GAIN = 4.0
-MOUTH_MAX = 0.45
-MOUTH_SPLIT = 0.55
+MOUTH_PIXEL = 18
+MOUTH_MIN_FRACTION = 0.0015
+MOUTH_MAX_FRACTION = 0.12
+MOUTH_MAX_BOX = 0.35
 SAMPLE_RATE = 44100
 
 
@@ -94,15 +97,16 @@ def cues_from_rows(rows: Sequence[Mapping[str, Any]], duration_s: float) -> list
         end = float(row["end_s"])
         if end <= start or start >= duration_s:
             continue
-        pending.append(
-            {
-                "id": str(row.get("id") or len(pending) + 1),
-                "role": str(row.get("role") or row.get("speaker") or ""),
-                "text": text,
-                "start_s": start,
-                "end_s": min(end, duration_s),
-            }
-        )
+        cue = {
+            "id": str(row.get("id") or len(pending) + 1),
+            "role": str(row.get("role") or row.get("speaker") or ""),
+            "text": text,
+            "start_s": start,
+            "end_s": min(end, duration_s),
+        }
+        if str(row.get("voice") or "").strip():
+            cue["voice"] = str(row["voice"]).strip()
+        pending.append(cue)
     pending.sort(key=lambda item: item["start_s"])
     return pending
 
@@ -123,6 +127,7 @@ def cues_from_structure(pack: Mapping[str, Any]) -> list[dict[str, Any]]:
                 "id": row["id"],
                 "role": row["role"],
                 "text": text,
+                "voice": voice_for(str(row["role"]), pack.get("voices")),
                 "start_s": start,
                 "shot_end": shot_end,
             }
@@ -142,6 +147,7 @@ def cues_from_structure(pack: Mapping[str, Any]) -> list[dict[str, Any]]:
                 "id": row["id"],
                 "role": row["role"],
                 "text": row["text"],
+                "voice": row["voice"],
                 "start_s": row["start_s"],
                 "end_s": end,
             }
@@ -163,26 +169,46 @@ def picture_in(job_dir: Path) -> Path | None:
     return None
 
 
-def voice_for(role: str) -> str:
+def voice_for(role: str, voices: Mapping[str, Any] | None = None) -> str:
+    """The story map wins. Without one, the shared defaults stay."""
+    if voices and str(voices.get(role) or "").strip():
+        return str(voices[role]).strip()
     return VOICES.get(role, DEFAULT_VOICE)
 
 
-def synth_edge(text: str, role: str, dest: Path) -> None:
-    """One line, via edge-tts. The voice is one of the two Japanese voices it lists."""
+def synth_edge(text: str, role: str, dest: Path, voice: str | None = None) -> None:
+    """One line. ``espeak:`` and ``gtts:`` are extra Japanese voices. Anything else is edge-tts."""
+    chosen = voice or voice_for(role)
     dest.parent.mkdir(parents=True, exist_ok=True)
+    if chosen.startswith("espeak:"):
+        name = chosen.split(":", 1)[1].strip() or "ja"
+        subprocess.check_call(["espeak-ng", "-v", name, "-w", str(dest), text])
+        return
+    if chosen.startswith("gtts:"):
+        lang = chosen.split(":", 1)[1].strip() or "ja"
+        gTTS(text, lang=lang).save(str(dest))
+        return
     subprocess.check_call(
         [
             sys.executable,
             "-m",
             "edge_tts",
             "--voice",
-            voice_for(role),
+            chosen,
             "--text",
             text,
             "--write-media",
             str(dest),
         ]
     )
+
+
+def _speak(synth: Callable[..., None], text: str, role: str, dest: Path, voice: str) -> None:
+    params = inspect.signature(synth).parameters
+    if "voice" in params:
+        synth(text, role, dest, voice=voice)
+        return
+    synth(text, role, dest)
 
 
 def _fit_argv(src: Path, dest: Path, window_s: float) -> list[str]:
@@ -274,7 +300,8 @@ def build_narration(
     for cue in cues:
         raw = work / f"{cue['id']}-raw.wav"
         fitted = work / f"{cue['id']}.wav"
-        synth(str(cue["text"]), str(cue["role"]), raw)
+        voice = str(cue.get("voice") or voice_for(str(cue["role"])))
+        _speak(synth, str(cue["text"]), str(cue["role"]), raw, voice)
         window = float(cue["end_s"]) - float(cue["start_s"])
         subprocess.check_call(_fit_argv(raw, fitted, window))
         pieces.append((fitted, float(cue["start_s"])))
@@ -282,165 +309,119 @@ def build_narration(
     subprocess.check_call(narration_argv(duration_s, pieces, dest))
 
 
-def _open_mouth(frame: np.ndarray, box: tuple[int, int, int, int], amount: float) -> np.ndarray:
-    """Stretch the lower face while the voice is loud. amount 0 leaves the frame."""
-    if amount <= 0.02:
-        return frame
-    x1, y1, x2, y2 = box
-    x1 = max(0, min(frame.shape[1] - 1, x1))
-    x2 = max(x1 + 1, min(frame.shape[1], x2))
-    y1 = max(0, min(frame.shape[0] - 1, y1))
-    y2 = max(y1 + 1, min(frame.shape[0], y2))
-    face = frame[y1:y2, x1:x2]
-    split = int(face.shape[0] * MOUTH_SPLIT)
-    if split <= 0 or split >= face.shape[0]:
-        return frame
-    upper = face[:split]
-    lower = face[split:]
-    scale = 1.0 + min(MOUTH_MAX, amount)
-    new_h = max(1, int(round(lower.shape[0] * scale)))
-    if new_h == lower.shape[0]:
-        return frame
-    index = np.linspace(0, lower.shape[0] - 1, new_h).astype(np.int64)
-    stretched = lower[index]
-    target = lower.shape[0]
-    if new_h >= target:
-        start = (new_h - target) // 2
-        fitted = stretched[start : start + target]
-    else:
-        fitted = np.concatenate([stretched, np.repeat(stretched[-1:], target - new_h, axis=0)], axis=0)
-    out = frame.copy()
-    out[y1:y2, x1:x2] = np.concatenate([upper, fitted], axis=0)
-    return out
+def _compact_change(prev: np.ndarray, frame: np.ndarray) -> bool:
+    """True when a small region changed. A cut or a still frame is not a mouth."""
+    diff = np.abs(frame.astype(np.int16) - prev.astype(np.int16))
+    if diff.ndim == 3:
+        diff = diff.mean(axis=2)
+    changed = diff > MOUTH_PIXEL
+    fraction = float(changed.mean())
+    if fraction < MOUTH_MIN_FRACTION or fraction > MOUTH_MAX_FRACTION:
+        return False
+    ys, xs = np.nonzero(changed)
+    if ys.size == 0:
+        return False
+    box = int(ys.max() - ys.min() + 1) * int(xs.max() - xs.min() + 1)
+    frame_area = int(frame.shape[0]) * int(frame.shape[1])
+    return box / frame_area <= MOUTH_MAX_BOX
 
 
-def detect_face(frame: np.ndarray) -> tuple[int, int, int, int] | None:
-    """Largest frontal face as x1,y1,x2,y2. None when OpenCV or a face is absent.
-
-    cv2 is imported here because the notebook installs it in this process after
-    the module may already have been imported.
-    """
-    try:
-        import cv2
-    except ImportError:
-        return None
-    gray = cv2.cvtColor(frame, cv2.COLOR_RGB2GRAY)
-    cascade = cv2.CascadeClassifier(cv2.data.haarcascades + "haarcascade_frontalface_default.xml")
-    found = cascade.detectMultiScale(gray, scaleFactor=1.1, minNeighbors=5, minSize=(40, 40))
-    if len(found) == 0:
-        return None
-    x, y, w, h = max(found, key=lambda item: int(item[2]) * int(item[3]))
-    return int(x), int(y), int(x + w), int(y + h)
-
-
-def sync_mouths(
+def mouths_for_cues(
     video: Path,
-    audio: Path,
-    dest: Path,
-    *,
-    box: tuple[int, int, int, int] | None = None,
-    command: str | None = None,
-) -> dict[str, Any]:
-    """Rewrite the mouth from the narration, or run an external command when one is set."""
-    if command:
-        subprocess.check_call(command, shell=True)
-        return {"method": "external", "mouth_frames": None, "face": None}
-    info = probe(video)
-    width, height, fps = int(info["width"]), int(info["height"]), float(info["fps"])
-    samples = np.frombuffer(
-        subprocess.check_output(
-            [
-                "ffmpeg",
-                "-v",
-                "error",
-                "-i",
-                str(audio),
-                "-ac",
-                "1",
-                "-ar",
-                "16000",
-                "-f",
-                "f32le",
-                "-",
-            ]
-        ),
-        dtype=np.float32,
-    )
-    hop = max(1, int(round(16000 / fps)))
+    cues: Sequence[Mapping[str, Any]],
+    info: Mapping[str, float],
+) -> list[dict[str, Any]]:
+    """Fit each line to the mouth motion inside its shot. The picture is not rewritten.
+
+    A mouth interval is the first compact change through the last one in that line's
+    seconds. One change that stays counts through the end of those seconds.
+    """
+    width, height = int(info["width"]), int(info["height"])
+    fps = float(info["fps"])
+    if fps <= 0:
+        raise ValueError("絵のフレームレートが読めない")
     frame_bytes = width * height * 3
+    pending = [
+        {"active": [], "anchor": None, "held": False}
+        for _cue in cues
+    ]
     decode = subprocess.Popen(
         ["ffmpeg", "-v", "error", "-i", str(video), "-f", "rawvideo", "-pix_fmt", "rgb24", "-"],
         stdout=subprocess.PIPE,
     )
-    dest.parent.mkdir(parents=True, exist_ok=True)
-    encode = subprocess.Popen(
-        [
-            "ffmpeg",
-            "-y",
-            "-v",
-            "error",
-            "-f",
-            "rawvideo",
-            "-pix_fmt",
-            "rgb24",
-            "-s",
-            f"{width}x{height}",
-            "-r",
-            _num(fps),
-            "-i",
-            "-",
-            "-i",
-            str(audio),
-            "-map",
-            "0:v",
-            "-map",
-            "1:a",
-            "-c:v",
-            "libx264",
-            "-pix_fmt",
-            "yuv420p",
-            "-c:a",
-            "pcm_s16le",
-            str(dest),
-        ],
-        stdin=subprocess.PIPE,
-    )
-    frames = 0
-    mouth_frames = 0
-    face_frames = 0
-    cached: tuple[int, int, int, int] | None = box
-    assert decode.stdout is not None and encode.stdin is not None
+    assert decode.stdout is not None
+    index = 0
+    prev: np.ndarray | None = None
     while True:
         buf = decode.stdout.read(frame_bytes)
         if len(buf) < frame_bytes:
             break
         frame = np.frombuffer(buf, dtype=np.uint8).reshape((height, width, 3))
-        start = frames * hop
-        chunk = samples[start : start + hop]
-        rms = float(np.sqrt(np.mean(np.square(chunk)))) if chunk.size else 0.0
-        if box is None and frames % 6 == 0:
-            cached = detect_face(frame)
-        used = box if box is not None else cached
-        if used is not None:
-            face_frames += 1
-            amount = min(MOUTH_MAX, rms * MOUTH_GAIN)
-            if amount > 0.02:
-                frame = _open_mouth(frame, used, amount)
-                mouth_frames += 1
-        encode.stdin.write(np.ascontiguousarray(frame).tobytes())
-        frames += 1
-    encode.stdin.close()
+        if prev is not None:
+            stamp = index / fps
+            changed = _compact_change(prev, frame)
+            for cue, state in zip(cues, pending):
+                start = float(cue["start_s"])
+                end = float(cue["end_s"])
+                if stamp < start or stamp >= end:
+                    continue
+                if changed:
+                    state["active"].append(index)
+                    if state["anchor"] is None:
+                        state["anchor"] = prev.copy()
+                anchor = state["anchor"]
+                if anchor is not None and _compact_change(anchor, frame):
+                    state["held"] = True
+        prev = frame.copy()
+        index += 1
     decode.wait()
-    code = encode.wait()
-    if code != 0 or frames == 0:
-        raise RuntimeError(f"口の書き出しに失敗した。終了コード {code}")
-    return {
-        "method": "loudness",
-        "frames": frames,
-        "mouth_frames": mouth_frames,
-        "face_frames": face_frames,
-        "face": face_frames > 0,
-    }
+    if index == 0:
+        raise ValueError("絵のフレームが読めない")
+    fitted: list[dict[str, Any]] = []
+    for cue, state in zip(cues, pending):
+        active: list[int] = state["active"]
+        end = float(cue["end_s"])
+        if len(active) >= 2:
+            open_s = active[0] / fps
+            close_s = min(end, (active[-1] + 1) / fps)
+        elif len(active) == 1 and state["held"]:
+            open_s = active[0] / fps
+            close_s = end
+        else:
+            raise ValueError(f"絵から口の開閉が測れない: {cue['id']}")
+        if close_s <= open_s:
+            raise ValueError(f"絵から口の開閉が測れない: {cue['id']}")
+        row = dict(cue)
+        row["start_s"] = round(open_s, 3)
+        row["end_s"] = round(close_s, 3)
+        fitted.append(row)
+    return fitted
+
+
+def mux_picture(video: Path, audio: Path, dest: Path) -> None:
+    """Keep the baked picture and replace its audio. The mouth pixels stay."""
+    dest.parent.mkdir(parents=True, exist_ok=True)
+    subprocess.check_call(
+        [
+            "ffmpeg",
+            "-y",
+            "-v",
+            "error",
+            "-i",
+            str(video),
+            "-i",
+            str(audio),
+            "-map",
+            "0:v:0",
+            "-map",
+            "1:a:0",
+            "-c:v",
+            "copy",
+            "-c:a",
+            "pcm_s16le",
+            str(dest),
+        ]
+    )
 
 
 def _blocked(reasons: list[str]) -> dict[str, Any]:
@@ -460,11 +441,10 @@ def apply(
     rows: Sequence[Mapping[str, Any]] | None = None,
     pack: Mapping[str, Any] | None = None,
     bgm: str | Path | None = None,
-    synth: Callable[[str, str, Path], None] | None = None,
-    face_box: tuple[int, int, int, int] | None = None,
+    synth: Callable[..., None] | None = None,
     work: str | Path | None = None,
 ) -> dict[str, Any]:
-    """Narration, mouth, captions, and optional music. Does nothing when every line is empty."""
+    """Measure the baked mouth, then fit the voice. Does nothing when every line is empty."""
     path = Path(video)
     dest = Path(out)
     if not path.is_file():
@@ -476,24 +456,21 @@ def apply(
     music = Path(bgm) if bgm else None
     if music is not None and not music.is_file():
         return _blocked(["曲のファイルが無い"])
+    try:
+        fitted = mouths_for_cues(path, cues, info)
+    except ValueError as exc:
+        return _blocked([str(exc)])
     folder = Path(work) if work is not None else dest.parent / "post-work"
     folder.mkdir(parents=True, exist_ok=True)
     narration = folder / "narration.wav"
-    build_narration(cues, float(info["duration_s"]), narration, folder, synth or synth_edge)
-    mouthed = folder / "mouthed.mov"
-    command = os.environ.get("LIPSYNC_CMD", "").strip()
-    if command:
-        command = command.format(
-            video=shlex.quote(str(path)),
-            audio=shlex.quote(str(narration)),
-            out=shlex.quote(str(mouthed)),
-        )
-    mouth = sync_mouths(path, narration, mouthed, box=face_box, command=command or None)
+    build_narration(fitted, float(info["duration_s"]), narration, folder, synth or synth_edge)
+    picture = folder / "picture.mov"
+    mux_picture(path, narration, picture)
     height = int(info["height"])
     style = affi_finish.caption_style("白ゴシック。細い影。画面の下から約30%。", height=height)
     captions = [
         {"start_s": cue["start_s"], "end_s": cue["end_s"], "text": cue["text"], "burn": True}
-        for cue in cues
+        for cue in fitted
     ]
     ass = folder / "captions.ass"
     ass.write_text(
@@ -507,25 +484,21 @@ def apply(
     )
     subprocess.check_call(
         affi_finish.finish_argv(
-            mouthed,
+            picture,
             dest,
             ass_path=ass,
             fonts_dir=affi_finish.FONT_DIR if affi_finish.FONT_DIR.is_dir() else None,
             bgm=music,
         )
     )
-    note = "顔が無い区間は絵のまま。声だけ載せた。"
-    if mouth.get("face"):
-        note = f"口を開けたフレームは {mouth['mouth_frames']}。"
-    if mouth.get("method") == "external":
-        note = "口は外部のコマンドで合わせた。"
+    intervals = [{"id": cue["id"], "start_s": cue["start_s"], "end_s": cue["end_s"]} for cue in fitted]
     return {
         "status": "ready",
         "blocked": [],
         "out": str(dest),
-        "cues": len(cues),
-        "mouth": mouth,
-        "note": note,
+        "cues": len(fitted),
+        "mouth": {"method": "picture", "intervals": intervals},
+        "note": "絵の口は変えていない。開閉を測って、声をその秒に合わせた。",
         "generates_h3": False,
         "posts": False,
     }

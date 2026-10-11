@@ -45,6 +45,11 @@ registers:
   polite: 丁寧語。
   owner: この話には出さない。
   indoor_pair: この話では使わない。
+voices:
+  guest: espeak:ja
+  retort: ja-JP-KeitaNeural
+  polite: ja-JP-NanamiNeural
+  owner: gtts:ja
 subtitle:
   font: 白ゴシック
   edge: 細い影

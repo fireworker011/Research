@@ -20,6 +20,8 @@ import affi_reference as ref
 ROOT = Path(__file__).resolve().parent
 PACK_PATH = ROOT / "reference-accounts" / "source" / "repro" / "junjun_825k.yaml"
 SHEET_PATH = ROOT / "reference-accounts" / "source" / "repro" / "junjun_825k.md"
+INDEX_PATH = ROOT / "stories" / "INDEX.md"
+LOCKED_SHEET = "71.552秒"
 
 SLOT = "入力"
 ROLES = ("guest", "retort", "polite", "owner", "indoor_pair")
@@ -73,19 +75,65 @@ def _existing(text: str) -> Path | None:
     return None
 
 
-def pack_file(raw: str | Path | None = None) -> Path | None:
-    """Empty stays the locked sheet. A written path is another pack of the same schema.
+def story_index() -> list[dict[str, str]]:
+    """Rows of stories/INDEX.md. The Colab 構成 menu is these names."""
+    if not INDEX_PATH.is_file():
+        return []
+    rows: list[dict[str, str]] = []
+    for line in INDEX_PATH.read_text(encoding="utf-8").splitlines():
+        if not line.startswith("|"):
+            continue
+        cells = [cell.strip() for cell in line.strip().strip("|").split("|")]
+        if len(cells) < 6:
+            continue
+        name = cells[0]
+        if not name or name == "名前" or set(name) <= set("-: "):
+            continue
+        rows.append(
+            {
+                "name": name,
+                "summary": cells[1],
+                "duration": cells[2],
+                "cast": cells[3],
+                "pattern": cells[4],
+                "baked": cells[5],
+            }
+        )
+    return rows
 
-    A GitHub URL is accepted when it contains ``stories/<name>.yaml``.
+
+def pack_file(raw: str | Path | None = None) -> Path | None:
+    """Empty or the locked label stays the 71.552s sheet. A name in the index is that story.
+
+    A written path, or a GitHub URL that contains ``stories/<name>.yaml``, is that file.
     """
     text = "" if raw is None else str(raw).strip()
-    if not text:
+    if text in {"", LOCKED_SHEET}:
         return None
     for candidate in [*_PACK_TAIL.findall(text), text]:
         found = _existing(candidate)
         if found is not None and found.suffix in {".yaml", ".yml"}:
             return found
+    names = {row["name"] for row in story_index()}
+    if text in names:
+        found = ROOT / "stories" / f"{text}.yaml"
+        if found.is_file():
+            return found
     raise ValueError(f"構成ファイルが無い: {text}")
+
+
+def stock_lines(pack_raw: str | Path | None, lines_text: str) -> str:
+    """Typed lines win. An empty field loads ``<story>_lines.txt`` only when a stock pack is chosen."""
+    typed = read_lines(lines_text)
+    if typed.strip():
+        return typed
+    path = pack_file(pack_raw)
+    if path is None:
+        return ""
+    side = path.with_name(path.stem + "_lines.txt")
+    if side.is_file():
+        return side.read_text(encoding="utf-8")
+    return ""
 
 
 def read_lines(raw: str) -> str:
@@ -170,7 +218,33 @@ def load(path: Path | None = None) -> dict[str, Any]:
     animals = slots.get("animals") or {}
     if any(animals.get(key) != SLOT for key in ANIMAL_SLOTS):
         raise ValueError("動物が入力ではない")
+    check_voices(data)
     return data
+
+
+def check_voices(data: Mapping[str, Any]) -> None:
+    """Optional ``voices`` map. Absent keeps the shared defaults. Present voices are one each."""
+    voices = data.get("voices")
+    if voices is None:
+        return
+    if not isinstance(voices, dict):
+        raise ValueError("声の対応がオブジェクトではない")
+    unknown = [str(role) for role in voices if role not in ROLES]
+    if unknown:
+        raise ValueError("声の役が無い: " + ", ".join(unknown))
+    spoken = {row["role"] for row in data.get("captions") or []}
+    missing = sorted(spoken - set(voices))
+    if missing:
+        raise ValueError("話している役の声が無い: " + ", ".join(missing))
+    heard: dict[str, str] = {}
+    for role, voice in voices.items():
+        text = str(voice or "").strip()
+        if not text:
+            raise ValueError(f"声が空: {role}")
+        other = heard.get(text)
+        if other is not None:
+            raise ValueError(f"同じ声が2役に当たっている: {other} と {role}")
+        heard[text] = str(role)
 
 
 def captions_of(pack: Mapping[str, Any]) -> list[dict[str, Any]]:

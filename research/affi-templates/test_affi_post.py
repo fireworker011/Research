@@ -19,10 +19,11 @@ import affi_post
 import affi_structure as structure
 
 needs_ffmpeg = pytest.mark.skipif(shutil.which("ffmpeg") is None, reason="ffmpeg が無い")
+needs_espeak = pytest.mark.skipif(shutil.which("espeak-ng") is None, reason="espeak-ng が無い")
 WIDTH = 288
 HEIGHT = 512
 FPS = 8
-FACE = (80, 110, 208, 300)
+MOUTH_BOX = (120, 200, 150, 240)
 
 
 def test_voices_follow_the_role() -> None:
@@ -70,14 +71,26 @@ def test_picture_in_prefers_the_joined_file(tmp_path: Path) -> None:
     assert affi_post.picture_in(tmp_path) is None
 
 
-def test_mouth_opens_only_the_lower_face() -> None:
-    frame = np.zeros((80, 40, 3), np.uint8)
-    frame[44:, :, 0] = np.arange(36, dtype=np.uint8)[:, None]
-    assert affi_post._open_mouth(frame, (0, 0, 40, 80), 0.0) is frame
-    opened = affi_post._open_mouth(frame, (0, 0, 40, 80), 0.45)
-    split = int(80 * affi_post.MOUTH_SPLIT)
-    assert np.array_equal(opened[:split], frame[:split])
-    assert not np.array_equal(opened[split:], frame[split:])
+def test_a_story_map_overrides_the_shared_voices() -> None:
+    voices = {
+        "guest": "espeak:ja",
+        "retort": "ja-JP-KeitaNeural",
+        "polite": "ja-JP-NanamiNeural",
+        "owner": "gtts:ja",
+    }
+    assert affi_post.voice_for("guest", voices) == "espeak:ja"
+    assert affi_post.voice_for("retort", voices) == "ja-JP-KeitaNeural"
+    assert affi_post.voice_for("indoor_pair", voices) == "ja-JP-KeitaNeural"
+    assert len(set(voices.values())) == len(voices)
+
+
+def test_compact_change_is_a_small_region() -> None:
+    still = np.zeros((80, 40, 3), np.uint8)
+    assert affi_post._compact_change(still, still) is False
+    assert affi_post._compact_change(still, np.full_like(still, 255)) is False
+    mouth = still.copy()
+    mouth[40:48, 10:18] = 255
+    assert affi_post._compact_change(still, mouth) is True
 
 
 def test_a_missing_picture_or_music_file_blocks(tmp_path: Path) -> None:
@@ -89,8 +102,7 @@ def test_a_missing_picture_or_music_file_blocks(tmp_path: Path) -> None:
 
 
 @needs_ffmpeg
-def test_unfilled_lines_do_not_speak(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
-    monkeypatch.delenv("LIPSYNC_CMD", raising=False)
+def test_unfilled_lines_do_not_speak(tmp_path: Path) -> None:
     video = tmp_path / "story.mp4"
     _pattern_clip(video)
     spoken: list[str] = []
@@ -124,10 +136,9 @@ def test_unfilled_lines_do_not_speak(tmp_path: Path, monkeypatch: pytest.MonkeyP
 
 
 @needs_ffmpeg
-def test_voice_caption_music_and_mouth_follow_the_filled_line(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
-    monkeypatch.delenv("LIPSYNC_CMD", raising=False)
+def test_voice_follows_the_measured_mouth_and_the_picture_stays(tmp_path: Path) -> None:
     video = tmp_path / "story.mp4"
-    _pattern_clip(video, beep_at=0.2)
+    _mouth_clip(video, range(6, 10))
     before = _rgb_frames(video)
     spoken: list[str] = []
 
@@ -174,33 +185,30 @@ def test_voice_caption_music_and_mouth_follow_the_filled_line(tmp_path: Path, mo
         rows=[
             {"id": "skip", "text": "入力", "start_s": 0.0, "end_s": 0.4, "burn": True, "role": "guest"},
             {"id": "src", "text": "おい、そこのデブ", "start_s": 0.0, "end_s": 0.4, "burn": False, "role": "guest"},
-            {"id": "c1", "text": "HELLO", "start_s": 0.75, "end_s": 1.5, "burn": True, "role": "owner"},
+            {"id": "c1", "text": "HELLO", "start_s": 0.25, "end_s": 1.75, "burn": True, "role": "owner", "voice": "ja-JP-NanamiNeural"},
         ],
         bgm=bgm,
         synth=synth,
-        face_box=FACE,
     )
     assert result["status"] == "ready"
     assert result["generates_h3"] is False
     assert result["posts"] is False
     assert result["cues"] == 1
-    assert result["mouth"]["method"] == "loudness"
-    assert result["mouth"]["mouth_frames"] > 0
+    assert result["mouth"]["method"] == "picture"
+    assert result["note"] == "絵の口は変えていない。開閉を測って、声をその秒に合わせた。"
+    interval = result["mouth"]["intervals"][0]
+    assert interval["start_s"] == pytest.approx(0.75, abs=0.02)
+    assert interval["end_s"] == pytest.approx(1.25, abs=0.02)
     assert spoken == ["HELLO"]
     assert out.is_file()
-    assert video.read_bytes() != out.read_bytes()
     samples = affi_media._decode_mono(out, 16000)
     loud = np.flatnonzero(np.abs(samples) > 0.45)
     assert loud.size
-    assert float(loud[0]) / 16000 == pytest.approx(0.75, abs=0.08)
-    early = samples[: int(0.45 * 16000)]
+    assert float(loud[0]) / 16000 == pytest.approx(interval["start_s"], abs=0.08)
+    early = samples[: int(0.5 * 16000)]
     assert float(np.abs(early).max()) < 0.35
-    assert float(np.abs(early).mean()) > 0.02
     after = _rgb_frames(out)
-    quiet = _face_diff(before[1], after[1])
-    opened = max(_face_diff(before[index], after[index]) for index in range(6, 12))
-    assert quiet < 25
-    assert opened > 60
+    assert _mouth_diff(before[8], after[8]) < 25
     raw = subprocess.check_output(
         ["ffmpeg", "-v", "error", "-ss", "1.0", "-i", str(out), "-frames:v", "1", "-f", "rawvideo", "-pix_fmt", "gray", "-"]
     )
@@ -211,62 +219,36 @@ def test_voice_caption_music_and_mouth_follow_the_filled_line(tmp_path: Path, mo
 
 
 @needs_ffmpeg
-def test_an_external_command_keeps_the_picture(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+def test_a_still_picture_does_not_invent_a_mouth(tmp_path: Path) -> None:
     video = tmp_path / "story.mp4"
     _pattern_clip(video)
-    before = _rgb_frames(video)
-    monkeypatch.setenv(
-        "LIPSYNC_CMD",
-        "ffmpeg -y -v error -i {video} -i {audio} -map 0:v:0 -map 1:a:0 -c:v copy -c:a pcm_s16le {out}",
-    )
+    spoken: list[str] = []
 
-    def synth(text: str, role: str, dest: Path) -> None:
-        subprocess.run(
-            [
-                "ffmpeg",
-                "-y",
-                "-v",
-                "error",
-                "-f",
-                "lavfi",
-                "-i",
-                "aevalsrc='sin(2*PI*440*t)':s=44100:d=0.4",
-                "-ac",
-                "2",
-                str(dest),
-            ],
-            check=True,
-        )
+    def boom(text: str, role: str, dest: Path) -> None:
+        spoken.append(text)
+        raise AssertionError(text)
 
-    out = tmp_path / "post.mp4"
     result = affi_post.apply(
         video,
-        out,
-        rows=[{"id": "c1", "text": "HELLO", "start_s": 0.75, "end_s": 1.4, "burn": True, "role": "guest"}],
-        synth=synth,
-        face_box=FACE,
+        tmp_path / "post.mp4",
+        rows=[{"id": "c1", "text": "HELLO", "start_s": 0.25, "end_s": 1.75, "burn": True, "role": "guest"}],
+        synth=boom,
     )
-    assert result["status"] == "ready"
-    assert result["mouth"]["method"] == "external"
-    assert result["note"] == "口は外部のコマンドで合わせた。"
+    assert result["status"] == "blocked"
+    assert result["blocked"] == ["絵から口の開閉が測れない: c1"]
     assert result["posts"] is False
-    after = _rgb_frames(out)
-    assert _face_diff(before[8], after[8]) < 25
+    assert spoken == []
+    assert not (tmp_path / "post.mp4").exists()
 
 
-def _pattern_clip(path: Path, *, beep_at: float | None = None) -> None:
-    frames = []
-    x1, y1, x2, y2 = FACE
-    split = y1 + int((y2 - y1) * affi_post.MOUTH_SPLIT)
-    for _ in range(16):
-        frame = np.full((HEIGHT, WIDTH, 3), 12, np.uint8)
-        frame[y1:split, x1:x2] = 40
-        for row in range(split, y2):
-            frame[row, x1:x2] = 255 if ((row - split) // 4) % 2 == 0 else 0
-        frames.append(frame)
-    audio = "anullsrc=r=44100:cl=stereo:d=2"
-    if beep_at is not None:
-        audio = f"aevalsrc='0.8*sin(2*PI*1000*t)*between(t,{beep_at:.3f},{beep_at + 0.05:.3f})':s=44100:d=2"
+@needs_espeak
+def test_espeak_writes_a_distinct_guest_voice(tmp_path: Path) -> None:
+    dest = tmp_path / "dog.wav"
+    affi_post.synth_edge("本日は検品を休業しております", "guest", dest, voice="espeak:ja")
+    assert dest.stat().st_size > 1000
+
+
+def _write_clip(path: Path, frames: list[np.ndarray]) -> None:
     subprocess.run(
         [
             "ffmpeg",
@@ -286,7 +268,7 @@ def _pattern_clip(path: Path, *, beep_at: float | None = None) -> None:
             "-f",
             "lavfi",
             "-i",
-            audio,
+            "anullsrc=r=44100:cl=stereo:d=2",
             "-c:v",
             "libx264",
             "-pix_fmt",
@@ -301,6 +283,22 @@ def _pattern_clip(path: Path, *, beep_at: float | None = None) -> None:
     )
 
 
+def _pattern_clip(path: Path) -> None:
+    frames = [np.full((HEIGHT, WIDTH, 3), 12, np.uint8) for _ in range(16)]
+    _write_clip(path, frames)
+
+
+def _mouth_clip(path: Path, moving: range) -> None:
+    x1, y1, x2, y2 = MOUTH_BOX
+    frames = []
+    for index in range(16):
+        frame = np.full((HEIGHT, WIDTH, 3), 18, np.uint8)
+        if index in moving:
+            frame[y1:y2, x1:x2] = (40 + index * 25) % 250
+        frames.append(frame)
+    _write_clip(path, frames)
+
+
 def _rgb_frames(path: Path) -> list[np.ndarray]:
     raw = subprocess.check_output(
         ["ffmpeg", "-v", "error", "-i", str(path), "-f", "rawvideo", "-pix_fmt", "rgb24", "-"]
@@ -313,7 +311,6 @@ def _rgb_frames(path: Path) -> list[np.ndarray]:
     ]
 
 
-def _face_diff(left: np.ndarray, right: np.ndarray) -> float:
-    x1, y1, x2, y2 = FACE
-    split = y1 + int((y2 - y1) * affi_post.MOUTH_SPLIT)
-    return float(np.abs(left[split:y2, x1:x2].astype(np.int16) - right[split:y2, x1:x2].astype(np.int16)).mean())
+def _mouth_diff(left: np.ndarray, right: np.ndarray) -> float:
+    x1, y1, x2, y2 = MOUTH_BOX
+    return float(np.abs(left[y1:y2, x1:x2].astype(np.int16) - right[y1:y2, x1:x2].astype(np.int16)).mean())

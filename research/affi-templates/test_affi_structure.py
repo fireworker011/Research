@@ -121,6 +121,20 @@ def test_pet_sheet_is_another_pack_of_the_same_sheet() -> None:
     assert structure.read_lines("c01 あっつ") == "c01 あっつ"
     with pytest.raises(ValueError, match="セリフファイルが無い"):
         structure.read_lines("stories/missing_lines.txt")
+    assert "voices" not in pack
+    index = structure.story_index()
+    assert [row["name"] for row in index] == ["pet_sheet", "paw_stamp"]
+    assert index[0]["duration"] == "51.572秒"
+    assert index[1]["duration"] == "50.556秒"
+    assert index[0]["pattern"] == "junjun_ranran"
+    assert index[1]["baked"] == "まだ"
+    assert structure.pack_file("pet_sheet") == path
+    assert structure.pack_file("paw_stamp") == ROOT / "stories" / "paw_stamp.yaml"
+    assert structure.pack_file("71.552秒") is None
+    assert structure.stock_lines("paw_stamp", "").startswith("c01")
+    assert structure.stock_lines("71.552秒", "") == ""
+    assert structure.stock_lines("", "") == ""
+    assert structure.stock_lines("paw_stamp", "c01 別") == "c01 別"
 
 
 def test_fill_changes_only_the_four_slots() -> None:
@@ -177,3 +191,12 @@ def test_paw_stamp_is_another_pack_of_the_same_sheet() -> None:
     assert "<d>" not in text
     assert "No one speaks." in text
     assert structure.load()["duration_s"] == 71.552
+    voices = pack["voices"]
+    assert voices["guest"] == "espeak:ja"
+    assert voices["retort"] == "ja-JP-KeitaNeural"
+    assert voices["polite"] == "ja-JP-NanamiNeural"
+    assert voices["owner"] == "gtts:ja"
+    assert len(set(voices.values())) == len(voices)
+    broken = {**voices, "owner": voices["guest"]}
+    with pytest.raises(ValueError, match="同じ声が2役に当たっている"):
+        structure.check_voices({**pack, "voices": broken})

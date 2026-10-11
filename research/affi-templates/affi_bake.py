@@ -1689,7 +1689,7 @@ def plan_sheet(
 ) -> dict[str, Any]:
     """One sheet job. An empty path is the 71.552s sheet. H3 gets the picture only."""
     pack = structure.load(structure.pack_file(pack_path))
-    spoken = structure.parse_lines(structure.read_lines(lines_text), [row["id"] for row in pack["captions"]])
+    spoken = structure.parse_lines(structure.stock_lines(pack_path, lines_text), [row["id"] for row in pack["captions"]])
     filled = structure.fill(pack, person=person, animals=animals, place=place, lines=spoken)
     reasons = structure.blocked(filled)
     image_text = (image or "").strip()
@@ -1740,11 +1740,13 @@ def plan_sheet(
     captions = []
     for row in filled["captions"]:
         cue = by_cue.get(row["id"])
+        voice = affi_post.voice_for(str(row["role"]), filled.get("voices"))
         if cue is None:
             captions.append(
                 {
                     "id": row["id"],
                     "role": row["role"],
+                    "voice": voice,
                     "start_s": float(row["seen_s"][0]),
                     "end_s": float(row["seen_s"][0]) + 0.4,
                     "text": str(row["line"]),
@@ -1756,6 +1758,7 @@ def plan_sheet(
             {
                 "id": row["id"],
                 "role": row["role"],
+                "voice": cue.get("voice") or voice,
                 "start_s": cue["start_s"],
                 "end_s": cue["end_s"],
                 "text": cue["text"],
@@ -3176,12 +3179,14 @@ def sheet_form_cell() -> str:
     for row in pack["captions"]:
         guide.append(f"#@markdown {row['id']} {structure.ROLE_JA[row['role']]}")
     body = "\n".join(guide)
+    menu = _param_list(["71.552秒", *[row["name"] for row in structure.story_index()]])
     return f"""#@title この1本 {{ display-mode: "form" }}
 #@markdown 「選ぶ」で構成のまま1本を選んだときだけ使う。人、動物、セリフ、場所だけ書く。
-#@markdown 構成が空なら 71.552秒。ペットシーツは stories/pet_sheet.yaml。ふみふみは stories/paw_stamp.yaml。セリフは、それぞれの _lines.txt のパスか、その中身。
+#@markdown 構成は stories/INDEX.md の名前。71.552秒は固定のシート。パスも書ける。行を足してノートを作り直すと、この欄に増える。
+#@markdown セリフが空で、構成が台本の名前なら、その _lines.txt を読む。書いたセリフが優先。
 #@markdown 空は入力のまま。元の顔、元の動物、元のセリフは書かない。ここは焼かない。
 {body}
-構成 = "" #@param {{type:"string"}}
+構成 = "71.552秒" #@param {menu} {{allow-input: true}}
 人 = "入力" #@param {{type:"string"}}
 客の動物 = "入力" #@param {{type:"string"}}
 ツッコミの動物 = "入力" #@param {{type:"string"}}
@@ -3198,7 +3203,7 @@ try:
         person=人,
         animals={{"guest": 客の動物, "retort": ツッコミの動物, "polite": 丁寧の動物}},
         place=場所,
-        lines=structure.parse_lines(structure.read_lines(セリフ), [row["id"] for row in pack["captions"]]),
+        lines=structure.parse_lines(structure.stock_lines(構成, セリフ), [row["id"] for row in pack["captions"]]),
     )
 except ValueError as exc:
     print("止まった:", exc)
@@ -3215,17 +3220,16 @@ else:
 
 
 def post_cell() -> str:
-    """Voice, mouth, captions, and an own music file after the picture exists. Off by default."""
+    """Voice fitted to the baked mouth, captions, and an own music file. Off by default."""
     return """#@title 仕上げ { display-mode: "form" }
 #@markdown 絵ができたあと、仕上げにチェックを入れてこのセルを押す。H3 は呼ばない。投稿しない。
+#@markdown 焼いた絵の、そのせりふの秒の中で、画面の一部だけが動いた区間を口の開閉として測る。声はその秒に合わせる。絵の口は変えない。
 #@markdown captions.json の空でないせりふだけを声にする。入力、台詞は入力、burn が false の行は読まない。
-#@markdown 顔が見つかった区間だけ口を開ける。顔が無い区間は絵のまま、声だけ載せる。
-#@markdown 字幕は白ゴシック、下から約30%。曲は「選ぶ」の曲。空ならジョブの曲ファイル。口のコマンドが空なら、声の大きさで口を開ける。書くときは {video} {audio} {out}。
+#@markdown 字幕は白ゴシック、下から約30%。曲は「選ぶ」の曲。空ならジョブの曲ファイル。
 仕上げ = False #@param {type:"boolean"}
-口のコマンド = "" #@param {type:"string"}
 
 import json
-import os
+import shutil
 import subprocess
 import sys
 from pathlib import Path
@@ -3234,7 +3238,10 @@ if not 仕上げ:
     print("仕上げにチェックを入れて、このセルをもう一度押してください。今は声も字幕も足しません。")
 else:
     try:
-        subprocess.check_call([sys.executable, "-m", "pip", "install", "-q", "edge-tts", "opencv-python-headless"])
+        subprocess.check_call([sys.executable, "-m", "pip", "install", "-q", "edge-tts", "gTTS"])
+        if shutil.which("espeak-ng") is None:
+            subprocess.check_call(["apt-get", "update", "-qq"])
+            subprocess.check_call(["apt-get", "install", "-y", "-qq", "espeak-ng", "espeak-ng-data"])
     except subprocess.CalledProcessError as exc:
         print(f"止まった: 仕上げの準備に失敗した。終了コード {exc.returncode}。")
     else:
@@ -3270,10 +3277,6 @@ else:
                     bgm = str(globals().get("曲") or "").strip()
                     if not bgm and (job_dir / "job.json").is_file():
                         bgm = str(json.loads((job_dir / "job.json").read_text(encoding="utf-8")).get("bgm_file") or "").strip()
-                    if 口のコマンド.strip():
-                        os.environ["LIPSYNC_CMD"] = 口のコマンド.strip()
-                    else:
-                        os.environ.pop("LIPSYNC_CMD", None)
                     font_ok = True
                     if on_colab and not affi_finish.FONT_DIR.is_dir():
                         try:
@@ -3347,7 +3350,7 @@ def _intro() -> str:
         "2. **選ぶ** で、やりたいことを1つ選んで実行",
         "3. **実行**",
         "4. **焼く**（ready のあと。焼くにチェックを入れて押す。残りの範囲を続けて焼いて、そろったら1本につなぐ。mp4 はマイドライブの affi-bake に残る）",
-        "5. **仕上げ**（絵ができたあと。チェックを入れると、空でないせりふを声にして、顔があれば口を開け、字幕を焼き、自分の曲を重ねる。H3 は呼ばない。`post.mp4` を書く。つないだ mp4 は上書きしない）",
+        "5. **仕上げ**（絵ができたあと。チェックを入れると、焼いた口の開閉を測り、その秒に声を合わせ、字幕を焼き、自分の曲を重ねる。絵の口は変えない。H3 は呼ばない。`post.mp4` を書く。つないだ mp4 は上書きしない）",
         "",
         "見た目を変えるときだけ、2と3のあいだに、話の名前が同じ見た目のセルを1つ実行します。変えないときは飛ばします。初期値です。",
         "",
@@ -3425,6 +3428,7 @@ def _loader_cell() -> str:
         "stories/pet_sheet_lines.txt",
         "stories/paw_stamp.yaml",
         "stories/paw_stamp_lines.txt",
+        "stories/INDEX.md",
         "affi_bake.py",
         "reference-accounts/hypotheses.yaml",
         "reference-accounts/results.csv",
@@ -3474,6 +3478,25 @@ def _loader_cell() -> str:
             '        urllib.request.urlretrieve(f"{RAW}/data/{DATE}/videos.csv", LOCAL / "data" / DATE / "videos.csv")',
             "    except Exception:",
             '        print("動画一覧は無し。アカウント一覧だけで計算する。")',
+            '    index_path = LOCAL / "stories" / "INDEX.md"',
+            "    if index_path.is_file():",
+            '        for line in index_path.read_text(encoding="utf-8").splitlines():',
+            '            if not line.startswith("|"):',
+            "                continue",
+            '            cells = [cell.strip() for cell in line.strip().strip("|").split("|")]',
+            '            name = cells[0] if cells else ""',
+            '            if not name or name == "名前" or set(name) <= set("-: "):',
+            "                continue",
+            '            for rel in (f"stories/{name}.yaml", f"stories/{name}_lines.txt"):',
+            "                dest = LOCAL / rel",
+            "                if dest.is_file():",
+            "                    continue",
+            "                dest.parent.mkdir(parents=True, exist_ok=True)",
+            "                try:",
+            '                    urllib.request.urlretrieve(f"{RAW}/{rel}", dest)',
+            '                    print("取りました", rel)',
+            "                except Exception:",
+            '                    print("取り込めなかった", rel)',
             "sys.path.insert(0, str(LOCAL))",
             "import affi_reference as ref",
             "ref.ROOT = LOCAL",
@@ -3551,7 +3574,7 @@ def reference_notebook() -> dict[str, Any]:
                     "",
                     "空欄は入力のまま残ります。証拠の文は欄に出ません。ここに書いても、H3 のプロンプトには入れません。",
                     "",
-                    "構成欄が空なら 71.552秒です。ペットシーツは `stories/pet_sheet.yaml`、ふみふみは `stories/paw_stamp.yaml` です。セリフはそれぞれのファイルのパスか中身です。",
+                    "構成欄は `stories/INDEX.md` の名前です。71.552秒は固定のシートです。セリフが空なら、その台本の `_lines.txt` を読みます。書いたセリフが優先です。",
                     "",
                     "H3 は絵だけ焼きます。声、口、字幕、曲は、絵ができたあとの「仕上げ」です。",
                     "",
@@ -3630,7 +3653,7 @@ def reference_notebook() -> dict[str, Any]:
                     "",
                     "チェックを入れると、`captions.json` の空でないせりふを声にします。`入力` と、burn が false の行は読みません。",
                     "",
-                    "顔が見つかった区間だけ、声の大きさで口を開けます。顔が無い区間は絵のまま、声だけ載せます。",
+                    "焼いた絵の、そのせりふの秒の中で、画面の一部だけが動いた区間を口の開閉として測ります。声はその秒に合わせます。絵の口は変えません。",
                     "",
                     "字幕は白ゴシック、画面の下から約30%です。曲は「選ぶ」の曲か、ジョブに書いたファイルです。",
                     "",
