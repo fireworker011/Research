@@ -214,15 +214,15 @@
 ### 役割
 
 - ナオミチ（朝の枠）: 見本の合否。出すチャンネルを1つ決める。投稿。次の種を1回貼る。数字を見た日だけ CSV に1行。
-- Grok Build（夜）: 人が貼った指示で、ブランチ `cursor/script-kata-measure-a21d` の `tools/irasutoya-short` を動かす。mp4 と `REPORT.json` を、朝に開ける場所へ置く。投稿しない。台本を新しく書かない。既存 JSON か、人が貼った種だけ。
+- Grok Build（Windows の朝の枠）: 貼る文は `research/affi-recovery/grok-build-sample.md`。ブランチは `cursor/irasutoya-short-pipeline-a21d`。見本の mp4 は `C:\Users\hp\Documents\affi\sample\`。投稿しない。台本は新しく書かない。
 - Colab: この週は開かない。
 - Cursor: 形だけ見る。9:16 か、尺が 25〜40秒の帯か、末尾に使った VOICEVOX の名前があるか、いらすとやが20点以内か、ファイルにアフィ URL が無いか。不合格ならその1本は出さない。台本は書かない。PR #169 #170 #174 #176 はこの診断ではマージしない。
 
 種を書くのは Grok Bot の仕事、という既存の役割のまま。Cursor は種を作らない。
 
-### 夜に貼る指示（見本）
+### 朝に貼る指示（見本）
 
-新しい文は足さない。既存の `research/script-kata/scripts/irasutoya-ogori.json` を `make` する。投稿しない。`REPORT.json` の点数と、mp4 の秒と、縦横を残す。
+貼る全文は `research/affi-recovery/grok-build-sample.md`。`make` に渡すのは、`cursor/script-kata-measure-a21d` にある既存の `tools/irasutoya-short/examples/ogori.json`（hook と bullets がある方）。`research/script-kata/scripts/irasutoya-ogori.json` はシーン表で、このブランチの `make` は bullets が空だと止まる。投稿しない。`REPORT.json` の点数と秒を残す。
 
 見本が不合格なら、同じ指示をやり直さない。`revise` は1回まで。2回目の直しが要る本は、その本を出さない。
 
