@@ -78,7 +78,7 @@ def generate_script(brief: dict) -> dict:
         ),
         _scene(
             5, "punch", "narrator", punchline, "office",
-            ["rival_bow"], "zoom", "coin", BEAT_SECONDS[4], label=series,
+            ["rival_shock"], "zoom", "coin", BEAT_SECONDS[4], label=series,
         ),
         _credit_scene(series),
     ]

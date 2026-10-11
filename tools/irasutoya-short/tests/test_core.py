@@ -9,7 +9,7 @@ import numpy as np
 
 from irasutoya_short.audio import mix_tracks
 from irasutoya_short.lipsync import mouth_envelope
-from irasutoya_short.qa import body_count, title_rejection
+from irasutoya_short.qa import body_count, bow_pose, title_rejection
 from irasutoya_short.revise import apply_note
 from irasutoya_short.scriptgen import auto_scripts, check_draft, generate_script, grok_complete
 from irasutoya_short.sfx import make_sfx
@@ -52,6 +52,9 @@ class ScriptTests(unittest.TestCase):
         self.assertIn("VOICEVOX:四国めたん", script["scenes"][-1]["telop"])
         hints = [s["duration_hint"] for s in script["scenes"][:5]]
         self.assertEqual(hints, [2.37, 5.53, 0.97, 5.53, 11.05])
+        punch_scene = next(s for s in script["scenes"] if s["role"] == "punch")
+        self.assertEqual([c["id"] for c in punch_scene["characters"]], ["rival_shock"])
+        self.assertNotIn("rival_bow", script["asset_ids"])
 
     def test_punchline_required(self) -> None:
         bad = dict(BRIEF)
@@ -130,6 +133,17 @@ class QaTests(unittest.TestCase):
         self.assertIsNotNone(title_rejection("正月の鏡餅", "", ""))
         self.assertIsNotNone(title_rejection("話す二人", "男女", "男性"))
         self.assertIsNone(title_rejection("困るサラリーマン", "男性", "男性"))
+        self.assertIsNotNone(title_rejection("土下座する男性", "", "男性"))
+        self.assertIsNotNone(title_rejection("お辞儀をする人", "", "男性"))
+        self.assertIsNotNone(title_rejection("謝罪をする人のイラスト（男性）", "", "男性"))
+
+    def test_bow_pose_is_wider_than_tall(self) -> None:
+        tall = np.zeros((80, 40), dtype=np.uint8)
+        tall[5:75, 10:30] = 255
+        self.assertFalse(bow_pose(tall))
+        wide = np.zeros((40, 120), dtype=np.uint8)
+        wide[8:32, 5:115] = 255
+        self.assertTrue(bow_pose(wide))
 
     def test_two_bodies(self) -> None:
         one = np.zeros((80, 80), dtype=np.uint8)

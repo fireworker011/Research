@@ -99,7 +99,7 @@
       "bg": "office",
       "characters": [
         {
-          "id": "rival_bow",
+          "id": "rival_shock",
           "who": "rival",
           "label": "奢らせ同僚"
         }
@@ -137,6 +137,6 @@
     "rival_smug",
     "hero_trouble",
     "hero_angry",
-    "rival_bow"
+    "rival_shock"
   ]
 }
