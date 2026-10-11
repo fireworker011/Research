@@ -8,12 +8,15 @@ import unittest
 import numpy as np
 
 from irasutoya_short.audio import mix_tracks
+from irasutoya_short.backgrounds import render_bg
+from irasutoya_short.layout import default_layout
 from irasutoya_short.lipsync import mouth_envelope
 from irasutoya_short.qa import body_count, bow_pose, title_rejection
+from irasutoya_short.render import SpriteBook, compose_frame, render_telop
 from irasutoya_short.revise import apply_note
 from irasutoya_short.scriptgen import auto_scripts, check_draft, generate_script, grok_complete
 from irasutoya_short.sfx import make_sfx
-from irasutoya_short.sprites import MouthAnchor, draw_mouth, mouth_anchor, skin_color
+from irasutoya_short.sprites import MouthAnchor, draw_mouth, mouth_anchor, mouth_problem, skin_color
 from irasutoya_short.textutil import wrap_telop
 
 
@@ -195,13 +198,8 @@ class MouthTests(unittest.TestCase):
         img[head, 3] = 255
         img[120:132, 40:58] = (30, 20, 20, 255)
         img[120:132, 122:140] = (30, 20, 20, 255)
-        anchor = mouth_anchor(img)
-        self.assertIsNotNone(anchor)
-        assert anchor is not None
-        self.assertGreater(anchor.x, 70)
-        self.assertLess(anchor.x, 110)
-        self.assertFalse(abs(anchor.x - 49) < 18 and abs(anchor.y - 126) < 16)
-        self.assertFalse(abs(anchor.x - 131) < 18 and abs(anchor.y - 126) < 16)
+        self.assertIsNone(mouth_anchor(img))
+        self.assertEqual(mouth_problem(img), "口の線が見えない")
 
     def test_neck_shadow_is_not_the_mouth(self) -> None:
         img = np.zeros((280, 180, 4), dtype=np.uint8)
@@ -224,6 +222,30 @@ class MouthTests(unittest.TestCase):
         self.assertLess(anchor.y, 155)
         self.assertGreater(anchor.x, 70)
         self.assertLess(anchor.x, 115)
+        self.assertIsNone(mouth_problem(img))
+
+
+class FrameTests(unittest.TestCase):
+    def test_card_is_black_text_only(self) -> None:
+        bg = render_bg("card", 180, 320)
+        self.assertEqual(int(bg.max()), 0)
+        telop = render_telop("終電だ", "develop", 180, 320, 1.0, 0.46, plain=True)
+        scene = {
+            "effect": "none",
+            "bg": "card",
+            "characters": [],
+            "code_props": [],
+            "props": [],
+            "duration": 1.0,
+        }
+        frame = compose_frame(
+            scene, SpriteBook({}), bg, np.zeros((320, 180, 4), dtype=np.uint8),
+            telop, 0.0, 1.0, default_layout(), 0.5,
+        )
+        self.assertGreater(int((frame.mean(axis=2) > 180).sum()), 20)
+        self.assertLess(float(frame.mean()), 40)
+        blue_window = (frame[:, :, 2] > 180) & (frame[:, :, 0] < 80)
+        self.assertFalse(bool(blue_window.any()))
 
     def test_open_mouth_drops_below_the_lip(self) -> None:
         img = np.zeros((220, 160, 4), dtype=np.uint8)

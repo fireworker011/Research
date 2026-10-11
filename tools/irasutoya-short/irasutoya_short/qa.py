@@ -10,7 +10,7 @@ from collections import deque
 import numpy as np
 from PIL import Image
 
-from irasutoya_short.sprites import load_rgba
+from irasutoya_short.sprites import load_rgba, mouth_problem
 
 # 記事が挙げている事故: 文字が焼き込まれた絵、正月飾り、2人組。
 REJECT_TOKENS = (
@@ -192,6 +192,9 @@ def inspect_image(path: str, title: str, alt: str, gender: str, kind: str) -> st
             return "お辞儀や土下座で口が見えない"
         if body_count(keyed[:, :, 3]) >= 2:
             return "2人以上に見える"
+        reason = mouth_problem(keyed)
+        if reason:
+            return reason
     ocr = _ocr_text(path)
     if ocr:
         for token in REJECT_TOKENS:
