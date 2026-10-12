@@ -1,0 +1,1633 @@
+{
+  "language": "en",
+  "tool": "whisperx",
+  "whisperx_version": "3.8.6",
+  "model": "medium",
+  "compute_type": "int8",
+  "device": "cpu",
+  "vad": "silero",
+  "alignment": "wav2vec2 (default WhisperX aligner)",
+  "word_level": true,
+  "source": "uploads/cruising_src.mp4",
+  "window_sec": [
+    0,
+    105
+  ],
+  "diarization": {
+    "requested": "whisperx --diarize --min_speakers 2 --max_speakers 4",
+    "model": "pyannote/speaker-diarization-community-1",
+    "result": "failed",
+    "error": "401 GatedRepoError: model is restricted and no Hugging Face token is available in this environment.",
+    "fallback": "speechbrain/spkrec-ecapa-voxceleb embeddings. The 69.2s line's max cosine similarity to any other line is 0.29, so it is a different voice. It is also the only speech while the hat man is in the room (entrance 57.3, exit about 70.8). Labeled hat_man. Every other line is labeled other_man."
+  },
+  "silence_note": "Silero VAD, including a sensitive threshold, finds no speech from 56.0s to 69.2s. A WhisperX pass on 62.0–69.2s also returned no speech. Entrance 57.3s and slap contact 65.6s are inside that silence.",
+  "segments": [
+    {
+      "start": 0.866,
+      "end": 1.867,
+      "text": "What were you fag!\".",
+      "words": [
+        {
+          "word": "What",
+          "start": 0.866,
+          "end": 0.946,
+          "score": 0.988
+        },
+        {
+          "word": "were",
+          "start": 0.986,
+          "end": 1.106,
+          "score": 0.726
+        },
+        {
+          "word": "you",
+          "start": 1.126,
+          "end": 1.246,
+          "score": 0.809
+        },
+        {
+          "word": "fag!\".",
+          "start": 1.306,
+          "end": 1.867,
+          "score": 0.69
+        }
+      ],
+      "speaker": "other_man"
+    },
+    {
+      "start": 2.947,
+      "end": 3.928,
+      "text": "What is this shit, huh?",
+      "words": [
+        {
+          "word": "What",
+          "start": 2.947,
+          "end": 3.068,
+          "score": 0.978
+        },
+        {
+          "word": "is",
+          "start": 3.128,
+          "end": 3.208,
+          "score": 0.648
+        },
+        {
+          "word": "this",
+          "start": 3.248,
+          "end": 3.368,
+          "score": 0.526
+        },
+        {
+          "word": "shit,",
+          "start": 3.448,
+          "end": 3.708,
+          "score": 0.663
+        },
+        {
+          "word": "huh?",
+          "start": 3.728,
+          "end": 3.928,
+          "score": 0.498
+        }
+      ],
+      "speaker": "other_man"
+    },
+    {
+      "start": 4.669,
+      "end": 5.809,
+      "text": "You were going to stick him, weren't you?",
+      "words": [
+        {
+          "word": "You",
+          "start": 4.669,
+          "end": 4.769,
+          "score": 0.921
+        },
+        {
+          "word": "were",
+          "start": 4.809,
+          "end": 4.909,
+          "score": 0.138
+        },
+        {
+          "word": "going",
+          "start": 4.929,
+          "end": 5.049,
+          "score": 0.108
+        },
+        {
+          "word": "to",
+          "start": 5.069,
+          "end": 5.109,
+          "score": 0.005
+        },
+        {
+          "word": "stick",
+          "start": 5.129,
+          "end": 5.329,
+          "score": 0.646
+        },
+        {
+          "word": "him,",
+          "start": 5.369,
+          "end": 5.489,
+          "score": 0.796
+        },
+        {
+          "word": "weren't",
+          "start": 5.529,
+          "end": 5.689,
+          "score": 0.108
+        },
+        {
+          "word": "you?",
+          "start": 5.709,
+          "end": 5.809,
+          "score": 0.344
+        }
+      ],
+      "speaker": "other_man"
+    },
+    {
+      "start": 6.65,
+      "end": 7.731,
+      "text": "What are you talking about?",
+      "words": [
+        {
+          "word": "What",
+          "start": 6.65,
+          "end": 6.73,
+          "score": 0.997
+        },
+        {
+          "word": "are",
+          "start": 6.75,
+          "end": 6.83,
+          "score": 0.757
+        },
+        {
+          "word": "you",
+          "start": 6.85,
+          "end": 6.95,
+          "score": 0.799
+        },
+        {
+          "word": "talking",
+          "start": 7.03,
+          "end": 7.391,
+          "score": 0.911
+        },
+        {
+          "word": "about?",
+          "start": 7.451,
+          "end": 7.731,
+          "score": 0.938
+        }
+      ],
+      "speaker": "other_man"
+    },
+    {
+      "start": 8.011,
+      "end": 8.832,
+      "text": "Whose room was it?",
+      "words": [
+        {
+          "word": "Whose",
+          "start": 8.011,
+          "end": 8.211,
+          "score": 0.818
+        },
+        {
+          "word": "room",
+          "start": 8.271,
+          "end": 8.471,
+          "score": 0.502
+        },
+        {
+          "word": "was",
+          "start": 8.511,
+          "end": 8.671,
+          "score": 0.708
+        },
+        {
+          "word": "it?",
+          "start": 8.731,
+          "end": 8.832,
+          "score": 0.45
+        }
+      ],
+      "speaker": "other_man"
+    },
+    {
+      "start": 9.292,
+      "end": 9.592,
+      "text": "Keith's.",
+      "words": [
+        {
+          "word": "Keith's.",
+          "start": 9.292,
+          "end": 9.592,
+          "score": 0.383
+        }
+      ],
+      "speaker": "other_man"
+    },
+    {
+      "start": 13.235,
+      "end": 13.715,
+      "text": "Is that right?",
+      "words": [
+        {
+          "word": "Is",
+          "start": 13.235,
+          "end": 13.315,
+          "score": 0.782
+        },
+        {
+          "word": "that",
+          "start": 13.335,
+          "end": 13.495,
+          "score": 0.654
+        },
+        {
+          "word": "right?",
+          "start": 13.535,
+          "end": 13.715,
+          "score": 0.792
+        }
+      ],
+      "speaker": "other_man"
+    },
+    {
+      "start": 16.357,
+      "end": 19.019,
+      "text": "I told you what we're doing has none of your business.",
+      "words": [
+        {
+          "word": "I",
+          "start": 16.357,
+          "end": 16.457,
+          "score": 0.8
+        },
+        {
+          "word": "told",
+          "start": 16.477,
+          "end": 16.637,
+          "score": 0.669
+        },
+        {
+          "word": "you",
+          "start": 16.677,
+          "end": 16.777,
+          "score": 0.448
+        },
+        {
+          "word": "what",
+          "start": 16.817,
+          "end": 16.937,
+          "score": 0.414
+        },
+        {
+          "word": "we're",
+          "start": 16.957,
+          "end": 17.077,
+          "score": 0.287
+        },
+        {
+          "word": "doing",
+          "start": 17.097,
+          "end": 17.458,
+          "score": 0.574
+        },
+        {
+          "word": "has",
+          "start": 17.518,
+          "end": 17.678,
+          "score": 0.747
+        },
+        {
+          "word": "none",
+          "start": 17.718,
+          "end": 18.018,
+          "score": 0.683
+        },
+        {
+          "word": "of",
+          "start": 18.118,
+          "end": 18.218,
+          "score": 0.714
+        },
+        {
+          "word": "your",
+          "start": 18.258,
+          "end": 18.358,
+          "score": 0.528
+        },
+        {
+          "word": "business.",
+          "start": 18.378,
+          "end": 19.019,
+          "score": 0.795
+        }
+      ],
+      "speaker": "other_man"
+    },
+    {
+      "start": 19.039,
+      "end": 20.159,
+      "text": "You had no right to come in there.",
+      "words": [
+        {
+          "word": "You",
+          "start": 19.039,
+          "end": 19.099,
+          "score": 0.715
+        },
+        {
+          "word": "had",
+          "start": 19.119,
+          "end": 19.219,
+          "score": 0.718
+        },
+        {
+          "word": "no",
+          "start": 19.259,
+          "end": 19.359,
+          "score": 0.906
+        },
+        {
+          "word": "right",
+          "start": 19.379,
+          "end": 19.559,
+          "score": 0.343
+        },
+        {
+          "word": "to",
+          "start": 19.579,
+          "end": 19.639,
+          "score": 0.753
+        },
+        {
+          "word": "come",
+          "start": 19.679,
+          "end": 19.839,
+          "score": 0.835
+        },
+        {
+          "word": "in",
+          "start": 19.879,
+          "end": 19.939,
+          "score": 0.992
+        },
+        {
+          "word": "there.",
+          "start": 19.979,
+          "end": 20.159,
+          "score": 0.564
+        }
+      ],
+      "speaker": "other_man"
+    },
+    {
+      "start": 20.219,
+      "end": 22.421,
+      "text": "I want to know what you were doing in there.",
+      "words": [
+        {
+          "word": "I",
+          "start": 20.219,
+          "end": 20.28,
+          "score": 0.369
+        },
+        {
+          "word": "want",
+          "start": 20.32,
+          "end": 20.44,
+          "score": 0.237
+        },
+        {
+          "word": "to",
+          "start": 20.6,
+          "end": 20.76,
+          "score": 0.641
+        },
+        {
+          "word": "know",
+          "start": 20.84,
+          "end": 21.24,
+          "score": 0.337
+        },
+        {
+          "word": "what",
+          "start": 21.28,
+          "end": 21.42,
+          "score": 0.85
+        },
+        {
+          "word": "you",
+          "start": 21.46,
+          "end": 21.56,
+          "score": 0.991
+        },
+        {
+          "word": "were",
+          "start": 21.6,
+          "end": 21.741,
+          "score": 0.712
+        },
+        {
+          "word": "doing",
+          "start": 21.781,
+          "end": 22.041,
+          "score": 0.879
+        },
+        {
+          "word": "in",
+          "start": 22.061,
+          "end": 22.121,
+          "score": 0.438
+        },
+        {
+          "word": "there.",
+          "start": 22.181,
+          "end": 22.421,
+          "score": 0.804
+        }
+      ],
+      "speaker": "other_man"
+    },
+    {
+      "start": 22.541,
+      "end": 22.961,
+      "text": "Nothing!",
+      "words": [
+        {
+          "word": "Nothing!",
+          "start": 22.541,
+          "end": 22.961,
+          "score": 0.753
+        }
+      ],
+      "speaker": "other_man"
+    },
+    {
+      "start": 24.082,
+      "end": 24.422,
+      "text": "Nothing?",
+      "words": [
+        {
+          "word": "Nothing?",
+          "start": 24.082,
+          "end": 24.422,
+          "score": 0.384
+        }
+      ],
+      "speaker": "other_man"
+    },
+    {
+      "start": 26.564,
+      "end": 28.365,
+      "text": "He's tied up lying face down.",
+      "words": [
+        {
+          "word": "He's",
+          "start": 26.564,
+          "end": 26.764,
+          "score": 0.804
+        },
+        {
+          "word": "tied",
+          "start": 26.824,
+          "end": 27.104,
+          "score": 0.745
+        },
+        {
+          "word": "up",
+          "start": 27.184,
+          "end": 27.284,
+          "score": 0.672
+        },
+        {
+          "word": "lying",
+          "start": 27.344,
+          "end": 27.625,
+          "score": 0.383
+        },
+        {
+          "word": "face",
+          "start": 27.725,
+          "end": 28.005,
+          "score": 0.961
+        },
+        {
+          "word": "down.",
+          "start": 28.065,
+          "end": 28.365,
+          "score": 0.867
+        }
+      ],
+      "speaker": "other_man"
+    },
+    {
+      "start": 29.106,
+      "end": 29.466,
+      "text": "Nothing.",
+      "words": [
+        {
+          "word": "Nothing.",
+          "start": 29.106,
+          "end": 29.466,
+          "score": 0.693
+        }
+      ],
+      "speaker": "other_man"
+    },
+    {
+      "start": 30.73,
+      "end": 34.654,
+      "text": "Is this what you had!\".",
+      "words": [
+        {
+          "word": "Is",
+          "start": 30.73,
+          "end": 30.83,
+          "score": 0.682
+        },
+        {
+          "word": "this",
+          "start": 30.85,
+          "end": 31.03,
+          "score": 0.773
+        },
+        {
+          "word": "what",
+          "start": 31.07,
+          "end": 31.17,
+          "score": 0.915
+        },
+        {
+          "word": "you",
+          "start": 31.19,
+          "end": 31.311,
+          "score": 0.726
+        },
+        {
+          "word": "had!\".",
+          "start": 31.331,
+          "end": 34.654,
+          "score": 0.773
+        }
+      ],
+      "speaker": "other_man"
+    },
+    {
+      "start": 34.674,
+      "end": 36.956,
+      "text": "We got enough to stick you away for three years right now.",
+      "words": [
+        {
+          "word": "We",
+          "start": 34.674,
+          "end": 34.774,
+          "score": 0.942
+        },
+        {
+          "word": "got",
+          "start": 34.814,
+          "end": 34.954,
+          "score": 0.938
+        },
+        {
+          "word": "enough",
+          "start": 34.974,
+          "end": 35.114,
+          "score": 0.178
+        },
+        {
+          "word": "to",
+          "start": 35.134,
+          "end": 35.234,
+          "score": 0.692
+        },
+        {
+          "word": "stick",
+          "start": 35.274,
+          "end": 35.475,
+          "score": 0.98
+        },
+        {
+          "word": "you",
+          "start": 35.515,
+          "end": 35.575,
+          "score": 0.307
+        },
+        {
+          "word": "away",
+          "start": 35.615,
+          "end": 35.795,
+          "score": 0.925
+        },
+        {
+          "word": "for",
+          "start": 35.835,
+          "end": 35.955,
+          "score": 0.758
+        },
+        {
+          "word": "three",
+          "start": 35.995,
+          "end": 36.215,
+          "score": 0.882
+        },
+        {
+          "word": "years",
+          "start": 36.235,
+          "end": 36.455,
+          "score": 0.817
+        },
+        {
+          "word": "right",
+          "start": 36.516,
+          "end": 36.696,
+          "score": 0.894
+        },
+        {
+          "word": "now.",
+          "start": 36.756,
+          "end": 36.956,
+          "score": 0.973
+        }
+      ],
+      "speaker": "other_man"
+    },
+    {
+      "start": 37.316,
+      "end": 38.838,
+      "text": "It's as tight as a chicken's ass.",
+      "words": [
+        {
+          "word": "It's",
+          "start": 37.316,
+          "end": 37.516,
+          "score": 0.361
+        },
+        {
+          "word": "as",
+          "start": 37.537,
+          "end": 37.577,
+          "score": 0.006
+        },
+        {
+          "word": "tight",
+          "start": 37.617,
+          "end": 37.857,
+          "score": 0.488
+        },
+        {
+          "word": "as",
+          "start": 37.897,
+          "end": 37.957,
+          "score": 0.781
+        },
+        {
+          "word": "a",
+          "start": 38.017,
+          "end": 38.077,
+          "score": 0.588
+        },
+        {
+          "word": "chicken's",
+          "start": 38.117,
+          "end": 38.477,
+          "score": 0.685
+        },
+        {
+          "word": "ass.",
+          "start": 38.678,
+          "end": 38.838,
+          "score": 0.78
+        }
+      ],
+      "speaker": "other_man"
+    },
+    {
+      "start": 39.298,
+      "end": 40.579,
+      "text": "And you want to do yourself a favor?",
+      "words": [
+        {
+          "word": "And",
+          "start": 39.298,
+          "end": 39.378,
+          "score": 0.231
+        },
+        {
+          "word": "you",
+          "start": 39.398,
+          "end": 39.478,
+          "score": 0.827
+        },
+        {
+          "word": "want",
+          "start": 39.498,
+          "end": 39.578,
+          "score": 0.748
+        },
+        {
+          "word": "to",
+          "start": 39.598,
+          "end": 39.659,
+          "score": 0.136
+        },
+        {
+          "word": "do",
+          "start": 39.679,
+          "end": 39.759,
+          "score": 0.543
+        },
+        {
+          "word": "yourself",
+          "start": 39.779,
+          "end": 40.119,
+          "score": 0.365
+        },
+        {
+          "word": "a",
+          "start": 40.139,
+          "end": 40.219,
+          "score": 0.472
+        },
+        {
+          "word": "favor?",
+          "start": 40.239,
+          "end": 40.579,
+          "score": 0.601
+        }
+      ],
+      "speaker": "other_man"
+    },
+    {
+      "start": 41.961,
+      "end": 42.421,
+      "text": "Hey, listen.",
+      "words": [
+        {
+          "word": "Hey,",
+          "start": 41.961,
+          "end": 42.081,
+          "score": 0.607
+        },
+        {
+          "word": "listen.",
+          "start": 42.101,
+          "end": 42.421,
+          "score": 0.888
+        }
+      ],
+      "speaker": "other_man"
+    },
+    {
+      "start": 43.582,
+      "end": 44.523,
+      "text": "This guy cruised me.",
+      "words": [
+        {
+          "word": "This",
+          "start": 43.582,
+          "end": 43.722,
+          "score": 0.662
+        },
+        {
+          "word": "guy",
+          "start": 43.782,
+          "end": 43.963,
+          "score": 0.754
+        },
+        {
+          "word": "cruised",
+          "start": 44.003,
+          "end": 44.343,
+          "score": 0.596
+        },
+        {
+          "word": "me.",
+          "start": 44.383,
+          "end": 44.523,
+          "score": 0.977
+        }
+      ],
+      "speaker": "other_man"
+    },
+    {
+      "start": 45.144,
+      "end": 45.764,
+      "text": "I didn't even know him.",
+      "words": [
+        {
+          "word": "I",
+          "start": 45.144,
+          "end": 45.204,
+          "score": 0.802
+        },
+        {
+          "word": "didn't",
+          "start": 45.224,
+          "end": 45.364,
+          "score": 0.087
+        },
+        {
+          "word": "even",
+          "start": 45.384,
+          "end": 45.464,
+          "score": 0.207
+        },
+        {
+          "word": "know",
+          "start": 45.484,
+          "end": 45.624,
+          "score": 0.457
+        },
+        {
+          "word": "him.",
+          "start": 45.664,
+          "end": 45.764,
+          "score": 0.291
+        }
+      ],
+      "speaker": "other_man"
+    },
+    {
+      "start": 45.784,
+      "end": 46.985,
+      "text": "I didn't even know his name.",
+      "words": [
+        {
+          "word": "I",
+          "start": 45.784,
+          "end": 45.804,
+          "score": 0.001
+        },
+        {
+          "word": "didn't",
+          "start": 46.165,
+          "end": 46.305,
+          "score": 0.085
+        },
+        {
+          "word": "even",
+          "start": 46.345,
+          "end": 46.425,
+          "score": 0.129
+        },
+        {
+          "word": "know",
+          "start": 46.445,
+          "end": 46.565,
+          "score": 0.41
+        },
+        {
+          "word": "his",
+          "start": 46.585,
+          "end": 46.685,
+          "score": 0.172
+        },
+        {
+          "word": "name.",
+          "start": 46.725,
+          "end": 46.985,
+          "score": 0.654
+        }
+      ],
+      "speaker": "other_man"
+    },
+    {
+      "start": 47.606,
+      "end": 49.168,
+      "text": "He got me to go up to his room with him.",
+      "words": [
+        {
+          "word": "He",
+          "start": 47.606,
+          "end": 47.806,
+          "score": 0.578
+        },
+        {
+          "word": "got",
+          "start": 47.826,
+          "end": 47.946,
+          "score": 0.631
+        },
+        {
+          "word": "me",
+          "start": 47.966,
+          "end": 48.067,
+          "score": 0.617
+        },
+        {
+          "word": "to",
+          "start": 48.087,
+          "end": 48.127,
+          "score": 0.201
+        },
+        {
+          "word": "go",
+          "start": 48.147,
+          "end": 48.207,
+          "score": 0.116
+        },
+        {
+          "word": "up",
+          "start": 48.227,
+          "end": 48.287,
+          "score": 0.259
+        },
+        {
+          "word": "to",
+          "start": 48.307,
+          "end": 48.347,
+          "score": 0.002
+        },
+        {
+          "word": "his",
+          "start": 48.387,
+          "end": 48.587,
+          "score": 0.596
+        },
+        {
+          "word": "room",
+          "start": 48.627,
+          "end": 48.767,
+          "score": 0.492
+        },
+        {
+          "word": "with",
+          "start": 48.787,
+          "end": 48.927,
+          "score": 0.471
+        },
+        {
+          "word": "him.",
+          "start": 48.967,
+          "end": 49.168,
+          "score": 0.81
+        }
+      ],
+      "speaker": "other_man"
+    },
+    {
+      "start": 49.188,
+      "end": 50.389,
+      "text": "That's bullshit.",
+      "words": [
+        {
+          "word": "That's",
+          "start": 49.188,
+          "end": 49.668,
+          "score": 0.522
+        },
+        {
+          "word": "bullshit.",
+          "start": 49.748,
+          "end": 50.389,
+          "score": 0.864
+        }
+      ],
+      "speaker": "other_man"
+    },
+    {
+      "start": 50.429,
+      "end": 50.909,
+      "text": "Is that right?",
+      "words": [
+        {
+          "word": "Is",
+          "start": 50.429,
+          "end": 50.509,
+          "score": 0.82
+        },
+        {
+          "word": "that",
+          "start": 50.549,
+          "end": 50.689,
+          "score": 0.902
+        },
+        {
+          "word": "right?",
+          "start": 50.729,
+          "end": 50.909,
+          "score": 0.915
+        }
+      ],
+      "speaker": "other_man"
+    },
+    {
+      "start": 50.929,
+      "end": 52.711,
+      "text": "I told you it was my room.",
+      "words": [
+        {
+          "word": "I",
+          "start": 50.929,
+          "end": 50.949,
+          "score": 0.0
+        },
+        {
+          "word": "told",
+          "start": 51.61,
+          "end": 51.77,
+          "score": 0.312
+        },
+        {
+          "word": "you",
+          "start": 51.79,
+          "end": 51.93,
+          "score": 0.268
+        },
+        {
+          "word": "it",
+          "start": 51.95,
+          "end": 52.07,
+          "score": 0.372
+        },
+        {
+          "word": "was",
+          "start": 52.09,
+          "end": 52.23,
+          "score": 0.619
+        },
+        {
+          "word": "my",
+          "start": 52.271,
+          "end": 52.451,
+          "score": 0.889
+        },
+        {
+          "word": "room.",
+          "start": 52.491,
+          "end": 52.711,
+          "score": 0.813
+        }
+      ],
+      "speaker": "other_man"
+    },
+    {
+      "start": 53.552,
+      "end": 54.873,
+      "text": "That's all I'm going to tell you.",
+      "words": [
+        {
+          "word": "That's",
+          "start": 53.552,
+          "end": 53.692,
+          "score": 0.342
+        },
+        {
+          "word": "all",
+          "start": 53.712,
+          "end": 53.792,
+          "score": 0.164
+        },
+        {
+          "word": "I'm",
+          "start": 53.832,
+          "end": 53.952,
+          "score": 0.181
+        },
+        {
+          "word": "going",
+          "start": 53.972,
+          "end": 54.152,
+          "score": 0.307
+        },
+        {
+          "word": "to",
+          "start": 54.192,
+          "end": 54.312,
+          "score": 0.716
+        },
+        {
+          "word": "tell",
+          "start": 54.352,
+          "end": 54.513,
+          "score": 0.473
+        },
+        {
+          "word": "you.",
+          "start": 54.773,
+          "end": 54.873,
+          "score": 0.18
+        }
+      ],
+      "speaker": "other_man"
+    },
+    {
+      "start": 54.893,
+      "end": 55.714,
+      "text": "I want to see him with you.",
+      "words": [
+        {
+          "word": "I",
+          "start": 54.893,
+          "end": 54.913,
+          "score": 0.0
+        },
+        {
+          "word": "want",
+          "start": 54.933,
+          "end": 55.073,
+          "score": 0.315
+        },
+        {
+          "word": "to",
+          "start": 55.093,
+          "end": 55.213,
+          "score": 0.63
+        },
+        {
+          "word": "see",
+          "start": 55.233,
+          "end": 55.293,
+          "score": 0.014
+        },
+        {
+          "word": "him",
+          "start": 55.313,
+          "end": 55.434,
+          "score": 0.372
+        },
+        {
+          "word": "with",
+          "start": 55.454,
+          "end": 55.534,
+          "score": 0.003
+        },
+        {
+          "word": "you.",
+          "start": 55.574,
+          "end": 55.714,
+          "score": 0.56
+        }
+      ],
+      "speaker": "other_man"
+    },
+    {
+      "start": 69.222,
+      "end": 69.995,
+      "text": "I'll show you his knife.",
+      "words": [
+        {
+          "word": "I'll",
+          "start": 69.222,
+          "end": 69.303,
+          "score": 0.0
+        },
+        {
+          "word": "show",
+          "start": 69.324,
+          "end": 69.405,
+          "score": 0.002
+        },
+        {
+          "word": "you",
+          "start": 69.425,
+          "end": 69.527,
+          "score": 0.548
+        },
+        {
+          "word": "his",
+          "start": 69.568,
+          "end": 69.69,
+          "score": 0.69
+        },
+        {
+          "word": "knife.",
+          "start": 69.751,
+          "end": 69.995,
+          "score": 0.918
+        }
+      ],
+      "note": "Long-file pass truncated this to \"I'll show you his!\". Text and word times are from a focused WhisperX pass on 68.9–70.6s.",
+      "speaker": "hat_man"
+    },
+    {
+      "start": 71.336,
+      "end": 72.136,
+      "text": "What did he hit me for?",
+      "words": [
+        {
+          "word": "What",
+          "start": 71.336,
+          "end": 71.456,
+          "score": 0.71
+        },
+        {
+          "word": "did",
+          "start": 71.476,
+          "end": 71.576,
+          "score": 0.064
+        },
+        {
+          "word": "he",
+          "start": 71.616,
+          "end": 71.716,
+          "score": 0.566
+        },
+        {
+          "word": "hit",
+          "start": 71.776,
+          "end": 71.836,
+          "score": 0.154
+        },
+        {
+          "word": "me",
+          "start": 71.876,
+          "end": 71.916,
+          "score": 0.03
+        },
+        {
+          "word": "for?",
+          "start": 71.936,
+          "end": 72.136,
+          "score": 0.688
+        }
+      ],
+      "speaker": "other_man",
+      "speaker_note": "ECAPA cosine to the 69.2s line is negative, so this is not the hat man's voice."
+    },
+    {
+      "start": 72.176,
+      "end": 73.017,
+      "text": "Who paid for the room?",
+      "words": [
+        {
+          "word": "Who",
+          "start": 72.176,
+          "end": 72.316,
+          "score": 0.491
+        },
+        {
+          "word": "paid",
+          "start": 72.337,
+          "end": 72.517,
+          "score": 0.531
+        },
+        {
+          "word": "for",
+          "start": 72.557,
+          "end": 72.657,
+          "score": 0.536
+        },
+        {
+          "word": "the",
+          "start": 72.677,
+          "end": 72.737,
+          "score": 0.616
+        },
+        {
+          "word": "room?",
+          "start": 72.757,
+          "end": 73.017,
+          "score": 0.713
+        }
+      ],
+      "speaker": "other_man"
+    },
+    {
+      "start": 74.478,
+      "end": 75.059,
+      "text": "What was that?",
+      "words": [
+        {
+          "word": "What",
+          "start": 74.478,
+          "end": 74.638,
+          "score": 0.783
+        },
+        {
+          "word": "was",
+          "start": 74.678,
+          "end": 74.799,
+          "score": 0.612
+        },
+        {
+          "word": "that?",
+          "start": 74.839,
+          "end": 75.059,
+          "score": 0.855
+        }
+      ],
+      "speaker": "other_man"
+    },
+    {
+      "start": 75.079,
+      "end": 75.919,
+      "text": "Who paid for the room?",
+      "words": [
+        {
+          "word": "Who",
+          "start": 75.079,
+          "end": 75.239,
+          "score": 0.282
+        },
+        {
+          "word": "paid",
+          "start": 75.299,
+          "end": 75.479,
+          "score": 0.507
+        },
+        {
+          "word": "for",
+          "start": 75.499,
+          "end": 75.599,
+          "score": 0.299
+        },
+        {
+          "word": "the",
+          "start": 75.619,
+          "end": 75.679,
+          "score": 0.649
+        },
+        {
+          "word": "room?",
+          "start": 75.699,
+          "end": 75.919,
+          "score": 0.633
+        }
+      ],
+      "speaker": "other_man"
+    },
+    {
+      "start": 76.78,
+      "end": 77.621,
+      "text": "What did he hit me for?",
+      "words": [
+        {
+          "word": "What",
+          "start": 76.78,
+          "end": 76.9,
+          "score": 0.853
+        },
+        {
+          "word": "did",
+          "start": 76.92,
+          "end": 76.98,
+          "score": 0.004
+        },
+        {
+          "word": "he",
+          "start": 77.0,
+          "end": 77.04,
+          "score": 0.272
+        },
+        {
+          "word": "hit",
+          "start": 77.06,
+          "end": 77.201,
+          "score": 0.577
+        },
+        {
+          "word": "me",
+          "start": 77.221,
+          "end": 77.321,
+          "score": 0.896
+        },
+        {
+          "word": "for?",
+          "start": 77.381,
+          "end": 77.621,
+          "score": 0.883
+        }
+      ],
+      "speaker": "other_man",
+      "speaker_note": "ECAPA cosine to the 69.2s line is negative, so this is not the hat man's voice."
+    },
+    {
+      "start": 77.681,
+      "end": 78.702,
+      "text": "Who paid for the room?",
+      "words": [
+        {
+          "word": "Who",
+          "start": 77.681,
+          "end": 77.881,
+          "score": 0.609
+        },
+        {
+          "word": "paid",
+          "start": 77.901,
+          "end": 78.161,
+          "score": 0.672
+        },
+        {
+          "word": "for",
+          "start": 78.201,
+          "end": 78.321,
+          "score": 0.874
+        },
+        {
+          "word": "the",
+          "start": 78.342,
+          "end": 78.402,
+          "score": 0.914
+        },
+        {
+          "word": "room?",
+          "start": 78.462,
+          "end": 78.702,
+          "score": 0.558
+        }
+      ],
+      "speaker": "other_man"
+    },
+    {
+      "start": 78.722,
+      "end": 79.643,
+      "text": "I told you I did!",
+      "words": [
+        {
+          "word": "I",
+          "start": 78.722,
+          "end": 78.802,
+          "score": 0.5
+        },
+        {
+          "word": "told",
+          "start": 78.822,
+          "end": 78.982,
+          "score": 0.446
+        },
+        {
+          "word": "you",
+          "start": 79.002,
+          "end": 79.062,
+          "score": 0.011
+        },
+        {
+          "word": "I",
+          "start": 79.222,
+          "end": 79.342,
+          "score": 0.797
+        },
+        {
+          "word": "did!",
+          "start": 79.402,
+          "end": 79.643,
+          "score": 0.416
+        }
+      ],
+      "speaker": "other_man"
+    },
+    {
+      "start": 79.683,
+      "end": 80.223,
+      "text": "He did, man!",
+      "words": [
+        {
+          "word": "He",
+          "start": 79.683,
+          "end": 79.843,
+          "score": 0.62
+        },
+        {
+          "word": "did,",
+          "start": 79.883,
+          "end": 80.083,
+          "score": 0.362
+        },
+        {
+          "word": "man!",
+          "start": 80.143,
+          "end": 80.223,
+          "score": 0.01
+        }
+      ],
+      "speaker": "other_man"
+    },
+    {
+      "start": 80.263,
+      "end": 85.788,
+      "text": "All right, let's separate these two girls.",
+      "words": [
+        {
+          "word": "All",
+          "start": 80.263,
+          "end": 80.423,
+          "score": 0.275
+        },
+        {
+          "word": "right,",
+          "start": 83.486,
+          "end": 83.726,
+          "score": 0.402
+        },
+        {
+          "word": "let's",
+          "start": 84.627,
+          "end": 84.807,
+          "score": 0.198
+        },
+        {
+          "word": "separate",
+          "start": 84.827,
+          "end": 85.187,
+          "score": 0.918
+        },
+        {
+          "word": "these",
+          "start": 85.207,
+          "end": 85.327,
+          "score": 0.283
+        },
+        {
+          "word": "two",
+          "start": 85.347,
+          "end": 85.487,
+          "score": 0.899
+        },
+        {
+          "word": "girls.",
+          "start": 85.527,
+          "end": 85.788,
+          "score": 0.79
+        }
+      ],
+      "speaker": "other_man"
+    },
+    {
+      "start": 88.97,
+      "end": 93.254,
+      "text": "Come on, get in there.",
+      "words": [
+        {
+          "word": "Come",
+          "start": 88.97,
+          "end": 89.191,
+          "score": 0.636
+        },
+        {
+          "word": "on,",
+          "start": 92.553,
+          "end": 92.673,
+          "score": 0.591
+        },
+        {
+          "word": "get",
+          "start": 92.713,
+          "end": 92.854,
+          "score": 0.473
+        },
+        {
+          "word": "in",
+          "start": 92.914,
+          "end": 92.994,
+          "score": 0.412
+        },
+        {
+          "word": "there.",
+          "start": 93.034,
+          "end": 93.254,
+          "score": 0.536
+        }
+      ],
+      "speaker": "other_man"
+    },
+    {
+      "start": 98.914,
+      "end": 99.941,
+      "text": "You came in too soon!",
+      "words": [
+        {
+          "word": "You",
+          "start": 98.914,
+          "end": 98.995,
+          "score": 0.166
+        },
+        {
+          "word": "came",
+          "start": 99.015,
+          "end": 99.095,
+          "score": 0.227
+        },
+        {
+          "word": "in",
+          "start": 99.156,
+          "end": 99.236,
+          "score": 0.954
+        },
+        {
+          "word": "too",
+          "start": 99.277,
+          "end": 99.458,
+          "score": 0.736
+        },
+        {
+          "word": "soon!\"",
+          "start": 99.559,
+          "end": 99.941,
+          "score": 0.663
+        }
+      ],
+      "speaker": "other_man"
+    }
+  ]
+}
