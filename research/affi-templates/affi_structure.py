@@ -1483,6 +1483,33 @@ def _label_names(cast: Mapping[str, dict[str, str] | None]) -> dict[str, str]:
     return found
 
 
+def slot_preview(pack: Mapping[str, Any]) -> list[str]:
+    """What each slot becomes in the H3 prompt, one line per slot."""
+    slots = pack["slots"]
+    animals = slots.get("animals") or {}
+    labeled = [
+        ("人", slots.get("person")),
+        (f"{ROLE_JA['guest']}の動物", animals.get("guest")),
+        (f"{ROLE_JA['retort']}の動物", animals.get("retort")),
+        (f"{ROLE_JA['polite']}の動物", animals.get("polite")),
+        ("場所", slots.get("place")),
+    ]
+    out = []
+    for label, value in labeled:
+        text = str(value or "").strip()
+        if not text or text == SLOT:
+            shown = "入力のまま"
+        elif text == NOT_SHOWN and label != "場所":
+            shown = "出さない（プロンプトに入れない）"
+        else:
+            try:
+                shown = slot_english(text)[0]
+            except ValueError:
+                shown = "英語にできない（止まる）"
+        out.append(f"{label} → {shown}")
+    return out
+
+
 def slot_reasons(pack: Mapping[str, Any]) -> list[str]:
     """Filled slots that cannot go to H3 in English, and hidden roles the sheet still shows."""
     reasons: list[str] = []

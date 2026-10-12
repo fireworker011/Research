@@ -133,9 +133,24 @@ REF2VA_STEPS = (
     (311, 320),
     (345, 288),
 )
+# (largest aligned frames, width, height) of a 9:16 T2VA or FL2VA request.
+# Same as h3_runner.planner.choose_short_edges, kept here for 「実行」 before h3-runner is cloned.
+T2VA_STEPS = (
+    (158, 768, 1344),
+    (175, 736, 1312),
+    (192, 704, 1280),
+    (209, 672, 1184),
+    (226, 640, 1152),
+    (260, 608, 1088),
+    (294, 576, 1024),
+    (328, 544, 960),
+    (345, 512, 928),
+)
+# The branch Colab loads and bakes from. The notebook links point here too.
+BRANCH = "cursor/affi-sheet-bugs-44d6"
 NOTEBOOK_URL = (
     "https://colab.research.google.com/github/fireworker011/Research/"
-    "blob/cursor/affi-template-bake-44d6/research/affi-templates/affi.ipynb"
+    f"blob/{BRANCH}/research/affi-templates/affi.ipynb"
 )
 # Short fills for the form. The source account's face, lines, and song titles stay out.
 _FILL_NOTE = "型の絵とカメラ。元の顔、元の台詞、曲名は入れない。"
@@ -891,6 +906,8 @@ def run_choice(
             bgm,
             out_dir,
             sheet_pack,
+            split=resolve_split(split),
+            role_images=sheet_images,
         )
     if kind == "homage":
         return _run_homage(
@@ -1258,6 +1275,19 @@ def _request_seconds(trim_s: float) -> float:
     if trim_s < MIN_DURATION_S:
         return float(MIN_DURATION_S)
     return float(trim_s)
+
+
+def _request_frames(trim_s: float) -> int:
+    return affi_media.align_frames(frames_for_seconds(_request_seconds(trim_s)))
+
+
+def sheet_canvas(request_s: float) -> tuple[int, int]:
+    """Width and height H3 picks for one 9:16 T2VA or FL2VA request of this length."""
+    frames = affi_media.align_frames(frames_for_seconds(request_s))
+    for max_frames, width, height in T2VA_STEPS:
+        if frames <= max_frames:
+            return width, height
+    raise ValueError(f"H3 が受け取れない秒数: {request_s}")
 
 
 def _contiguous_from_zero(cuts: Sequence[Mapping[str, Any]]) -> bool:
@@ -1698,11 +1728,14 @@ def _write_finish(
 def _shot_groups(
     shots: Sequence[Mapping[str, Any]],
     still_of: Any = None,
+    max_frames: int | None = None,
 ) -> list[list[Mapping[str, Any]]]:
     """Consecutive shots. Each group is one H3 request, or one shot that must be split.
 
     ``still_of`` splits a group when the next shot needs a different still.
-    H3 takes one ``--image`` per request.
+    H3 takes one ``--image`` per request. ``max_frames`` stops adding shots once
+    the request would pass that many frames, so the canvas stays that size.
+    A single shot longer than that stays one request.
     """
     groups: list[list[Mapping[str, Any]]] = []
     index = 0
@@ -1715,6 +1748,8 @@ def _shot_groups(
                 break
             span = round(float(shots[end]["end_s"]) - float(shots[index]["start_s"]), 3)
             if span > MAX_DURATION_S:
+                break
+            if max_frames is not None and end > index and _request_frames(span) > max_frames:
                 break
             if len(split_trim(span)) == 1:
                 best = end
@@ -1762,8 +1797,15 @@ def _job_from_pack(
     *,
     stills: Mapping[str, str] | None = None,
     extra: Mapping[str, Any] | None = None,
+    each_shot: bool = True,
+    max_frames: int | None = None,
 ) -> dict[str, Any]:
-    """Picture clips for one filled sheet. H3 does not get the spoken line."""
+    """Picture clips for one filled sheet. H3 does not get the spoken line.
+
+    With ``stills`` each range takes the speaking role's still. ``each_shot``
+    keeps every shot its own range (homage). Otherwise shots that share a still
+    stay together, up to ``max_frames`` per request.
+    """
     use_stills = stills is not None
     still_map = dict(stills or {})
 
@@ -1771,12 +1813,18 @@ def _job_from_pack(
         """Homage keeps each measured cut as its own join. A shared still does not merge shots."""
         return str(shot["id"])
 
+    def shot_still(shot: Mapping[str, Any]) -> str:
+        return _still_for(shot, filled["captions"], still_map)
+
     notes: list[str] = []
-    if use_stills and any(len(shot.get("on_screen") or []) > 1 for shot in filled["shots"]):
+    if use_stills and (each_shot or still_map) and any(len(shot.get("on_screen") or []) > 1 for shot in filled["shots"]):
         notes.append(_ONE_STILL)
     clips: list[dict[str, Any]] = []
     serial = 1
-    for group in _shot_groups(filled["shots"], shot_alone if use_stills else None):
+    grouping = None
+    if use_stills:
+        grouping = shot_alone if each_shot else shot_still
+    for group in _shot_groups(filled["shots"], grouping, max_frames):
         cursor = float(group[0]["start_s"])
         span = round(float(group[-1]["end_s"]) - cursor, 3)
         pieces = split_trim(span)
@@ -1805,6 +1853,7 @@ def _job_from_pack(
                 "part_count": len(pieces),
                 "start_s": round(cursor, 3),
                 "end_s": end_s,
+                "canvas": list(sheet_canvas(request_s)),
             }
             if use_stills:
                 clip["image"] = still
@@ -1884,19 +1933,57 @@ def plan_sheet(
     image: str | None = None,
     bgm: str = "",
     pack_path: str = "",
+    split: str = "fewer",
+    role_images: Mapping[str, str] | None = None,
 ) -> dict[str, Any]:
-    """One sheet job. An empty path is the 71.552s sheet. H3 gets the picture only."""
+    """One sheet job. An empty path is the 71.552s sheet. H3 gets the picture only.
+
+    ``split`` "quality" keeps each request inside the largest canvas
+    (``T2VA_STEPS[0]``), the size the 768p Turbo LoRA was trained at. "fewer"
+    joins shots up to H3's longest request. Role stills, when given, replace the
+    single ``image``: each range starts from its speaking role's still.
+    """
     pack = structure.load(structure.pack_file(pack_path))
     spoken = structure.parse_lines(structure.stock_lines(pack_path, lines_text), [row["id"] for row in pack["captions"]])
     filled = structure.fill(pack, person=person, animals=animals, place=place, lines=spoken)
     reasons = structure.blocked(filled)
     image_text = (image or "").strip()
     bgm_text = str(bgm or "").strip()
+    stills: dict[str, str] = {}
+    for role, raw in dict(role_images or {}).items():
+        text = str(raw or "").strip()
+        if not text:
+            continue
+        if not Path(text).is_file():
+            reasons.append(f"{structure.ROLE_JA.get(str(role), role)}の静止画のファイルが無い。場所を直すか、欄を空にする。")
+            continue
+        stills[str(role)] = text
+    if stills:
+        image_text = ""
     if image_text and not Path(image_text).is_file():
         reasons.append("静止画のファイルが無い。場所を直すか、欄を空にする。")
     if bgm_text and not Path(bgm_text).is_file():
         reasons.append("曲のファイルが無い。場所を直すか、欄を空にする。")
-    return _job_from_pack(filled, reasons, image_text, bgm_text)
+    job = _job_from_pack(
+        filled,
+        reasons,
+        image_text,
+        bgm_text,
+        stills=stills or None,
+        each_shot=False,
+        max_frames=T2VA_STEPS[0][0] if split == "quality" else None,
+    )
+    job["split"] = split
+    return job
+
+
+def _canvas_text(clips: Sequence[Mapping[str, Any]]) -> str:
+    counts: dict[str, int] = {}
+    for clip in clips:
+        width, height = clip.get("canvas") or sheet_canvas(float(clip["request_s"]))
+        key = f"{width}x{height}"
+        counts[key] = counts.get(key, 0) + 1
+    return "、".join(f"{key} が {count} 本" for key, count in counts.items())
 
 
 def _run_sheet(
@@ -1908,6 +1995,8 @@ def _run_sheet(
     bgm: str,
     out_dir: str | Path | None,
     pack_path: str = "",
+    split: str = "fewer",
+    role_images: Mapping[str, str] | None = None,
 ) -> str:
     try:
         job = plan_sheet(
@@ -1918,6 +2007,8 @@ def _run_sheet(
             image=image,
             bgm=bgm,
             pack_path=pack_path,
+            split=split,
+            role_images=role_images,
         )
     except ValueError as exc:
         return f"止まった: {exc}"
@@ -1930,11 +2021,14 @@ def _run_sheet(
         f"status={job['status']}",
         f"書いた {path.parent}",
     ]
+    lines.extend(job.get("notes") or [])
     lines.extend(job["blocked"])
     if job["status"] == "ready":
-        lines.append(f"範囲 {len(job['clips'])} 本。次は「焼く」。絵のあと「仕上げ」。")
+        how = "画質優先" if split == "quality" else "本数を減らす"
+        lines.append(f"範囲 {len(job['clips'])} 本（{how}）。H3 の画角は {_canvas_text(job['clips'])}。つなぐときに 1080x1920 へ広げる。")
+        lines.append("次は「焼く」。絵のあと「仕上げ」。")
     else:
-        lines.append("空の欄があるので焼かない。")
+        lines.append("止まる理由があるので焼かない。")
     lines.append("mp4 は焼いていない。投稿していない。")
     return "\n".join(lines)
 
@@ -3110,7 +3204,8 @@ def choice_cell() -> str:
             "#@markdown 元動画を再現するときは、mp4 の場所を書く。空なら動かない。カメラ、カット、声、曲は、そのファイルが持つ。読めたせりふは口がその文だけを作る。FL2VA の Turbo は載せない。",
             "#@markdown mp4の構成で差し替えるときも、同じ欄に mp4 を書く。使うのはカットと、せりふの秒と話者だけ。絵、顔、場所、せりふの文は使わない。",
             '元動画 = "" #@param {type:"string"}',
-            "#@markdown 元動画の範囲の切り方。画質優先は短く切って画角を上げる。本数は増える。本数を減らすは長く切る。画角は下がる。",
+            "#@markdown 範囲の切り方。元動画を再現と構成のまま1本で使う。画質優先は短く切って画角を上げる。本数は増える。本数を減らすは長く切る。画角は下がる。",
+            "#@markdown 構成のまま1本の画質優先は、1本 158 コマまでで 768x1344（Turbo の学習サイズ）。本数を減らすは 15 秒までつなぐ。給水なら 544x960 が 4 本。",
             f"範囲の切り方 = {_py(SPLIT_CHOICES[0][0])} #@param {_param_list([text for text, _key in SPLIT_CHOICES])}",
             "#@markdown 話でジョブを書くときだけ。自分の曲を重ねるときは、その音声ファイルの場所。空なら曲は型のまま。",
             '曲 = "" #@param {type:"string"}',
@@ -3427,7 +3522,7 @@ else:
                         raise ValueError(f"マイドライブをマウントできなかった。{exc}") from exc
                     print("今マウントしたアカウントのマイドライブに保存します。")
                     root = Path("/content/Research")
-                    affi_bake.sync_repo(root, "cursor/affi-sheet-bugs-44d6", "https://github.com/fireworker011/Research.git")
+                    affi_bake.sync_repo(root, "__BRANCH__", "https://github.com/fireworker011/Research.git")
                     sys.path.insert(0, str(root / "h3-runner"))
                     sys.path.insert(0, str(root / "research" / "affi-templates"))
                     import importlib
@@ -3558,7 +3653,7 @@ else:
                 print("止まった:", exc)
             except Exception as exc:
                 print(f"止まった: {type(exc).__name__}: {exc}")
-"""
+""".replace("__BRANCH__", BRANCH)
 
 
 def sheet_form_cell() -> str:
@@ -3576,15 +3671,17 @@ def sheet_form_cell() -> str:
 #@markdown 初期値は給水。人、動物、場所、セリフは入っている。給水は stories/pet_sheet.yaml。
 #@markdown 構成は stories/INDEX.md の名前。71.552秒は固定のシート。パスも書ける。行を足してノートを作り直すと、この欄に増える。mp4の構成で差し替えるときは、構成欄は使わない。
 #@markdown セリフが空で、構成が台本の名前なら、その _lines.txt を読む。書いたセリフが優先。mp4の構成では、空のセリフは読まない。
-#@markdown 静止画は役ごと。空ならその役は文章から焼く。H3 の画像は1枚なので、話している役の画像だけをその範囲に使う。
+#@markdown 静止画は役ごと。構成のまま1本でも、mp4の構成で差し替えるでも使う。空ならその役は文章から焼く。H3 の画像は1枚なので、話している役の画像だけをその範囲の最初のコマに使う。
 #@markdown 空は入力のまま。元の顔、元の動物、元のセリフは書かない。ここは焼かない。
+#@markdown 人、動物、場所は英語にして H3 に渡す。下に、渡す英語が出る。表に無い日本語は止まる。英語で書けばそのまま渡す。「出さない」の役はプロンプトに入れない。
+#@markdown 場所は場所だけ書く。水入れやプールのような小物は、ショットの絵に書いてある。場所に書くと全部のショットに出る。
 {body}
 構成 = "給水" #@param {menu} {{allow-input: true}}
 人 = "20代後半の成人の女性。ゆるい部屋着。髪はひとつ結び" #@param {{type:"string"}}
 客の動物 = "出さない" #@param {{type:"string"}}
 ツッコミの動物 = "グレーのマンチカン" #@param {{type:"string"}}
 丁寧の動物 = "白いスコティッシュフォールド" #@param {{type:"string"}}
-場所 = "真夏の庭。空の水入れと小さなビニールプール" #@param {{type:"string"}}
+場所 = "真夏の庭" #@param {{type:"string"}}
 セリフ = {_py(lines)} #@param {{type:"raw"}}
 客の静止画 = "" #@param {{type:"string"}}
 ツッコミの静止画 = "" #@param {{type:"string"}}
@@ -3606,12 +3703,15 @@ try:
 except ValueError as exc:
     print("止まった:", exc)
 else:
+    print("H3 に渡す英語:")
+    for line in structure.slot_preview(filled):
+        print(" ", line)
     reasons = structure.blocked(filled)
-    print(f"未入力 {{len(reasons)}} 件")
+    print(f"止まる理由 {{len(reasons)}} 件")
     for reason in reasons:
         print(reason)
     if reasons:
-        print("空の欄があるので、実行しても焼かない。")
+        print("止まる理由があるので、実行しても焼かない。")
     else:
         print("4欄は入った。次は「実行」。H3 は絵だけ。声と字幕と曲は「仕上げ」。")
 """
@@ -3621,12 +3721,17 @@ def post_cell() -> str:
     """Voice fitted to the baked mouth, captions, and an own music file. Off by default."""
     return """#@title 仕上げ { display-mode: "form" }
 #@markdown 仕上げはオン。絵ができたあと、声、字幕、曲を足す。H3 は呼ばない。投稿しない。
-#@markdown 焼いた絵の、そのせりふの秒の中で、画面の一部だけが動いた区間を口の開閉として測る。声はその秒に合わせる。絵の口は変えない。
+#@markdown せりふごとに、その秒の中で口が開いて閉じた区間を測る。まず画面の一部だけが動いた区間。無ければ正面の顔を探し、顔の下半分（あご）が上半分より動いたコマを数える。カメラの動きは差し引く。絵の口は変えない。
+#@markdown 全部のせりふを測ってから止まる。測れなかったせりふと理由を全部出す。測った秒は post-work/mouths.json。
+#@markdown 「測れない口はシートの秒」をオンにすると、測れなかったせりふだけ、シートのせりふの秒に置いて post.mp4 を書く。どれをそう置いたかを出す。オフなら止まる。
+#@markdown 声が測った区間より長いときは、そのせりふのシートの秒の中で後ろへ伸ばし、足りなければ前へずらす。それでも入らない分だけ速くする。
 #@markdown captions.json の空でないせりふだけを声にする。入力、台詞は入力、burn が false の行は読まない。
 #@markdown 字幕は白ゴシック、下から約30%。曲は「選ぶ」の曲。空ならジョブの曲ファイル。
 仕上げ = True #@param {type:"boolean"}
+測れない口はシートの秒 = False #@param {type:"boolean"}
 
 import importlib
+import inspect
 import json
 import shutil
 import subprocess
@@ -3687,7 +3792,15 @@ else:
                             font_ok = False
                     if font_ok:
                         out = job_dir / "post.mp4"
-                        result = affi_post.apply(video, out, rows=rows, bgm=bgm or None)
+                        extra = {"sheet_seconds": bool(測れない口はシートの秒)}
+                        known = inspect.signature(affi_post.apply).parameters
+                        result = affi_post.apply(
+                            video,
+                            out,
+                            rows=rows,
+                            bgm=bgm or None,
+                            **{key: value for key, value in extra.items() if key in known},
+                        )
                         if result["status"] != "ready":
                             for reason in result["blocked"]:
                                 print(reason)
@@ -3726,15 +3839,21 @@ def _intro() -> str:
         "",
         "スマホは、ランタイムを **GPU** にしてから、上のメニューの「すべてのセルを実行」を1回押す。構成は **給水**。人、動物、場所、セリフは入っている。焼く、仕上げ、重みが無いとき落とす、はオン。絵のあと声と字幕まで進む。投稿しない。",
         "",
+        "すべてのセルを実行は **構成のまま1本** です。H3 は給水のシートの文章から絵を作ります（T2VA）。元動画の再現ではありません。元の mp4 はこのリポジトリにありません。元動画を再現するときは「選ぶ」で **元動画を再現** にして、元動画欄に mp4 の場所を書きます。",
+        "",
+        "範囲の切り方は **画質優先** が初期値です。給水は 10 本に分けて、1本ずつ 768x1344（Turbo の学習サイズ）で焼きます。**本数を減らす** にすると 544x960 の 4 本です。どちらも 1080x1920 へ広げてつなぎます。",
+        "",
+        "人、動物、場所は英語にして H3 に渡します。「この1本」を押すと、渡す英語が出ます。表に無い日本語は焼く前に止まります。英語で書けばそのまま渡します。「出さない」の役はプロンプトに入れません。",
+        "",
         "表は動画になりません。動画は一番下の **焼く** です。投稿しません。",
         "",
-        "**構成のまま1本** が、71.552秒の完全な手順です。選ぶでそれを選び、この1本で人、動物、セリフ、場所を書く。実行。焼く。仕上げ。H3 は絵だけ。声、口、字幕、曲は仕上げ。欄が入力のままなら焼かない。構成欄が空なら、この71.552秒のままです。",
+        "**構成のまま1本** が、シート1枚から焼く完全な手順です。選ぶでそれを選び、この1本で人、動物、セリフ、場所を書く。実行。焼く。仕上げ。H3 は絵だけ。声、口、字幕、曲は仕上げ。欄が入力のままなら焼かない。構成欄が「71.552秒」なら、その固定のシートです。",
         "",
         "**ペットシーツ1本** は、同じ構成のまま1本の入力です。新しい焼き方はありません。",
         "",
         "1. **読み込み**",
         "2. **選ぶ** で「構成のまま1本」を実行",
-        "3. **この1本** で、構成に `stories/pet_sheet.yaml`。人は「20代後半の成人の女性。ゆるい部屋着。髪はひとつ結び」。客の動物は「出さない」。ツッコミの動物は「グレーのマンチカン」。丁寧の動物は「白いスコティッシュフォールド」。場所は「真夏の庭。空の水入れと小さなビニールプール」。セリフは `stories/pet_sheet_lines.txt` のパスか、その中身",
+        "3. **この1本** で、構成に `stories/pet_sheet.yaml`。人は「20代後半の成人の女性。ゆるい部屋着。髪はひとつ結び」。客の動物は「出さない」。ツッコミの動物は「グレーのマンチカン」。丁寧の動物は「白いスコティッシュフォールド」。場所は「真夏の庭」（水入れとプールはショットの絵に書いてある）。セリフは `stories/pet_sheet_lines.txt` のパスか、その中身",
         "4. **実行**。ready なら **焼く**（チェックを入れる。マイドライブに MiniMax-H3 が無いときは「重みが無いとき落とす」も入れる。オフだと mp4 は出ない）。絵のあと **仕上げ**。止まったら、そのセルの最後の「止まった:」の行をコピーする。H3 は絵だけ。話者の口の開閉は絵に書いてある。せりふの文字はプロンプトに入らない",
         "",
         "**ふみふみ1本** も、同じ構成のまま1本の入力です。新しい焼き方はありません。",
@@ -3752,7 +3871,7 @@ def _intro() -> str:
         "2. **選ぶ** で、やりたいことを1つ選んで実行",
         "3. **実行**",
         "4. **焼く**（ready のあと。焼くにチェックを入れて押す。残りの範囲を続けて焼いて、そろったら1本につなぐ。mp4 はマイドライブの affi-bake に残る）",
-        "5. **仕上げ**（絵ができたあと。チェックを入れると、焼いた口の開閉を測り、その秒に声を合わせ、字幕を焼き、自分の曲を重ねる。絵の口は変えない。H3 は呼ばない。`post.mp4` を書く。つないだ mp4 は上書きしない）",
+        "5. **仕上げ**（絵ができたあと。チェックを入れると、焼いた口の開閉を測り、その秒に声を合わせ、字幕を焼き、自分の曲を重ねる。絵の口は変えない。H3 は呼ばない。`post.mp4` を書く。つないだ mp4 は上書きしない。測れないせりふがあれば、全部のせりふを測ってから、測れなかったものと理由を全部出して止まる）",
         "",
         "見た目を変えるときだけ、2と3のあいだに、話の名前が同じ見た目のセルを1つ実行します。変えないときは飛ばします。初期値です。",
         "",
@@ -3800,7 +3919,7 @@ def _intro() -> str:
         "役ごとの静止画を書くと、その役が話す範囲の最初のコマに使います。H3 の画像は1枚なので、同時にいるほかの顔は固定できません。",
         "H3 は口の開閉の絵だけです。声、字幕、曲は「仕上げ」で、焼いた口の秒に合わせます。",
         "焼いたあとに比べるのは、カットの秒、ショットの順、誰がいつ話すかです。全体の割合は出しません。元のせりふとは比べません。",
-        "読み込みと焼くは `cursor/affi-sheet-bugs-44d6` を取り直す。古いノートを開いているときは、このブランチのノートを開き直してから読み込みを押す。",
+        f"読み込みと焼くは `{BRANCH}` を取り直す。古いノートを開いているときは、このブランチのノートを開き直してから読み込みを押す。",
         "",
         "## 4つの話",
         "",
@@ -3815,7 +3934,7 @@ def _intro() -> str:
             "",
             "秒数・カット・字幕は型のままです。会話（ドッグフード）は、型に区間が書いてある 0〜19 秒だけを作ります。",
             "",
-            "Checkpoint は MiniMax-H3。話のジョブと手入力は、FL2VA の Turbo と、動作のつながりを使います。",
+            "Checkpoint は MiniMax-H3。話のジョブ、手入力、構成のまま1本は、Turbo と、動作のつながりを使います。Turbo は lightx2v の FL2VA Turbo 8step v1.0 768p で、配布元の表では FL2VA と T2VA の両方が対象、学習は 1344x768、video shift 6 です。",
             "元動画の再現は Ref2VA です。同じ Turbo は載せません。",
             "",
         ]
@@ -3868,7 +3987,7 @@ def _loader_cell() -> str:
             "except subprocess.CalledProcessError as exc:",
             '    print(f"止まった: 声のパッケージに失敗した。終了コード {exc.returncode}。")',
             "",
-            'BRANCH = "cursor/affi-sheet-bugs-44d6"',
+            f"BRANCH = {_py(BRANCH)}",
             'REPO = "fireworker011/Research"',
             'RAW = f"https://raw.githubusercontent.com/{REPO}/{BRANCH}/research/affi-templates"',
             "STRONG_MIN = 10",
@@ -4015,6 +4134,10 @@ def reference_notebook() -> dict[str, Any]:
                     "",
                     "構成欄は `stories/INDEX.md` の名前です。71.552秒は固定のシートです。セリフが空なら、その台本の `_lines.txt` を読みます。書いたセリフが優先です。",
                     "",
+                    "人、動物、場所は英語にして H3 に渡します。押すと渡す英語が出ます。表に無い日本語は止まります。場所は場所だけ書きます。小物はショットの絵にあります。",
+                    "",
+                    "役ごとの静止画は、構成のまま1本でも使います。その役が話す範囲の最初のコマになります。",
+                    "",
                     "H3 は絵だけ焼きます。声、口、字幕、曲は、絵ができたあとの「仕上げ」です。",
                     "",
                 ]
@@ -4036,7 +4159,7 @@ def reference_notebook() -> dict[str, Any]:
                     "- 話でジョブを書く … 選んだ1件のジョブ。静止画が空なら T2V。ファイルがあればその画像が最初のコマ",
                     "- 自分の文で1本 … 手入力。静止画が空なら T2V、ファイルがあれば I2V。ここでは焼きません",
                     "- 元動画を再現 … 元の mp4 を Ref2VA の参照にする。カットと無音の位置で 5〜14.4 秒の範囲に分ける。読めたせりふは口がその文だけを作る。FL2VA の Turbo は載せない。ここでは焼きません",
-                    "- 構成のまま1本 … 構成欄が空なら 71.552秒。ファイルを書くとそのカット。人、動物、セリフ、場所を「この1本」に書く。H3 は絵だけ。声、口、字幕、曲は「仕上げ」。空欄なら焼かない",
+                    "- 構成のまま1本 … 構成欄が「71.552秒」なら固定のシート。名前かファイルを書くとそのカット。人、動物、セリフ、場所を「この1本」に書く。範囲は「選ぶ」の範囲の切り方で分ける。H3 の画角も出す。H3 は絵だけ。声、口、字幕、曲は「仕上げ」。空欄や英語にできない欄なら焼かない",
                     "- mp4の構成で差し替える … 元動画のカットとせりふの秒を動かさない。人、動物、セリフ、場所だけ替える。せりふがその秒に入らなければ焼く前に止まる。H3 は口の開閉の絵だけ。声、字幕、曲は「仕上げ」。一致はカット、ショット順、誰がいつ話すか。全体の割合は出さない",
                     "",
                 ]
@@ -4094,7 +4217,13 @@ def reference_notebook() -> dict[str, Any]:
                     "",
                     "チェックを入れると、`captions.json` の空でないせりふを声にします。`入力` と、burn が false の行は読みません。",
                     "",
-                    "焼いた絵の、そのせりふの秒の中で、画面の一部だけが動いた区間を口の開閉として測ります。声はその秒に合わせます。絵の口は変えません。",
+                    "焼いた絵の、そのせりふの秒の中で、口が開いて閉じた区間を測ります。声はその秒に合わせます。絵の口は変えません。",
+                    "",
+                    "測り方は2つです。まず、画面の一部だけが動いた区間。H3 の絵は芝や毛が全体にちらつくので、これで測れないことが多い。そのときは正面の顔を探して（OpenCV の YuNet と猫の顔の検出器）、顔の下半分（あご）が上半分より動いたコマを数えます。カメラの寄りや振りは差し引きます。人のせりふは人の顔だけを見ます。",
+                    "",
+                    "全部のせりふを測ってから止まります。測れなかったせりふは、「正面の顔が映っていない」「顔はあるが口が動いていない」のように理由が出ます。測った秒は `post-work/mouths.json` です。",
+                    "",
+                    "**測れない口はシートの秒** をオンにすると、測れなかったせりふだけをシートのせりふの秒に置いて `post.mp4` を書きます。どのせりふをそう置いたかが出ます。オフなら止まります。",
                     "",
                     "字幕は白ゴシック、画面の下から約30%です。曲は「選ぶ」の曲か、ジョブに書いたファイルです。",
                     "",

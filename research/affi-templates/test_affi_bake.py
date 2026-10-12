@@ -221,6 +221,92 @@ def test_h3_acceptance_matches_the_runner_when_it_is_installed() -> None:
         assert bake._accepts(seconds) is bool(diffusers_accepts(frames_for_seconds(seconds)))
 
 
+def test_sheet_canvas_matches_the_runner_plan() -> None:
+    from h3_runner.planner import canvas_for, choose_short_edges
+
+    previous = 0
+    for max_frames, width, height in bake.T2VA_STEPS:
+        for frames in range(previous + 1, max_frames + 1):
+            if frames % 17 != 5 or frames < 120:
+                continue
+            edge = choose_short_edges("t2va", frames, "9:16")[0]
+            assert canvas_for("9:16", edge) == (height, width)
+            assert bake.sheet_canvas(frames / 24) == (width, height)
+        previous = max_frames
+    assert bake.sheet_canvas(13.528) == (544, 960)
+    assert bake.sheet_canvas(6.224) == (768, 1344)
+
+
+def test_quality_split_keeps_the_sheet_on_the_turbo_canvas(tmp_path: Path) -> None:
+    common = dict(
+        person="20代後半の成人の女性。ゆるい部屋着。髪はひとつ結び",
+        animals={"guest": "出さない", "retort": "グレーのマンチカン", "polite": "白いスコティッシュフォールド"},
+        place="真夏の庭",
+        pack_path="給水",
+    )
+    fewer = bake.plan_sheet(**common, split="fewer")
+    assert [clip["trim_s"] for clip in fewer["clips"]] == [13.528, 13.064, 12.584, 12.396]
+    assert {tuple(clip["canvas"]) for clip in fewer["clips"]} == {(544, 960)}
+    quality = bake.plan_sheet(**common, split="quality")
+    assert quality["status"] == "ready"
+    assert len(quality["clips"]) == 10
+    assert {tuple(clip["canvas"]) for clip in quality["clips"]} == {(768, 1344)}
+    assert sum(clip["trim_s"] for clip in quality["clips"]) == pytest.approx(51.572, abs=0.01)
+    assert [clip["cut_ids"] for clip in quality["clips"]][:3] == [["s01"], ["s02", "s03"], ["s04", "s05"]]
+    shown = bake.run_choice(
+        "構成のまま1本",
+        sheet_person=common["person"],
+        sheet_animals=common["animals"],
+        sheet_place=common["place"],
+        sheet_pack="給水",
+        out_dir=tmp_path,
+    )
+    assert "範囲 10 本（画質優先）。H3 の画角は 768x1344 が 10 本。" in shown
+    fewer_text = bake.run_choice(
+        "構成のまま1本",
+        sheet_person=common["person"],
+        sheet_animals=common["animals"],
+        sheet_place=common["place"],
+        sheet_pack="給水",
+        split="本数を減らす（長く切る）",
+        out_dir=tmp_path / "fewer",
+    )
+    assert "範囲 4 本（本数を減らす）。H3 の画角は 544x960 が 4 本。" in fewer_text
+
+
+def test_sheet_takes_the_speaking_roles_still(tmp_path: Path) -> None:
+    retort = tmp_path / "retort.jpg"
+    polite = tmp_path / "polite.jpg"
+    retort.write_bytes(b"r")
+    polite.write_bytes(b"p")
+    job = bake.plan_sheet(
+        person="20代後半の成人の女性。ゆるい部屋着。髪はひとつ結び",
+        animals={"guest": "出さない", "retort": "グレーのマンチカン", "polite": "白いスコティッシュフォールド"},
+        place="真夏の庭",
+        pack_path="給水",
+        split="quality",
+        role_images={"retort": str(retort), "polite": str(polite), "owner": ""},
+    )
+    assert job["status"] == "ready"
+    assert bake._ONE_STILL in job["notes"]
+    first = job["clips"][0]
+    assert first["cut_ids"] == ["s01"] and first["image"] == str(retort) and first["task"] == "fl2va"
+    assert job["clips"][1]["image"] == str(polite)
+    silent = [clip for clip in job["clips"] if clip["cut_ids"] == ["s06", "s07"]]
+    assert silent and silent[0]["task"] == "t2va" and silent[0]["image"] == ""
+    commands = (bake.write_job(job, tmp_path / "stills").parent / "commands.txt").read_text(encoding="utf-8")
+    assert "--task fl2va" in commands and f"--image {retort}" in commands
+    missing = bake.plan_sheet(
+        person="20代後半の成人の女性。ゆるい部屋着。髪はひとつ結び",
+        animals={"guest": "出さない", "retort": "グレーのマンチカン", "polite": "白いスコティッシュフォールド"},
+        place="真夏の庭",
+        pack_path="給水",
+        role_images={"retort": str(tmp_path / "none.jpg")},
+    )
+    assert missing["status"] == "blocked"
+    assert "ツッコミの静止画のファイルが無い。場所を直すか、欄を空にする。" in missing["blocked"]
+
+
 def _cell_source(cell: dict) -> str:
     return "".join(cell["source"])
 
@@ -348,6 +434,13 @@ def test_reference_notebook_is_one_japanese_form_per_story() -> None:
     assert "上書きしません" in blob
     assert "絵の口は変えない" in post_src
     assert '仕上げ = True' in post_src
+    assert "測れない口はシートの秒 = False" in post_src
+    assert "inspect.signature(affi_post.apply)" in post_src
+    assert "mouths.json" in post_src
+    assert f'"{bake.BRANCH}"' in bake_src
+    assert bake.BRANCH in bake.NOTEBOOK_URL
+    assert "affi-template-bake-44d6" not in blob
+    assert "元動画の再現ではありません" in blob
     sheet_src = next(src for src in code if "#@title この1本" in src)
     assert "構成のまま1本" in blob
     assert "おい、そこのデブ" not in sheet_src
@@ -357,7 +450,8 @@ def test_reference_notebook_is_one_japanese_form_per_story() -> None:
     assert sheet_ns["客の動物"] == "出さない"
     assert sheet_ns["ツッコミの動物"] == "グレーのマンチカン"
     assert sheet_ns["丁寧の動物"] == "白いスコティッシュフォールド"
-    assert sheet_ns["場所"] == "真夏の庭。空の水入れと小さなビニールプール"
+    assert sheet_ns["場所"] == "真夏の庭"
+    assert "H3 に渡す英語" in sheet_src and "slot_preview" in sheet_src
     assert sheet_ns["セリフ"] == (ROOT / "stories" / "pet_sheet_lines.txt").read_text(encoding="utf-8").strip()
     assert sheet_ns["構成"] == "給水"
     assert sheet_ns["客の静止画"] == ""
