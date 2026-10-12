@@ -1,0 +1,19 @@
+{
+  "pack": "2026-10-13/pet/01-gray-blink",
+  "picture_sec": 5.0,
+  "shot_sec": [
+    5
+  ],
+  "voice_sec": 2.901333,
+  "fit": {
+    "start_sec": 1.0,
+    "available_sec": 3.0,
+    "atempo": 1.0,
+    "atempo_filter": ""
+  },
+  "bgm": "/tmp/tmp.OcQBXSKPq7/placeholder-bgm.wav",
+  "bgm_amplitude": 0.15,
+  "captions": false,
+  "nobgm": "/tmp/tmp.OcQBXSKPq7/pet-out/2026-10-13-pet-01-gray-blink-nobgm.mp4",
+  "with_bgm": "/tmp/tmp.OcQBXSKPq7/pet-out/2026-10-13-pet-01-gray-blink.mp4"
+}

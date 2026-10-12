@@ -1,0 +1,25 @@
+{
+  "sample": "samples/2026-10-13-pet-01-gray-blink-placeholder.mp4",
+  "sample_nobgm": "samples/2026-10-13-pet-01-gray-blink-placeholder-nobgm.mp4",
+  "sample_picture_sec": 5.0,
+  "sample_voice_sec": 2.901333,
+  "sample_fit": {
+    "start_sec": 1.0,
+    "available_sec": 3.0,
+    "atempo": 1.0,
+    "atempo_filter": ""
+  },
+  "sample_note": "色だけの試験映像。投稿しない。",
+  "multishot_pack": "2026-10-12/konkatsu/01-profile",
+  "multishot_picture_sec": 10.0,
+  "multishot_note": "shot-01 のファイルは 6 秒。出力は台本の 2+4+4 秒。",
+  "silent_pack": "2026-10-12/pet/01-gray-sofa-rug",
+  "silent_picture_sec": 12.0,
+  "long_voice_sec": 17.408,
+  "long_voice_atempo": 5.802666666666667,
+  "long_voice_picture_sec": 5.0,
+  "captions": false,
+  "frame": "1080x1920",
+  "bgm_amplitude": 0.15,
+  "post": false
+}
