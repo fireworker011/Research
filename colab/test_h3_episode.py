@@ -72,6 +72,9 @@ from h3_episode import (  # noqa: E402
     episode_voice,
     bootstrap_episode,
     build_beat_prompt,
+    hospital_export_blocks,
+    hospital_negative_prompt,
+    select_hospital_take,
     build_episode_graph,
     camera_angle,
     camera_line,
@@ -6441,4 +6444,109 @@ def test_hospital_jacko_rear_and_dildo_leave_the_other_routes():
         "04-tsuno-jo-kiss",
         "04-tsuno-jo-walk",
     ]
+
+
+def _adult_pool(winner: str = "t3") -> list[dict]:
+    takes = []
+    for i in range(8):
+        take_id = f"t{i}"
+        takes.append(
+            {
+                "take_id": take_id,
+                "age_reads_adult": take_id == winner,
+                "breaks": [] if take_id == winner else ["extra_leg"],
+                "bodies_separate": take_id == winner,
+                "small_motion": take_id == winner,
+            }
+        )
+    return takes
+
+
+def test_hospital_prompts_lock_an_adult_body_and_keep_speech():
+    raw = load_episode(HOSPITAL_DIR / "episode.json")
+    accept = prepare_episode(raw, story_override="受け入れる")
+    cover = next(b for b in accept["beats"] if b["id"] == "01-cover")
+    prompt = build_beat_prompt(accept, cover)
+    assert "grown adult" in prompt.lower()
+    assert "adult jaw" in prompt.lower()
+    assert "brown hair stays on this adult head" in prompt.lower()
+    assert "two arms and two legs" in prompt.lower()
+    assert "underage" not in prompt.lower()
+    assert "petite child-like" not in prompt.lower()
+    assert "child face" not in prompt.lower()
+    neg = hospital_negative_prompt()
+    assert "child" in neg and "teen" in neg and "underage" in neg
+    assert "petite child-like proportions" in neg
+    assert "extra leg" in neg and "detached tongue" in neg
+    fours = prepare_episode(raw, story_override="誘う", invite_pose_override="四つん這い股広げ")
+    tangled = next(b for b in fours["beats"] if b["id"] == "03-kiss")
+    tangled_prompt = build_beat_prompt(fours, tangled)
+    assert "short bend on this same floor spot" in tangled_prompt.lower()
+    assert "each body keeps its own outline" in tangled_prompt.lower()
+    walk = next(b for b in fours["beats"] if b["id"].endswith("-walk"))
+    walk_prompt = build_beat_prompt(fours, walk)
+    assert "short bend on this same floor spot" not in walk_prompt.lower()
+    dog = prepare_episode(raw, story_override="受け入れる", dog_override="accept")
+    spot = next(b for b in dog["beats"] if b["id"] == "04-dog-spot")
+    dog_prompt = build_beat_prompt(dog, spot)
+    assert "two arms and two legs" not in dog_prompt.lower()
+    assert "grown adult" in dog_prompt.lower()
+    spoken = next(b for b in accept["beats"] if b.get("voices") or b.get("speech"))
+    spoken_prompt = build_beat_prompt(accept, spoken)
+    assert "「" in spoken_prompt
+
+
+def test_hospital_take_picker_drops_childlike_and_broken_bodies():
+    pool = _adult_pool("t3")
+    assert select_hospital_take(pool)["take_id"] == "t3"
+    loose = {
+        "take_id": "a",
+        "age_reads_adult": True,
+        "breaks": [],
+        "bodies_separate": False,
+        "small_motion": False,
+    }
+    tight = {
+        "take_id": "b",
+        "age_reads_adult": True,
+        "breaks": [],
+        "bodies_separate": True,
+        "small_motion": True,
+    }
+    assert select_hospital_take([loose, tight])["take_id"] == "b"
+    melted = dict(tight)
+    melted["breaks"] = ["face_melt", "tongue_detached"]
+    assert select_hospital_take([melted]) is None
+    child = dict(tight)
+    child["age_reads_adult"] = False
+    assert select_hospital_take([child]) is None
+
+
+def test_hospital_export_qc_blocks_until_the_pool_is_chosen(tmp_path):
+    ep = {
+        "slug": "hospital-exit-adult",
+        "beats": [
+            {"id": "01-cover", "source": "t2v"},
+            {"id": "02-menu", "source": "ui"},
+        ],
+    }
+    assert any(row.endswith("qc missing") for row in hospital_export_blocks(ep, {}))
+    takes = _adult_pool("t3")
+    report = {
+        "beats": {
+            "01-cover": {
+                "age_reads_adult": True,
+                "mosaic_outside_intact": True,
+                "bodies_separate": True,
+                "limb_count": True,
+                "takes": takes,
+                "chosen": "t3",
+            }
+        }
+    }
+    assert hospital_export_blocks(ep, report) == []
+    report["beats"]["01-cover"]["chosen"] = "t0"
+    assert any(row.endswith("chosen") for row in hospital_export_blocks(ep, report))
+    with pytest.raises(EpisodeError, match="hospital QC blocked export"):
+        finish_episode(ep, tmp_path / "ep")
 

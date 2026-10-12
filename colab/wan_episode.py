@@ -35,6 +35,8 @@ from h3_episode import (
     ensure_episode_tree,
     extra_lora_entries,
     finish_episode,
+    hospital_negative_prompt,
+    hospital_visual_locks,
     is_ui_beat,
     load_status,
     prepare_episode,
@@ -340,10 +342,12 @@ def wan_shot_prompt(ep: dict[str, Any], beat: dict[str, Any]) -> str:
     speech = _speech_visual(ep, beat).strip()
     end = "By the end, that motion has happened once and the pose holds."
     camera_line_text = f"Camera: {camera}." if camera else ""
+    locks = " ".join(hospital_visual_locks(ep, beat))
     if beat_source(beat) in ("chain", "still"):
         parts = [
             "The clip starts on the previous frame. Same people, same skin, same hair, same wounds.",
             f"{action}.",
+            locks,
             camera_line_text,
             speech,
             end,
@@ -353,6 +357,7 @@ def wan_shot_prompt(ep: dict[str, Any], beat: dict[str, Any]) -> str:
             subjects,
             f"{place}." if place else "",
             f"{action}.",
+            locks,
             camera_line_text,
             speech,
             end,
@@ -450,6 +455,13 @@ def _loader(class_type: str, **inputs: Any) -> dict[str, Any]:
     return {"class_type": class_type, "inputs": inputs}
 
 
+def wan_negative_for(ep: dict[str, Any]) -> str:
+    """Hospital bans childlike proportions in the negative encoder. Other episodes stay empty."""
+    if str(ep.get("slug") or "") == "hospital-exit-adult":
+        return hospital_negative_prompt()
+    return ""
+
+
 def build_wan_graph(
     *,
     source: str,
@@ -462,6 +474,7 @@ def build_wan_graph(
     start_image: str | None = None,
     slots: list[dict[str, Any]] | None = None,
     use_lightx2v: bool = False,
+    negative: str = "",
 ) -> dict[str, Any]:
     """ComfyUI API graph. T2V has no LoadImage. I2V has exactly one start image.
 
@@ -488,7 +501,7 @@ def build_wan_graph(
     g: dict[str, Any] = {
         "1": _loader("CLIPLoader", clip_name=WAN_TEXT_ENCODER, type=WAN_TEXT_ENCODER_TYPE),
         "2": _loader("CLIPTextEncode", text=prompt, clip=["1", 0]),
-        "3": _loader("CLIPTextEncode", text="", clip=["1", 0]),
+        "3": _loader("CLIPTextEncode", text=str(negative or ""), clip=["1", 0]),
         "4": _loader("UnetLoaderGGUF", unet_name=high),
         "5": _loader("UnetLoaderGGUF", unet_name=low),
         "6": _loader("VAELoader", vae_name=WAN_VAE),
@@ -701,6 +714,7 @@ def run_wan_episode(
                 start_image=start_name,
                 slots=shot["slots"],
                 use_lightx2v=False,
+                negative=wan_negative_for(ep),
             )
             (root / "logs" / f"{bid}.wan.json").write_text(
                 __import__("json").dumps(graph, ensure_ascii=False, indent=2),

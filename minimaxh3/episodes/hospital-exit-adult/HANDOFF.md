@@ -19,6 +19,18 @@
 - テスト: `python3 -m pytest colab/test_h3_episode.py -q`
 - このファイル: `minimaxh3/episodes/hospital-exit-adult/HANDOFF.md`。仕様が変わったら、ここを同じコミットで更新する
 
+## 書き出し前（2026-10-12、10/8〜10/9 の完成版）
+
+10/8〜10/9 の3版で、茶髪が 1:30〜2:00 付近で子どもに見え、絡むカットと脚の大きいカットで体が崩れた。台本の穴や口パクは、この節では変えない。声は後乗せのまま。口の焼き方も変えない。
+
+成人の見え方。全カットのプロンプトに、成人の顔・顎・眉・肩・腰・手を書く。茶髪のみきとれいには、茶髪が成人の頭と体に付く文を足す。`child` `teen` `underage` `petite child-like proportions` はポジティブ文に置かない。H3 はその語を描く。ネガティブは `hospital_negative_prompt()`。Wan の負側エンコーダだけがそれを受ける。
+
+体の崩れ。モザイクの外で落とすのは `extra_leg` `floating_hand` `bodies_merged` `joint_reversed` `foot_backward` `face_melt` `tongue_detached`。シーンは 7〜10 テイク。`select_hospital_take` が成人に見えないテイクと、上の崩れがあるテイクを落とす。残った中では、胴の輪郭が分かれて、脚の曲げが短いものを選ぶ。
+
+絡むカットと、脚が大きく動く着地。歩きは歩幅のまま。着地は脚を短い曲げで同じ床に置く。各成人は腕2、脚2。手は手首、足は足首で、足先はそのすねの向き。顔は一つ。舌は口の中。犬のカットにはこの肢の文を足さない。
+
+書き出し。`finish_episode` は `qc/review.json` を読む。各 GPU カットに、上の4項目が true、テイクが 7〜10、`chosen` が選別結果、と揃うまで `final/` を作らない。口パクと後乗せの声はこのチェックの外。
+
 ## いま（2026-09-30）
 
 仕様の差分は `05608320` と `ec8371ba`。ブランチと PR は上のまま。`python3 -m pytest colab/test_h3_episode.py colab/test_wan_episode.py -q` は 109 通過。生成はまだ人間。新しい話も新しい id も足していない。
