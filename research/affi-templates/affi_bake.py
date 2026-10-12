@@ -1792,9 +1792,8 @@ def _job_from_pack(
             clip_id = f"{serial:02d}-{span_name}"
             if len(pieces) > 1:
                 clip_id = f"{clip_id}-p{part_index + 1}"
-            prompt = structure.picture_prompt(filled, cursor, end_s)
-            if request_s > trim_s + 0.05:
-                prompt += f"After {_num(trim_s)} seconds the same frame holds. The mouth stays still.\n"
+            held = trim_s if request_s > trim_s + 0.05 else None
+            prompt = structure.picture_prompt(filled, cursor, end_s, hold_after_s=held)
             clip = {
                 "id": clip_id,
                 "cut_ids": [str(shot["id"]) for shot in group],

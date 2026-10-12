@@ -61,6 +61,162 @@ def _norm(text: str) -> str:
     return _NORM.sub("", str(text or ""))
 
 
+# A slot that says the role is not in this story.
+NOT_SHOWN = "出さない"
+_CJK = re.compile(r"[ぁ-んァ-ヶー一-龥々〆]")
+_AGE_WORDS = {20: "twenties", 30: "thirties", 40: "forties", 50: "fifties", 60: "sixties"}
+# (Japanese, English, where). "head" is the noun, "pre" goes before it, "post" after it.
+_SLOT_WORDS: tuple[tuple[str, str, str], ...] = (
+    ("スコティッシュフォールド", "Scottish Fold cat", "head"),
+    ("マンチカン", "Munchkin cat", "head"),
+    ("トイプードル", "toy poodle", "head"),
+    ("プードル", "poodle", "head"),
+    ("ビーグル", "beagle", "head"),
+    ("チワワ", "Chihuahua", "head"),
+    ("柴犬", "Shiba Inu", "head"),
+    ("柴", "Shiba Inu", "head"),
+    ("ハムスター", "hamster", "head"),
+    ("うさぎ", "rabbit", "head"),
+    ("小鳥", "small bird", "head"),
+    ("子猫", "kitten", "head"),
+    ("子犬", "puppy", "head"),
+    ("猫", "cat", "head"),
+    ("犬", "dog", "head"),
+    ("鳥", "bird", "head"),
+    ("動物", "animal", "head"),
+    ("獣", "beast", "head"),
+    ("女性", "woman", "head"),
+    ("男性", "man", "head"),
+    ("人", "person", "head"),
+    ("リビング", "living room", "head"),
+    ("キッチン", "kitchen", "head"),
+    ("台所", "kitchen", "head"),
+    ("寝室", "bedroom", "head"),
+    ("玄関", "entryway", "head"),
+    ("カフェ", "cafe", "head"),
+    ("部屋", "room", "head"),
+    ("公園", "park", "head"),
+    ("ベランダ", "balcony", "head"),
+    ("庭", "yard", "head"),
+    ("グレー一色", "solid grey", "pre"),
+    ("グレー", "grey", "pre"),
+    ("灰色", "grey", "pre"),
+    ("白い", "white", "pre"),
+    ("白", "white", "pre"),
+    ("黒い", "black", "pre"),
+    ("黒", "black", "pre"),
+    ("茶色い", "brown", "pre"),
+    ("茶色", "brown", "pre"),
+    ("クリーム色", "cream", "pre"),
+    ("クリーム", "cream", "pre"),
+    ("三毛", "calico", "pre"),
+    ("茶トラ", "orange tabby", "pre"),
+    ("キジトラ", "brown tabby", "pre"),
+    ("サバトラ", "silver tabby", "pre"),
+    ("短い足", "short-legged", "pre"),
+    ("長毛", "long-haired", "pre"),
+    ("短毛", "short-haired", "pre"),
+    ("小さい", "small", "pre"),
+    ("小さな", "small", "pre"),
+    ("大きい", "large", "pre"),
+    ("大きな", "large", "pre"),
+    ("小柄", "small", "pre"),
+    ("太い", "stout", "pre"),
+    ("細い", "slender", "pre"),
+    ("短い", "short", "pre"),
+    ("成人", "adult", "pre"),
+    ("大人", "adult", "pre"),
+    ("別", "different", "pre"),
+    *(
+        (f"{age}代{part}", f"in their {span}{_AGE_WORDS[age]}", "post")
+        for age in _AGE_WORDS
+        for part, span in (("前半", "early "), ("後半", "late "), ("", ""))
+    ),
+    ("真夏", "in midsummer", "post"),
+    ("夏", "in summer", "post"),
+    ("昼", "in daylight", "post"),
+    ("朝", "in the morning", "post"),
+    ("夕方", "in the early evening", "post"),
+    ("夜", "at night", "post"),
+)
+# Sentences that describe a filled slot but are not one noun.
+_SLOT_SENTENCES = {
+    "ゆるい部屋着": "wearing loose loungewear",
+    "髪はひとつ結び": "with hair tied back",
+    "空の水入れと小さなビニールプール": "with an empty water bowl and a small vinyl pool",
+    "ソファの薄い毛布": "with a thin blanket on the sofa",
+    "床におやつ皿": "with a treat dish on the floor",
+}
+_SLOT_GLUE = "の、 　"
+
+
+def _article(phrase: str) -> str:
+    return ("an " if phrase[:1].lower() in "aeiou" else "a ") + phrase
+
+
+def _noun_phrase(sentence: str) -> tuple[str, str]:
+    """One Japanese noun with its modifiers. Returns (with article, with "the")."""
+    words = sorted(_SLOT_WORDS, key=lambda item: len(item[0]), reverse=True)
+    pre: list[str] = []
+    post: list[str] = []
+    heads: list[str] = []
+    unknown: list[str] = []
+    at = 0
+    while at < len(sentence):
+        if sentence[at] in _SLOT_GLUE:
+            at += 1
+            continue
+        hit = next((item for item in words if sentence.startswith(item[0], at)), None)
+        if hit is None:
+            start = at
+            while at < len(sentence) and sentence[at] not in _SLOT_GLUE and not any(
+                sentence.startswith(item[0], at) for item in words
+            ):
+                at += 1
+            unknown.append(sentence[start:at])
+            continue
+        japanese, english, where = hit
+        {"pre": pre, "post": post, "head": heads}[where].append(english)
+        at += len(japanese)
+    if unknown:
+        raise ValueError("「" + "」「".join(unknown) + "」")
+    if len(heads) != 1:
+        raise ValueError(f"「{sentence}」")
+    core = " ".join([*pre, heads[0]])
+    full = " ".join([core, *post])
+    return _article(full), f"the {core}"
+
+
+def slot_english(text: str) -> tuple[str, str]:
+    """English for one filled slot: (description, name inside the shots).
+
+    Text without Japanese is kept as typed. Japanese is read from the word and
+    sentence tables above. A word that is not listed raises, so the bake stops
+    instead of handing Japanese to H3.
+    """
+    raw = str(text or "").strip()
+    if not _CJK.search(raw):
+        full = raw.rstrip(" .")
+        bare = re.sub(r"^(?:a|an|the)\s+", "", full, flags=re.IGNORECASE)
+        short = bool(bare) and len(bare.split()) <= 6 and not re.search(r"[,;:]", bare)
+        return full, f"the {bare}" if short else ""
+    sentences = [part.strip() for part in re.split(r"[。．.]", raw) if part.strip()]
+    parts: list[str] = []
+    name = ""
+    for index, sentence in enumerate(sentences):
+        fixed = _SLOT_SENTENCES.get(sentence)
+        if fixed is not None:
+            parts.append(fixed)
+            continue
+        described, called = _noun_phrase(sentence)
+        if index == 0:
+            parts.append(described)
+            name = called
+        else:
+            parts.append(f"with {described}")
+    return ", ".join(parts), name
+
+
 def _existing(text: str) -> Path | None:
     """A file at the written path, under this folder, or by its name in stories/."""
     chosen = Path(text)
@@ -330,7 +486,7 @@ def fill(
 
 
 def blocked(pack: Mapping[str, Any]) -> list[str]:
-    """Slots that are still empty. Empty means the prompt must not invent them."""
+    """Slots that are still empty or cannot reach H3 in English. Empty means the prompt must not invent them."""
     reasons = []
     slots = pack["slots"]
     if slots.get("person") == SLOT:
@@ -344,6 +500,7 @@ def blocked(pack: Mapping[str, Any]) -> list[str]:
     for row in pack["captions"]:
         if row.get("line") == SLOT:
             reasons.append(f"{row['id']} のセリフは入力のまま")
+    reasons.extend(slot_reasons(pack))
     return reasons
 
 
@@ -734,13 +891,17 @@ _CAMERA_MOTION = (
     ("同じ向き", "The facing stays the same as the earlier shot."),
     ("手すり", "A rail stays in the frame."),
 )
-_JAW_OPENS = "The lower jaw drops and rises, more than once, and does not shape words."
+_JAW_OPENS = "The lower jaw drops and rises, more than once."
 _MOUTH_CLOSED = "The mouth stays closed. The jaw does not travel."
 _MOUTH_CLOSED_THAT = "That mouth stays closed. The jaw does not travel."
 _MOUTH_OPEN = "The mouth stays open. The jaw does not travel."
 _MOUTH_UP = "The mouth points upward and stays open. The jaw does not travel."
-_MOUTH_PAD = "The mouth keeps hold of the pad. The jaw does not travel and does not shape words."
-_MOUTH_STICK = "The mouth keeps hold of a thin stick. The jaw does not travel and does not shape words."
+_MOUTH_PAD = "The mouth keeps hold of the pad. The jaw does not travel."
+_MOUTH_STICK = "The mouth keeps hold of a thin stick. The jaw does not travel."
+_TEETH = "The eyelids squeeze shut and the jaw drops until the teeth show."
+_CARRY_PAD = "The mouth keeps hold of a flat white pad while the legs step forward."
+_STAND_DOOR = "The body stands upright in the doorway."
+_LOOK_POOL = "The head turns toward the vinyl pool at the edge of the yard."
 _EVERY_MOUTH = "Every mouth stays closed. Those jaws do not travel."
 _OTHER_MOUTHS = "The other mouths stay closed. Those jaws do not travel."
 _STAND_THEN_SIT = "The weight moves onto the hind legs and the torso rises, then the hind legs fold and the body sits."
@@ -799,7 +960,7 @@ _BODY_MOTION = (
     ("前足二本で縦の棒を胸の前で握る", "Both forepaws close around a vertical stick held in front of the chest."),
     ("前足で縦の棒を頭の上に横たえる", "One forepaw lays the stick across the top of the head."),
     ("片手を頭の上へ上げる", "One hand rises onto the top of the head."),
-    ("まぶたをきつく閉じ、歯が見える", "The eyelids squeeze shut and the jaw drops until the teeth show. The jaw does not shape words."),
+    ("まぶたをきつく閉じ、歯が見える", _TEETH),
     ("両膝を床につけ、両手を床の平たい物に置く", "Both knees stay on the floor and both hands stay on the flat object on the floor."),
     ("床を離れて前へ飛ぶ", "The body leaves the floor and travels forward through the air."),
     ("縦の棒が床へ落ちる", "The stick drops to the floor and stays there."),
@@ -810,6 +971,7 @@ _BODY_MOTION = (
     ("前足を一本上げて", "One forepaw lifts and stays raised."),
     ("二回、それからもう一回踏む", "The forepaw presses down twice, then once more."),
     ("毛布の端を少しめくる", "One paw lifts the blanket edge a short way."),
+    ("白い敷きパッドをくわえて歩く", _CARRY_PAD),
     ("くわえて歩く", "The mouth keeps hold of the object while the legs step forward."),
     ("パッドが水面に落ち", "The pad drops onto the water."),
     ("水が渦を巻いてプールから無くなり", "The water turns in a vortex until the pool is empty."),
@@ -820,7 +982,7 @@ _BODY_MOTION = (
     ("画面に向かう", "The body turns to face the lens."),
     ("正面を向いて", "The body turns to face the lens."),
     ("家の方を見て", "The head turns toward the house."),
-    ("庭の端のビニールプールを見る", "The head turns toward the pool at the edge of the yard."),
+    ("庭の端のビニールプールを見る", _LOOK_POOL),
     ("ひび割れた底を見て", "The head tilts down toward the cracked ground."),
     ("踏んでいる前足を見て", "The head turns toward the forepaw that is pressing down."),
     ("自分の前足を見る", "The head turns down toward that one's own forepaw."),
@@ -834,7 +996,7 @@ _BODY_MOTION = (
     ("短い足の茶色い犬は床のラグで", "The short-legged brown dog stays on the floor rug."),
     ("外に小さくいる", "The body stays small in the distance outside."),
     ("戸口に小さくいる", "The body stays small in the doorway."),
-    ("戸口に立って", "The weight stays on both feet in the doorway."),
+    ("戸口に立って", _STAND_DOOR),
     ("手すりにいる", "The body stays at the rail."),
     ("人の顔は出さない", "The person's face stays out of frame."),
     ("並んでいる", "The bodies stay side by side."),
@@ -869,6 +1031,7 @@ _BODY_MOTION = (
     ("座って", _SIT),
     ("座る", _SIT),
     ("黒画面", "The frame stays black."),
+    ("白い敷きパッドだけが平らにある", "Only the flat white pad lies there and does not move."),
     ("平らにある", "The pad lies flat and does not move."),
     ("網目", "A mesh stays between the lens and the face."),
     ("仕切りが開く", "The partition swings open."),
@@ -950,15 +1113,22 @@ def _role_hits(clause: str, marks: Sequence[str]) -> list[str]:
     return out
 
 
-def _possessive(who: Sequence[str]) -> str:
+# Labels from _ROLE_MARK that are one sheet role. Their cast name replaces the label.
+_LABEL_ROLE = {"guest": "guest", "retort": "retort", "polite one": "polite", "person": "owner"}
+
+
+def _possessive(who: Sequence[str], names: Mapping[str, str] | None = None) -> str:
     bits: list[str] = []
-    for name in who:
-        if name == "two animals":
+    for label in who:
+        called = (names or {}).get(label, "")
+        if called:
+            bits.append(f"{called}'s")
+        elif label == "two animals":
             bits.append("the two animals'")
-        elif name == "one animal":
+        elif label == "one animal":
             bits.append("one animal's")
         else:
-            bits.append(f"the {name}'s")
+            bits.append(f"the {label}'s")
     if len(bits) == 1:
         return bits[0][0].upper() + bits[0][1:]
     head = bits[0][0].upper() + bits[0][1:]
@@ -967,16 +1137,16 @@ def _possessive(who: Sequence[str]) -> str:
     return f"{head}, {', '.join(bits[1:-1])}, and {bits[-1]}"
 
 
-def _bind_mouth(english: str, who: Sequence[str]) -> str:
+def _bind_mouth(english: str, who: Sequence[str], names: Mapping[str, str] | None = None) -> str:
     """Keep a shut jaw from cancelling the jaw that this clause names."""
     if not who or english not in _BINDABLE:
         return english
     plural = len(who) > 1 or any(name in _PLURAL_ROLES for name in who)
-    name = _possessive(who)
+    name = _possessive(who, names)
     if english == _JAW_OPENS:
         if plural:
-            return f"{name} lower jaws drop and rise, more than once, and do not shape words."
-        return f"{name} lower jaw drops and rises, more than once, and does not shape words."
+            return f"{name} lower jaws drop and rise, more than once."
+        return f"{name} lower jaw drops and rises, more than once."
     if english == _MOUTH_OPEN:
         if plural:
             return f"{name} mouths stay open. Those jaws do not travel."
@@ -987,12 +1157,12 @@ def _bind_mouth(english: str, who: Sequence[str]) -> str:
         return f"{name} mouth points upward and stays open. That jaw does not travel."
     if english == _MOUTH_PAD:
         if plural:
-            return f"{name} mouths keep hold of the pad. Those jaws do not travel and do not shape words."
-        return f"{name} mouth keeps hold of the pad. That jaw does not travel and does not shape words."
+            return f"{name} mouths keep hold of the pad. Those jaws do not travel."
+        return f"{name} mouth keeps hold of the pad. That jaw does not travel."
     if english == _MOUTH_STICK:
         if plural:
-            return f"{name} mouths keep hold of a thin stick. Those jaws do not travel and do not shape words."
-        return f"{name} mouth keeps hold of a thin stick. That jaw does not travel and does not shape words."
+            return f"{name} mouths keep hold of a thin stick. Those jaws do not travel."
+        return f"{name} mouth keeps hold of a thin stick. That jaw does not travel."
     if plural:
         return f"{name} mouths stay closed. Those jaws do not travel."
     return f"{name} mouth stays closed. That jaw does not travel."
@@ -1045,9 +1215,9 @@ _NAMED = {
         "hands rise onto the top of the head.",
         "",
     ),
-    "The eyelids squeeze shut and the jaw drops until the teeth show. The jaw does not shape words.": (
-        "{name} eyelids squeeze shut and the jaw drops until the teeth show. That jaw does not shape words.",
-        "{name} eyelids squeeze shut and the jaws drop until the teeth show. Those jaws do not shape words.",
+    _TEETH: (
+        "{name} eyelids squeeze shut and the jaw drops until the teeth show.",
+        "{name} eyelids squeeze shut and the jaws drop until the teeth show.",
     ),
     "Both knees stay on the floor and both hands stay on the flat object on the floor.": _noun(
         "knees stay on the floor and both hands stay on the flat object on the floor.",
@@ -1087,11 +1257,16 @@ _NAMED = {
         "mouths keep hold of the object while the legs step forward.",
         "",
     ),
+    _CARRY_PAD: _noun(
+        "mouth keeps hold of a flat white pad while the legs step forward.",
+        "mouths keep hold of a flat white pad while the legs step forward.",
+        "",
+    ),
     "The head tilts upward.": _noun("head tilts upward.", "heads tilt upward.", ""),
     "The head turns toward the house.": _noun("head turns toward the house.", "heads turn toward the house.", ""),
-    "The head turns toward the pool at the edge of the yard.": _noun(
-        "head turns toward the pool at the edge of the yard.",
-        "heads turn toward the pool at the edge of the yard.",
+    _LOOK_POOL: _noun(
+        "head turns toward the vinyl pool at the edge of the yard.",
+        "heads turn toward the vinyl pool at the edge of the yard.",
         "",
     ),
     "The head tilts down toward the cracked ground.": _noun(
@@ -1137,9 +1312,9 @@ _NAMED = {
         "bodies stay small in the doorway.",
         "",
     ),
-    "The weight stays on both feet in the doorway.": _noun(
-        "weight stays on both feet in the doorway.",
-        "weight stays on both feet in the doorway.",
+    _STAND_DOOR: _noun(
+        "body stands upright in the doorway.",
+        "bodies stand upright in the doorway.",
         "",
     ),
     "The body stays at the rail.": _noun("body stays at the rail.", "bodies stay at the rail.", ""),
@@ -1211,17 +1386,22 @@ _NAMED = {
 }
 
 
-def _bind_actor(english: str, who: Sequence[str]) -> str:
+def _bind_actor(english: str, who: Sequence[str], names: Mapping[str, str] | None = None) -> str:
     """A written move stays with the role named in that clause."""
     pair = _NAMED.get(english)
     if pair is None or not who:
         return english
     plural = len(who) > 1 or any(role in _PLURAL_ROLES for role in who)
-    text = pair[1 if plural else 0].format(name=_possessive(who))
+    text = pair[1 if plural else 0].format(name=_possessive(who, names))
     return " ".join(text.split())
 
 
-def _body_lines(picture: str, camera: str, timed_jaw: bool) -> list[str]:
+def _body_lines(
+    picture: str,
+    camera: str,
+    timed_jaw: bool,
+    names: Mapping[str, str] | None = None,
+) -> list[str]:
     """Motion already written, one clause at a time, with the role that clause names."""
     last: list[str] = []
     out: list[str] = []
@@ -1237,10 +1417,104 @@ def _body_lines(picture: str, camera: str, timed_jaw: bool) -> list[str]:
         for english in _covered_phrases(clause, _BODY_MOTION):
             if timed_jaw and english == _JAW_OPENS:
                 continue
-            line = _bind_mouth(english, who) if english in _BINDABLE else _bind_actor(english, who)
+            if english in _BINDABLE:
+                line = _bind_mouth(english, who, names)
+            else:
+                line = _bind_actor(english, who, names)
+            line = _rename(line, names)
             if line not in out:
                 out.append(line)
     return out
+
+
+def _rename(line: str, names: Mapping[str, str] | None) -> str:
+    """Fixed sentences that already say "the person" use that role's cast name."""
+    for label, called in (names or {}).items():
+        upper = called[0].upper() + called[1:]
+        line = line.replace(f"The {label}'s", f"{upper}'s").replace(f"the {label}'s", f"{called}'s")
+        line = line.replace(f"The {label} ", f"{upper} ")
+    return line
+
+
+def _cast(pack: Mapping[str, Any]) -> dict[str, dict[str, str] | None]:
+    """English for each role slot. None is a role the story does not show.
+
+    An empty or untranslatable slot keeps an empty description, so the prompt
+    falls back to the role label and never carries the Japanese text.
+    """
+    slots = pack["slots"]
+    animals = slots.get("animals") or {}
+    raw = {
+        "guest": animals.get("guest"),
+        "retort": animals.get("retort"),
+        "polite": animals.get("polite"),
+        "owner": slots.get("person"),
+    }
+    out: dict[str, dict[str, str] | None] = {}
+    for role, value in raw.items():
+        text = str(value or "").strip()
+        if text == NOT_SHOWN:
+            out[role] = None
+            continue
+        full, name = "", ""
+        if text and text != SLOT:
+            try:
+                full, name = slot_english(text)
+            except ValueError:
+                full, name = "", ""
+        out[role] = {"full": full, "name": name}
+    names = [entry["name"] for entry in out.values() if entry and entry["name"]]
+    for entry in out.values():
+        if entry and entry["name"] and names.count(entry["name"]) > 1:
+            entry["name"] = ""
+    return out
+
+
+def _label_names(cast: Mapping[str, dict[str, str] | None]) -> dict[str, str]:
+    """Shot labels such as "retort" mapped to the cast name, when the slot gives one."""
+    found: dict[str, str] = {}
+    for label, role in _LABEL_ROLE.items():
+        entry = cast.get(role)
+        if entry and entry["name"]:
+            found[label] = entry["name"]
+    dogs = [entry["name"] for entry in cast.values() if entry and entry["name"].endswith(" dog")]
+    if len(dogs) == 1:
+        found["dog"] = dogs[0]
+    return found
+
+
+def slot_reasons(pack: Mapping[str, Any]) -> list[str]:
+    """Filled slots that cannot go to H3 in English, and hidden roles the sheet still shows."""
+    reasons: list[str] = []
+    slots = pack["slots"]
+    animals = slots.get("animals") or {}
+    labeled = [
+        ("人", slots.get("person")),
+        (f"{ROLE_JA['guest']}の動物", animals.get("guest")),
+        (f"{ROLE_JA['retort']}の動物", animals.get("retort")),
+        (f"{ROLE_JA['polite']}の動物", animals.get("polite")),
+        ("場所", slots.get("place")),
+    ]
+    for label, value in labeled:
+        text = str(value or "").strip()
+        if not text or text == SLOT or (text == NOT_SHOWN and label != "場所"):
+            continue
+        try:
+            slot_english(text)
+        except ValueError as exc:
+            reasons.append(
+                f"{label}「{text}」は英語にできない語がある: {exc}。英語で書けば、そのまま H3 に渡す。"
+            )
+    hidden = {role for role, entry in _cast(pack).items() if entry is None}
+    for shot in pack["shots"]:
+        shown = [role for role in shot.get("on_screen") or [] if role in hidden]
+        for role in shown:
+            reasons.append(f"{shot['id']} の画面に「{NOT_SHOWN}」の{ROLE_JA[role]}がいる")
+    for row in pack["captions"]:
+        text = str(row.get("line") or "").strip()
+        if row.get("role") in hidden and text and text != SLOT:
+            reasons.append(f"{row['id']} は「{NOT_SHOWN}」の{ROLE_JA[row['role']]}のせりふ")
+    return reasons
 
 
 _TRAVEL = ("pushes in", "pulls out", "pans ", "tilts ", "tracks ")
@@ -1301,8 +1575,13 @@ _ON_EN = {
 }
 
 
-def _frame_line(roles: Sequence[str]) -> str:
-    names = [_ON_EN[role] for role in roles if role in _ON_EN]
+def _frame_line(roles: Sequence[str], cast: Mapping[str, dict[str, str] | None] | None = None) -> str:
+    names: list[str] = []
+    for role in roles:
+        if role not in _ON_EN:
+            continue
+        entry = (cast or {}).get(role)
+        names.append(entry["name"] if entry and entry["name"] else _ON_EN[role])
     if not names:
         return ""
     if len(names) == 1:
@@ -1314,7 +1593,13 @@ def _frame_line(roles: Sequence[str]) -> str:
     return f"In frame: {listed}."
 
 
-def _measured_jaw(pack: Mapping[str, Any], shot_id: str, origin: float, stop: float) -> list[str]:
+def _measured_jaw(
+    pack: Mapping[str, Any],
+    shot_id: str,
+    origin: float,
+    stop: float,
+    cast: Mapping[str, dict[str, str] | None] | None = None,
+) -> list[str]:
     """Speech windows that were measured. Sheets without fit_s stay as written."""
     lines = []
     for row in pack["captions"]:
@@ -1327,41 +1612,74 @@ def _measured_jaw(pack: Mapping[str, Any], shot_id: str, origin: float, stop: fl
         right = min(float(fit[1]), stop) - origin
         if right - left < 0.05:
             continue
-        role = ROLE_JA.get(str(row.get("role")), str(row.get("role")))
+        role = str(row.get("role"))
+        entry = (cast or {}).get(role)
+        who = entry["name"] if entry and entry["name"] else _ON_EN.get(role, f"the {role}")
         lines.append(
-            f"From {_num(left)} to {_num(right)}, the {role} lower jaw drops and rises. "
+            f"From {_num(left)} to {_num(right)}, {who}'s lower jaw drops and rises. "
             "Outside that interval that jaw stays closed and does not travel."
         )
     return lines
 
 
-def picture_prompt(pack: Mapping[str, Any], start_s: float, end_s: float) -> str:
-    """English picture for one range. Spoken lines and the source cast stay out."""
+# place_part on a shot. The key is already English; this only makes it a sentence.
+_PLACE_PART = {
+    "yard": "This shot stays in the yard.",
+    "pool": "This shot stays at the pool.",
+    "door": "This shot stays at the doorway.",
+    "sofa": "This shot stays on the sofa.",
+    "rug": "This shot stays on the rug.",
+}
+
+
+def _cast_line(roles: Sequence[str], cast: Mapping[str, dict[str, str] | None]) -> str:
+    """Who is drawn in this range, in English. A role without its own name keeps its label."""
+    bits: list[str] = []
+    for role in roles:
+        if role == "indoor_pair":
+            continue
+        entry = cast.get(role)
+        if entry is None:
+            continue
+        label = _ON_EN.get(role, role)
+        if entry["full"] and entry["name"]:
+            bits.append(entry["full"])
+        else:
+            bits.append(f"{label}: {entry['full'] or 'not named'}")
+    if not bits:
+        return ""
+    return "Cast: " + "; ".join(bits) + "."
+
+
+def picture_prompt(
+    pack: Mapping[str, Any],
+    start_s: float,
+    end_s: float,
+    *,
+    hold_after_s: float | None = None,
+) -> str:
+    """English picture for one range. Spoken lines and the source cast stay out.
+
+    Slots go in as English, and each role is called by that English name inside
+    the shots. A jaw the sheet opens is not told to stay wordless.
+    ``hold_after_s`` is where the sheet's seconds end inside a longer request.
+    """
     slots = pack["slots"]
-    animals = slots["animals"]
-
-    def named(value: str) -> str:
-        text = str(value or "").strip()
-        if not text or text == SLOT:
-            return "not named"
-        return text
-
-    lines = [
-        "Vertical 9:16. Live-action. The picture follows the shots below. No title card.",
-        f"Place: {named(slots['place'])}.",
-        (
-            f"Guest: {named(animals['guest'])}. "
-            f"Retort: {named(animals['retort'])}. "
-            f"Polite: {named(animals['polite'])}. "
-            f"Person: {named(slots['person'])}."
-        ),
-        "Adults only. Do not resemble a real person or the source account.",
-        "No one speaks. Jaws do not shape words. No writing. No music. No logo.",
-        "",
-    ]
+    cast = _cast(pack)
+    names = _label_names(cast)
+    place_text = str(slots.get("place") or "").strip()
+    place = "not named"
+    if place_text and place_text != SLOT:
+        try:
+            place = slot_english(place_text)[0] or "not named"
+        except ValueError:
+            place = "not named"
     origin = float(start_s)
     stop = float(end_s)
     shot_no = 0
+    seen_roles: list[str] = []
+    jaw_moves = False
+    shot_lines: list[str] = []
     for shot in pack["shots"]:
         begin = float(shot["start_s"])
         end = float(shot["end_s"])
@@ -1373,10 +1691,14 @@ def picture_prompt(pack: Mapping[str, Any], start_s: float, end_s: float) -> str
         camera_has_body = any(_covered_phrases(clause, _BODY_MOTION) for clause in _clauses(camera_text))
         if camera_text.strip() and not camera_en and not camera_has_body:
             camera_en = [f"{_STATIC}."]
-        jaw = _measured_jaw(pack, str(shot["id"]), origin, stop)
-        body_en = _body_lines(str(shot.get("picture") or ""), camera_text, timed_jaw=bool(jaw))
+        jaw = _measured_jaw(pack, str(shot["id"]), origin, stop, cast)
+        picture = str(shot.get("picture") or "")
+        body_en = _body_lines(picture, camera_text, timed_jaw=bool(jaw), names=names)
+        if jaw or any(_JAW_OPENS in _covered_phrases(clause, _BODY_MOTION) for clause in _clauses(picture)):
+            jaw_moves = True
+        where = _PLACE_PART.get(str(shot.get("place_part") or ""))
         bits: list[str] = []
-        for part in [*camera_en, *body_en, *jaw]:
+        for part in [*camera_en, *body_en, *jaw, *([where] if where else [])]:
             if part not in bits:
                 bits.append(part)
         if not bits:
@@ -1387,10 +1709,34 @@ def picture_prompt(pack: Mapping[str, Any], start_s: float, end_s: float) -> str
             line = f"[Shot 1] {motion}"
         else:
             line = f"[Shot {shot_no}] At {_stamp(left)}, the camera cuts. {motion}"
-        frame = _frame_line(shot.get("on_screen") or [])
+        on_screen = list(shot.get("on_screen") or [])
+        frame = _frame_line(on_screen, cast)
         if frame:
             line += " " + frame
-        lines.append(line)
+        shot_lines.append(line)
+        for role in on_screen:
+            if role not in seen_roles:
+                seen_roles.append(role)
+    quiet = "No writing. No music. No logo."
+    if not jaw_moves:
+        quiet = "No one speaks. " + quiet
+    lines = [
+        "Vertical 9:16. Live-action. The picture follows the shots below. No title card.",
+        f"Place: {place}.",
+    ]
+    cast_line = _cast_line(seen_roles, cast)
+    if cast_line:
+        lines.append(cast_line)
+    lines.extend(
+        [
+            "Adults only. Do not resemble a real person or the source account.",
+            quiet,
+            "",
+            *shot_lines,
+        ]
+    )
+    if hold_after_s is not None:
+        lines.append(f"After {_num(hold_after_s)} seconds the same frame holds. The mouth stays still.")
     text = "\n".join(lines) + "\n"
     for row in pack["captions"]:
         source = str(row["source_line"])

@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import re
 import sys
 from pathlib import Path
 
@@ -12,6 +13,8 @@ ROOT = Path(__file__).resolve().parent
 sys.path.insert(0, str(ROOT))
 
 import affi_structure as structure
+
+_JAPANESE = re.compile(r"[ぁ-んァ-ヶ一-龥]")
 
 
 def test_sheet_locks_twenty_shots_and_leaves_slots_empty() -> None:
@@ -65,11 +68,17 @@ def test_written_moves_become_paths_and_unmeasured_times_stay_out() -> None:
     assert "The retort's head turns toward the house." in pet_text
     assert "The retort's forepaw lifts, strikes the water, and returns." in pet_text
     assert "The water turns in a vortex until the pool is empty." in pet_text
-    assert "The retort's lower jaw drops and rises, more than once, and does not shape words." in pet_text
+    assert "The retort's lower jaw drops and rises, more than once." in pet_text
     assert "The polite one's mouth stays closed. That jaw does not travel." in pet_text
-    assert "The person's lower jaw drops and rises, more than once, and does not shape words." in pet_text
+    assert "The person's lower jaw drops and rises, more than once." in pet_text
     assert "The two animals' mouths stay closed. Those jaws do not travel." in pet_text
-    assert "The lower jaw drops and rises, more than once, and does not shape words." not in pet_text
+    assert "The polite one's mouth keeps hold of a flat white pad while the legs step forward." in pet_text
+    assert "The polite one's head turns toward the vinyl pool at the edge of the yard." in pet_text
+    assert "The person's body stands upright in the doorway." in pet_text
+    assert "Only the flat white pad lies there and does not move." in pet_text
+    assert "This shot stays at the pool." in pet_text
+    assert "This shot stays at the doorway." in pet_text
+    assert "shape words" not in pet_text
     paw = structure.load(ROOT / "stories" / "paw_stamp.yaml")
     paw_text = structure.picture_prompt(paw, 0.0, float(paw["duration_s"]))
     assert "The retort's forepaw presses down twice, then once more." in paw_text
@@ -77,7 +86,8 @@ def test_written_moves_become_paths_and_unmeasured_times_stay_out() -> None:
     assert "The dog's forepaws stay folded under the chest and do not travel." in paw_text
     assert "The polite one's and the dog's mouths stay closed. Those jaws do not travel." in paw_text
     assert "Every mouth stays closed. Those jaws do not travel." in paw_text
-    assert "The lower jaw drops and rises, more than once, and does not shape words." not in paw_text
+    assert "This shot stays on the rug." in paw_text
+    assert "shape words" not in paw_text
 
 
 def test_parse_lines_keeps_blanks_empty() -> None:
@@ -99,17 +109,19 @@ def test_picture_prompt_leaves_the_spoken_line_out() -> None:
         place="別の部屋",
         lines=lines,
     )
+    assert structure.blocked(filled) == []
     text = structure.picture_prompt(filled, 0.0, 1.333)
     assert "文1" not in text
     assert "おい、そこのデブ" not in text
-    assert "小さい鳥" in text
-    assert "別の部屋" in text
+    assert "小さい鳥" not in text
+    assert "a small bird" in text
+    assert "Place: a different room." in text
     assert "No one speaks." in text
     assert "Mouths do not form words." not in text
-    assert "Jaws do not shape words." in text
+    assert "shape words" not in text
     assert "The camera holds a static shot at close range" in text
     assert "口が開閉" not in text
-    assert "The guest's mouth stays open. That jaw does not travel." in text
+    assert "The small bird's mouth stays open. That jaw does not travel." in text
     assert "A jaw opens and closes" not in text
     assert "From " not in text
     assert filled["shots"][0]["source_seen"] not in text
@@ -130,7 +142,7 @@ def test_pet_sheet_is_another_pack_of_the_same_sheet() -> None:
         pack,
         person="20代後半の成人の女性。ゆるい部屋着。髪はひとつ結び",
         animals={"guest": "出さない", "retort": "グレーのマンチカン", "polite": "白いスコティッシュフォールド"},
-        place="真夏の庭。空の水入れと小さなビニールプール",
+        place="真夏の庭",
         lines=spoken,
     )
     assert structure.blocked(filled) == []
@@ -144,7 +156,26 @@ def test_pet_sheet_is_another_pack_of_the_same_sheet() -> None:
     assert "ナプキン" not in text
     assert "イメージです" not in text
     assert "<d>" not in text
-    assert "No one speaks." in text
+    assert "No one speaks." not in text
+    assert "shape words" not in text
+    assert not _JAPANESE.search(text)
+    assert "Place: a yard in midsummer." in text
+    assert "Guest" not in text and "the guest" not in text
+    assert "The grey Munchkin cat's lower jaw drops and rises, more than once." in text
+    assert "The white Scottish Fold cat's mouth stays closed." in text
+    assert "The adult woman's face stays out of frame." in text
+    assert "In frame: the grey Munchkin cat and the white Scottish Fold cat." in text
+    first = structure.picture_prompt(filled, 0.0, 4.192)
+    assert "Cast: a grey Munchkin cat; a white Scottish Fold cat." in first
+    assert "pool" not in first
+    door = structure.picture_prompt(filled, 42.6, 46.072)
+    assert (
+        "Cast: an adult woman in their late twenties, wearing loose loungewear, with hair tied back; "
+        "a grey Munchkin cat; a white Scottish Fold cat."
+    ) in door
+    assert "The adult woman's body stands upright in the doorway." in door
+    quiet = structure.picture_prompt(filled, 15.8, 20.8)
+    assert "No one speaks. No writing. No music. No logo." in quiet
     assert filled["shots"][0]["camera"]
     assert structure.load()["duration_s"] == 71.552
     url = (
@@ -227,13 +258,18 @@ def test_paw_stamp_is_another_pack_of_the_same_sheet() -> None:
         assert line not in text
     assert "lower jaw drops and rises" in text
     assert "口が開閉" not in text
-    assert "グレーのマンチカン" in text
-    assert "短い足の茶色い犬" in text
+    assert "グレーのマンチカン" not in text
+    assert "短い足の茶色い犬" not in text
+    assert not _JAPANESE.search(text)
+    assert "a grey Munchkin cat" in text
+    assert "Place: a living room in daylight, with a thin blanket on the sofa, with a treat dish on the floor." in text
+    assert "The short-legged brown dog's lower jaw drops and rises, more than once." in text
+    assert "the person" not in text.casefold()
     assert "名刺" not in text
     assert "お尻" not in text
     assert "猫" not in text
     assert "<d>" not in text
-    assert "No one speaks." in text
+    assert "No one speaks." not in text
     assert structure.load()["duration_s"] == 71.552
     voices = pack["voices"]
     assert voices["guest"] == "espeak:ja"
@@ -274,8 +310,11 @@ def test_homage_pack_keeps_measured_times_and_drops_the_words(tmp_path: Path) ->
     assert "オアシス" not in text
     assert "e-01" not in text
     assert "Mouths do not form words." not in text
-    assert "From 0.2 to 1, the 客 lower jaw drops and rises." in text
-    assert "From 4.2 to 5.2, the 客 lower jaw drops and rises." in text
+    assert "From 0.2 to 1, the guest's lower jaw drops and rises." in text
+    assert "From 4.2 to 5.2, the guest's lower jaw drops and rises." in text
+    assert not _JAPANESE.search(text)
+    named = structure.fill(loaded, animals={"guest": "茶トラの猫"})
+    assert "From 0.2 to 1, the orange tabby cat's lower jaw drops and rises." in structure.picture_prompt(named, 0, 6)
     assert "The other mouths stay closed. Those jaws do not travel." in text
     assert "Every mouth stays closed. Those jaws do not travel." in text
     assert "The lower jaw drops and rises, more than once" not in text
@@ -309,14 +348,14 @@ def test_reference_paths_bind_to_the_role_and_stay_off_locked_sheets() -> None:
     lines = structure._body_lines(picture, "", False)
     assert lines == [
         "The two animals' bodies stay seated with the backs toward the lens, and the heads turn toward each other.",
-        "The guest's mouth keeps hold of a thin stick. That jaw does not travel and does not shape words.",
+        "The guest's mouth keeps hold of a thin stick. That jaw does not travel.",
         "The guest's forepaw rises to the thin stick at the mouth and then lowers. The stick leaves that mouth.",
         "The guest's forepaw stays raised in front of the chest.",
         "The guest's weight moves onto the hind legs and the torso rises until the body is standing, and both forepaws close around a vertical stick held in front of the chest.",
         "The guest's forepaws raise the vertical stick until it is beside the head.",
         "The guest's forepaw lays the stick across the top of the head.",
         "The person's hand rises onto the top of the head.",
-        "The person's eyelids squeeze shut and the jaw drops until the teeth show. That jaw does not shape words.",
+        "The person's eyelids squeeze shut and the jaw drops until the teeth show.",
         "The person's knees stay on the floor and both hands stay on the flat object on the floor.",
         "The guest's body leaves the floor and travels forward through the air.",
         "The stick drops to the floor and stays there.",
@@ -345,6 +384,55 @@ def test_reference_paths_bind_to_the_role_and_stay_off_locked_sheets() -> None:
         text = structure.picture_prompt(pack, 0.0, float(pack["duration_s"]))
         for word in fresh:
             assert word not in text
+
+
+def test_slots_reach_h3_in_english_or_stop() -> None:
+    assert structure.slot_english("グレーのマンチカン") == ("a grey Munchkin cat", "the grey Munchkin cat")
+    assert structure.slot_english("白いスコティッシュフォールド") == (
+        "a white Scottish Fold cat",
+        "the white Scottish Fold cat",
+    )
+    assert structure.slot_english("短い足の茶色い犬") == ("a short-legged brown dog", "the short-legged brown dog")
+    assert structure.slot_english("20代後半の成人の女性。ゆるい部屋着。髪はひとつ結び") == (
+        "an adult woman in their late twenties, wearing loose loungewear, with hair tied back",
+        "the adult woman",
+    )
+    assert structure.slot_english("真夏の庭")[0] == "a yard in midsummer"
+    assert structure.slot_english("a grey cat with a red collar") == (
+        "a grey cat with a red collar",
+        "the grey cat with a red collar",
+    )
+    assert structure.slot_english("A cat, small, with stripes.")[1] == ""
+    with pytest.raises(ValueError, match="ふわふわ"):
+        structure.slot_english("ふわふわの猫")
+    pack = structure.load(ROOT / "stories" / "pet_sheet.yaml")
+    unknown = structure.fill(
+        pack,
+        person="出さない",
+        animals={"guest": "出さない", "retort": "ふわふわの猫", "polite": "白い猫"},
+        place="真夏の庭",
+    )
+    reasons = structure.blocked(unknown)
+    assert any(reason.startswith("ツッコミの動物「ふわふわの猫」は英語にできない語がある") for reason in reasons)
+    assert "s15 の画面に「出さない」の飼い主がいる" in reasons
+    assert "s16 の画面に「出さない」の飼い主がいる" in reasons
+    text = structure.picture_prompt(unknown, 0.0, float(pack["duration_s"]))
+    assert not _JAPANESE.search(text)
+    assert "the retort: not named" in text
+    english = structure.fill(
+        pack,
+        person="an adult man in a plain shirt",
+        animals={"guest": "出さない", "retort": "a black cat", "polite": "a white cat"},
+        place="a small balcony at noon",
+        lines={"c01": "あっつ"},
+    )
+    assert [reason for reason in structure.blocked(english) if "入力のまま" not in reason] == []
+    english_text = structure.picture_prompt(english, 0.0, 4.192)
+    assert "Place: a small balcony at noon." in english_text
+    assert "The black cat's lower jaw drops and rises, more than once." in english_text
+    paw = structure.load(ROOT / "stories" / "paw_stamp.yaml")
+    spoken_guest = structure.fill(paw, animals={"guest": "出さない"}, lines={"c07": "休業"})
+    assert "c07 は「出さない」の客のせりふ" in structure.blocked(spoken_guest)
 
 
 def test_line_fit_stops_only_when_the_sheet_asks() -> None:

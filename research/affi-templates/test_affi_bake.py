@@ -1130,9 +1130,12 @@ def test_the_locked_sheet_bakes_a_picture_and_leaves_speech_for_later(tmp_path: 
         assert bake._accepts(clip["request_s"])
         assert "文1" not in clip["prompt"]
         assert "おい、そこのデブ" not in clip["prompt"]
-        assert "小さい鳥" in clip["prompt"]
+        assert "小さい鳥" not in clip["prompt"]
+        assert "Place: a different room." in clip["prompt"]
         assert "lip-synced" not in clip["prompt"].casefold()
         assert "<d>" not in clip["prompt"]
+        music_field = clip["prompt"].split("non_diegetic_music:", 1)[1]
+        assert "holds" not in music_field
     assert covered == pytest.approx(71.552, abs=0.02)
     assert previous == pytest.approx(71.552, abs=0.02)
     captions = json.loads((folder / "captions.json").read_text(encoding="utf-8"))
@@ -1174,7 +1177,8 @@ def test_the_locked_sheet_bakes_a_picture_and_leaves_speech_for_later(tmp_path: 
     assert "イメージです" not in blob
     assert "lower jaw drops and rises" in blob
     assert "口が開閉" not in blob
-    assert "グレーのマンチカン" in blob
+    assert "グレーのマンチカン" not in blob
+    assert "a grey Munchkin cat" in blob
     assert "<d>" not in blob
     url = (
         "https://github.com/fireworker011/Research/blob/"
@@ -1387,7 +1391,10 @@ def test_homage_stops_before_bake_when_the_line_does_not_fit(tmp_path: Path) -> 
     blob = "\n".join(clip["prompt"] for clip in blocked["clips"])
     assert "砂漠" not in blob and "オアシス" not in blob and "ナプキン" not in blob
     assert "ひとつ" not in blob and "元の顔" not in blob
-    assert "昼の台所" in blob
+    assert "昼の台所" not in blob
+    assert "Place: a kitchen in daylight." in blob
+    held = next(clip["prompt"] for clip in blocked["clips"] if "same frame holds" in clip["prompt"])
+    assert held.index("same frame holds") < held.index("overall_soundscape:")
     ready = bake.plan_homage(**common, probe=lambda _text, _role: 0.5)
     assert ready["status"] == "ready"
     assert ready["source_cuts"] == [2.5]
