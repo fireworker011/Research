@@ -168,7 +168,7 @@ PYTHONPATH=. python -m irasutoya_short make examples/oshitsuke.json \
 
 - `asset_count` が 20 以下
 - `credits` に、その回で話した `VOICEVOX:` の名前がある
-- `within_25_40` が true
+- `within_20_30` が true
 
 動画の最後のクレジットは消さない。概要欄に書くときも、同じ文字列を使う。
 

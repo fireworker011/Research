@@ -228,7 +228,7 @@ def _summary(project: dict, out_path: Path) -> dict:
         "rejected_count": len(project["asset_report"]["rejected"]),
         "credits": project["credits"],
         "terms": TERMS,
-        "within_25_40": MIN_DURATION <= duration <= MAX_DURATION,
+        "within_20_30": MIN_DURATION <= duration <= MAX_DURATION,
     }
 
 

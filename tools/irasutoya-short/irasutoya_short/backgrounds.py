@@ -62,15 +62,6 @@ def _office(width: int, height: int, night: bool) -> np.ndarray:
     # 窓
     win = (40, 90, 420, int(height * 0.48))
     draw.rounded_rectangle(win, radius=12, fill=(18, 28, 48) if night else (198, 228, 255), outline=(80, 80, 90), width=8)
-    if night:
-        rng = np.random.default_rng(3)
-        for _ in range(18):
-            x = int(rng.integers(60, 390))
-            y = int(rng.integers(110, int(height * 0.42)))
-            draw.rectangle((x, y, x + 18, y + 12), fill=(255, 214, 90))
-    else:
-        draw.rectangle((70, 120, 200, 280), fill=(255, 255, 255))
-        draw.rectangle((230, 150, 380, 300), fill=(170, 190, 210))
     # 蛍光灯
     light = (255, 244, 210) if not night else (90, 110, 150)
     draw.rounded_rectangle((width - 280, 40, width - 80, 70), radius=8, fill=light)

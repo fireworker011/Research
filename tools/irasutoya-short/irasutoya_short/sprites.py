@@ -452,12 +452,8 @@ def draw_mouth(rgba: np.ndarray, anchor: MouthAnchor, openness: float, skin: np.
 
 
 def mouth_levels(rgba: np.ndarray, levels: int = 7) -> tuple[list[np.ndarray], MouthAnchor | None]:
-    anchor = mouth_anchor(rgba)
-    if anchor is None:
-        return [rgba.copy() for _ in range(levels)], None
-    skin = skin_color(rgba, anchor.x, anchor.y, anchor.width)
-    frames = [draw_mouth(rgba, anchor, i / (levels - 1), skin) for i in range(levels)]
-    return frames, anchor
+    """口の重ね絵は描かない。イラストに描いてある口をそのまま使う。"""
+    return [rgba.copy() for _ in range(levels)], mouth_anchor(rgba)
 
 
 def scale_rgba(arr: np.ndarray, height: int) -> np.ndarray:

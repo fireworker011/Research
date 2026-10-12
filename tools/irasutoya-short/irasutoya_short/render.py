@@ -4,7 +4,6 @@ from __future__ import annotations
 
 import shutil
 import subprocess
-from functools import lru_cache
 from pathlib import Path
 
 import numpy as np
@@ -84,14 +83,14 @@ def render_telop(
         return overlay
     look = style or telop_style("sukatto")
     tone_name = tone or role
-    max_w = int(width * 0.88)
-    start = 64 if role == "credit" else int(look["size"])
-    size = max(28, int(start * scale))
+    max_w = int(width * 0.92)
+    start = 64 if role == "credit" else max(int(look["size"]), 104)
+    size = max(36, int(start * scale))
     font = find_font(size)
     while size > 28:
         font = find_font(size)
         tw, th = _text_size(font, text)
-        if tw <= max_w and th <= int(height * 0.28):
+        if tw <= max_w and th <= int(height * 0.34):
             break
         size -= 2
     tw, th = _text_size(font, text)
@@ -113,24 +112,13 @@ def render_telop(
     fill = telop_color(look, tone_name, role)
     tx = cx - tw // 2
     ty = top + pad_y - 4
-    stroke = 3 if role == "credit" else int(look["stroke"])
+    stroke = 4 if role == "credit" else max(6, int(look["stroke"]))
     for dx in range(-stroke, stroke + 1):
         for dy in range(-stroke, stroke + 1):
             if dx * dx + dy * dy > stroke * stroke:
                 continue
             draw.multiline_text((tx + dx, ty + dy), text, font=font, fill=(0, 0, 0, 255), spacing=8, align="center")
     draw.multiline_text((tx, ty), text, font=font, fill=fill, spacing=8, align="center")
-    return np.array(img)
-
-
-@lru_cache(maxsize=32)
-def _label(text: str) -> np.ndarray:
-    font = find_font(36)
-    tw, th = _text_size(font, text)
-    img = Image.new("RGBA", (tw + 36, th + 20), (0, 0, 0, 0))
-    draw = ImageDraw.Draw(img)
-    draw.rounded_rectangle((0, 0, img.width - 1, img.height - 1), radius=12, fill=(220, 60, 30, 230))
-    draw.text((18, 6), text, font=font, fill=(255, 255, 255, 255))
     return np.array(img)
 
 
@@ -161,6 +149,24 @@ def _shake(frame: np.ndarray, amp: int, t: float) -> np.ndarray:
     dx = int(amp * np.sin(t * 47))
     dy = int(amp * np.cos(t * 33))
     return shift_frame(frame, dx, dy)
+
+
+def _is_reaction(scene: dict) -> bool:
+    if scene.get("effect") in ("shake", "zoom_shake"):
+        return True
+    return scene.get("sfx") in ("shock",)
+
+
+def _light_motion(frame: np.ndarray, scene: dict, local_t: float) -> np.ndarray:
+    """ゆっくりズームとパン。反応のシーンだけ、小さく揺らす。字幕はここより後に載せる。"""
+    duration = max(float(scene.get("duration") or 0.01), 0.01)
+    p = min(1.0, local_t / duration)
+    dx = int(round((p - 0.5) * 28))
+    dy = int(round((0.5 - p) * 12))
+    moved = shift_frame(frame, dx, dy)
+    if _is_reaction(scene):
+        moved = _shake(moved, 5, local_t)
+    return _zoom(moved, 1.02 + 0.045 * p)
 
 
 class SpriteBook:
@@ -207,9 +213,6 @@ def _place_characters(frame, scene, book: SpriteBook, openness: float, mouth_gai
         x = int(xs[index] - sprite.shape[1] / 2)
         y = foot - sprite.shape[0]
         blit(frame, sprite, x, y)
-        if ch.get("label"):
-            tag = _label(ch["label"])
-            blit(frame, tag, x + sprite.shape[1] // 2 - tag.shape[1] // 2, max(0, y - tag.shape[0] - 6))
 
 
 def _talking(ch: dict, scene: dict, index: int) -> bool:
@@ -263,17 +266,13 @@ def compose_frame(scene, book, bg, lines, telop, openness, mouth_gain, layout, l
     look = style or telop_style("sukatto")
     slide_seconds = max(0.04, float(look.get("slide", 0.16)))
     slide = int(30 * max(0.0, 1.0 - local_t / slide_seconds))
+    frame = _light_motion(frame, scene, local_t)
     blit(frame, telop, 0, slide)
-    zoom = 1.0
-    if scene["effect"] in ("zoom", "zoom_shake"):
-        p = min(1.0, local_t / max(scene["duration"], 0.01))
-        zoom = 1.0 + 0.08 * np.sin(p * np.pi)
-    amp = 12 if scene["effect"] in ("shake", "zoom_shake") else 0
-    frame = _shake(frame, amp, local_t)
-    return _zoom(frame, float(zoom))
+    return frame
 
 
-def render_movie(project: dict, out_path: Path, preview_dir: Path | None = None) -> None:
+def render_movie(project: dict, out_path: Path, preview_dir: Path | None = None, *, pictures_only: bool = False) -> int:
+    """フレームを書き出す。pictures_only のときは声を載せない。戻り値はフレーム数。"""
     scenes = project["scenes"]
     settings = project["settings"]
     layout = project["layout"]
@@ -295,13 +294,16 @@ def render_movie(project: dict, out_path: Path, preview_dir: Path | None = None)
         for s in scenes
     ]
     nframes = sum(int(round(s["duration"] * FPS)) for s in scenes)
-    audio = fit_length(np.asarray(project["audio"], dtype=np.float32), samples_for_frames(nframes))
     if preview_dir is not None:
         preview_dir.mkdir(parents=True, exist_ok=True)
     out_path.parent.mkdir(parents=True, exist_ok=True)
     wav_path = out_path.with_suffix(".mix.wav")
-    write_wav(wav_path, audio)
-    proc = _open_encoder(out_path, wav_path)
+    if pictures_only:
+        proc = _open_video_encoder(out_path)
+    else:
+        audio = fit_length(np.asarray(project["audio"], dtype=np.float32), samples_for_frames(nframes))
+        write_wav(wav_path, audio)
+        proc = _open_encoder(out_path, wav_path)
     scene_i = 0
     scene_frame = 0
     scene_len = int(round(scenes[0]["duration"] * FPS))
@@ -332,7 +334,46 @@ def render_movie(project: dict, out_path: Path, preview_dir: Path | None = None)
     else:
         _finish_encoder(proc, out_path)
     finally:
-        wav_path.unlink(missing_ok=True)
+        if not pictures_only:
+            wav_path.unlink(missing_ok=True)
+    return nframes
+
+
+def mux_voice(video: Path, wav: Path, out_path: Path) -> None:
+    """書き出した絵はそのままに、声だけ載せる。"""
+    if shutil.which("ffmpeg") is None:
+        raise RuntimeError("ffmpeg がありません。docs/GROK_BUILD.md のパッケージ手順を実行してください。")
+    out_path.parent.mkdir(parents=True, exist_ok=True)
+    cmd = [
+        "ffmpeg", "-y", "-loglevel", "error",
+        "-i", str(video),
+        "-i", str(wav),
+        "-c:v", "copy",
+        "-c:a", "aac", "-b:a", "160k",
+        "-movflags", "+faststart",
+        "-shortest",
+        str(out_path),
+    ]
+    proc = subprocess.run(cmd, capture_output=True)
+    if proc.returncode != 0:
+        err = proc.stderr.decode("utf-8", "replace").strip()
+        raise RuntimeError(f"ffmpeg が失敗しました: {err or out_path}")
+
+
+def _open_video_encoder(path: Path) -> subprocess.Popen[bytes]:
+    if shutil.which("ffmpeg") is None:
+        raise RuntimeError("ffmpeg がありません。docs/GROK_BUILD.md のパッケージ手順を実行してください。")
+    cmd = [
+        "ffmpeg", "-y", "-loglevel", "error",
+        "-f", "rawvideo", "-pix_fmt", "rgb24", "-s", f"{WIDTH}x{HEIGHT}", "-r", str(FPS),
+        "-i", "pipe:0",
+        "-an",
+        "-c:v", "libx264", "-preset", "veryfast", "-crf", "20",
+        "-pix_fmt", "yuv420p", "-vsync", "cfr",
+        "-movflags", "+faststart",
+        str(path),
+    ]
+    return subprocess.Popen(cmd, stdin=subprocess.PIPE, stderr=subprocess.PIPE)
 
 
 def _open_encoder(path: Path, wav_path: Path) -> subprocess.Popen[bytes]:
