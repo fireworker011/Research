@@ -1,7 +1,8 @@
-"""テロップと画面演出を乗せて、6秒ごとに書き出して結合する。"""
+"""テロップと画面演出を乗せて、1本の mp4 に書き出す。"""
 
 from __future__ import annotations
 
+import shutil
 import subprocess
 from functools import lru_cache
 from pathlib import Path
@@ -9,24 +10,23 @@ from pathlib import Path
 import numpy as np
 from PIL import Image, ImageDraw, ImageFont
 
-from irasutoya_short.audio import write_wav
+from irasutoya_short.audio import fit_length, samples_for_frames, write_wav
 from irasutoya_short.backgrounds import concentration, render_bg
-from irasutoya_short.constants import FONT_CANDIDATES, FPS, HEIGHT, SAMPLE_RATE, WIDTH
+from irasutoya_short.constants import FONT_CANDIDATES, FPS, HEIGHT, WIDTH
 from irasutoya_short.sprites import load_rgba, mouth_levels, scale_rgba
+from irasutoya_short.templates import telop_bar_fill, telop_color, telop_style
 
-TELOP_COLORS = {
-    "hook": (255, 226, 40, 255),
-    "punch": (255, 226, 40, 255),
-    "close": (255, 226, 40, 255),
-    "develop": (255, 255, 255, 255),
-    "credit": (255, 255, 255, 255),
-}
-
-
-def find_font(size: int) -> ImageFont.FreeTypeFont:
+def bundled_font() -> str:
     for path in FONT_CANDIDATES:
         if Path(path).is_file():
-            return ImageFont.truetype(path, size=size)
+            return path
+    return ""
+
+
+def find_font(size: int) -> ImageFont.FreeTypeFont | ImageFont.ImageFont:
+    path = bundled_font()
+    if path:
+        return ImageFont.truetype(path, size=size)
     return ImageFont.load_default()
 
 
@@ -59,12 +59,33 @@ def _text_size(font: ImageFont.ImageFont, text: str) -> tuple[int, int]:
     return box[2] - box[0], box[3] - box[1]
 
 
-def render_telop(text: str, role: str, width: int, height: int, scale: float, y_ratio: float) -> np.ndarray:
+def _bar_radius(kind: str, bar_h: int) -> int:
+    if kind == "round":
+        return 22
+    if kind == "square":
+        return 4
+    if kind == "pill":
+        return max(4, bar_h // 2)
+    raise ValueError(f"未知のテロップ枠です: {kind}")
+
+
+def render_telop(
+    text: str,
+    role: str,
+    width: int,
+    height: int,
+    scale: float,
+    y_ratio: float,
+    tone: str = "",
+    style: dict | None = None,
+) -> np.ndarray:
     overlay = np.zeros((height, width, 4), dtype=np.uint8)
     if not text.strip():
         return overlay
+    look = style or telop_style("sukatto")
+    tone_name = tone or role
     max_w = int(width * 0.88)
-    start = 64 if role == "credit" else 78
+    start = 64 if role == "credit" else int(look["size"])
     size = max(28, int(start * scale))
     font = find_font(size)
     while size > 28:
@@ -83,11 +104,16 @@ def render_telop(text: str, role: str, width: int, height: int, scale: float, y_
     top = int(height * y_ratio - bar_h / 2)
     top = max(8, min(height - bar_h - 8, top))
     left = cx - bar_w // 2
-    draw.rounded_rectangle((left, top, left + bar_w, top + bar_h), radius=22, fill=(0, 0, 0, 170))
-    fill = TELOP_COLORS.get(role, (255, 255, 255, 255))
+    radius = _bar_radius(str(look["bar"]), bar_h)
+    draw.rounded_rectangle(
+        (left, top, left + bar_w, top + bar_h),
+        radius=radius,
+        fill=telop_bar_fill(look, tone_name, role),
+    )
+    fill = telop_color(look, tone_name, role)
     tx = cx - tw // 2
     ty = top + pad_y - 4
-    stroke = 5 if role != "credit" else 3
+    stroke = 3 if role == "credit" else int(look["stroke"])
     for dx in range(-stroke, stroke + 1):
         for dy in range(-stroke, stroke + 1):
             if dx * dx + dy * dy > stroke * stroke:
@@ -119,12 +145,22 @@ def _zoom(frame: np.ndarray, zoom: float) -> np.ndarray:
     return np.array(im)
 
 
+def shift_frame(frame: np.ndarray, dx: int, dy: int) -> np.ndarray:
+    """画面をずらす。はみ出した分は端の色を伸ばし、反対側へ回さない。"""
+    if dx == 0 and dy == 0:
+        return frame
+    height, width = frame.shape[:2]
+    y_idx = np.clip(np.arange(height) - dy, 0, height - 1)
+    x_idx = np.clip(np.arange(width) - dx, 0, width - 1)
+    return frame[y_idx[:, None], x_idx[None, :]]
+
+
 def _shake(frame: np.ndarray, amp: int, t: float) -> np.ndarray:
     if amp <= 0:
         return frame
     dx = int(amp * np.sin(t * 47))
     dy = int(amp * np.cos(t * 33))
-    return np.roll(np.roll(frame, dy, axis=0), dx, axis=1)
+    return shift_frame(frame, dx, dy)
 
 
 class SpriteBook:
@@ -170,8 +206,6 @@ def _place_characters(frame, scene, book: SpriteBook, openness: float, mouth_gai
         sprite = frames[pick]
         x = int(xs[index] - sprite.shape[1] / 2)
         y = foot - sprite.shape[0]
-        if talking:
-            y += int(level * 8)
         blit(frame, sprite, x, y)
         if ch.get("label"):
             tag = _label(ch["label"])
@@ -219,14 +253,16 @@ def _place_props(frame, scene, book: SpriteBook) -> None:
         blit(frame, sprite, x, y)
 
 
-def compose_frame(scene, book, bg, lines, telop, openness, mouth_gain, layout, local_t) -> np.ndarray:
+def compose_frame(scene, book, bg, lines, telop, openness, mouth_gain, layout, local_t, style=None) -> np.ndarray:
     frame = bg.copy()
     if scene["effect"] == "lines" or scene["bg"] == "lines":
         blit(frame, lines, 0, 0)
     _draw_papers(frame, scene)
     _place_props(frame, scene, book)
     _place_characters(frame, scene, book, openness, mouth_gain, layout)
-    slide = int(30 * max(0.0, 1.0 - local_t / 0.16))
+    look = style or telop_style("sukatto")
+    slide_seconds = max(0.04, float(look.get("slide", 0.16)))
+    slide = int(30 * max(0.0, 1.0 - local_t / slide_seconds))
     blit(frame, telop, 0, slide)
     zoom = 1.0
     if scene["effect"] in ("zoom", "zoom_shake"):
@@ -241,96 +277,126 @@ def render_movie(project: dict, out_path: Path, preview_dir: Path | None = None)
     scenes = project["scenes"]
     settings = project["settings"]
     layout = project["layout"]
+    style = project.get("telop_style") or telop_style(str(project.get("template") or "sukatto"))
     book = SpriteBook(project["asset_paths"])
     bgs = {name: render_bg(name) for name in {s["bg"] for s in scenes}}
     lines = concentration()
     telops = [
-        render_telop(s["telop"], s["role"], WIDTH, HEIGHT, settings["telop_scale"], layout["telop_y_ratio"] if s["role"] != "credit" else 0.5)
+        render_telop(
+            s["telop"],
+            s["role"],
+            WIDTH,
+            HEIGHT,
+            settings["telop_scale"],
+            0.5 if s["role"] == "credit" else layout["telop_y_ratio"],
+            str(s.get("tone") or s["role"]),
+            style,
+        )
         for s in scenes
     ]
     nframes = sum(int(round(s["duration"] * FPS)) for s in scenes)
-    audio = project["audio"]
+    audio = fit_length(np.asarray(project["audio"], dtype=np.float32), samples_for_frames(nframes))
     if preview_dir is not None:
         preview_dir.mkdir(parents=True, exist_ok=True)
-
     out_path.parent.mkdir(parents=True, exist_ok=True)
-    chunk_dir = out_path.parent / "chunks"
-    chunk_dir.mkdir(exist_ok=True)
-    chunk_frames = int(round(project.get("chunk_seconds", 6) * FPS))
-    paths: list[Path] = []
+    wav_path = out_path.with_suffix(".mix.wav")
+    write_wav(wav_path, audio)
+    proc = _open_encoder(out_path, wav_path)
     scene_i = 0
     scene_frame = 0
     scene_len = int(round(scenes[0]["duration"] * FPS))
-    for start in range(0, nframes, chunk_frames):
-        end = min(nframes, start + chunk_frames)
-        frames: list[np.ndarray] = []
-        for _ in range(start, end):
+    print(f"scene {scenes[0]['id']}/{len(scenes)}", flush=True)
+    try:
+        for _ in range(nframes):
             if scene_frame >= scene_len and scene_i < len(scenes) - 1:
                 scene_i += 1
                 scene_frame = 0
                 scene_len = int(round(scenes[scene_i]["duration"] * FPS))
+                print(f"scene {scenes[scene_i]['id']}/{len(scenes)}", flush=True)
             scene = scenes[scene_i]
             env = scene["envelope"]
             openness = float(env[scene_frame]) if scene_frame < len(env) else 0.0
             local_t = scene_frame / FPS
             frame = compose_frame(
                 scene, book, bgs[scene["bg"]], lines, telops[scene_i],
-                openness, settings["mouth_gain"], layout, local_t,
+                openness, settings["mouth_gain"], layout, local_t, style,
             )
             peak = int(np.argmax(env)) if len(env) else 0
             if preview_dir is not None and scene_frame == peak:
                 Image.fromarray(frame, "RGB").save(preview_dir / f"scene_{scene['id']:02d}.png")
-            frames.append(frame)
+            _write_frame(proc, frame)
             scene_frame += 1
-        audio_slice = _slice_audio(audio, start, end)
-        chunk_path = chunk_dir / f"chunk_{start:05d}.mp4"
-        _encode(frames, audio_slice, chunk_path)
-        paths.append(chunk_path)
-        print(f"chunk {len(paths)}: frames {start}-{end}", flush=True)
-    _concat(paths, out_path)
+    except Exception:
+        _stop_encoder(proc)
+        raise
+    else:
+        _finish_encoder(proc, out_path)
+    finally:
+        wav_path.unlink(missing_ok=True)
 
 
-def _slice_audio(audio: np.ndarray, start: int, end: int) -> np.ndarray:
-    a = int(start / FPS * SAMPLE_RATE)
-    b = int(end / FPS * SAMPLE_RATE)
-    return audio[a:b]
-
-
-def _encode(frames: list[np.ndarray], audio: np.ndarray, path: Path) -> None:
-    wav_path = path.with_suffix(".wav")
-    write_wav(wav_path, audio)
+def _open_encoder(path: Path, wav_path: Path) -> subprocess.Popen[bytes]:
+    if shutil.which("ffmpeg") is None:
+        raise RuntimeError("ffmpeg がありません。docs/GROK_BUILD.md のパッケージ手順を実行してください。")
     cmd = [
         "ffmpeg", "-y", "-loglevel", "error",
         "-f", "rawvideo", "-pix_fmt", "rgb24", "-s", f"{WIDTH}x{HEIGHT}", "-r", str(FPS),
         "-i", "pipe:0",
         "-i", str(wav_path),
         "-c:v", "libx264", "-preset", "veryfast", "-crf", "20",
-        "-pix_fmt", "yuv420p",
+        "-pix_fmt", "yuv420p", "-vsync", "cfr",
         "-c:a", "aac", "-b:a", "160k",
+        "-movflags", "+faststart",
         "-shortest",
         str(path),
     ]
-    proc = subprocess.Popen(cmd, stdin=subprocess.PIPE)
-    assert proc.stdin is not None
-    for frame in frames:
+    return subprocess.Popen(cmd, stdin=subprocess.PIPE, stderr=subprocess.PIPE)
+
+
+def _write_frame(proc: subprocess.Popen[bytes], frame: np.ndarray) -> None:
+    if proc.stdin is None:
+        raise RuntimeError("ffmpeg の入力が開いていません。")
+    try:
         proc.stdin.write(frame.tobytes())
-    proc.stdin.close()
-    code = proc.wait()
-    wav_path.unlink(missing_ok=True)
+    except BrokenPipeError as exc:
+        err = _read_stderr(proc)
+        raise RuntimeError(f"ffmpeg が失敗しました: {err or '入力が閉じられました'}") from exc
+
+
+def _finish_encoder(proc: subprocess.Popen[bytes], path: Path) -> None:
+    if proc.stdin is not None:
+        try:
+            proc.stdin.close()
+        except BrokenPipeError as exc:
+            err = _read_stderr(proc)
+            proc.wait(timeout=30)
+            raise RuntimeError(f"ffmpeg が失敗しました: {err or path}") from exc
+    try:
+        code = proc.wait(timeout=600)
+    except subprocess.TimeoutExpired as exc:
+        proc.kill()
+        proc.wait(timeout=30)
+        raise RuntimeError(f"ffmpeg が時間内に終わりませんでした: {path}") from exc
+    err = _read_stderr(proc)
     if code != 0:
-        raise RuntimeError(f"ffmpeg が失敗しました: {path}")
+        raise RuntimeError(f"ffmpeg が失敗しました: {err or path}")
 
 
-def _concat(paths: list[Path], out_path: Path) -> None:
-    if len(paths) == 1:
-        paths[0].replace(out_path)
-        return
-    listing = out_path.with_suffix(".txt")
-    listing.write_text("".join(f"file '{p}'\n" for p in paths), encoding="utf-8")
-    cmd = [
-        "ffmpeg", "-y", "-loglevel", "error",
-        "-f", "concat", "-safe", "0", "-i", str(listing),
-        "-c", "copy", str(out_path),
-    ]
-    subprocess.run(cmd, check=True)
-    listing.unlink(missing_ok=True)
+def _stop_encoder(proc: subprocess.Popen[bytes]) -> None:
+    if proc.poll() is None:
+        proc.kill()
+    if proc.stdin is not None:
+        try:
+            proc.stdin.close()
+        except BrokenPipeError:
+            pass
+    try:
+        proc.wait(timeout=30)
+    except subprocess.TimeoutExpired:
+        pass
+
+
+def _read_stderr(proc: subprocess.Popen[bytes]) -> str:
+    if proc.stderr is None:
+        return ""
+    return proc.stderr.read().decode("utf-8", "replace").strip()

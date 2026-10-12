@@ -5,6 +5,7 @@ from __future__ import annotations
 import re
 
 from irasutoya_short.constants import MAX_SCENES
+from irasutoya_short.templates import scale_speeds
 from irasutoya_short.textutil import spoken, wrap_telop
 
 
@@ -14,12 +15,10 @@ def apply_note(project: dict, note: str) -> list[str]:
     text = note.strip()
     changes: list[str] = []
     if any(word in text for word in ("テンポ悪い", "テンポが悪い", "長い", "だるい", "のろい", "遅い", "間がもた")):
-        settings["speed"] = round(float(settings["speed"]) * 1.15, 3)
-        settings["hook_speed"] = round(float(settings["hook_speed"]) * 1.12, 3)
+        scale_speeds(settings, 1.15, 1.12)
         changes.append("テンポを上げた")
     if any(word in text for word in ("早すぎ", "早過ぎ", "せわしない", "テンポが速い", "テンポ速い")):
-        settings["speed"] = round(float(settings["speed"]) * 0.88, 3)
-        settings["hook_speed"] = round(float(settings["hook_speed"]) * 0.9, 3)
+        scale_speeds(settings, 0.88, 0.9)
         changes.append("テンポを落とした")
     if any(word in text for word in ("はみ出", "見切れ", "文字が大きい", "文字がでかい")):
         settings["telop_scale"] = round(float(settings["telop_scale"]) * 0.82, 3)

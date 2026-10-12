@@ -2,10 +2,13 @@
 
 from __future__ import annotations
 
+import hashlib
 import html
 import json
+import os
 import re
 import time
+import urllib.error
 import urllib.parse
 import urllib.request
 from pathlib import Path
@@ -20,10 +23,43 @@ FEED = "https://www.irasutoya.com/feeds/posts/default"
 USER_AGENT = "irasutoya-short/1.0"
 
 
+def default_cache_root() -> Path:
+    return Path(os.environ.get("IRASUTOYA_CACHE", Path.home() / ".cache/irasutoya-short/images"))
+
+
+def cache_file(url: str, root: Path | None = None) -> Path:
+    digest = hashlib.sha256(url.encode("utf-8")).hexdigest()[:24]
+    return (root or default_cache_root()) / f"{digest}.png"
+
+
+def normalize_entries(entry: object) -> list:
+    """Blogger の entry は、1件のとき辞書、0件のとき欠ける。"""
+    if entry is None:
+        return []
+    if isinstance(entry, dict):
+        return [entry]
+    if isinstance(entry, list):
+        return entry
+    return []
+
+
 def _get(url: str) -> bytes:
-    req = urllib.request.Request(url, headers={"User-Agent": USER_AGENT})
-    with urllib.request.urlopen(req, timeout=40) as resp:
-        return resp.read()
+    last: Exception | None = None
+    for attempt in range(3):
+        try:
+            req = urllib.request.Request(url, headers={"User-Agent": USER_AGENT})
+            with urllib.request.urlopen(req, timeout=40) as resp:
+                return resp.read()
+        except urllib.error.HTTPError as exc:
+            if exc.code in (404, 410):
+                raise
+            last = exc
+        except (urllib.error.URLError, TimeoutError, ConnectionError, OSError) as exc:
+            last = exc
+        time.sleep(0.4 * (attempt + 1))
+    if last is None:
+        raise RuntimeError(f"取得に失敗しました: {url}")
+    raise last
 
 
 def _attr(tag: str, name: str) -> str:
@@ -60,7 +96,7 @@ def search_posts(query: str, max_results: int = 8) -> list[dict]:
     raw = _get(f"{FEED}?{params}")
     data = json.loads(raw.decode("utf-8"))
     posts = []
-    for entry in data.get("feed", {}).get("entry", []):
+    for entry in normalize_entries(data.get("feed", {}).get("entry")):
         title = entry.get("title", {}).get("$t", "")
         content = entry.get("content", {}).get("$t", "")
         link = ""
@@ -73,14 +109,19 @@ def search_posts(query: str, max_results: int = 8) -> list[dict]:
     return posts
 
 
-def _score(title: str, alt: str, needles: list[str], gender: str) -> int:
+def match_score(title: str, alt: str, needles: list[str], gender: str) -> int:
+    """0 は針が一つも刺さっていない。負はタイトル不採用。針が刺さると正。"""
     if title_rejection(title, alt, gender):
         return -1
     blob = f"{title} {alt}"
     score = 0
+    hit = False
     for needle in needles:
         if needle and needle in blob:
             score += 2
+            hit = True
+    if not hit:
+        return 0
     if gender and gender in alt:
         score += 3
     if gender and gender in title:
@@ -88,10 +129,22 @@ def _score(title: str, alt: str, needles: list[str], gender: str) -> int:
     return score
 
 
-def _download(url: str, dest: Path) -> None:
-    dest.write_bytes(_get(url))
+def _download(url: str, dest: Path, cache_root: Path | None = None) -> None:
+    cached = cache_file(url, cache_root)
+    if cached.is_file() and cached.stat().st_size > 0:
+        try:
+            dest.write_bytes(cached.read_bytes())
+            with Image.open(dest) as im:
+                im.verify()
+            return
+        except (OSError, SyntaxError, ValueError):
+            cached.unlink(missing_ok=True)
+    data = _get(url)
+    dest.write_bytes(data)
     with Image.open(dest) as im:
         im.verify()
+    cached.parent.mkdir(parents=True, exist_ok=True)
+    cached.write_bytes(data)
 
 
 def collect_assets(asset_ids: list[str], dest_dir: Path, pinned: dict | None = None) -> dict:
@@ -113,7 +166,8 @@ def collect_assets(asset_ids: list[str], dest_dir: Path, pinned: dict | None = N
             raise RuntimeError(f"「{asset_id}」の適切ないらすとやが見つかりませんでした。")
         used_urls.add(winner["url"])
         accepted.append(winner)
-        time.sleep(0.25)
+        if winner.pop("network", False):
+            time.sleep(0.25)
 
     report = {
         "count": len(accepted),
@@ -128,78 +182,97 @@ def collect_assets(asset_ids: list[str], dest_dir: Path, pinned: dict | None = N
 
 
 def _pick_one(asset_id, spec, dest_dir, rejected_dir, used_urls, pin, rejected) -> dict | None:
-    candidates: list[dict] = []
+    seen: set[str] = set()
+    tried = 0
+    networked = False
     if pin:
-        candidates.append({"url": pin, "alt": asset_id, "title": "pinned", "link": pin, "score": 99})
+        seen.add(pin)
+        had_cache = cache_file(pin).is_file()
+        winner = _try_candidate(
+            asset_id, spec, dest_dir, rejected_dir, rejected,
+            {"url": pin, "alt": asset_id, "title": "pinned", "link": pin, "score": 99},
+            1,
+        )
+        tried = 1
+        if winner is not None:
+            winner["network"] = not had_cache
+            return winner
     for query in spec["queries"]:
+        if tried >= 6:
+            break
         try:
             posts = search_posts(query)
         except Exception as exc:  # noqa: BLE001 - 検索失敗は次の語へ
             rejected.append({"id": asset_id, "reason": f"検索失敗: {exc}", "query": query})
             continue
+        batch: list[dict] = []
         for post in posts:
             for image in post["images"]:
-                score = _score(post["title"], image["alt"], spec["needles"], spec.get("gender") or "")
-                if score < 0 or image["url"] in used_urls:
-                    if score < 0:
-                        rejected.append({
-                            "id": asset_id,
-                            "reason": title_rejection(post["title"], image["alt"], spec.get("gender") or ""),
-                            "title": post["title"],
-                            "alt": image["alt"],
-                            "url": image["url"],
-                        })
+                score = match_score(post["title"], image["alt"], spec["needles"], spec.get("gender") or "")
+                if score < 0:
+                    rejected.append({
+                        "id": asset_id,
+                        "reason": title_rejection(post["title"], image["alt"], spec.get("gender") or ""),
+                        "title": post["title"],
+                        "alt": image["alt"],
+                        "url": image["url"],
+                    })
                     continue
-                candidates.append({
+                if score == 0 or image["url"] in used_urls or image["url"] in seen:
+                    continue
+                batch.append({
                     "url": image["url"],
                     "alt": image["alt"],
                     "title": post["title"],
                     "link": post["link"],
                     "score": score,
                 })
+        batch.sort(key=lambda c: c["score"], reverse=True)
+        for cand in batch:
+            if tried >= 6:
+                break
+            seen.add(cand["url"])
+            tried += 1
+            winner = _try_candidate(asset_id, spec, dest_dir, rejected_dir, rejected, cand, tried)
+            if winner is not None:
+                winner["network"] = True
+                return winner
         time.sleep(0.2)
-    candidates.sort(key=lambda c: c["score"], reverse=True)
-    seen: set[str] = set()
-    rank = 0
-    for cand in candidates:
-        if cand["url"] in seen:
-            continue
-        seen.add(cand["url"])
-        rank += 1
-        if rank > 6:
-            break
-        path = dest_dir / f"{asset_id}.png"
-        tmp = dest_dir / f"_{asset_id}_try.png"
-        try:
-            _download(cand["url"], tmp)
-        except Exception as exc:  # noqa: BLE001
-            rejected.append({"id": asset_id, "reason": f"DL失敗: {exc}", "url": cand["url"]})
-            continue
-        reason = inspect_image(str(tmp), cand["title"], cand["alt"], spec.get("gender") or "", spec["kind"])
-        if reason:
-            reject_path = rejected_dir / f"{asset_id}_{rank}.png"
-            tmp.replace(reject_path)
-            rejected.append({
-                "id": asset_id,
-                "reason": reason,
-                "title": cand["title"],
-                "alt": cand["alt"],
-                "url": cand["url"],
-                "path": str(reject_path),
-            })
-            continue
-        tmp.replace(path)
-        return {
+    return None
+
+
+def _try_candidate(asset_id, spec, dest_dir, rejected_dir, rejected, cand: dict, rank: int) -> dict | None:
+    path = dest_dir / f"{asset_id}.png"
+    tmp = dest_dir / f"_{asset_id}_try.png"
+    try:
+        _download(cand["url"], tmp)
+    except Exception as exc:  # noqa: BLE001
+        rejected.append({"id": asset_id, "reason": f"DL失敗: {exc}", "url": cand["url"]})
+        return None
+    reason = inspect_image(str(tmp), cand["title"], cand["alt"], spec.get("gender") or "", spec["kind"])
+    if reason:
+        reject_path = rejected_dir / f"{asset_id}_{rank}.png"
+        tmp.replace(reject_path)
+        rejected.append({
             "id": asset_id,
-            "kind": spec["kind"],
-            "path": str(path),
-            "url": cand["url"],
+            "reason": reason,
             "title": cand["title"],
             "alt": cand["alt"],
-            "link": cand["link"],
-            "page": cand["link"],
-        }
-    return None
+            "url": cand["url"],
+            "path": str(reject_path),
+        })
+        return None
+    tmp.replace(path)
+    return {
+        "id": asset_id,
+        "kind": spec["kind"],
+        "path": str(path),
+        "url": cand["url"],
+        "title": cand["title"],
+        "alt": cand["alt"],
+        "link": cand["link"],
+        "page": cand["link"],
+    }
 
 
 def _contact_sheet(accepted: list[dict], dest: Path) -> None:

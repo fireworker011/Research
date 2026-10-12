@@ -8,7 +8,7 @@ from pathlib import Path
 
 import numpy as np
 
-from irasutoya_short.constants import SAMPLE_RATE
+from irasutoya_short.constants import FPS, SAMPLE_RATE
 
 
 def wav_bytes_to_float(data: bytes) -> np.ndarray:
@@ -47,6 +47,13 @@ def fit_length(samples: np.ndarray, n: int) -> np.ndarray:
     m = min(n, len(samples))
     out[:m] = samples[:m]
     return out
+
+
+def samples_for_frames(nframes: int, sr: int = SAMPLE_RATE, fps: int = FPS) -> int:
+    """フレーム数にちょうど合うサンプル数。端数で音と画面がずれないようにする。"""
+    if nframes < 0:
+        raise ValueError("フレーム数が負です。")
+    return nframes * sr // fps
 
 
 def mix_tracks(voice: np.ndarray, sfx: np.ndarray | None, sfx_gain: float, bgm: np.ndarray | None, bgm_gain: float) -> np.ndarray:

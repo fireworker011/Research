@@ -9,7 +9,7 @@ from pathlib import Path
 import numpy as np
 from PIL import Image
 
-from irasutoya_short.audio import fit_length, mix_tracks, read_wav, write_wav
+from irasutoya_short.audio import fit_length, mix_tracks, read_wav, samples_for_frames, write_wav
 from irasutoya_short.constants import FPS, MAX_DURATION, MIN_DURATION, SAMPLE_RATE
 from irasutoya_short.irasutoya import collect_assets
 from irasutoya_short.layout import analyze_screenshots, default_layout
@@ -19,6 +19,7 @@ from irasutoya_short.revise import apply_note
 from irasutoya_short.scriptgen import generate_script
 from irasutoya_short.sfx import bgm_loop, make_sfx
 from irasutoya_short.sprites import load_rgba, mark_mouth, mouth_anchor
+from irasutoya_short.templates import scale_speeds, scene_speed, scene_tail, settings_for, telop_style
 from irasutoya_short.tts import Speaker
 
 TERMS = {
@@ -38,28 +39,34 @@ TERMS = {
 
 
 def default_settings() -> dict:
-    return {
-        "speed": 1.28,
-        "hook_speed": 1.48,
-        "telop_scale": 1.0,
-        "sfx_gain": 0.22,
-        "bgm_gain": 0.045,
-        "mouth_gain": 1.0,
-        "bgm": True,
-    }
+    return settings_for("sukatto")
 
 
-def make(brief_path: Path, work_dir: Path, out_path: Path, screenshots: list[Path] | None = None, bgm: bool = True) -> dict:
+def make(
+    brief_path: Path,
+    work_dir: Path,
+    out_path: Path,
+    screenshots: list[Path] | None = None,
+    bgm: bool = True,
+    template: str = "",
+) -> dict:
     brief = json.loads(Path(brief_path).read_text(encoding="utf-8"))
+    if template:
+        brief = dict(brief)
+        brief["template"] = template
     work_dir.mkdir(parents=True, exist_ok=True)
     script = generate_script(brief)
     shots = list(screenshots or [])
     layout = analyze_screenshots(shots) if shots else default_layout()
+    style = telop_style(script["template"])
+    if not shots:
+        layout["telop_y_ratio"] = float(style["y_ratio"])
     asset_dir = work_dir / "assets"
     report = collect_assets(script["asset_ids"], asset_dir, brief.get("asset_urls"))
     _debug_mouths(report["accepted"], asset_dir / "debug_mouth")
     project = {
         "brief": brief,
+        "template": script["template"],
         "title": script["title"],
         "punchline": script["punchline"],
         "scenes": script["scenes"],
@@ -68,7 +75,8 @@ def make(brief_path: Path, work_dir: Path, out_path: Path, screenshots: list[Pat
         "asset_report": report,
         "asset_paths": {item["id"]: item["path"] for item in report["accepted"]},
         "layout": layout,
-        "settings": default_settings(),
+        "settings": settings_for(script["template"]),
+        "telop_style": style,
         "terms": TERMS,
     }
     project["settings"]["bgm"] = bgm
@@ -100,25 +108,22 @@ def _synthesize(project: dict, speaker: Speaker, audio_dir: Path, depth: int = 0
     audio_dir.mkdir(parents=True, exist_ok=True)
     settings = project["settings"]
     for scene in project["scenes"]:
-        speed = settings["hook_speed"] if scene["role"] == "hook" else settings["speed"]
+        speed = scene_speed(settings, scene)
         samples = speaker.speak(scene["text"], int(scene["style_id"]), float(speed))
         path = audio_dir / f"scene_{int(scene['id']):02d}.wav"
         write_wav(path, samples)
         scene["voice_path"] = str(path)
         scene["voice_seconds"] = round(len(samples) / SAMPLE_RATE, 3)
-        tail = 0.16 if scene["text"] else 0.0
-        scene["duration"] = max(scene["voice_seconds"] + tail, 2.0 if scene["role"] == "credit" else 0.8)
+        floor = 2.0 if scene["role"] == "credit" else float(scene.get("hold") or 0.8)
+        scene["duration"] = max(scene["voice_seconds"] + scene_tail(settings, scene), floor)
     total = sum(float(s["duration"]) for s in project["scenes"])
     if total > MAX_DURATION and depth < 2:
-        factor = (MAX_DURATION - 1.0) / total
-        settings["speed"] = round(float(settings["speed"]) / factor, 3)
-        settings["hook_speed"] = round(float(settings["hook_speed"]) / factor, 3)
+        boost = total / (MAX_DURATION - 1.0)
+        scale_speeds(settings, boost, boost)
         _synthesize(project, speaker, audio_dir, depth + 1)
         return
     if total < MIN_DURATION:
-        extra = (MIN_DURATION + 0.6 - total) / len(project["scenes"])
-        for scene in project["scenes"]:
-            scene["duration"] = float(scene["duration"]) + extra
+        _add_slack(project["scenes"], (MIN_DURATION + 0.6) - total, str(project.get("template") or "sukatto"))
     for scene in project["scenes"]:
         frames = max(1, int(round(float(scene["duration"]) * FPS)))
         scene["duration"] = frames / FPS
@@ -127,7 +132,6 @@ def _synthesize(project: dict, speaker: Speaker, audio_dir: Path, depth: int = 0
 def _render_from_project(project: dict, work_dir: Path, out_path: Path) -> None:
     _attach_performance(project)
     project["audio"] = _mix(project)
-    project["chunk_seconds"] = 6
     render_movie(project, out_path, work_dir / "preview")
     project.pop("audio", None)
     for scene in project["scenes"]:
@@ -153,7 +157,8 @@ def _mix(project: dict) -> np.ndarray:
     bed = bgm_loop(80.0) if settings.get("bgm", True) else None
     offset = 0
     for scene in project["scenes"]:
-        n = int(round(float(scene["duration"]) * SAMPLE_RATE))
+        nframes = max(1, int(round(float(scene["duration"]) * FPS)))
+        n = samples_for_frames(nframes)
         voice = fit_length(scene["_voice"], n)
         sfx = make_sfx(scene["sfx"])
         bgm_slice = None if bed is None else bed[offset : offset + n]
@@ -189,6 +194,7 @@ def _public(project: dict) -> dict:
         item = {k: v for k, v in scene.items() if k not in ("envelope", "_voice")}
         scenes.append(item)
     return {
+        "template": project.get("template"),
         "title": project.get("title"),
         "punchline": project.get("punchline"),
         "brief": project.get("brief"),
@@ -199,6 +205,7 @@ def _public(project: dict) -> dict:
         "asset_paths": project.get("asset_paths"),
         "layout": project.get("layout"),
         "settings": project.get("settings"),
+        "telop_style": project.get("telop_style"),
         "terms": project.get("terms"),
         "notes": project.get("notes", []),
     }
@@ -209,6 +216,7 @@ def _summary(project: dict, out_path: Path) -> dict:
     accepted = project["asset_report"]["accepted"]
     return {
         "out": str(out_path),
+        "template": project.get("template"),
         "duration_sec": duration,
         "scene_count": len(project["scenes"]),
         "asset_count": len(accepted),
@@ -222,6 +230,28 @@ def _summary(project: dict, out_path: Path) -> dict:
         "terms": TERMS,
         "within_25_40": MIN_DURATION <= duration <= MAX_DURATION,
     }
+
+
+def _add_slack(scenes: list[dict], slack: float, template: str) -> None:
+    if slack <= 0 or not scenes:
+        return
+    weights = [_slack_weight(scene, template) for scene in scenes]
+    total = sum(weights) or float(len(scenes))
+    for scene, weight in zip(scenes, weights):
+        scene["duration"] = float(scene["duration"]) + slack * weight / total
+
+
+def _slack_weight(scene: dict, template: str) -> float:
+    if template == "sukatto":
+        return 1.0
+    tone = str(scene.get("tone") or scene.get("role") or "")
+    if tone == "item":
+        return 0.2
+    if scene.get("role") in ("close", "credit"):
+        return 2.0
+    if scene.get("role") == "hook":
+        return 1.4
+    return 1.0
 
 
 def copy_out(src: Path, dest: Path) -> None:

@@ -6,7 +6,14 @@ import os
 from pathlib import Path
 
 import numpy as np
-from voicevox_core.blocking import Onnxruntime, OpenJtalk, Synthesizer, VoiceModelFile
+
+try:
+    from voicevox_core.blocking import Onnxruntime, OpenJtalk, Synthesizer, VoiceModelFile
+except ImportError:
+    Onnxruntime = None
+    OpenJtalk = None
+    Synthesizer = None
+    VoiceModelFile = None
 
 from irasutoya_short.audio import wav_bytes_to_float
 from irasutoya_short.catalog import VOICES
@@ -17,6 +24,8 @@ NEEDED_VVMS = ("0.vvm", "4.vvm", "9.vvm")
 
 
 def runtime_ready(root: Path | None = None) -> bool:
+    if Onnxruntime is None:
+        return False
     root = root or DEFAULT_ROOT
     dict_dir = root / "dict/open_jtalk_dic_utf_8-1.11"
     ort = root / "onnxruntime/lib" / Onnxruntime.LIB_VERSIONED_FILENAME
@@ -26,17 +35,24 @@ def runtime_ready(root: Path | None = None) -> bool:
 
 def require_runtime(root: Path | None = None) -> Path:
     root = root or DEFAULT_ROOT
+    if Onnxruntime is None:
+        raise RuntimeError(
+            "VOICEVOX の Python パッケージがありません。"
+            " docs/GROK_BUILD.md の手順3で wheel を入れてください。"
+        )
     if runtime_ready(root):
         return root
     raise RuntimeError(
         "VOICEVOX の実行ファイルがありません。"
-        f" README の setup を実行して {root} に 0.vvm / 4.vvm / 9.vvm を置いてください。"
+        f" docs/GROK_BUILD.md の手順3を実行して {root} に 0.vvm / 4.vvm / 9.vvm を置いてください。"
     )
 
 
 class Speaker:
     def __init__(self, root: Path | None = None) -> None:
         self.root = require_runtime(root)
+        if Onnxruntime is None or OpenJtalk is None or Synthesizer is None or VoiceModelFile is None:
+            raise RuntimeError("VOICEVOX の Python パッケージがありません。")
         ort_path = self.root / "onnxruntime/lib" / Onnxruntime.LIB_VERSIONED_FILENAME
         ort = Onnxruntime.load_once(filename=str(ort_path))
         dictionary = self.root / "dict/open_jtalk_dic_utf_8-1.11"

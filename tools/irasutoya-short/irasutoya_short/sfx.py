@@ -54,6 +54,23 @@ def coin() -> np.ndarray:
     return tone.astype(np.float32) * 0.4
 
 
+def tick() -> np.ndarray:
+    """あるあるの1項目。短いクリック。"""
+    n = int(0.08 * SR)
+    t = np.arange(n, dtype=np.float32) / SR
+    tone = np.sin(2 * np.pi * 1400 * t)
+    return tone.astype(np.float32) * _env(n, 0.002, 0.05) * 0.35
+
+
+def rise() -> np.ndarray:
+    """順位や転換の立ち上がり。"""
+    n = int(0.28 * SR)
+    t = np.arange(n, dtype=np.float32) / SR
+    freq = 420 + 900 * t
+    phase = 2 * np.pi * np.cumsum(freq) / SR
+    return np.sin(phase).astype(np.float32) * _env(n, 0.01, 0.12) * 0.4
+
+
 def make_sfx(name: str) -> np.ndarray | None:
     table = {
         "none": None,
@@ -62,6 +79,8 @@ def make_sfx(name: str) -> np.ndarray | None:
         "shock": shock,
         "notify": notify,
         "coin": coin,
+        "tick": tick,
+        "rise": rise,
     }
     if name not in table:
         raise ValueError(f"未知の効果音: {name}")

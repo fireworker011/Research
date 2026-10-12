@@ -256,6 +256,21 @@ def _dip_anchor(rgba: np.ndarray, box: dict, y_limit: int) -> MouthAnchor | None
     return MouthAnchor(cx, y, width, 4)
 
 
+def _choose_mouth(parts: list[dict], box: dict, chin: int) -> dict:
+    """口の線は、あごの影より顔の下から3割あたりにある横線を採る。"""
+    top = box["top"]
+    span = max(1, chin - top)
+    target = top + int(round(span * 0.78))
+    lower = top + int(round(span * 0.55))
+
+    def rank(part: dict) -> tuple:
+        horizontal = part["width"] >= max(1, part["height"]) * 1.4
+        in_band = lower <= part["y"] <= chin + 4
+        return (in_band, horizontal, -abs(part["y"] - target), part["width"])
+
+    return max(parts, key=rank)
+
+
 def mouth_anchor(rgba: np.ndarray) -> MouthAnchor | None:
     """顔の中で、鼻より下にある暗い口の線を返す。襟や顎の輪郭は幅が広すぎるので捨てる。"""
     box = _face_box(rgba)
@@ -266,7 +281,7 @@ def mouth_anchor(rgba: np.ndarray) -> MouthAnchor | None:
     alpha = rgba[:, :, 3] > 40
     parts = [part for part in _dark_parts(lum, alpha, box, chin + 12) if part["y"] <= chin + 8]
     if parts:
-        mouth = max(parts, key=lambda part: (part["bottom"], part["width"]))
+        mouth = _choose_mouth(parts, box, chin)
         return MouthAnchor(mouth["x"], mouth["y"], mouth["width"], mouth["height"])
     return _dip_anchor(rgba, box, chin)
 
