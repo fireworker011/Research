@@ -75,6 +75,10 @@ def test_written_moves_become_paths_and_unmeasured_times_stay_out() -> None:
     assert "The polite one's mouth keeps hold of a flat white pad while the legs step forward." in pet_text
     assert "The polite one's head turns toward the vinyl pool at the edge of the yard." in pet_text
     assert "The person's body stands upright in the doorway." in pet_text
+    door = structure.picture_prompt(pet, 42.6, 46.072)
+    assert "This shot stays in the yard" not in door
+    assert "The camera starts in the yard and pushes in on the face in the doorway." in door
+    assert "This shot stays at the doorway." in door
     assert "Only the flat white pad lies there and does not move." in pet_text
     assert "This shot stays at the pool." in pet_text
     assert "This shot stays at the doorway." in pet_text
@@ -87,6 +91,7 @@ def test_written_moves_become_paths_and_unmeasured_times_stay_out() -> None:
     assert "The polite one's and the dog's mouths stay closed. Those jaws do not travel." in paw_text
     assert "Every mouth stays closed. Those jaws do not travel." in paw_text
     assert "This shot stays on the rug." in paw_text
+    assert "The camera pushes in on the blanket from a low height." in paw_text
     assert "shape words" not in paw_text
 
 
@@ -170,7 +175,7 @@ def test_pet_sheet_is_another_pack_of_the_same_sheet() -> None:
     assert "pool" not in first
     door = structure.picture_prompt(filled, 42.6, 46.072)
     assert (
-        "Cast: an adult woman in their late twenties, wearing loose loungewear, with hair tied back; "
+        "Cast: an adult woman in her late twenties, wearing loose loungewear, with hair tied back; "
         "a grey Munchkin cat; a white Scottish Fold cat."
     ) in door
     assert "The adult woman's body stands upright in the doorway." in door
@@ -394,9 +399,11 @@ def test_slots_reach_h3_in_english_or_stop() -> None:
     )
     assert structure.slot_english("短い足の茶色い犬") == ("a short-legged brown dog", "the short-legged brown dog")
     assert structure.slot_english("20代後半の成人の女性。ゆるい部屋着。髪はひとつ結び") == (
-        "an adult woman in their late twenties, wearing loose loungewear, with hair tied back",
+        "an adult woman in her late twenties, wearing loose loungewear, with hair tied back",
         "the adult woman",
     )
+    assert structure.slot_english("30代の男性") == ("a man in his thirties", "the man")
+    assert structure.slot_english("40代の人") == ("a person in their forties", "the person")
     assert structure.slot_english("真夏の庭")[0] == "a yard in midsummer"
     assert structure.slot_english("a grey cat with a red collar") == (
         "a grey cat with a red collar",

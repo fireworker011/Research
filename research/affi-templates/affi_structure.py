@@ -182,6 +182,9 @@ def _noun_phrase(sentence: str) -> tuple[str, str]:
         raise ValueError("「" + "」「".join(unknown) + "」")
     if len(heads) != 1:
         raise ValueError(f"「{sentence}」")
+    whose = {"woman": "her", "man": "his"}.get(heads[0])
+    if whose:
+        post = [part.replace("in their ", f"in {whose} ") for part in post]
     core = " ".join([*pre, heads[0]])
     full = " ".join([core, *post])
     return _article(full), f"the {core}"
@@ -850,6 +853,8 @@ def parse_lines(text: str, ids: Sequence[str]) -> dict[str, str]:
 # Longer phrases first. A hit consumes those characters so a shorter phrase cannot fire inside it.
 _STATIC = "The camera holds a static shot"
 _CAMERA_MOTION = (
+    ("庭から戸口の顔へ寄る", "The camera starts in the yard and pushes in on the face in the doorway."),
+    ("低い位置から毛布へ寄る", "The camera pushes in on the blanket from a low height."),
     ("カメラの動きは測っていない", "The camera path was not measured. The camera holds a static shot."),
     ("黒で切れる", "The picture cuts to black and the camera holds that black frame."),
     ("低い位置から寄る", "The camera pushes in from a low height."),
@@ -1045,6 +1050,11 @@ _BODY_MOTION = (
 )
 
 
+# A short word is a different word when these characters follow it.
+# 庭から is where the camera starts, not a shot that stays in the yard.
+_NOT_FOLLOWED = {"庭": "から"}
+
+
 def _covered_phrases(text: str, table: Sequence[tuple[str, str]]) -> list[str]:
     """English for phrases already written. Unlisted words are not expanded."""
     used = [False] * len(text)
@@ -1057,6 +1067,10 @@ def _covered_phrases(text: str, table: Sequence[tuple[str, str]]) -> list[str]:
                 break
             end = at + len(phrase)
             if any(used[at:end]):
+                start = at + 1
+                continue
+            tail = _NOT_FOLLOWED.get(phrase)
+            if tail and text.startswith(tail, end):
                 start = at + 1
                 continue
             for index in range(at, end):

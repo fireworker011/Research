@@ -1933,7 +1933,7 @@ def plan_sheet(
     image: str | None = None,
     bgm: str = "",
     pack_path: str = "",
-    split: str = "fewer",
+    split: str = "quality",
     role_images: Mapping[str, str] | None = None,
 ) -> dict[str, Any]:
     """One sheet job. An empty path is the 71.552s sheet. H3 gets the picture only.
@@ -1995,7 +1995,7 @@ def _run_sheet(
     bgm: str,
     out_dir: str | Path | None,
     pack_path: str = "",
-    split: str = "fewer",
+    split: str = "quality",
     role_images: Mapping[str, str] | None = None,
 ) -> str:
     try:
