@@ -14,7 +14,7 @@ from irasutoya_short.audio import mix_tracks, samples_for_frames
 from irasutoya_short.constants import BLOCKED_STYLE_IDS, FPS, SAMPLE_RATE
 from irasutoya_short.irasutoya import _download, cache_file, match_score, normalize_entries
 from irasutoya_short.lipsync import mouth_envelope
-from irasutoya_short.qa import body_count, title_rejection
+from irasutoya_short.qa import body_count, multiple_faces, title_rejection
 from irasutoya_short.render import _bar_radius, render_telop, shift_frame
 from irasutoya_short.revise import apply_note
 from irasutoya_short.scriptgen import generate_script
@@ -57,6 +57,39 @@ class ScriptTests(unittest.TestCase):
         self.assertEqual(script["scenes"][-1]["role"], "credit")
         self.assertIn("VOICEVOX:四国めたん", script["scenes"][-1]["telop"])
 
+    def test_line_overrides_replace_canned_office_lines(self) -> None:
+        brief = dict(BRIEF)
+        brief["template"] = "sukatto"
+        brief["lines"] = {
+            "hero_refuse": "その契約は、今じゃない",
+            "hero_aside": "まだ、数字を見てない",
+            "boss_line": "その欄は、何だ",
+        }
+        script = generate_script(brief)
+        blob = " ".join(scene["text"] for scene in script["scenes"])
+        self.assertIn("その契約は、今じゃない", blob)
+        self.assertIn("まだ、数字を見てない", blob)
+        self.assertIn("その欄は、何だ", blob)
+        self.assertNotIn("俺の仕事じゃねえだろ", blob)
+        self.assertNotIn("どういうことだ", blob)
+
+    def test_aruaru_list_voice_reads_each_item(self) -> None:
+        brief = dict(BRIEF)
+        brief["template"] = "aruaru"
+        brief["item_voice"] = "list"
+        brief["bullets"] = [
+            "写真が、三年前のまま",
+            "会う日に、残業が入る",
+            "店を、相手に任せない",
+            "既読のまま、終電で寝る",
+            "趣味欄が、食べること",
+            "翌朝、会社のチャットが先",
+        ]
+        script = generate_script(brief)
+        items = [scene["text"] for scene in script["scenes"] if scene.get("tone") == "item"]
+        self.assertIn("写真が、三年前のまま", items)
+        self.assertIn("翌朝、会社のチャットが先", items)
+
     def test_punchline_required(self) -> None:
         bad = dict(BRIEF)
         bad["punchline"] = ""
@@ -74,6 +107,26 @@ class QaTests(unittest.TestCase):
         self.assertIsNotNone(title_rejection("正月の鏡餅", "", ""))
         self.assertIsNotNone(title_rejection("話す二人", "男女", "男性"))
         self.assertIsNone(title_rejection("困るサラリーマン", "男性", "男性"))
+
+    def test_multiple_faces_rejects_side_by_side(self) -> None:
+        solo = np.zeros((200, 160, 4), dtype=np.uint8)
+        yy, xx = np.ogrid[:200, :160]
+        face = ((yy - 70) ** 2) / 40**2 + ((xx - 80) ** 2) / 36**2 <= 1
+        solo[face, 0] = 230
+        solo[face, 1] = 180
+        solo[face, 2] = 150
+        solo[face, 3] = 255
+        self.assertFalse(multiple_faces(solo))
+        pair = np.zeros((200, 320, 4), dtype=np.uint8)
+        py, px = np.ogrid[:200, :320]
+        for cx in (80, 240):
+            blob = ((py - 70) ** 2) / 40**2 + ((px - cx) ** 2) / 36**2 <= 1
+            pair[blob, 0] = 230
+            pair[blob, 1] = 180
+            pair[blob, 2] = 150
+            pair[blob, 3] = 255
+        self.assertTrue(multiple_faces(pair))
+        self.assertIsNotNone(title_rejection("怒る上司の三段階", "", "男性"))
 
     def test_two_bodies(self) -> None:
         one = np.zeros((80, 80), dtype=np.uint8)

@@ -198,7 +198,7 @@ def _pick_one(asset_id, spec, dest_dir, rejected_dir, used_urls, pin, rejected) 
             winner["network"] = not had_cache
             return winner
     for query in spec["queries"]:
-        if tried >= 6:
+        if tried >= 12:
             break
         try:
             posts = search_posts(query)
@@ -229,7 +229,7 @@ def _pick_one(asset_id, spec, dest_dir, rejected_dir, used_urls, pin, rejected) 
                 })
         batch.sort(key=lambda c: c["score"], reverse=True)
         for cand in batch:
-            if tried >= 6:
+            if tried >= 12:
                 break
             seen.add(cand["url"])
             tried += 1

@@ -271,8 +271,120 @@ def _choose_mouth(parts: list[dict], box: dict, chin: int) -> dict:
     return max(parts, key=rank)
 
 
+def _eye_pair(blobs: list[dict], fig_w: int, fig_top: int, fig_h: int) -> tuple[dict, dict] | None:
+    """同じ高さで、大きさが近い暗い点を両目にする。髪の大塊は幅で落とす。"""
+    eyes = []
+    for blob in blobs:
+        width = blob["right"] - blob["left"]
+        height = blob["bot"] - blob["top"]
+        if width < 6 or height < 4 or width > fig_w * 0.22 or height > fig_h * 0.12:
+            continue
+        if blob["top"] > fig_top + fig_h * 0.55:
+            continue
+        eyes.append(blob)
+    best: tuple[dict, dict] | None = None
+    best_score = -1
+    for index, left in enumerate(eyes):
+        for right in eyes[index + 1 :]:
+            ly = (left["top"] + left["bot"]) / 2
+            ry = (right["top"] + right["bot"]) / 2
+            if abs(ly - ry) > 10:
+                continue
+            lx = (left["left"] + left["right"]) / 2
+            rx = (right["left"] + right["right"]) / 2
+            gap = abs(rx - lx)
+            if gap < fig_w * 0.06 or gap > fig_w * 0.42:
+                continue
+            small, large = sorted((left["area"], right["area"]))
+            if large == 0 or small / large < 0.55:
+                continue
+            score = small + large
+            if score > best_score:
+                best_score = score
+                best = (left, right) if lx < rx else (right, left)
+    return best
+
+
+def _mouth_from_eyes(rgba: np.ndarray) -> MouthAnchor | None:
+    """両目の中点の下、鼻より下の横長の暗い部分を口にする。"""
+    alpha = rgba[:, :, 3] > 40
+    ys, xs = np.where(alpha)
+    if len(xs) == 0:
+        return None
+    fig_top, fig_bot = int(ys.min()), int(ys.max())
+    fig_left, fig_right = int(xs.min()), int(xs.max())
+    fig_h = max(1, fig_bot - fig_top)
+    fig_w = max(1, fig_right - fig_left)
+    lum = rgba[:, :, :3].astype(np.float32).mean(axis=2)
+    dark = alpha & (lum < 105)
+    pair = _eye_pair(_blobs(dark, step=1, min_pts=8), fig_w, fig_top, fig_h)
+    if pair is None:
+        return None
+    left, right = pair
+    eye_y = (left["top"] + left["bot"] + right["top"] + right["bot"]) / 4
+    eye_x = (left["left"] + left["right"] + right["left"] + right["right"]) / 4
+    gap = abs((right["left"] + right["right"]) / 2 - (left["left"] + left["right"]) / 2)
+    y0 = int(eye_y + gap * 0.35)
+    y1 = int(eye_y + gap * 1.65)
+    band = dark.copy()
+    band[: max(0, y0), :] = False
+    band[min(rgba.shape[0], y1) :, :] = False
+    half = max(8, int(gap * 0.7))
+    x0 = max(0, int(eye_x - half))
+    x1 = min(rgba.shape[1], int(eye_x + half))
+    band[:, :x0] = False
+    band[:, x1:] = False
+    mouths = []
+    for blob in _blobs(band, step=1, min_pts=8):
+        width = blob["right"] - blob["left"]
+        height = blob["bot"] - blob["top"]
+        if width < max(8, gap * 0.28):
+            continue
+        if width < height * 1.15:
+            continue
+        if height > gap * 1.3:
+            continue
+        mid_x = (blob["left"] + blob["right"]) / 2
+        if abs(mid_x - eye_x) > gap * 0.45:
+            continue
+        mouths.append(blob)
+    if not mouths:
+        return None
+    mouth = max(mouths, key=lambda blob: (blob["right"] - blob["left"], blob["area"]))
+    return MouthAnchor(
+        int(round((mouth["left"] + mouth["right"]) / 2)),
+        int(round((mouth["top"] + mouth["bot"]) / 2)),
+        int(mouth["right"] - mouth["left"]),
+        max(2, int(mouth["bot"] - mouth["top"])),
+    )
+
+
+def _anchor_on_face(rgba: np.ndarray, anchor: MouthAnchor) -> bool:
+    """口の点が、顔の肌の中にあること。手や後頭部はここから外れる。"""
+    box = _face_box(rgba)
+    if box is None:
+        return False
+    if anchor.x < box["left"] - 6 or anchor.x > box["right"] + 6:
+        return False
+    if anchor.y < box["top"] or anchor.y > box["bot"] + 6:
+        return False
+    skin = _skin_mask(rgba)
+    # 開いた口の真ん中は黒い。上唇のすぐ上に肌があるかを見る。
+    lift = max(8, anchor.height // 2 + 4)
+    y1 = max(0, anchor.y - lift + 6)
+    y0 = max(0, anchor.y - lift - 8)
+    x0 = max(0, anchor.x - 12)
+    x1 = min(skin.shape[1], anchor.x + 13)
+    if y1 <= y0:
+        return False
+    return bool(skin[y0:y1, x0:x1].any())
+
+
 def mouth_anchor(rgba: np.ndarray) -> MouthAnchor | None:
-    """顔の中で、鼻より下にある暗い口の線を返す。襟や顎の輪郭は幅が広すぎるので捨てる。"""
+    """両目の下にある口を返す。目が手や後頭部に乗ったら、顔の線に戻す。"""
+    found = _mouth_from_eyes(rgba)
+    if found is not None and _anchor_on_face(rgba, found):
+        return found
     box = _face_box(rgba)
     if box is None:
         return None

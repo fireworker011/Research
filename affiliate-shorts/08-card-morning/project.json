@@ -1,0 +1,633 @@
+{
+  "template": "before_after",
+  "title": "明細の朝に手が止まった",
+  "punchline": "一回の上限を自分で下げた。翌月の明細が細くなった",
+  "brief": {
+    "template": "before_after",
+    "hook": "明細の朝に手が止まった",
+    "series_character": "明細係",
+    "bullets": [
+      "深夜の少額を重ねた",
+      "ポイントで余計な物「一回だけだろ」",
+      "上限が無かった",
+      "引き落とし前日に焦る「払いすぎた」"
+    ],
+    "punchline": "一回の上限を自分で下げた。翌月の明細が細くなった",
+    "closing": "先に触るのは上限",
+    "lines": {
+      "hero_refuse": "その枠は広すぎる",
+      "turn_line": "ここからアフター",
+      "boss_line": "明細が違うぞ",
+      "after_gap": "前後の差は明細だ"
+    },
+    "asset_urls": {
+      "hero_trouble": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhxJL1uWPRrar9S-FPxNv7FCtcDsBUM5B8ItxCoPVFnqtsBKjv7TyPF54QNeSpcg2QCm3Fn8maHs9AscQD5Bmegje_6Zdt2xtzqXkriOKe76Aq37zUYxI0kfBoONd8SbYE_loSyJw3rkVY8/s800/businessman1_nayami.png",
+      "hero_angry": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEh-_r1tYuiOicwB0kiiTCh8agF8SToBv9jqsc4LcnWPdgfAE65qjQmPobIVnj1j9iX_x3hsvaQke3Za0nmVGXG1LT5HG-sSX1W6t_Sy4oMh1dtA3H3eTmGMaaoDRb4mtEqS31VG3h2LlwH7/s800/businessman7_angry.png",
+      "hero_tired": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEi5O7ebIPQwPb7j8zWG0W4g3EN_nlmRZvPEfGKxwGsCnV44eGJARhg0Zz2mBNr7m9BK61Ebp00-9v4cX_V-YkzlJB5YAj7Dpb9slFkX2GG7xGyXKCYl1wMwzi6eWXoCHVuQIFSjsaL-5CM/s800/tsukareta_business_man.png",
+      "hero_smile": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhy3dDvRMBHJ-tn1A2AUBt4iUbmcOXxRuHUegd9lKUBveMfLADwYFD0QsmGhDqoctcd1lk7bY5wO3M04TuC_EVB8TcyirHiMlsvyn-HPGcHJHl6wMEEcrZb5vc-YuKF8ddVD16Wadzfqurn/s800/businessman5_ureshii.png",
+      "rival_smug": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgmfOy1dvPW5nkAXq91r1d2JpatnBWDQHwMOsQRfjoJK3UhP4qRvRGgzacoQu3ogBLYq4zj0tYolJd4_6rjS4tUa8DR5lSj_PQaqXzd6Cs_DivuxoRAkIygU6GV36iS3QhIj3oa6vnevpY/s800/pose_doyagao_man.png",
+      "rival_pale": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEi2aqf82E2vPsRDjhHRSzVXSzvLd3t_6ZfH1Y3w-eKILaooOeCEu21h_g4F819e-TL4u8S4e1XZ1AOI9gfMkJp6IZTFCyIGUBiiHq86qEeKe59JE7Bk3nOgPvpQo6JxhiGDIPJyXcnSb3cF/s800/money_tsuchou_shock_man.png",
+      "rival_bow": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhXVsD9VIHym9LT-UAiWhsDTiYU2l70xSUUOZC8suvWuCqcUH3Gx8G0c0UEHOfKErpYCK4ZdXlUkWCJdJW2ApshJJ6pJHdnAfdGUIHMhAjQ4b3u1_5VHwXk7xOxkt49pSQw3t3YoEGxfcGb/s800/job_bus_driver_man_ojigi.png",
+      "boss_angry": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjHP6Z99Wq0Hf3Ii9NZk1tUIlGBQKW7fKhHjtlIM9lUmiU_XIwwBCW_IRu91RKhlhBE0qMKWiNUq8ISkpgdER-nzCs8YEtseVITZD6V0B9f9kJ4OUtHzWVCiXpFrZ3QEjpAWzsVr9eEi8pQ/s800/pose_sugoi_okoru_man.png",
+      "mug": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgSgOkZbP1J1A0YQrFdOYyAu3IVUzr7gTOxUqJTbvTFK7HG6kSEm3WsCyJ83Z7yDuueR2JZ2pFs6SlJYVQt6qMd-M_6dbuJqgI226j9lcaewgHc-oFIowbziSd9vXoHbFExejAccEk9SNeF/s800/syokki_mug_cup.png"
+    }
+  },
+  "scenes": [
+    {
+      "id": 1,
+      "role": "hook",
+      "speaker": "narrator",
+      "style_id": 2,
+      "credit": "VOICEVOX:四国めたん",
+      "text": "明細の朝に手が止まった",
+      "telop": "明細の朝に手が止まった",
+      "bg": "office",
+      "characters": [
+        {
+          "id": "hero_smile",
+          "who": "hero",
+          "label": ""
+        },
+        {
+          "id": "rival_bow",
+          "who": "rival",
+          "label": "明細係"
+        }
+      ],
+      "props": [],
+      "code_props": [],
+      "effect": "zoom",
+      "sfx": "whoosh",
+      "duration_hint": 2.2,
+      "tone": "after",
+      "voice_path": "/tmp/irasu-work/08-card-morning/audio/scene_01.wav",
+      "voice_seconds": 1.333,
+      "duration": 1.7916666666666667
+    },
+    {
+      "id": 2,
+      "role": "develop",
+      "speaker": "narrator",
+      "style_id": 2,
+      "credit": "VOICEVOX:四国めたん",
+      "text": "ビフォー、深夜の少額を重ねた",
+      "telop": "ビフォー、深夜の\n少額を重ねた",
+      "bg": "office",
+      "characters": [
+        {
+          "id": "hero_trouble",
+          "who": "hero",
+          "label": ""
+        }
+      ],
+      "props": [],
+      "code_props": [
+        "papers"
+      ],
+      "effect": "none",
+      "sfx": "paper",
+      "duration_hint": 2.2,
+      "tone": "before",
+      "voice_path": "/tmp/irasu-work/08-card-morning/audio/scene_02.wav",
+      "voice_seconds": 2.219,
+      "duration": 2.7083333333333335
+    },
+    {
+      "id": 3,
+      "role": "develop",
+      "speaker": "rival",
+      "style_id": 11,
+      "credit": "VOICEVOX:玄野武宏",
+      "text": "一回だけだろ",
+      "telop": "一回だけだろ",
+      "bg": "office",
+      "characters": [
+        {
+          "id": "rival_smug",
+          "who": "rival",
+          "label": "明細係"
+        }
+      ],
+      "props": [],
+      "code_props": [],
+      "effect": "none",
+      "sfx": "none",
+      "duration_hint": 2.2,
+      "tone": "before",
+      "voice_path": "/tmp/irasu-work/08-card-morning/audio/scene_03.wav",
+      "voice_seconds": 0.843,
+      "duration": 1.3333333333333333
+    },
+    {
+      "id": 4,
+      "role": "develop",
+      "speaker": "narrator",
+      "style_id": 2,
+      "credit": "VOICEVOX:四国めたん",
+      "text": "ポイントで余計な物",
+      "telop": "ポイントで余計な物",
+      "bg": "office",
+      "characters": [
+        {
+          "id": "rival_smug",
+          "who": "rival",
+          "label": "明細係"
+        }
+      ],
+      "props": [],
+      "code_props": [],
+      "effect": "none",
+      "sfx": "whoosh",
+      "duration_hint": 2.2,
+      "tone": "before",
+      "voice_path": "/tmp/irasu-work/08-card-morning/audio/scene_04.wav",
+      "voice_seconds": 1.387,
+      "duration": 1.875
+    },
+    {
+      "id": 5,
+      "role": "develop",
+      "speaker": "hero",
+      "style_id": 34,
+      "credit": "VOICEVOX:白上虎太郎",
+      "text": "その枠は広すぎる",
+      "telop": "その枠は広すぎる",
+      "bg": "office",
+      "characters": [
+        {
+          "id": "hero_angry",
+          "who": "hero",
+          "label": ""
+        }
+      ],
+      "props": [],
+      "code_props": [],
+      "effect": "shake",
+      "sfx": "none",
+      "duration_hint": 2.2,
+      "tone": "before",
+      "voice_path": "/tmp/irasu-work/08-card-morning/audio/scene_05.wav",
+      "voice_seconds": 1.451,
+      "duration": 1.9166666666666667
+    },
+    {
+      "id": 6,
+      "role": "develop",
+      "speaker": "narrator",
+      "style_id": 2,
+      "credit": "VOICEVOX:四国めたん",
+      "text": "上限が無かった",
+      "telop": "上限が無かった",
+      "bg": "office_night",
+      "characters": [
+        {
+          "id": "hero_tired",
+          "who": "hero",
+          "label": ""
+        }
+      ],
+      "props": [],
+      "code_props": [],
+      "effect": "none",
+      "sfx": "none",
+      "duration_hint": 2.2,
+      "tone": "before",
+      "voice_path": "/tmp/irasu-work/08-card-morning/audio/scene_06.wav",
+      "voice_seconds": 1.109,
+      "duration": 1.5833333333333333
+    },
+    {
+      "id": 7,
+      "role": "develop",
+      "speaker": "narrator",
+      "style_id": 2,
+      "credit": "VOICEVOX:四国めたん",
+      "text": "ここからアフター",
+      "telop": "ここからアフター",
+      "bg": "office",
+      "characters": [
+        {
+          "id": "hero_smile",
+          "who": "hero",
+          "label": ""
+        }
+      ],
+      "props": [],
+      "code_props": [],
+      "effect": "lines",
+      "sfx": "rise",
+      "duration_hint": 2.2,
+      "tone": "turn",
+      "hold": 1.6,
+      "voice_path": "/tmp/irasu-work/08-card-morning/audio/scene_07.wav",
+      "voice_seconds": 1.013,
+      "duration": 1.8333333333333333
+    },
+    {
+      "id": 8,
+      "role": "punch",
+      "speaker": "narrator",
+      "style_id": 2,
+      "credit": "VOICEVOX:四国めたん",
+      "text": "一回の上限を自分で下げた",
+      "telop": "一回の上限を自分で下げた",
+      "bg": "chat",
+      "characters": [
+        {
+          "id": "hero_smile",
+          "who": "hero",
+          "label": ""
+        }
+      ],
+      "props": [],
+      "code_props": [],
+      "effect": "zoom",
+      "sfx": "coin",
+      "duration_hint": 2.2,
+      "tone": "after",
+      "voice_path": "/tmp/irasu-work/08-card-morning/audio/scene_08.wav",
+      "voice_seconds": 1.515,
+      "duration": 1.8333333333333333
+    },
+    {
+      "id": 9,
+      "role": "punch",
+      "speaker": "boss",
+      "style_id": 21,
+      "credit": "VOICEVOX:剣崎雌雄",
+      "text": "明細が違うぞ",
+      "telop": "明細が違うぞ",
+      "bg": "office",
+      "characters": [
+        {
+          "id": "boss_angry",
+          "who": "boss",
+          "label": ""
+        }
+      ],
+      "props": [],
+      "code_props": [],
+      "effect": "shake",
+      "sfx": "shock",
+      "duration_hint": 2.2,
+      "tone": "after",
+      "voice_path": "/tmp/irasu-work/08-card-morning/audio/scene_09.wav",
+      "voice_seconds": 0.928,
+      "duration": 1.25
+    },
+    {
+      "id": 10,
+      "role": "punch",
+      "speaker": "rival",
+      "style_id": 11,
+      "credit": "VOICEVOX:玄野武宏",
+      "text": "払いすぎた",
+      "telop": "払いすぎた",
+      "bg": "office",
+      "characters": [
+        {
+          "id": "rival_pale",
+          "who": "rival",
+          "label": "明細係"
+        }
+      ],
+      "props": [],
+      "code_props": [],
+      "effect": "none",
+      "sfx": "none",
+      "duration_hint": 2.2,
+      "tone": "after",
+      "voice_path": "/tmp/irasu-work/08-card-morning/audio/scene_10.wav",
+      "voice_seconds": 0.597,
+      "duration": 1.0416666666666667
+    },
+    {
+      "id": 11,
+      "role": "punch",
+      "speaker": "narrator",
+      "style_id": 2,
+      "credit": "VOICEVOX:四国めたん",
+      "text": "翌月の明細が細くなった",
+      "telop": "翌月の明細が細くなった",
+      "bg": "office",
+      "characters": [
+        {
+          "id": "rival_bow",
+          "who": "rival",
+          "label": "明細係"
+        }
+      ],
+      "props": [],
+      "code_props": [],
+      "effect": "zoom",
+      "sfx": "coin",
+      "duration_hint": 2.2,
+      "tone": "after",
+      "voice_path": "/tmp/irasu-work/08-card-morning/audio/scene_11.wav",
+      "voice_seconds": 1.472,
+      "duration": 1.7916666666666667
+    },
+    {
+      "id": 12,
+      "role": "close",
+      "speaker": "narrator",
+      "style_id": 2,
+      "credit": "VOICEVOX:四国めたん",
+      "text": "先に触るのは上限",
+      "telop": "先に触るのは上限",
+      "bg": "lines",
+      "characters": [
+        {
+          "id": "hero_smile",
+          "who": "hero",
+          "label": ""
+        }
+      ],
+      "props": [],
+      "code_props": [],
+      "effect": "zoom",
+      "sfx": "none",
+      "duration_hint": 2.2,
+      "tone": "close",
+      "voice_path": "/tmp/irasu-work/08-card-morning/audio/scene_12.wav",
+      "voice_seconds": 1.429,
+      "duration": 2.125
+    },
+    {
+      "id": 13,
+      "role": "close",
+      "speaker": "narrator",
+      "style_id": 2,
+      "credit": "VOICEVOX:四国めたん",
+      "text": "前後の差は明細だ",
+      "telop": "前後の差は明細だ",
+      "bg": "lines",
+      "characters": [
+        {
+          "id": "hero_smile",
+          "who": "hero",
+          "label": ""
+        },
+        {
+          "id": "rival_bow",
+          "who": "rival",
+          "label": ""
+        }
+      ],
+      "props": [],
+      "code_props": [],
+      "effect": "none",
+      "sfx": "none",
+      "duration_hint": 2.2,
+      "tone": "after",
+      "voice_path": "/tmp/irasu-work/08-card-morning/audio/scene_13.wav",
+      "voice_seconds": 1.333,
+      "duration": 2.0
+    },
+    {
+      "id": 14,
+      "role": "credit",
+      "speaker": "narrator",
+      "style_id": 2,
+      "credit": "VOICEVOX:四国めたん",
+      "text": "",
+      "telop": "VOICEVOX:四国めたん\nVOICEVOX:玄野武宏\nVOICEVOX:白上虎太郎\nVOICEVOX:剣崎雌雄",
+      "bg": "credit",
+      "characters": [],
+      "props": [],
+      "code_props": [],
+      "effect": "none",
+      "sfx": "none",
+      "duration_hint": 2.2,
+      "series_note": "明細係",
+      "voice_path": "/tmp/irasu-work/08-card-morning/audio/scene_14.wav",
+      "voice_seconds": 0.15,
+      "duration": 2.5
+    }
+  ],
+  "credits": [
+    "VOICEVOX:四国めたん",
+    "VOICEVOX:玄野武宏",
+    "VOICEVOX:白上虎太郎",
+    "VOICEVOX:剣崎雌雄"
+  ],
+  "asset_ids": [
+    "hero_smile",
+    "rival_bow",
+    "hero_trouble",
+    "rival_smug",
+    "hero_angry",
+    "hero_tired",
+    "boss_angry",
+    "rival_pale"
+  ],
+  "asset_report": {
+    "count": 8,
+    "limit": 20,
+    "within_limit": true,
+    "accepted": [
+      {
+        "id": "hero_smile",
+        "kind": "person",
+        "path": "/tmp/irasu-work/08-card-morning/assets/hero_smile.png",
+        "url": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhy3dDvRMBHJ-tn1A2AUBt4iUbmcOXxRuHUegd9lKUBveMfLADwYFD0QsmGhDqoctcd1lk7bY5wO3M04TuC_EVB8TcyirHiMlsvyn-HPGcHJHl6wMEEcrZb5vc-YuKF8ddVD16Wadzfqurn/s800/businessman5_ureshii.png",
+        "title": "pinned",
+        "alt": "hero_smile",
+        "link": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhy3dDvRMBHJ-tn1A2AUBt4iUbmcOXxRuHUegd9lKUBveMfLADwYFD0QsmGhDqoctcd1lk7bY5wO3M04TuC_EVB8TcyirHiMlsvyn-HPGcHJHl6wMEEcrZb5vc-YuKF8ddVD16Wadzfqurn/s800/businessman5_ureshii.png",
+        "page": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhy3dDvRMBHJ-tn1A2AUBt4iUbmcOXxRuHUegd9lKUBveMfLADwYFD0QsmGhDqoctcd1lk7bY5wO3M04TuC_EVB8TcyirHiMlsvyn-HPGcHJHl6wMEEcrZb5vc-YuKF8ddVD16Wadzfqurn/s800/businessman5_ureshii.png"
+      },
+      {
+        "id": "rival_bow",
+        "kind": "person",
+        "path": "/tmp/irasu-work/08-card-morning/assets/rival_bow.png",
+        "url": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhXVsD9VIHym9LT-UAiWhsDTiYU2l70xSUUOZC8suvWuCqcUH3Gx8G0c0UEHOfKErpYCK4ZdXlUkWCJdJW2ApshJJ6pJHdnAfdGUIHMhAjQ4b3u1_5VHwXk7xOxkt49pSQw3t3YoEGxfcGb/s800/job_bus_driver_man_ojigi.png",
+        "title": "pinned",
+        "alt": "rival_bow",
+        "link": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhXVsD9VIHym9LT-UAiWhsDTiYU2l70xSUUOZC8suvWuCqcUH3Gx8G0c0UEHOfKErpYCK4ZdXlUkWCJdJW2ApshJJ6pJHdnAfdGUIHMhAjQ4b3u1_5VHwXk7xOxkt49pSQw3t3YoEGxfcGb/s800/job_bus_driver_man_ojigi.png",
+        "page": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhXVsD9VIHym9LT-UAiWhsDTiYU2l70xSUUOZC8suvWuCqcUH3Gx8G0c0UEHOfKErpYCK4ZdXlUkWCJdJW2ApshJJ6pJHdnAfdGUIHMhAjQ4b3u1_5VHwXk7xOxkt49pSQw3t3YoEGxfcGb/s800/job_bus_driver_man_ojigi.png"
+      },
+      {
+        "id": "hero_trouble",
+        "kind": "person",
+        "path": "/tmp/irasu-work/08-card-morning/assets/hero_trouble.png",
+        "url": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhxJL1uWPRrar9S-FPxNv7FCtcDsBUM5B8ItxCoPVFnqtsBKjv7TyPF54QNeSpcg2QCm3Fn8maHs9AscQD5Bmegje_6Zdt2xtzqXkriOKe76Aq37zUYxI0kfBoONd8SbYE_loSyJw3rkVY8/s800/businessman1_nayami.png",
+        "title": "pinned",
+        "alt": "hero_trouble",
+        "link": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhxJL1uWPRrar9S-FPxNv7FCtcDsBUM5B8ItxCoPVFnqtsBKjv7TyPF54QNeSpcg2QCm3Fn8maHs9AscQD5Bmegje_6Zdt2xtzqXkriOKe76Aq37zUYxI0kfBoONd8SbYE_loSyJw3rkVY8/s800/businessman1_nayami.png",
+        "page": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhxJL1uWPRrar9S-FPxNv7FCtcDsBUM5B8ItxCoPVFnqtsBKjv7TyPF54QNeSpcg2QCm3Fn8maHs9AscQD5Bmegje_6Zdt2xtzqXkriOKe76Aq37zUYxI0kfBoONd8SbYE_loSyJw3rkVY8/s800/businessman1_nayami.png"
+      },
+      {
+        "id": "rival_smug",
+        "kind": "person",
+        "path": "/tmp/irasu-work/08-card-morning/assets/rival_smug.png",
+        "url": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgmfOy1dvPW5nkAXq91r1d2JpatnBWDQHwMOsQRfjoJK3UhP4qRvRGgzacoQu3ogBLYq4zj0tYolJd4_6rjS4tUa8DR5lSj_PQaqXzd6Cs_DivuxoRAkIygU6GV36iS3QhIj3oa6vnevpY/s800/pose_doyagao_man.png",
+        "title": "pinned",
+        "alt": "rival_smug",
+        "link": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgmfOy1dvPW5nkAXq91r1d2JpatnBWDQHwMOsQRfjoJK3UhP4qRvRGgzacoQu3ogBLYq4zj0tYolJd4_6rjS4tUa8DR5lSj_PQaqXzd6Cs_DivuxoRAkIygU6GV36iS3QhIj3oa6vnevpY/s800/pose_doyagao_man.png",
+        "page": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgmfOy1dvPW5nkAXq91r1d2JpatnBWDQHwMOsQRfjoJK3UhP4qRvRGgzacoQu3ogBLYq4zj0tYolJd4_6rjS4tUa8DR5lSj_PQaqXzd6Cs_DivuxoRAkIygU6GV36iS3QhIj3oa6vnevpY/s800/pose_doyagao_man.png"
+      },
+      {
+        "id": "hero_angry",
+        "kind": "person",
+        "path": "/tmp/irasu-work/08-card-morning/assets/hero_angry.png",
+        "url": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEh-_r1tYuiOicwB0kiiTCh8agF8SToBv9jqsc4LcnWPdgfAE65qjQmPobIVnj1j9iX_x3hsvaQke3Za0nmVGXG1LT5HG-sSX1W6t_Sy4oMh1dtA3H3eTmGMaaoDRb4mtEqS31VG3h2LlwH7/s800/businessman7_angry.png",
+        "title": "pinned",
+        "alt": "hero_angry",
+        "link": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEh-_r1tYuiOicwB0kiiTCh8agF8SToBv9jqsc4LcnWPdgfAE65qjQmPobIVnj1j9iX_x3hsvaQke3Za0nmVGXG1LT5HG-sSX1W6t_Sy4oMh1dtA3H3eTmGMaaoDRb4mtEqS31VG3h2LlwH7/s800/businessman7_angry.png",
+        "page": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEh-_r1tYuiOicwB0kiiTCh8agF8SToBv9jqsc4LcnWPdgfAE65qjQmPobIVnj1j9iX_x3hsvaQke3Za0nmVGXG1LT5HG-sSX1W6t_Sy4oMh1dtA3H3eTmGMaaoDRb4mtEqS31VG3h2LlwH7/s800/businessman7_angry.png"
+      },
+      {
+        "id": "hero_tired",
+        "kind": "person",
+        "path": "/tmp/irasu-work/08-card-morning/assets/hero_tired.png",
+        "url": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEi5O7ebIPQwPb7j8zWG0W4g3EN_nlmRZvPEfGKxwGsCnV44eGJARhg0Zz2mBNr7m9BK61Ebp00-9v4cX_V-YkzlJB5YAj7Dpb9slFkX2GG7xGyXKCYl1wMwzi6eWXoCHVuQIFSjsaL-5CM/s800/tsukareta_business_man.png",
+        "title": "pinned",
+        "alt": "hero_tired",
+        "link": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEi5O7ebIPQwPb7j8zWG0W4g3EN_nlmRZvPEfGKxwGsCnV44eGJARhg0Zz2mBNr7m9BK61Ebp00-9v4cX_V-YkzlJB5YAj7Dpb9slFkX2GG7xGyXKCYl1wMwzi6eWXoCHVuQIFSjsaL-5CM/s800/tsukareta_business_man.png",
+        "page": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEi5O7ebIPQwPb7j8zWG0W4g3EN_nlmRZvPEfGKxwGsCnV44eGJARhg0Zz2mBNr7m9BK61Ebp00-9v4cX_V-YkzlJB5YAj7Dpb9slFkX2GG7xGyXKCYl1wMwzi6eWXoCHVuQIFSjsaL-5CM/s800/tsukareta_business_man.png"
+      },
+      {
+        "id": "boss_angry",
+        "kind": "person",
+        "path": "/tmp/irasu-work/08-card-morning/assets/boss_angry.png",
+        "url": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjHP6Z99Wq0Hf3Ii9NZk1tUIlGBQKW7fKhHjtlIM9lUmiU_XIwwBCW_IRu91RKhlhBE0qMKWiNUq8ISkpgdER-nzCs8YEtseVITZD6V0B9f9kJ4OUtHzWVCiXpFrZ3QEjpAWzsVr9eEi8pQ/s800/pose_sugoi_okoru_man.png",
+        "title": "pinned",
+        "alt": "boss_angry",
+        "link": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjHP6Z99Wq0Hf3Ii9NZk1tUIlGBQKW7fKhHjtlIM9lUmiU_XIwwBCW_IRu91RKhlhBE0qMKWiNUq8ISkpgdER-nzCs8YEtseVITZD6V0B9f9kJ4OUtHzWVCiXpFrZ3QEjpAWzsVr9eEi8pQ/s800/pose_sugoi_okoru_man.png",
+        "page": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjHP6Z99Wq0Hf3Ii9NZk1tUIlGBQKW7fKhHjtlIM9lUmiU_XIwwBCW_IRu91RKhlhBE0qMKWiNUq8ISkpgdER-nzCs8YEtseVITZD6V0B9f9kJ4OUtHzWVCiXpFrZ3QEjpAWzsVr9eEi8pQ/s800/pose_sugoi_okoru_man.png"
+      },
+      {
+        "id": "rival_pale",
+        "kind": "person",
+        "path": "/tmp/irasu-work/08-card-morning/assets/rival_pale.png",
+        "url": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEi2aqf82E2vPsRDjhHRSzVXSzvLd3t_6ZfH1Y3w-eKILaooOeCEu21h_g4F819e-TL4u8S4e1XZ1AOI9gfMkJp6IZTFCyIGUBiiHq86qEeKe59JE7Bk3nOgPvpQo6JxhiGDIPJyXcnSb3cF/s800/money_tsuchou_shock_man.png",
+        "title": "pinned",
+        "alt": "rival_pale",
+        "link": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEi2aqf82E2vPsRDjhHRSzVXSzvLd3t_6ZfH1Y3w-eKILaooOeCEu21h_g4F819e-TL4u8S4e1XZ1AOI9gfMkJp6IZTFCyIGUBiiHq86qEeKe59JE7Bk3nOgPvpQo6JxhiGDIPJyXcnSb3cF/s800/money_tsuchou_shock_man.png",
+        "page": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEi2aqf82E2vPsRDjhHRSzVXSzvLd3t_6ZfH1Y3w-eKILaooOeCEu21h_g4F819e-TL4u8S4e1XZ1AOI9gfMkJp6IZTFCyIGUBiiHq86qEeKe59JE7Bk3nOgPvpQo6JxhiGDIPJyXcnSb3cF/s800/money_tsuchou_shock_man.png"
+      }
+    ],
+    "rejected": []
+  },
+  "asset_paths": {
+    "hero_smile": "/tmp/irasu-work/08-card-morning/assets/hero_smile.png",
+    "rival_bow": "/tmp/irasu-work/08-card-morning/assets/rival_bow.png",
+    "hero_trouble": "/tmp/irasu-work/08-card-morning/assets/hero_trouble.png",
+    "rival_smug": "/tmp/irasu-work/08-card-morning/assets/rival_smug.png",
+    "hero_angry": "/tmp/irasu-work/08-card-morning/assets/hero_angry.png",
+    "hero_tired": "/tmp/irasu-work/08-card-morning/assets/hero_tired.png",
+    "boss_angry": "/tmp/irasu-work/08-card-morning/assets/boss_angry.png",
+    "rival_pale": "/tmp/irasu-work/08-card-morning/assets/rival_pale.png"
+  },
+  "layout": {
+    "telop_y_ratio": 0.82,
+    "character_x_ratio": 0.5,
+    "screenshot_count": 0
+  },
+  "settings": {
+    "speed": 1.12,
+    "hook_speed": 1.42,
+    "telop_scale": 1.0,
+    "sfx_gain": 0.2,
+    "bgm_gain": 0.045,
+    "mouth_gain": 1.0,
+    "bgm": true,
+    "tail": 0.2,
+    "role_speed": {
+      "hook": 1.42,
+      "develop": 1.12,
+      "punch": 1.45,
+      "close": 1.18,
+      "credit": 1.12
+    },
+    "role_tail": {
+      "hook": 0.12,
+      "develop": 0.24,
+      "punch": 0.08,
+      "close": 0.2,
+      "credit": 0.0
+    }
+  },
+  "telop_style": {
+    "bar": "square",
+    "stroke": 6,
+    "size": 80,
+    "slide": 0.2,
+    "y_ratio": 0.82,
+    "bar_fill": [
+      0,
+      0,
+      0,
+      170
+    ],
+    "bar_fills": {
+      "before": [
+        16,
+        36,
+        72,
+        200
+      ],
+      "after": [
+        92,
+        36,
+        8,
+        200
+      ]
+    },
+    "colors": {
+      "hook": [
+        255,
+        148,
+        48,
+        255
+      ],
+      "develop": [
+        186,
+        230,
+        255,
+        255
+      ],
+      "before": [
+        186,
+        230,
+        255,
+        255
+      ],
+      "turn": [
+        255,
+        255,
+        255,
+        255
+      ],
+      "after": [
+        255,
+        148,
+        48,
+        255
+      ],
+      "punch": [
+        255,
+        148,
+        48,
+        255
+      ],
+      "close": [
+        255,
+        226,
+        40,
+        255
+      ],
+      "credit": [
+        255,
+        255,
+        255,
+        255
+      ]
+    }
+  },
+  "terms": {
+    "irasutoya": "いらすとやは1つの制作物につき20点まで商用無料（同じ絵の重複は1点）。21点以上の商用利用は有償。クレジット表記は不要。素材そのものの再配布や、イラストを主体にした商品化は不可。背景はコード描画にして点数をキャラと小物に使っている。",
+    "voicevox": "使った声はクレジットが要る。四国めたん、白上虎太郎、玄野武宏、剣崎雌雄はクレジットを書けば商用可。青山龍星は個人事業・法人だと事前許可が要るので使っていない。効果音とBGMはこの場で合成したオリジナルなのでクレジット不要。"
+  },
+  "notes": []
+}
