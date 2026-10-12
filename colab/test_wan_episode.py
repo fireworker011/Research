@@ -23,6 +23,7 @@ from wan_episode import (  # noqa: E402
     plan_wan_shots,
     wan_beat_prompt,
     wan_needs_start_image,
+    wan_negative_for,
     wan_weight_jobs,
 )
 
@@ -323,3 +324,32 @@ def test_wash_carry_order_and_chain_starts_stall_from_previous_frame():
     shot = next(s for s in plan_wan_shots(chain) if s["id"] == "04-tsuno-stall")
     assert shot["start_image"] is True
     assert wan_needs_start_image(stall["source"]) is True
+
+
+def test_hospital_wan_negative_bans_childlike_proportions_and_keeps_the_positive_clean():
+    ep = _prepare("受け入れる", "カット")
+    neg = wan_negative_for(ep)
+    assert "underage" in neg
+    assert "petite child-like proportions" in neg
+    assert "floating hand" in neg
+    assert wan_negative_for({"slug": "other"}) == ""
+    cover = next(b for b in ep["beats"] if b["id"] == "01-cover")
+    prompt = wan_beat_prompt(ep, cover)
+    assert "grown adult" in prompt.lower()
+    assert "brown hair stays on this adult head" in prompt.lower()
+    assert "underage" not in prompt.lower()
+    assert "petite child-like" not in prompt.lower()
+    graph = build_wan_graph(
+        source="t2v",
+        prompt=prompt,
+        width=1024,
+        height=576,
+        seconds=6,
+        seed=1,
+        filename_prefix="video/wan_age",
+        slots=[],
+        use_lightx2v=False,
+        negative=neg,
+    )
+    assert graph["3"]["inputs"]["text"] == neg
+    assert "underage" not in graph["2"]["inputs"]["text"]

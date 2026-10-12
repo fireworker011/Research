@@ -5396,13 +5396,17 @@ def _look_hold(ep: dict[str, Any], beat: dict[str, Any]) -> str:
 def _cast_block(ep: dict[str, Any], beat: dict[str, Any]) -> str:
     cast = ep.get("cast") or {}
     beat_locks = beat.get("cast_lock") if isinstance(beat.get("cast_lock"), dict) else {}
+    hospital = str(ep.get("slug") or "") == "hospital-exit-adult"
     lines: list[str] = []
     for cid in beat.get("cast") or []:
         c = cast.get(cid) or {}
         name = str(c.get("name_en") or cid.title())
         lock = _paint_horn_lock(str(beat_locks.get(cid) or c.get("lock") or ""), beat, str(cid))
         lock = _drop_tired(lock, beat).strip().rstrip(".")
-        lines.append(f"{name}: {lock}. Adult, {int(c.get('age') or 0)}.")
+        line = f"{name}: {lock}. Adult, {int(c.get('age') or 0)}."
+        if hospital:
+            line += " " + _hospital_adult_proportion_line(str(cid), lock)
+        lines.append(line)
     return "\n".join(lines)
 
 
@@ -5471,6 +5475,182 @@ RIDE_CAMERA_HOLD = (
 
 PAIR_FRAME_HOLD = "Only two adults share this frame. Two faces."
 
+# 2026-10-12 review of the 10/8–10/9 finals. A brown-haired adult read as a child
+# around 1:30–2:00, and mosaic-visible limbs broke in tangled shots.
+# H3 draws a negated word, so the ban stays in the negative channel and in take
+# rejection. The positive line only names a grown adult.
+HOSPITAL_ADULT_LOOK = (
+    "Every person stays a grown adult for the whole shot. "
+    "Adult face, adult jaw, adult brow, adult shoulders, adult hips, adult hands. "
+    "The same adult proportions stay from the first frame to the last."
+)
+HOSPITAL_BROWN_HAIR_ADULT = (
+    "Brown hair stays on this adult head and this adult body."
+)
+HOSPITAL_LIMB_ONE = (
+    "This adult keeps two arms and two legs. "
+    "Each hand stays on its wrist. Each foot stays on its ankle and points along that shin. "
+    "Joints bend along the limb. The face stays one whole face. The tongue stays in its mouth."
+)
+HOSPITAL_LIMB_PAIR = (
+    "Each adult keeps two arms and two legs. "
+    "Each body keeps its own outline. "
+    "Each hand stays on its wrist. Each foot stays on its ankle and points along that shin. "
+    "Joints bend along the limb. Each face stays one whole face. The tongue stays in its own mouth."
+)
+HOSPITAL_SMALL_LEG = (
+    "The legs hold a short bend on this same floor spot. The hips stay over that spot."
+)
+# Words for the negative encoder and for take rejection. Never paste these into the H3 positive prompt.
+HOSPITAL_AGE_NEGATIVE = (
+    "child, teen, underage, minor, loli, shota, petite child-like proportions, "
+    "child face, child body, youthful teen face, small child"
+)
+HOSPITAL_BODY_NEGATIVE = (
+    "extra leg, third leg, floating hand, disconnected hand, bodies merged, "
+    "bodies clipping through each other, reversed joint, knee bent backward, "
+    "foot facing backward, melted face, face melting, detached tongue, tongue separated from the mouth"
+)
+HOSPITAL_MOSAIC_BREAKS = (
+    "extra_leg",
+    "floating_hand",
+    "bodies_merged",
+    "joint_reversed",
+    "foot_backward",
+    "face_melt",
+    "tongue_detached",
+)
+HOSPITAL_EXPORT_QC = (
+    ("age_reads_adult", "全カットの顔と体が成人に見える。茶髪も成人の頭と体。"),
+    ("mosaic_outside_intact", "モザイクの外に、足の本数・浮いた手・体のめり込み・逆関節・後ろ向きの足・溶けた顔・離れた舌が無い。"),
+    ("bodies_separate", "2人の胴はそれぞれの輪郭を保つ。"),
+    ("limb_count", "各成人は腕2、脚2。手は手首、足は足首、舌は口の中。"),
+)
+_HOSPITAL_BROWN_HAIR_IDS = frozenset({"miki", "rei"})
+_HOSPITAL_WALK_ID_RE = re.compile(r"-(?:walk|out|run|slip)$")
+_HOSPITAL_TAKE_MIN = 7
+_HOSPITAL_TAKE_MAX = 10
+
+
+def hospital_negative_prompt() -> str:
+    """Negative encoder text. Kept out of the H3 positive prompt."""
+    return HOSPITAL_AGE_NEGATIVE + ", " + HOSPITAL_BODY_NEGATIVE
+
+
+def _hospital_brown_hair(cid: str, lock: str) -> bool:
+    if str(cid) in _HOSPITAL_BROWN_HAIR_IDS:
+        return True
+    return bool(re.search(r"brown (?:bob|perm|hair)", str(lock or ""), re.I))
+
+
+def _hospital_adult_proportion_line(cid: str, lock: str) -> str:
+    line = "Grown adult face, adult jaw, adult brow, adult shoulders, adult hips, adult hands."
+    if _hospital_brown_hair(cid, lock):
+        line += " " + HOSPITAL_BROWN_HAIR_ADULT
+    return line
+
+
+def _hospital_skip_limb_lock(beat: dict[str, Any]) -> bool:
+    return "dog" in {str(c) for c in (beat.get("cast") or [])}
+
+
+def _hospital_staying_cast(beat: dict[str, Any]) -> list[str]:
+    fade = {str(c) for c in (beat.get("fade_cast") or [])}
+    return [str(c) for c in (beat.get("cast") or []) if str(c) not in fade]
+
+
+def _hospital_small_motion(beat: dict[str, Any]) -> bool:
+    """Tangled or large-leg shots keep a short bend. Walks keep their stride."""
+    if _hospital_skip_limb_lock(beat):
+        return False
+    if len(_hospital_staying_cast(beat)) < 2:
+        return False
+    if beat_loco(beat) in ("walk", "run"):
+        return False
+    if _HOSPITAL_WALK_ID_RE.search(str(beat.get("id") or "")):
+        return False
+    return beat_loco(beat) == "planted" or bool(_SEX_ACT_RE.search(str(beat.get("action") or "")))
+
+
+def hospital_take_drop_reasons(take: dict[str, Any]) -> list[str]:
+    """Mosaic cannot hide these. A missing adult read drops the take too."""
+    reasons: list[str] = []
+    if take.get("age_reads_adult") is not True:
+        reasons.append("age_reads_adult")
+    for name in take.get("breaks") or []:
+        label = str(name)
+        if label in HOSPITAL_MOSAIC_BREAKS:
+            reasons.append(label)
+    return reasons
+
+
+def select_hospital_take(takes: list[dict[str, Any]]) -> dict[str, Any] | None:
+    """Pick the least-broken take from a scene pool. None when every take drops.
+
+    The review pool is 7 to 10 takes. Survivors prefer separated bodies and a short leg bend.
+    """
+    kept = [take for take in takes if isinstance(take, dict) and not hospital_take_drop_reasons(take)]
+    if not kept:
+        return None
+
+    def _rank(take: dict[str, Any]) -> tuple[int, int, str]:
+        separate = 0 if take.get("bodies_separate") is True else 1
+        small = 0 if take.get("small_motion") is True else 1
+        return (separate, small, str(take.get("take_id") or ""))
+
+    return sorted(kept, key=_rank)[0]
+
+
+def hospital_export_blocks(ep: dict[str, Any], report: dict[str, Any] | None) -> list[str]:
+    """Pre-export QC. Lip-sync and the later voice pass are outside this list."""
+    if str(ep.get("slug") or "") != "hospital-exit-adult":
+        return []
+    beats = report.get("beats") if isinstance(report, dict) else None
+    if not isinstance(beats, dict):
+        beats = {}
+    blocks: list[str] = []
+    for beat in ep.get("beats") or []:
+        if not isinstance(beat, dict) or is_ui_beat(beat):
+            continue
+        bid = str(beat.get("id") or "")
+        row = beats.get(bid)
+        if not isinstance(row, dict):
+            blocks.append(f"{bid}: qc missing")
+            continue
+        for key, _label in HOSPITAL_EXPORT_QC:
+            if row.get(key) is not True:
+                blocks.append(f"{bid}: {key}")
+        takes = row.get("takes")
+        if not isinstance(takes, list) or not (_HOSPITAL_TAKE_MIN <= len(takes) <= _HOSPITAL_TAKE_MAX):
+            blocks.append(f"{bid}: take count")
+            continue
+        chosen = select_hospital_take(takes)
+        if chosen is None:
+            blocks.append(f"{bid}: every take dropped")
+        elif str(row.get("chosen") or "") != str(chosen.get("take_id") or ""):
+            blocks.append(f"{bid}: chosen")
+    return blocks
+
+
+def hospital_visual_locks(ep: dict[str, Any], beat: dict[str, Any]) -> list[str]:
+    """Adult body, limb count, and a short bend on tangled shots. Affirmative lines only."""
+    if str(ep.get("slug") or "") != "hospital-exit-adult":
+        return []
+    lines = [HOSPITAL_ADULT_LOOK]
+    cast = ep.get("cast") or {}
+    locks = beat.get("cast_lock") if isinstance(beat.get("cast_lock"), dict) else {}
+    for cid in _hospital_staying_cast(beat):
+        row = cast.get(cid) or {}
+        lock = str((locks or {}).get(cid) or row.get("lock") or "")
+        if _hospital_brown_hair(cid, lock):
+            lines.append(HOSPITAL_BROWN_HAIR_ADULT)
+            break
+    if not _hospital_skip_limb_lock(beat):
+        lines.append(HOSPITAL_LIMB_PAIR if len(_hospital_staying_cast(beat)) >= 2 else HOSPITAL_LIMB_ONE)
+    if _hospital_small_motion(beat):
+        lines.append(HOSPITAL_SMALL_LEG)
+    return lines
+
 
 def _hospital_face_pair(beat: dict[str, Any]) -> bool:
     """Non-gin oral, facial, and kiss use a face frame instead of feet for the whole take.
@@ -5521,6 +5701,7 @@ def _hospital_prompt_holds(ep: dict[str, Any], beat: dict[str, Any]) -> list[str
     )
     if beat_loco(beat) == "planted" and len(cast) == 2 and sex and "sideride" not in keys and bid != "04-tsuno-kiss":
         holds.append(PAIR_FRAME_HOLD)
+    holds.extend(hospital_visual_locks(ep, beat))
     return holds
 
 
@@ -7083,6 +7264,16 @@ def finish_episode(ep: dict[str, Any], root: Path | str, *, raw_dir: Path | str 
     (`apply_trim=False` for stills previews whose held stills are shorter than any trim window).
     """
     root = Path(root)
+    if str(ep.get("slug") or "") == "hospital-exit-adult":
+        review_path = root / "qc" / "review.json"
+        report: dict[str, Any] = {}
+        if review_path.is_file():
+            loaded = json.loads(review_path.read_text(encoding="utf-8"))
+            if isinstance(loaded, dict):
+                report = loaded
+        blocks = hospital_export_blocks(ep, report)
+        if blocks:
+            raise EpisodeError("hospital QC blocked export: " + "; ".join(blocks[:12]))
     ensure_episode_tree(root)
     raw = Path(raw_dir) if raw_dir else root / "raw"
     if raw == root / "raw":
