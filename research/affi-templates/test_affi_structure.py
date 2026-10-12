@@ -124,7 +124,9 @@ def test_pet_sheet_is_another_pack_of_the_same_sheet() -> None:
         structure.read_lines("stories/missing_lines.txt")
     assert "voices" not in pack
     index = structure.story_index()
-    assert [row["name"] for row in index] == ["pet_sheet", "paw_stamp"]
+    assert [row["name"] for row in index][:2] == ["pet_sheet", "paw_stamp"]
+    assert len(index) > 2
+    assert len({row["name"] for row in index}) == len(index)
     assert index[0]["duration"] == "51.572秒"
     assert index[1]["duration"] == "50.556秒"
     assert index[0]["pattern"] == "junjun_ranran"
@@ -136,6 +138,17 @@ def test_pet_sheet_is_another_pack_of_the_same_sheet() -> None:
     assert structure.stock_lines("71.552秒", "") == ""
     assert structure.stock_lines("", "") == ""
     assert structure.stock_lines("paw_stamp", "c01 別") == "c01 別"
+    for row in index:
+        if row["pattern"] != "junjun_ranran" or row["name"] in {"pet_sheet", "paw_stamp"}:
+            continue
+        pack = structure.load(ROOT / "stories" / f"{row['name']}.yaml")
+        assert f"{pack['duration_s']:.3f}秒" == row["duration"]
+        assert "voices" not in pack
+        by_shot = {shot["id"]: shot for shot in pack["shots"]}
+        for cap in pack["captions"]:
+            shot = by_shot[cap["shot"]]
+            span = float(shot["end_s"]) - float(shot["start_s"])
+            assert abs(span - float(cap["mouth_s"])) < 0.001
 
 
 def test_fill_changes_only_the_four_slots() -> None:

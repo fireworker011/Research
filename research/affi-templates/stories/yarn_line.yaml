@@ -1,0 +1,233 @@
+schema: affi-repro-structure/v1
+source_id: yarn-straight-line
+pattern: junjun_ranran
+duration_s: 45.000
+canvas: "1080x1920"
+fps: 30
+file_in_repo: false
+cuts_s:
+  - 2.400
+  - 5.200
+  - 9.600
+  - 11.800
+  - 16.200
+  - 19.200
+  - 21.400
+  - 25.800
+  - 28.600
+  - 31.200
+  - 35.600
+  - 38.000
+  - 40.600
+silences_s: []
+measure:
+  cuts: せりふのショットの長さは、その台詞の口パク秒と同じ。動作のカットは絵の長さ。声はあとからこの秒に合わせる。
+  silences: この入力では測っていない。
+  captions: せりふは stories/yarn_line_lines.txt。絵のプロンプトには入れない。本編に字幕は焼かない。台詞は声用。
+  music: 曲も声も、口の動きのあとに合わせる。ファイルは指定しない。H3 には作らせない。
+  caption_y: 本編には出さない。
+change_only:
+  - person
+  - animals
+  - lines
+  - place
+slots:
+  person: 入力
+  animals:
+    guest: 入力
+    retort: 入力
+    polite: 入力
+  place: 入力
+narration: 独立した語りは無い。声はせりふ。
+registers:
+  guest: 短い相槌。キジトラの短毛。
+  retort: 方言のツッコミ。低い口調。
+  polite: 丁寧語。
+  owner: この話には出さない。
+  indoor_pair: この話では使わない。
+subtitle:
+  font: 白ゴシック
+  edge: 細い影
+  lines: 1
+  box: false
+  place: 中央やや下
+  content: 本編には焼かない。台詞は声用。
+watermark:
+  places: 上と中段
+  text: 自分のアカウント名
+punch:
+  - 玉を一回だけたたく
+  - ソファの下で線になる
+  - 丸に戻らない
+  - 線のまま三匹が座る
+shots:
+  - id: s01
+    start_s: 0.000
+    end_s: 2.400
+    place_part: floor
+    on_screen: [retort, polite, guest]
+    camera: 低い位置から玉へ寄る。
+    picture: ツッコミが床の毛糸玉の横に座る。ツッコミの口が開閉する。丁寧と客の口は閉じている。窓の昼光。毛糸の毛羽。文字は無い。
+  - id: s02
+    start_s: 2.400
+    end_s: 5.200
+    place_part: floor
+    on_screen: [retort, polite, guest]
+    camera: 添えた前足へ寄る。
+    picture: 丁寧が玉に前足を添えて止める。丁寧の口が開閉する。ツッコミと客の口は閉じている。窓の昼光。毛糸の毛羽。文字は無い。
+  - id: s03
+    start_s: 5.200
+    end_s: 9.600
+    place_part: floor
+    on_screen: [retort, polite, guest]
+    camera: 転がる玉を横から追う。
+    picture: ツッコミの前足が玉を一回たたく。全員の口は閉じている。窓の昼光。毛糸の毛羽。文字は無い。
+  - id: s04
+    start_s: 9.600
+    end_s: 11.800
+    place_part: floor
+    on_screen: [retort, polite, guest]
+    camera: 前足へ寄る。
+    picture: ツッコミが上げた前足を止める。ツッコミの口が開閉する。丁寧と客の口は閉じている。窓の昼光。短い毛の質感。文字は無い。
+  - id: s05
+    start_s: 11.800
+    end_s: 16.200
+    place_part: sofa
+    on_screen: [retort, polite, guest]
+    camera: 線を横から追う。
+    picture: 玉がほどけてソファの下まで線になる。全員の口は閉じている。窓の昼光。毛糸の毛羽。文字は無い。
+  - id: s06
+    start_s: 16.200
+    end_s: 19.200
+    place_part: floor
+    on_screen: [retort, polite, guest]
+    camera: 線へ寄る。
+    picture: 丁寧が伸びた線を見る。丁寧の口が開閉する。ツッコミと客の口は閉じている。窓の昼光。毛糸の毛羽。文字は無い。
+  - id: s07
+    start_s: 19.200
+    end_s: 21.400
+    place_part: sofa
+    on_screen: [retort, polite, guest]
+    camera: 端へ寄る。
+    picture: 客が線の端に顔を寄せる。客の口が開閉する。ツッコミと丁寧の口は閉じている。窓の昼光。短い毛の質感。文字は無い。
+  - id: s08
+    start_s: 21.400
+    end_s: 25.800
+    place_part: floor
+    on_screen: [retort, polite, guest]
+    camera: 押す前足へ寄る。
+    picture: 丁寧が線を前足で丸の方へ押す。全員の口は閉じている。窓の昼光。毛糸の毛羽。文字は無い。
+  - id: s09
+    start_s: 25.800
+    end_s: 28.600
+    place_part: floor
+    on_screen: [retort, polite, guest]
+    camera: ツッコミの顔へ寄る。
+    picture: ツッコミが伸びた線を見下ろす。ツッコミの口が開閉する。丁寧と客の口は閉じている。窓の昼光。短い毛の質感。文字は無い。
+  - id: s10
+    start_s: 28.600
+    end_s: 31.200
+    place_part: floor
+    on_screen: [retort, polite, guest]
+    camera: 中ほどへ寄る。
+    picture: 丁寧が線の中ほどを前足で寄せる。丁寧の口が開閉する。ツッコミと客の口は閉じている。窓の昼光。毛糸の毛羽。文字は無い。
+  - id: s11
+    start_s: 31.200
+    end_s: 35.600
+    place_part: floor
+    on_screen: [retort, polite, guest]
+    camera: 伸びた線を上から見る。
+    picture: 寄せた線がまた床に伸びる。全員の口は閉じている。窓の昼光。毛糸の毛羽。文字は無い。
+  - id: s12
+    start_s: 35.600
+    end_s: 38.000
+    place_part: floor
+    on_screen: [retort, polite, guest]
+    camera: 前足へ寄る。
+    picture: ツッコミが前足を引く。ツッコミの口が開閉する。丁寧と客の口は閉じている。窓の昼光。短い毛の質感。文字は無い。
+  - id: s13
+    start_s: 38.000
+    end_s: 40.600
+    place_part: floor
+    on_screen: [retort, polite, guest]
+    camera: 客の横から寄る。
+    picture: 客が線の横に腰を下ろす。客の口が開閉する。ツッコミと丁寧の口は閉じている。窓の昼光。短い毛の質感。文字は無い。
+  - id: s14
+    start_s: 40.600
+    end_s: 45.000
+    place_part: floor
+    on_screen: [retort, polite, guest]
+    camera: 少し引いて線と三匹を見る。
+    picture: 三匹が線の横に並んで座る。全員の口は閉じている。窓の昼光。床の木目。文字は無い。
+captions:
+  - id: c01
+    shot: s01
+    role: retort
+    source_line: e-01
+    mouth_s: 2.400
+    seen_s: [0.200]
+    line: 入力
+  - id: c02
+    shot: s02
+    role: polite
+    source_line: e-02
+    mouth_s: 2.800
+    seen_s: [2.600]
+    line: 入力
+  - id: c03
+    shot: s04
+    role: retort
+    source_line: e-03
+    mouth_s: 2.200
+    seen_s: [9.800]
+    line: 入力
+  - id: c04
+    shot: s06
+    role: polite
+    source_line: e-04
+    mouth_s: 3.000
+    seen_s: [16.400]
+    line: 入力
+  - id: c05
+    shot: s07
+    role: guest
+    source_line: e-05
+    mouth_s: 2.200
+    seen_s: [19.400]
+    line: 入力
+  - id: c06
+    shot: s09
+    role: retort
+    source_line: e-06
+    mouth_s: 2.800
+    seen_s: [26.000]
+    line: 入力
+  - id: c07
+    shot: s10
+    role: polite
+    source_line: e-07
+    mouth_s: 2.600
+    seen_s: [28.800]
+    line: 入力
+  - id: c08
+    shot: s12
+    role: retort
+    source_line: e-08
+    mouth_s: 2.400
+    seen_s: [35.800]
+    line: 入力
+  - id: c09
+    shot: s13
+    role: guest
+    source_line: e-09
+    mouth_s: 2.600
+    seen_s: [38.200]
+    line: 入力
+score:
+  最初3秒: 16
+  テンポ: 18
+  見やすさ: 18
+  参考の型との一致: 18
+  壊れ: 20
+  合計: 90
+  メモ: 口パク秒を先に固定。声と曲のファイルは指定しない。本編に字幕とCTAは無い。

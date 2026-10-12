@@ -1,0 +1,241 @@
+schema: affi-repro-structure/v1
+source_id: laundry-sock-basket
+pattern: junjun_ranran
+duration_s: 48.800
+canvas: "1080x1920"
+fps: 30
+file_in_repo: false
+cuts_s:
+  - 2.400
+  - 6.800
+  - 9.800
+  - 14.200
+  - 16.400
+  - 19.000
+  - 23.400
+  - 25.800
+  - 28.000
+  - 32.200
+  - 35.000
+  - 37.600
+  - 42.000
+  - 44.400
+silences_s: []
+measure:
+  cuts: せりふのショットの長さは、その台詞の口パク秒と同じ。動作のカットは絵の長さ。声はあとからこの秒に合わせる。
+  silences: この入力では測っていない。
+  captions: せりふは stories/laundry_sock_lines.txt。絵のプロンプトには入れない。本編に字幕は焼かない。台詞は声用。
+  music: 曲も声も、口の動きのあとに合わせる。ファイルは指定しない。H3 には作らせない。
+  caption_y: 本編には出さない。
+change_only:
+  - person
+  - animals
+  - lines
+  - place
+slots:
+  person: 入力
+  animals:
+    guest: 入力
+    retort: 入力
+    polite: 入力
+  place: 入力
+narration: 独立した語りは無い。声はせりふ。
+registers:
+  guest: 短い相槌。キジトラの短毛。
+  retort: 方言のツッコミ。低い口調。
+  polite: 丁寧語。
+  owner: この話には出さない。
+  indoor_pair: この話では使わない。
+subtitle:
+  font: 白ゴシック
+  edge: 細い影
+  lines: 1
+  box: false
+  place: 中央やや下
+  content: 本編には焼かない。台詞は声用。
+watermark:
+  places: 上と中段
+  text: 自分のアカウント名
+punch:
+  - 片っぽが客の頭にある
+  - 右だと言われて首にずらす
+  - 首も違うと言われてかごに落ちる
+  - もう一回かぶろうとして前足が止まる
+shots:
+  - id: s01
+    start_s: 0.000
+    end_s: 2.400
+    place_part: basket
+    on_screen: [retort, polite, guest]
+    camera: 低い位置からかごへ寄る。
+    picture: ツッコミが洗濯かごの縁に前足を掛ける。ツッコミの口が開閉する。丁寧と客の口は閉じている。窓の昼光。プラスチックの光。文字は無い。
+  - id: s02
+    start_s: 2.400
+    end_s: 6.800
+    place_part: basket
+    on_screen: [retort, polite, guest]
+    camera: 上からかごの中を見る。
+    picture: ツッコミがかごの中を前足で一回かき分ける。全員の口は閉じている。窓の昼光。布の毛羽。文字は無い。
+  - id: s03
+    start_s: 6.800
+    end_s: 9.800
+    place_part: basket
+    on_screen: [retort, polite, guest]
+    camera: 丁寧の顔へ寄る。
+    picture: 丁寧がかごの底をのぞき込む。丁寧の口が開閉する。ツッコミと客の口は閉じている。窓の昼光。短い毛の質感。文字は無い。
+  - id: s04
+    start_s: 9.800
+    end_s: 14.200
+    place_part: basket
+    on_screen: [retort, polite, guest]
+    camera: 持ち上げた布へ寄る。
+    picture: 丁寧がシャツを一枚、前足で持ち上げる。全員の口は閉じている。窓の昼光。布のしわ。文字は無い。
+  - id: s05
+    start_s: 14.200
+    end_s: 16.400
+    place_part: basket
+    on_screen: [retort, polite, guest]
+    camera: 丁寧の顔へ寄る。
+    picture: 丁寧が空の底を見て止まる。丁寧の口が開閉する。ツッコミと客の口は閉じている。窓の昼光。プラスチックの光。文字は無い。
+  - id: s06
+    start_s: 16.400
+    end_s: 19.000
+    place_part: floor
+    on_screen: [retort, polite, guest]
+    camera: 客の頭へ寄る。
+    picture: 客が床に座ったまま顔を上げる。客の口が開閉する。ツッコミと丁寧の口は閉じている。窓の昼光。布の毛羽。文字は無い。
+  - id: s07
+    start_s: 19.000
+    end_s: 23.400
+    place_part: floor
+    on_screen: [retort, polite, guest]
+    camera: 客の頭へ横から寄る。
+    picture: ツッコミが客の頭の上の靴下を見る。全員の口は閉じている。窓の昼光。短い毛の質感。文字は無い。
+  - id: s08
+    start_s: 23.400
+    end_s: 25.800
+    place_part: floor
+    on_screen: [retort, polite, guest]
+    camera: 靴下へ寄る。
+    picture: ツッコミが靴下を前足で一回つつく。ツッコミの口が開閉する。丁寧と客の口は閉じている。窓の昼光。布の毛羽。文字は無い。
+  - id: s09
+    start_s: 25.800
+    end_s: 28.000
+    place_part: floor
+    on_screen: [retort, polite, guest]
+    camera: 客の顔へ寄る。
+    picture: 客が頭を少し傾ける。客の口が開閉する。ツッコミと丁寧の口は閉じている。窓の昼光。短い毛の質感。文字は無い。
+  - id: s10
+    start_s: 28.000
+    end_s: 32.200
+    place_part: floor
+    on_screen: [retort, polite, guest]
+    camera: 首の布へ寄る。
+    picture: 客が靴下を前足で首までずらす。全員の口は閉じている。窓の昼光。布の毛羽。文字は無い。
+  - id: s11
+    start_s: 32.200
+    end_s: 35.000
+    place_part: floor
+    on_screen: [retort, polite, guest]
+    camera: 丁寧の顔へ寄る。
+    picture: 丁寧が首の靴下を見て首を横に振る。丁寧の口が開閉する。ツッコミと客の口は閉じている。窓の昼光。短い毛の質感。文字は無い。
+  - id: s12
+    start_s: 35.000
+    end_s: 37.600
+    place_part: basket
+    on_screen: [retort, polite, guest]
+    camera: かごへ寄る。
+    picture: ツッコミがかごの方を前足で示す。ツッコミの口が開閉する。丁寧と客の口は閉じている。窓の昼光。プラスチックの光。文字は無い。
+  - id: s13
+    start_s: 37.600
+    end_s: 42.000
+    place_part: basket
+    on_screen: [retort, polite, guest]
+    camera: 落ちた布を上から見る。
+    picture: 靴下がかごの中に落ちる。全員の口は閉じている。窓の昼光。布のしわ。文字は無い。
+  - id: s14
+    start_s: 42.000
+    end_s: 44.400
+    place_part: basket
+    on_screen: [retort, polite, guest]
+    camera: 客の前足へ寄る。
+    picture: 客がかごを見て前足を伸ばす。客の口が開閉する。ツッコミと丁寧の口は閉じている。窓の昼光。短い毛の質感。文字は無い。
+  - id: s15
+    start_s: 44.400
+    end_s: 48.800
+    place_part: basket
+    on_screen: [retort, polite, guest]
+    camera: 止まった前足へ寄る。
+    picture: 客の前足がかごの縁で止まる。全員の口は閉じている。窓の昼光。プラスチックの光。文字は無い。
+captions:
+  - id: c01
+    shot: s01
+    role: retort
+    source_line: e-01
+    mouth_s: 2.400
+    seen_s: [0.200]
+    line: 入力
+  - id: c02
+    shot: s03
+    role: polite
+    source_line: e-02
+    mouth_s: 3.000
+    seen_s: [7.000]
+    line: 入力
+  - id: c03
+    shot: s05
+    role: polite
+    source_line: e-03
+    mouth_s: 2.200
+    seen_s: [14.400]
+    line: 入力
+  - id: c04
+    shot: s06
+    role: guest
+    source_line: e-04
+    mouth_s: 2.600
+    seen_s: [16.600]
+    line: 入力
+  - id: c05
+    shot: s08
+    role: retort
+    source_line: e-05
+    mouth_s: 2.400
+    seen_s: [23.600]
+    line: 入力
+  - id: c06
+    shot: s09
+    role: guest
+    source_line: e-06
+    mouth_s: 2.200
+    seen_s: [26.000]
+    line: 入力
+  - id: c07
+    shot: s11
+    role: polite
+    source_line: e-07
+    mouth_s: 2.800
+    seen_s: [32.400]
+    line: 入力
+  - id: c08
+    shot: s12
+    role: retort
+    source_line: e-08
+    mouth_s: 2.600
+    seen_s: [35.200]
+    line: 入力
+  - id: c09
+    shot: s14
+    role: guest
+    source_line: e-09
+    mouth_s: 2.400
+    seen_s: [42.200]
+    line: 入力
+score:
+  最初3秒: 20
+  テンポ: 18
+  見やすさ: 18
+  参考の型との一致: 18
+  壊れ: 20
+  合計: 94
+  メモ: 口パク秒を先に固定。声と曲のファイルは指定しない。本編に字幕とCTAは無い。
