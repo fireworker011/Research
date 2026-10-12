@@ -1,0 +1,6 @@
+# 試験サンプル
+
+`2026-10-13-pet-01-gray-blink-placeholder.mp4` は色だけの試験映像。投稿しない。
+BGM は正弦波で、載せる曲ではない。
+隣の `-nobgm.mp4` は同じ絵と声で、BGM だけ無い。
+測った値は `self-test.json`。
