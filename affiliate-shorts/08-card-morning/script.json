@@ -1,0 +1,354 @@
+{
+  "template": "before_after",
+  "title": "明細の朝に手が止まった",
+  "series_character": "明細係",
+  "punchline": "一回の上限を自分で下げた。翌月の明細が細くなった",
+  "closing": "先に触るのは上限",
+  "scenes": [
+    {
+      "id": 1,
+      "role": "hook",
+      "speaker": "narrator",
+      "style_id": 2,
+      "credit": "VOICEVOX:四国めたん",
+      "text": "明細の朝に手が止まった",
+      "telop": "明細の朝に手が止まった",
+      "bg": "office",
+      "characters": [
+        {
+          "id": "hero_smile",
+          "who": "hero",
+          "label": ""
+        },
+        {
+          "id": "rival_bow",
+          "who": "rival",
+          "label": "明細係"
+        }
+      ],
+      "props": [],
+      "code_props": [],
+      "effect": "zoom",
+      "sfx": "whoosh",
+      "duration_hint": 2.2,
+      "tone": "after"
+    },
+    {
+      "id": 2,
+      "role": "develop",
+      "speaker": "narrator",
+      "style_id": 2,
+      "credit": "VOICEVOX:四国めたん",
+      "text": "ビフォー、深夜の少額を重ねた",
+      "telop": "ビフォー、深夜の\n少額を重ねた",
+      "bg": "office",
+      "characters": [
+        {
+          "id": "hero_trouble",
+          "who": "hero",
+          "label": ""
+        }
+      ],
+      "props": [],
+      "code_props": [
+        "papers"
+      ],
+      "effect": "none",
+      "sfx": "paper",
+      "duration_hint": 2.2,
+      "tone": "before"
+    },
+    {
+      "id": 3,
+      "role": "develop",
+      "speaker": "rival",
+      "style_id": 11,
+      "credit": "VOICEVOX:玄野武宏",
+      "text": "一回だけだろ",
+      "telop": "一回だけだろ",
+      "bg": "office",
+      "characters": [
+        {
+          "id": "rival_smug",
+          "who": "rival",
+          "label": "明細係"
+        }
+      ],
+      "props": [],
+      "code_props": [],
+      "effect": "none",
+      "sfx": "none",
+      "duration_hint": 2.2,
+      "tone": "before"
+    },
+    {
+      "id": 4,
+      "role": "develop",
+      "speaker": "narrator",
+      "style_id": 2,
+      "credit": "VOICEVOX:四国めたん",
+      "text": "ポイントで余計な物",
+      "telop": "ポイントで余計な物",
+      "bg": "office",
+      "characters": [
+        {
+          "id": "rival_smug",
+          "who": "rival",
+          "label": "明細係"
+        }
+      ],
+      "props": [],
+      "code_props": [],
+      "effect": "none",
+      "sfx": "whoosh",
+      "duration_hint": 2.2,
+      "tone": "before"
+    },
+    {
+      "id": 5,
+      "role": "develop",
+      "speaker": "hero",
+      "style_id": 34,
+      "credit": "VOICEVOX:白上虎太郎",
+      "text": "その枠は広すぎる",
+      "telop": "その枠は広すぎる",
+      "bg": "office",
+      "characters": [
+        {
+          "id": "hero_angry",
+          "who": "hero",
+          "label": ""
+        }
+      ],
+      "props": [],
+      "code_props": [],
+      "effect": "shake",
+      "sfx": "none",
+      "duration_hint": 2.2,
+      "tone": "before"
+    },
+    {
+      "id": 6,
+      "role": "develop",
+      "speaker": "narrator",
+      "style_id": 2,
+      "credit": "VOICEVOX:四国めたん",
+      "text": "上限が無かった",
+      "telop": "上限が無かった",
+      "bg": "office_night",
+      "characters": [
+        {
+          "id": "hero_tired",
+          "who": "hero",
+          "label": ""
+        }
+      ],
+      "props": [],
+      "code_props": [],
+      "effect": "none",
+      "sfx": "none",
+      "duration_hint": 2.2,
+      "tone": "before"
+    },
+    {
+      "id": 7,
+      "role": "develop",
+      "speaker": "narrator",
+      "style_id": 2,
+      "credit": "VOICEVOX:四国めたん",
+      "text": "ここからアフター",
+      "telop": "ここからアフター",
+      "bg": "office",
+      "characters": [
+        {
+          "id": "hero_smile",
+          "who": "hero",
+          "label": ""
+        }
+      ],
+      "props": [],
+      "code_props": [],
+      "effect": "lines",
+      "sfx": "rise",
+      "duration_hint": 2.2,
+      "tone": "turn",
+      "hold": 1.6
+    },
+    {
+      "id": 8,
+      "role": "punch",
+      "speaker": "narrator",
+      "style_id": 2,
+      "credit": "VOICEVOX:四国めたん",
+      "text": "一回の上限を自分で下げた",
+      "telop": "一回の上限を自分で下げた",
+      "bg": "chat",
+      "characters": [
+        {
+          "id": "hero_smile",
+          "who": "hero",
+          "label": ""
+        }
+      ],
+      "props": [],
+      "code_props": [],
+      "effect": "zoom",
+      "sfx": "coin",
+      "duration_hint": 2.2,
+      "tone": "after"
+    },
+    {
+      "id": 9,
+      "role": "punch",
+      "speaker": "boss",
+      "style_id": 21,
+      "credit": "VOICEVOX:剣崎雌雄",
+      "text": "明細が違うぞ",
+      "telop": "明細が違うぞ",
+      "bg": "office",
+      "characters": [
+        {
+          "id": "boss_angry",
+          "who": "boss",
+          "label": ""
+        }
+      ],
+      "props": [],
+      "code_props": [],
+      "effect": "shake",
+      "sfx": "shock",
+      "duration_hint": 2.2,
+      "tone": "after"
+    },
+    {
+      "id": 10,
+      "role": "punch",
+      "speaker": "rival",
+      "style_id": 11,
+      "credit": "VOICEVOX:玄野武宏",
+      "text": "払いすぎた",
+      "telop": "払いすぎた",
+      "bg": "office",
+      "characters": [
+        {
+          "id": "rival_pale",
+          "who": "rival",
+          "label": "明細係"
+        }
+      ],
+      "props": [],
+      "code_props": [],
+      "effect": "none",
+      "sfx": "none",
+      "duration_hint": 2.2,
+      "tone": "after"
+    },
+    {
+      "id": 11,
+      "role": "punch",
+      "speaker": "narrator",
+      "style_id": 2,
+      "credit": "VOICEVOX:四国めたん",
+      "text": "翌月の明細が細くなった",
+      "telop": "翌月の明細が細くなった",
+      "bg": "office",
+      "characters": [
+        {
+          "id": "rival_bow",
+          "who": "rival",
+          "label": "明細係"
+        }
+      ],
+      "props": [],
+      "code_props": [],
+      "effect": "zoom",
+      "sfx": "coin",
+      "duration_hint": 2.2,
+      "tone": "after"
+    },
+    {
+      "id": 12,
+      "role": "close",
+      "speaker": "narrator",
+      "style_id": 2,
+      "credit": "VOICEVOX:四国めたん",
+      "text": "先に触るのは上限",
+      "telop": "先に触るのは上限",
+      "bg": "lines",
+      "characters": [
+        {
+          "id": "hero_smile",
+          "who": "hero",
+          "label": ""
+        }
+      ],
+      "props": [],
+      "code_props": [],
+      "effect": "zoom",
+      "sfx": "none",
+      "duration_hint": 2.2,
+      "tone": "close"
+    },
+    {
+      "id": 13,
+      "role": "close",
+      "speaker": "narrator",
+      "style_id": 2,
+      "credit": "VOICEVOX:四国めたん",
+      "text": "前後の差は明細だ",
+      "telop": "前後の差は明細だ",
+      "bg": "lines",
+      "characters": [
+        {
+          "id": "hero_smile",
+          "who": "hero",
+          "label": ""
+        },
+        {
+          "id": "rival_bow",
+          "who": "rival",
+          "label": ""
+        }
+      ],
+      "props": [],
+      "code_props": [],
+      "effect": "none",
+      "sfx": "none",
+      "duration_hint": 2.2,
+      "tone": "after"
+    },
+    {
+      "id": 14,
+      "role": "credit",
+      "speaker": "narrator",
+      "style_id": 2,
+      "credit": "VOICEVOX:四国めたん",
+      "text": "",
+      "telop": "VOICEVOX:四国めたん\nVOICEVOX:玄野武宏\nVOICEVOX:白上虎太郎\nVOICEVOX:剣崎雌雄",
+      "bg": "credit",
+      "characters": [],
+      "props": [],
+      "code_props": [],
+      "effect": "none",
+      "sfx": "none",
+      "duration_hint": 2.2,
+      "series_note": "明細係"
+    }
+  ],
+  "credits": [
+    "VOICEVOX:四国めたん",
+    "VOICEVOX:玄野武宏",
+    "VOICEVOX:白上虎太郎",
+    "VOICEVOX:剣崎雌雄"
+  ],
+  "asset_ids": [
+    "hero_smile",
+    "rival_bow",
+    "hero_trouble",
+    "rival_smug",
+    "hero_angry",
+    "hero_tired",
+    "boss_angry",
+    "rival_pale"
+  ]
+}

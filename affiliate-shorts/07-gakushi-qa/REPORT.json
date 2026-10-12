@@ -1,0 +1,70 @@
+{
+  "out": "/workspace/affiliate-shorts/07-gakushi-qa/out.mp4",
+  "template": "qa",
+  "duration_sec": 25.54,
+  "scene_count": 14,
+  "asset_count": 8,
+  "asset_limit": 20,
+  "assets": [
+    {
+      "id": "hero_trouble",
+      "title": "pinned",
+      "alt": "hero_trouble",
+      "url": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhxJL1uWPRrar9S-FPxNv7FCtcDsBUM5B8ItxCoPVFnqtsBKjv7TyPF54QNeSpcg2QCm3Fn8maHs9AscQD5Bmegje_6Zdt2xtzqXkriOKe76Aq37zUYxI0kfBoONd8SbYE_loSyJw3rkVY8/s800/businessman1_nayami.png"
+    },
+    {
+      "id": "rival_smug",
+      "title": "pinned",
+      "alt": "rival_smug",
+      "url": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgmfOy1dvPW5nkAXq91r1d2JpatnBWDQHwMOsQRfjoJK3UhP4qRvRGgzacoQu3ogBLYq4zj0tYolJd4_6rjS4tUa8DR5lSj_PQaqXzd6Cs_DivuxoRAkIygU6GV36iS3QhIj3oa6vnevpY/s800/pose_doyagao_man.png"
+    },
+    {
+      "id": "hero_tired",
+      "title": "pinned",
+      "alt": "hero_tired",
+      "url": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEi5O7ebIPQwPb7j8zWG0W4g3EN_nlmRZvPEfGKxwGsCnV44eGJARhg0Zz2mBNr7m9BK61Ebp00-9v4cX_V-YkzlJB5YAj7Dpb9slFkX2GG7xGyXKCYl1wMwzi6eWXoCHVuQIFSjsaL-5CM/s800/tsukareta_business_man.png"
+    },
+    {
+      "id": "hero_angry",
+      "title": "pinned",
+      "alt": "hero_angry",
+      "url": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEh-_r1tYuiOicwB0kiiTCh8agF8SToBv9jqsc4LcnWPdgfAE65qjQmPobIVnj1j9iX_x3hsvaQke3Za0nmVGXG1LT5HG-sSX1W6t_Sy4oMh1dtA3H3eTmGMaaoDRb4mtEqS31VG3h2LlwH7/s800/businessman7_angry.png"
+    },
+    {
+      "id": "rival_pale",
+      "title": "pinned",
+      "alt": "rival_pale",
+      "url": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEi2aqf82E2vPsRDjhHRSzVXSzvLd3t_6ZfH1Y3w-eKILaooOeCEu21h_g4F819e-TL4u8S4e1XZ1AOI9gfMkJp6IZTFCyIGUBiiHq86qEeKe59JE7Bk3nOgPvpQo6JxhiGDIPJyXcnSb3cF/s800/money_tsuchou_shock_man.png"
+    },
+    {
+      "id": "hero_smile",
+      "title": "pinned",
+      "alt": "hero_smile",
+      "url": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhy3dDvRMBHJ-tn1A2AUBt4iUbmcOXxRuHUegd9lKUBveMfLADwYFD0QsmGhDqoctcd1lk7bY5wO3M04TuC_EVB8TcyirHiMlsvyn-HPGcHJHl6wMEEcrZb5vc-YuKF8ddVD16Wadzfqurn/s800/businessman5_ureshii.png"
+    },
+    {
+      "id": "boss_angry",
+      "title": "pinned",
+      "alt": "boss_angry",
+      "url": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjHP6Z99Wq0Hf3Ii9NZk1tUIlGBQKW7fKhHjtlIM9lUmiU_XIwwBCW_IRu91RKhlhBE0qMKWiNUq8ISkpgdER-nzCs8YEtseVITZD6V0B9f9kJ4OUtHzWVCiXpFrZ3QEjpAWzsVr9eEi8pQ/s800/pose_sugoi_okoru_man.png"
+    },
+    {
+      "id": "rival_bow",
+      "title": "pinned",
+      "alt": "rival_bow",
+      "url": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhXVsD9VIHym9LT-UAiWhsDTiYU2l70xSUUOZC8suvWuCqcUH3Gx8G0c0UEHOfKErpYCK4ZdXlUkWCJdJW2ApshJJ6pJHdnAfdGUIHMhAjQ4b3u1_5VHwXk7xOxkt49pSQw3t3YoEGxfcGb/s800/job_bus_driver_man_ojigi.png"
+    }
+  ],
+  "rejected_count": 0,
+  "credits": [
+    "VOICEVOX:四国めたん",
+    "VOICEVOX:玄野武宏",
+    "VOICEVOX:白上虎太郎",
+    "VOICEVOX:剣崎雌雄"
+  ],
+  "terms": {
+    "irasutoya": "いらすとやは1つの制作物につき20点まで商用無料（同じ絵の重複は1点）。21点以上の商用利用は有償。クレジット表記は不要。素材そのものの再配布や、イラストを主体にした商品化は不可。背景はコード描画にして点数をキャラと小物に使っている。",
+    "voicevox": "使った声はクレジットが要る。四国めたん、白上虎太郎、玄野武宏、剣崎雌雄はクレジットを書けば商用可。青山龍星は個人事業・法人だと事前許可が要るので使っていない。効果音とBGMはこの場で合成したオリジナルなのでクレジット不要。"
+  },
+  "within_25_40": true
+}

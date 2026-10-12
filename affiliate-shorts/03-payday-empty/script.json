@@ -1,0 +1,354 @@
+{
+  "template": "before_after",
+  "title": "給料日の翌日に薄い",
+  "series_character": "財布係",
+  "punchline": "支払日を翌週にまとめた。七日後も残高があった",
+  "closing": "先に動かすのは支払日",
+  "scenes": [
+    {
+      "id": 1,
+      "role": "hook",
+      "speaker": "narrator",
+      "style_id": 2,
+      "credit": "VOICEVOX:四国めたん",
+      "text": "給料日の翌日に薄い",
+      "telop": "給料日の翌日に薄い",
+      "bg": "office",
+      "characters": [
+        {
+          "id": "hero_smile",
+          "who": "hero",
+          "label": ""
+        },
+        {
+          "id": "rival_bow",
+          "who": "rival",
+          "label": "財布係"
+        }
+      ],
+      "props": [],
+      "code_props": [],
+      "effect": "zoom",
+      "sfx": "whoosh",
+      "duration_hint": 2.2,
+      "tone": "after"
+    },
+    {
+      "id": 2,
+      "role": "develop",
+      "speaker": "narrator",
+      "style_id": 2,
+      "credit": "VOICEVOX:四国めたん",
+      "text": "ビフォー、入金の夜に飲み会",
+      "telop": "ビフォー、\n入金の夜に飲み会",
+      "bg": "office",
+      "characters": [
+        {
+          "id": "hero_trouble",
+          "who": "hero",
+          "label": ""
+        }
+      ],
+      "props": [],
+      "code_props": [
+        "papers"
+      ],
+      "effect": "none",
+      "sfx": "paper",
+      "duration_hint": 2.2,
+      "tone": "before"
+    },
+    {
+      "id": 3,
+      "role": "develop",
+      "speaker": "rival",
+      "style_id": 11,
+      "credit": "VOICEVOX:玄野武宏",
+      "text": "まだ残ってるだろ",
+      "telop": "まだ残ってるだろ",
+      "bg": "office",
+      "characters": [
+        {
+          "id": "rival_smug",
+          "who": "rival",
+          "label": "財布係"
+        }
+      ],
+      "props": [],
+      "code_props": [],
+      "effect": "none",
+      "sfx": "none",
+      "duration_hint": 2.2,
+      "tone": "before"
+    },
+    {
+      "id": 4,
+      "role": "develop",
+      "speaker": "narrator",
+      "style_id": 2,
+      "credit": "VOICEVOX:四国めたん",
+      "text": "朝にサブスクが落ちる",
+      "telop": "朝にサブスクが落ちる",
+      "bg": "office",
+      "characters": [
+        {
+          "id": "rival_smug",
+          "who": "rival",
+          "label": "財布係"
+        }
+      ],
+      "props": [],
+      "code_props": [],
+      "effect": "none",
+      "sfx": "whoosh",
+      "duration_hint": 2.2,
+      "tone": "before"
+    },
+    {
+      "id": 5,
+      "role": "develop",
+      "speaker": "hero",
+      "style_id": 34,
+      "credit": "VOICEVOX:白上虎太郎",
+      "text": "その金は生活費だ",
+      "telop": "その金は生活費だ",
+      "bg": "office",
+      "characters": [
+        {
+          "id": "hero_angry",
+          "who": "hero",
+          "label": ""
+        }
+      ],
+      "props": [],
+      "code_props": [],
+      "effect": "shake",
+      "sfx": "none",
+      "duration_hint": 2.2,
+      "tone": "before"
+    },
+    {
+      "id": 6,
+      "role": "develop",
+      "speaker": "narrator",
+      "style_id": 2,
+      "credit": "VOICEVOX:四国めたん",
+      "text": "三日で食費を超える",
+      "telop": "三日で食費を超える",
+      "bg": "office_night",
+      "characters": [
+        {
+          "id": "hero_tired",
+          "who": "hero",
+          "label": ""
+        }
+      ],
+      "props": [],
+      "code_props": [],
+      "effect": "none",
+      "sfx": "none",
+      "duration_hint": 2.2,
+      "tone": "before"
+    },
+    {
+      "id": 7,
+      "role": "develop",
+      "speaker": "narrator",
+      "style_id": 2,
+      "credit": "VOICEVOX:四国めたん",
+      "text": "ここからアフター",
+      "telop": "ここからアフター",
+      "bg": "office",
+      "characters": [
+        {
+          "id": "hero_smile",
+          "who": "hero",
+          "label": ""
+        }
+      ],
+      "props": [],
+      "code_props": [],
+      "effect": "lines",
+      "sfx": "rise",
+      "duration_hint": 2.2,
+      "tone": "turn",
+      "hold": 1.6
+    },
+    {
+      "id": 8,
+      "role": "punch",
+      "speaker": "narrator",
+      "style_id": 2,
+      "credit": "VOICEVOX:四国めたん",
+      "text": "支払日を翌週にまとめた",
+      "telop": "支払日を翌週にまとめた",
+      "bg": "chat",
+      "characters": [
+        {
+          "id": "hero_smile",
+          "who": "hero",
+          "label": ""
+        }
+      ],
+      "props": [],
+      "code_props": [],
+      "effect": "zoom",
+      "sfx": "coin",
+      "duration_hint": 2.2,
+      "tone": "after"
+    },
+    {
+      "id": 9,
+      "role": "punch",
+      "speaker": "boss",
+      "style_id": 21,
+      "credit": "VOICEVOX:剣崎雌雄",
+      "text": "残高が違うぞ",
+      "telop": "残高が違うぞ",
+      "bg": "office",
+      "characters": [
+        {
+          "id": "boss_angry",
+          "who": "boss",
+          "label": ""
+        }
+      ],
+      "props": [],
+      "code_props": [],
+      "effect": "shake",
+      "sfx": "shock",
+      "duration_hint": 2.2,
+      "tone": "after"
+    },
+    {
+      "id": 10,
+      "role": "punch",
+      "speaker": "rival",
+      "style_id": 11,
+      "credit": "VOICEVOX:玄野武宏",
+      "text": "来月返す",
+      "telop": "来月返す",
+      "bg": "office",
+      "characters": [
+        {
+          "id": "rival_pale",
+          "who": "rival",
+          "label": "財布係"
+        }
+      ],
+      "props": [],
+      "code_props": [],
+      "effect": "none",
+      "sfx": "none",
+      "duration_hint": 2.2,
+      "tone": "after"
+    },
+    {
+      "id": 11,
+      "role": "punch",
+      "speaker": "narrator",
+      "style_id": 2,
+      "credit": "VOICEVOX:四国めたん",
+      "text": "七日後も残高があった",
+      "telop": "七日後も残高があった",
+      "bg": "office",
+      "characters": [
+        {
+          "id": "rival_bow",
+          "who": "rival",
+          "label": "財布係"
+        }
+      ],
+      "props": [],
+      "code_props": [],
+      "effect": "zoom",
+      "sfx": "coin",
+      "duration_hint": 2.2,
+      "tone": "after"
+    },
+    {
+      "id": 12,
+      "role": "close",
+      "speaker": "narrator",
+      "style_id": 2,
+      "credit": "VOICEVOX:四国めたん",
+      "text": "先に動かすのは支払日",
+      "telop": "先に動かすのは支払日",
+      "bg": "lines",
+      "characters": [
+        {
+          "id": "hero_smile",
+          "who": "hero",
+          "label": ""
+        }
+      ],
+      "props": [],
+      "code_props": [],
+      "effect": "zoom",
+      "sfx": "none",
+      "duration_hint": 2.2,
+      "tone": "close"
+    },
+    {
+      "id": 13,
+      "role": "close",
+      "speaker": "narrator",
+      "style_id": 2,
+      "credit": "VOICEVOX:四国めたん",
+      "text": "前後の差はここだ",
+      "telop": "前後の差はここだ",
+      "bg": "lines",
+      "characters": [
+        {
+          "id": "hero_smile",
+          "who": "hero",
+          "label": ""
+        },
+        {
+          "id": "rival_bow",
+          "who": "rival",
+          "label": ""
+        }
+      ],
+      "props": [],
+      "code_props": [],
+      "effect": "none",
+      "sfx": "none",
+      "duration_hint": 2.2,
+      "tone": "after"
+    },
+    {
+      "id": 14,
+      "role": "credit",
+      "speaker": "narrator",
+      "style_id": 2,
+      "credit": "VOICEVOX:四国めたん",
+      "text": "",
+      "telop": "VOICEVOX:四国めたん\nVOICEVOX:玄野武宏\nVOICEVOX:白上虎太郎\nVOICEVOX:剣崎雌雄",
+      "bg": "credit",
+      "characters": [],
+      "props": [],
+      "code_props": [],
+      "effect": "none",
+      "sfx": "none",
+      "duration_hint": 2.2,
+      "series_note": "財布係"
+    }
+  ],
+  "credits": [
+    "VOICEVOX:四国めたん",
+    "VOICEVOX:玄野武宏",
+    "VOICEVOX:白上虎太郎",
+    "VOICEVOX:剣崎雌雄"
+  ],
+  "asset_ids": [
+    "hero_smile",
+    "rival_bow",
+    "hero_trouble",
+    "rival_smug",
+    "hero_angry",
+    "hero_tired",
+    "boss_angry",
+    "rival_pale"
+  ]
+}

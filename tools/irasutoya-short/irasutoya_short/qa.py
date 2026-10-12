@@ -50,6 +50,10 @@ REJECT_TOKENS = (
     "過労死",
     "死亡",
     "白衣",
+    "段階",
+    "いろいろ",
+    "パターン",
+    "一覧",
 )
 
 
@@ -163,6 +167,30 @@ def _ocr_text(path: str) -> str:
     return " ".join(words)
 
 
+def multiple_faces(rgba: np.ndarray) -> bool:
+    """同じ高さに、同じくらい大きい肌の塊が横並びなら、顔が複数ある。"""
+    from irasutoya_short.sprites import _blobs, _skin_mask
+
+    blobs = [
+        blob
+        for blob in _blobs(_skin_mask(rgba), step=2, min_pts=40)
+        if blob["right"] - blob["left"] >= 36 and blob["bot"] - blob["top"] >= 36
+    ]
+    if len(blobs) < 2:
+        return False
+    blobs.sort(key=lambda blob: blob["area"], reverse=True)
+    biggest = max(1, blobs[0]["area"])
+    kept = [blob for blob in blobs if blob["area"] >= biggest * 0.5]
+    for index, left in enumerate(kept):
+        for right in kept[index + 1 :]:
+            overlap_y = min(left["bot"], right["bot"]) - max(left["top"], right["top"])
+            min_h = max(1, min(left["bot"] - left["top"], right["bot"] - right["top"]))
+            overlap_x = min(left["right"], right["right"]) - max(left["left"], right["left"])
+            if overlap_y / min_h > 0.45 and overlap_x <= 0:
+                return True
+    return False
+
+
 def inspect_image(path: str, title: str, alt: str, gender: str, kind: str) -> str | None:
     """不採用理由を返す。採用なら None。"""
     reason = title_rejection(title, alt, gender)
@@ -176,6 +204,12 @@ def inspect_image(path: str, title: str, alt: str, gender: str, kind: str) -> st
         keyed = load_rgba(path)
         if body_count(keyed[:, :, 3]) >= 2:
             return "2人以上に見える"
+        if multiple_faces(keyed):
+            return "顔が横に複数ある"
+        from irasutoya_short.sprites import mouth_anchor
+
+        if mouth_anchor(keyed) is None:
+            return "口の位置が取れない"
     ocr = _ocr_text(path)
     if ocr:
         for token in REJECT_TOKENS:

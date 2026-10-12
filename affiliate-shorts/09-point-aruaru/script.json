@@ -1,0 +1,343 @@
+{
+  "template": "aruaru",
+  "title": "ポイントで損するあるある",
+  "series_character": "ポイ活係",
+  "punchline": "期限切れが先に来た。使う分だけ残した",
+  "closing": "先に捨てるのは期限",
+  "scenes": [
+    {
+      "id": 1,
+      "role": "hook",
+      "speaker": "narrator",
+      "style_id": 2,
+      "credit": "VOICEVOX:四国めたん",
+      "text": "ポイントで損するあるある",
+      "telop": "ポイントで損するあるある",
+      "bg": "office",
+      "characters": [
+        {
+          "id": "hero_trouble",
+          "who": "hero",
+          "label": ""
+        },
+        {
+          "id": "rival_smug",
+          "who": "rival",
+          "label": "ポイ活係"
+        }
+      ],
+      "props": [],
+      "code_props": [],
+      "effect": "zoom",
+      "sfx": "notify",
+      "duration_hint": 2.2,
+      "tone": "hook"
+    },
+    {
+      "id": 2,
+      "role": "develop",
+      "speaker": "narrator",
+      "style_id": 2,
+      "credit": "VOICEVOX:四国めたん",
+      "text": "ポイントで余計な物",
+      "telop": "ポイントで余計な物",
+      "bg": "office",
+      "characters": [
+        {
+          "id": "hero_trouble",
+          "who": "hero",
+          "label": ""
+        }
+      ],
+      "props": [],
+      "code_props": [],
+      "effect": "none",
+      "sfx": "tick",
+      "duration_hint": 2.2,
+      "tone": "item"
+    },
+    {
+      "id": 3,
+      "role": "develop",
+      "speaker": "narrator",
+      "style_id": 2,
+      "credit": "VOICEVOX:四国めたん",
+      "text": "カードを何枚も持つ",
+      "telop": "カードを何枚も持つ",
+      "bg": "office",
+      "characters": [
+        {
+          "id": "rival_smug",
+          "who": "rival",
+          "label": ""
+        }
+      ],
+      "props": [],
+      "code_props": [],
+      "effect": "none",
+      "sfx": "tick",
+      "duration_hint": 2.2,
+      "tone": "item"
+    },
+    {
+      "id": 4,
+      "role": "develop",
+      "speaker": "narrator",
+      "style_id": 2,
+      "credit": "VOICEVOX:四国めたん",
+      "text": "期限を見ていない",
+      "telop": "期限を見ていない",
+      "bg": "office",
+      "characters": [
+        {
+          "id": "hero_tired",
+          "who": "hero",
+          "label": ""
+        }
+      ],
+      "props": [],
+      "code_props": [],
+      "effect": "none",
+      "sfx": "tick",
+      "duration_hint": 2.2,
+      "tone": "item"
+    },
+    {
+      "id": 5,
+      "role": "develop",
+      "speaker": "narrator",
+      "style_id": 2,
+      "credit": "VOICEVOX:四国めたん",
+      "text": "送料の方が高い",
+      "telop": "送料の方が高い",
+      "bg": "office",
+      "characters": [
+        {
+          "id": "hero_angry",
+          "who": "hero",
+          "label": ""
+        }
+      ],
+      "props": [],
+      "code_props": [],
+      "effect": "none",
+      "sfx": "tick",
+      "duration_hint": 2.2,
+      "tone": "item"
+    },
+    {
+      "id": 6,
+      "role": "develop",
+      "speaker": "narrator",
+      "style_id": 2,
+      "credit": "VOICEVOX:四国めたん",
+      "text": "二重取りだと思う",
+      "telop": "二重取りだと思う",
+      "bg": "office",
+      "characters": [
+        {
+          "id": "hero_trouble",
+          "who": "hero",
+          "label": ""
+        }
+      ],
+      "props": [],
+      "code_props": [],
+      "effect": "none",
+      "sfx": "tick",
+      "duration_hint": 2.2,
+      "tone": "item"
+    },
+    {
+      "id": 7,
+      "role": "develop",
+      "speaker": "narrator",
+      "style_id": 2,
+      "credit": "VOICEVOX:四国めたん",
+      "text": "明細は見ないまま",
+      "telop": "明細は見ないまま",
+      "bg": "office",
+      "characters": [
+        {
+          "id": "rival_smug",
+          "who": "rival",
+          "label": ""
+        }
+      ],
+      "props": [],
+      "code_props": [],
+      "effect": "none",
+      "sfx": "tick",
+      "duration_hint": 2.2,
+      "tone": "item"
+    },
+    {
+      "id": 8,
+      "role": "develop",
+      "speaker": "narrator",
+      "style_id": 2,
+      "credit": "VOICEVOX:四国めたん",
+      "text": "一番はここからだ",
+      "telop": "一番はここからだ",
+      "bg": "office",
+      "characters": [
+        {
+          "id": "hero_smile",
+          "who": "hero",
+          "label": ""
+        }
+      ],
+      "props": [],
+      "code_props": [],
+      "effect": "lines",
+      "sfx": "rise",
+      "duration_hint": 2.2,
+      "tone": "item"
+    },
+    {
+      "id": 9,
+      "role": "punch",
+      "speaker": "narrator",
+      "style_id": 2,
+      "credit": "VOICEVOX:四国めたん",
+      "text": "期限切れが先に来た",
+      "telop": "期限切れが先に来た",
+      "bg": "chat",
+      "characters": [
+        {
+          "id": "hero_smile",
+          "who": "hero",
+          "label": ""
+        }
+      ],
+      "props": [],
+      "code_props": [],
+      "effect": "zoom",
+      "sfx": "rise",
+      "duration_hint": 2.2,
+      "tone": "punch"
+    },
+    {
+      "id": 10,
+      "role": "punch",
+      "speaker": "boss",
+      "style_id": 21,
+      "credit": "VOICEVOX:剣崎雌雄",
+      "text": "その点は何だ",
+      "telop": "その点は何だ",
+      "bg": "office",
+      "characters": [
+        {
+          "id": "boss_angry",
+          "who": "boss",
+          "label": ""
+        }
+      ],
+      "props": [],
+      "code_props": [],
+      "effect": "shake",
+      "sfx": "shock",
+      "duration_hint": 2.2,
+      "tone": "punch"
+    },
+    {
+      "id": 11,
+      "role": "punch",
+      "speaker": "narrator",
+      "style_id": 2,
+      "credit": "VOICEVOX:四国めたん",
+      "text": "使う分だけ残した",
+      "telop": "使う分だけ残した",
+      "bg": "office",
+      "characters": [
+        {
+          "id": "rival_bow",
+          "who": "rival",
+          "label": "ポイ活係"
+        }
+      ],
+      "props": [],
+      "code_props": [],
+      "effect": "zoom",
+      "sfx": "coin",
+      "duration_hint": 2.2,
+      "tone": "punch"
+    },
+    {
+      "id": 12,
+      "role": "close",
+      "speaker": "narrator",
+      "style_id": 2,
+      "credit": "VOICEVOX:四国めたん",
+      "text": "先に捨てるのは期限",
+      "telop": "先に捨てるのは期限",
+      "bg": "lines",
+      "characters": [
+        {
+          "id": "hero_smile",
+          "who": "hero",
+          "label": ""
+        }
+      ],
+      "props": [],
+      "code_props": [],
+      "effect": "zoom",
+      "sfx": "none",
+      "duration_hint": 2.2,
+      "tone": "close"
+    },
+    {
+      "id": 13,
+      "role": "close",
+      "speaker": "narrator",
+      "style_id": 2,
+      "credit": "VOICEVOX:四国めたん",
+      "text": "何個当てはまった？",
+      "telop": "何個当てはまった？",
+      "bg": "lines",
+      "characters": [
+        {
+          "id": "hero_smile",
+          "who": "hero",
+          "label": ""
+        }
+      ],
+      "props": [],
+      "code_props": [],
+      "effect": "none",
+      "sfx": "tick",
+      "duration_hint": 2.2,
+      "tone": "close"
+    },
+    {
+      "id": 14,
+      "role": "credit",
+      "speaker": "narrator",
+      "style_id": 2,
+      "credit": "VOICEVOX:四国めたん",
+      "text": "",
+      "telop": "VOICEVOX:四国めたん\nVOICEVOX:剣崎雌雄",
+      "bg": "credit",
+      "characters": [],
+      "props": [],
+      "code_props": [],
+      "effect": "none",
+      "sfx": "none",
+      "duration_hint": 2.2,
+      "series_note": "ポイ活係"
+    }
+  ],
+  "credits": [
+    "VOICEVOX:四国めたん",
+    "VOICEVOX:剣崎雌雄"
+  ],
+  "asset_ids": [
+    "hero_trouble",
+    "rival_smug",
+    "hero_tired",
+    "hero_angry",
+    "hero_smile",
+    "boss_angry",
+    "rival_bow"
+  ]
+}
