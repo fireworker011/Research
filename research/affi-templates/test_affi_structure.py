@@ -9,6 +9,18 @@ import pytest
 import yaml
 
 ROOT = Path(__file__).resolve().parent
+CAT_DUO = (
+    "box_seat",
+    "sun_stripe",
+    "sock_pair",
+    "fridge_lamp",
+    "rain_towel",
+    "remote_keep",
+    "soil_paw",
+    "laundry_nest",
+    "night_round",
+    "cushion_vote",
+)
 sys.path.insert(0, str(ROOT))
 
 import affi_structure as structure
@@ -124,7 +136,7 @@ def test_pet_sheet_is_another_pack_of_the_same_sheet() -> None:
         structure.read_lines("stories/missing_lines.txt")
     assert "voices" not in pack
     index = structure.story_index()
-    assert [row["name"] for row in index] == ["pet_sheet", "paw_stamp"]
+    assert [row["name"] for row in index] == ["pet_sheet", "paw_stamp", *CAT_DUO]
     assert index[0]["duration"] == "51.572秒"
     assert index[1]["duration"] == "50.556秒"
     assert index[0]["pattern"] == "junjun_ranran"
@@ -250,3 +262,46 @@ def test_line_fit_stops_only_when_the_sheet_asks() -> None:
     assert not pet.get("line_must_fit")
     pet_filled = structure.fill(pet, lines={"c01": "短い"})
     assert structure.line_fit_reasons(pet_filled, lambda _text, _role: 99) == []
+
+
+def test_cat_duo_sheets_are_ready_to_load() -> None:
+    ready = (ROOT / "stories" / "READY.md").read_text(encoding="utf-8")
+    index = {row["name"]: row for row in structure.story_index()}
+    for name in CAT_DUO:
+        path = ROOT / "stories" / f"{name}.yaml"
+        pack = structure.load(path)
+        assert 45 <= float(pack["duration_s"]) <= 60
+        assert index[name]["duration"] == f"{structure._num(float(pack['duration_s']))}秒"
+        assert index[name]["pattern"] == "junjun_ranran"
+        assert index[name]["baked"] == "まだ"
+        assert pack["voices"]["retort"] == "ja-JP-KeitaNeural"
+        assert pack["voices"]["polite"] == "ja-JP-NanamiNeural"
+        assert len(set(pack["voices"].values())) == len(pack["voices"])
+        lines_text = (ROOT / "stories" / f"{name}_lines.txt").read_text(encoding="utf-8")
+        spoken = structure.parse_lines(lines_text, [row["id"] for row in pack["captions"]])
+        assert len(spoken) == len(pack["captions"])
+        shots = {shot["id"]: shot for shot in pack["shots"]}
+        for row in pack["captions"]:
+            shot = shots[row["shot"]]
+            span = round(float(shot["end_s"]) - float(shot["start_s"]), 3)
+            assert span == round(float(row["speak_s"]) + 0.4, 3)
+            assert spoken[row["id"]]
+        tts = (ROOT / "stories" / f"{name}_tts.txt").read_text(encoding="utf-8")
+        assert "ja-JP-KeitaNeural" in tts and "ja-JP-NanamiNeural" in tts
+        for line in spoken.values():
+            assert line in tts
+        assert f"構成 = {name}" in ready
+        assert f"## {name}" in ready
+        filled = structure.fill(
+            pack,
+            person="出さない",
+            animals={"guest": "出さない", "retort": "グレーのマンチカン", "polite": "白いスコティッシュフォールド"},
+            place="昼の部屋",
+            lines=spoken,
+        )
+        assert structure.blocked(filled) == []
+        prompt = structure.picture_prompt(filled, 0.0, float(filled["duration_s"]))
+        for line in spoken.values():
+            assert line not in prompt
+        assert "猫" not in prompt
+        assert "口が開閉" in prompt
