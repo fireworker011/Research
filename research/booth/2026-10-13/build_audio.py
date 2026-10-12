@@ -21,7 +21,9 @@ API = "http://127.0.0.1:50032/v1/synthesis"
 SPEAKER = "cc213e6d-d847-45b5-a1df-415744c890f2"
 SR = 44100
 RESEARCH = Path("/workspace/research/booth/2026-10-13")
-ARTIFACTS = Path("/opt/cursor/artifacts/booth-2026-10-13")
+# 作業用の完全ファイル。artifacts の保存先は1ファイル約100MBで切れるため、書き出し後に分ける。
+ARTIFACTS = Path("/home/ubuntu/booth-out")
+LINE_CACHE = Path("/home/ubuntu/booth-out/line-cache")
 ZIP_LIMIT = 290 * 1024 * 1024
 
 CUE_RE = re.compile(r"^［(?:(左|右|両方)・)?(.+)（(\d+(?:\.\d+)?)秒）］$")
@@ -29,8 +31,12 @@ TRACK_RE = re.compile(r"^##\s+トラック(\d+)")
 
 
 def speak_text(line: str) -> str:
-    text = re.sub(r"([^（）\n]{1,16})（([ぁ-んー]+)）", r"\2", line)
+    """括弧の読みは、直前の漢字（送りがな可）だけを読みに置き換える。"""
+    text = re.sub(r"[一-龥々]+[ぁ-んー]{0,6}（([ぁ-んー]+)）", r"\1", line)
+    text = re.sub(r"([ぁ-んー]{1,16})（\1）", r"\1", text)
     text = text.replace("……", "、、").replace("…", "、")
+    # 香織は行内に読みがない。Whisper が spear と聞いたため、読みだけを渡す。原稿の漢字は残す。
+    text = text.replace("香織", "かおり")
     return text.strip()
 
 
@@ -337,13 +343,16 @@ def ebur128(path: Path) -> dict[str, str]:
         text=True,
     )
     text = proc.stderr
+    summary = text.split("Summary:")[-1]
     found: dict[str, str] = {}
-    for key, label in (("I", "I"), ("TP", "True peak"), ("Peak", "Peak")):
-        match = re.search(rf"{label}:\s+(-?[\d.]+|inf|-inf)", text)
-        if match:
-            found[key] = match.group(1)
-    if "I" not in found:
+    integrated = re.search(r"^\s+I:\s+(-?[\d.]+|inf|-inf)", summary, re.M)
+    if not integrated:
         raise RuntimeError(f"ebur128 failed for {path}\n{text[-500:]}")
+    found["I"] = integrated.group(1)
+    true_peak = re.search(r"True peak:[\s\S]*?Peak:\s+(-?[\d.]+|inf|-inf)", summary)
+    if true_peak:
+        found["TP"] = true_peak.group(1)
+        found["Peak"] = true_peak.group(1)
     return found
 
 
@@ -593,7 +602,7 @@ def process_work(work_id: str) -> None:
     script_path = RESEARCH / work_id / "script.md"
     tracks = parse_script(script_path)
     work_dir = ARTIFACTS / work_id
-    cache = work_dir / "line-cache"
+    cache = LINE_CACHE / work_id / "line-cache"
     cache.mkdir(parents=True, exist_ok=True)
     by_id = {t["id"]: t for t in tracks}
     for number in range(1, 8):
@@ -658,17 +667,63 @@ def process_work(work_id: str) -> None:
 
 
 def synth_work19_line() -> None:
-    dest_dir = ARTIFACTS / "19"
+    dest_dir = LINE_CACHE / "19"
     dest_dir.mkdir(parents=True, exist_ok=True)
     raw = dest_dir / "line-raw.wav"
-    synthesize("平日は、原稿をチェックする仕事で", 122, 0.95, raw)
+    # 原稿の文は「原稿をチェックする仕事」。「原稿」だけだと健康と聞こえるため、合成は「書いた原稿」。
+    synthesize("平日は、書いた原稿をチェックする仕事で", 122, 0.95, raw)
     stereo = dest_dir / "kouetsu-line.wav"
     to_stereo(raw, stereo)
     to_mp3(stereo, dest_dir / "kouetsu-line.mp3")
     print("work19 line", ffprobe_seconds(stereo), flush=True)
 
 
+def clear_track(work_dir: Path, name: str) -> None:
+    for path in (
+        work_dir / "audio" / f"{name}.wav",
+        work_dir / "audio" / f"{name}.mp3",
+        work_dir / "dry" / f"{name}.wav",
+        work_dir / "dry" / f"{name}-bed.wav",
+        work_dir / "measure" / f"{name}.json",
+    ):
+        if path.exists():
+            path.unlink()
+    seg = work_dir / "seg" / name
+    if seg.exists():
+        shutil.rmtree(seg)
+
+
+def rebuild_affected() -> None:
+    """読みを直した行が入るトラックだけ、作り直す。"""
+    for raw in (
+        LINE_CACHE / "19" / "line-raw.wav",
+        LINE_CACHE / "19" / "kouetsu-line.wav",
+        LINE_CACHE / "19" / "kouetsu-line.mp3",
+    ):
+        if raw.exists():
+            raw.unlink()
+    ensure_engine()
+    synth_work19_line()
+    for work_id, names in (("20", ("part01",)), ("21", ("part01", "part02"))):
+        work_dir = ARTIFACTS / work_id
+        for name in names:
+            clear_track(work_dir, name)
+        clear_track(work_dir / "sample-build", "sample")
+        sample_dir = work_dir / "sample"
+        for path in (sample_dir / "sample.wav", sample_dir / "sample.mp3"):
+            if path.exists():
+                path.unlink()
+    process_work("20")
+    process_work("21")
+    subprocess.run(["pkill", "-f", "COEIROINK_LINUX_CPU_v.2025.4.1/engine/engine"], check=False)
+
+
 def main() -> None:
+    import sys
+
+    if len(sys.argv) > 1 and sys.argv[1] == "rebuild":
+        rebuild_affected()
+        return
     ensure_engine()
     synth_work19_line()
     process_work("20")
