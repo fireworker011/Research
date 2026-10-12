@@ -67,9 +67,17 @@ def join_command(
     *,
     width: int = 1080,
     height: int = 1920,
+    audio: str = "aac",
 ) -> list[str]:
+    """``audio="pcm"`` writes a master with PCM sound. The mp4 is made from it once, later."""
     if not parts:
         raise ValueError("concat needs at least one clip")
+    if audio == "aac":
+        sound = ["-c:a", "aac", "-ar", "32000", "-ac", "2"]
+    elif audio == "pcm":
+        sound = ["-c:a", "pcm_s16le", "-ac", "2"]
+    else:
+        raise ValueError(f"audio must be aac or pcm, got {audio!r}")
     inputs: list[str] = []
     filters: list[str] = []
     for index, (path, seconds) in enumerate(parts):
@@ -103,12 +111,7 @@ def join_command(
         "yuv420p",
         "-r",
         "24",
-        "-c:a",
-        "aac",
-        "-ar",
-        "32000",
-        "-ac",
-        "2",
+        *sound,
         str(out_path),
     ]
 

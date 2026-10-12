@@ -14,13 +14,18 @@ from __future__ import annotations
 
 import gc
 import json
+import shutil
 import time
 from pathlib import Path
 
 import torch
 from diffusers import ComponentsManager, MiniMaxH3Transformer3DModel, ModularPipeline, TorchAoConfig
 from diffusers.hooks import apply_group_offloading
-from diffusers.modular_pipelines.minimax_h3 import MiniMaxH3ImageReference
+from diffusers.modular_pipelines.minimax_h3 import (
+    MiniMaxH3AudioReference,
+    MiniMaxH3ImageReference,
+    MiniMaxH3VideoReference,
+)
 from diffusers.utils.export_utils import encode_video
 from PIL import Image
 from torchao.quantization import Int8WeightOnlyConfig
@@ -29,9 +34,11 @@ from transformers import TorchAoConfig as TransformersTorchAoConfig
 
 from h3_runner.ffmpeg_join import clip_is_done, join_clips
 from h3_runner.loras import LoraSpec, reject_pruned_adaln
-from h3_runner.official import AUDIO_FLOW_SHIFT, FPS
-from h3_runner.planner import ClipJob, Plan
-from h3_runner.weights import require_present
+from h3_runner.official import AUDIO_FLOW_SHIFT, FPS, pipeline_workflow
+from h3_runner.planner import ClipJob, Plan, load_key
+from h3_runner.slice_media import ensure_reference_slice
+from h3_runner.stage_time import attach_forward_timer
+from h3_runner.weights import failure_text, local_encode_path, require_present
 
 _TRANSFORMER_SKIP = [
     "proj_in",
@@ -68,7 +75,7 @@ def _release() -> None:
 def _denoiser(pipe: ModularPipeline, task: str):
     if task == "ref2va":
         return pipe.transformer_ref
-    if task in ("t2va", "fl2va"):
+    if task in ("t2va", "fl2va", "i2va"):
         return pipe.transformer
     raise ValueError(task)
 
@@ -112,7 +119,7 @@ def _load_bf16(
     manager = ComponentsManager()
     pipe = ModularPipeline.from_pretrained(
         str(model_dir),
-        workflow=task,
+        workflow=pipeline_workflow(task),
         components_manager=manager,
         local_files_only=True,
     )
@@ -126,11 +133,15 @@ def _load_bf16(
     manager.enable_auto_cpu_offload(device="cuda", memory_reserve_margin="12GB")
     _apply_shifts(pipe, video_shift)
     # _flash_3_hub is the Hopper kernel in the official docs (compute capability 9).
-    # A100 is 8. Blackwell (RTX PRO 6000) is 10, so leave its default attention.
+    # Blackwell (RTX PRO 6000 is 12, B200 is 10) has no kernel for that hub build.
     major, _minor = torch.cuda.get_device_capability()
     denoiser = _denoiser(pipe, task)
-    if major == 9 and hasattr(denoiser, "set_attention_backend"):
-        denoiser.set_attention_backend("_flash_3_hub")
+    if hasattr(denoiser, "set_attention_backend"):
+        if major == 9:
+            denoiser.set_attention_backend("_flash_3_hub")
+        elif major >= 10:
+            denoiser.set_attention_backend("native")
+            print(f"attention native (compute capability {major})", flush=True)
     return pipe, manager
 
 
@@ -171,7 +182,7 @@ def _load_int8(task: str, model_dir: Path, video_shift: float) -> tuple[ModularP
             transformer_ref=_quantized_transformer(model_dir, "transformer_ref"),
             text_encoder=text_encoder,
         )
-    elif task in ("t2va", "fl2va"):
+    elif task in ("t2va", "fl2va", "i2va"):
         pipe.update_components(
             transformer=_quantized_transformer(model_dir, "transformer"),
             text_encoder=text_encoder,
@@ -179,7 +190,7 @@ def _load_int8(task: str, model_dir: Path, video_shift: float) -> tuple[ModularP
     else:
         raise ValueError(task)
     pipe.load_components(
-        workflow=task,
+        workflow=pipeline_workflow(task),
         dtype=torch.bfloat16,
         pretrained_model_name_or_path=str(model_dir),
         local_files_only=True,
@@ -196,6 +207,28 @@ def _load_int8(task: str, model_dir: Path, video_shift: float) -> tuple[ModularP
     return pipe, None
 
 
+def _align_rope_device(pipe: ModularPipeline, task: str) -> None:
+    """Put the RoPE buffer on the same device as ``position_ids``.
+
+    Pinned diffusers ``5ff8e59`` only casts the ids to float32. ``inv_freq`` is a
+    non-persistent buffer, so CPU offload can leave it on CPU while the ids are
+    on CUDA. That raises on the first denoiser step, after ``request.json``.
+    """
+    rope = getattr(_denoiser(pipe, task), "rope", None)
+    if rope is None or getattr(rope, "_device_aligned", False):
+        return
+    original = rope.forward
+
+    def forward(position_ids: torch.Tensor) -> tuple[torch.Tensor, torch.Tensor]:
+        inv = rope._buffers.get("inv_freq")
+        if inv is not None and inv.device != position_ids.device:
+            rope._buffers["inv_freq"] = inv.to(device=position_ids.device)
+        return original(position_ids)
+
+    rope.forward = forward
+    rope._device_aligned = True
+
+
 def load_pipeline(
     task: str,
     offload: str,
@@ -205,13 +238,14 @@ def load_pipeline(
 ) -> ModularPipeline:
     if offload == "bf16":
         pipe, _manager = _load_bf16(task, model_dir, loras, video_shift)
-        return pipe
-    if offload == "int8":
+    elif offload == "int8":
         if loras:
             print("int8 経路では LoRA を無効にする。", flush=True)
         pipe, _manager = _load_int8(task, model_dir, video_shift)
-        return pipe
-    raise ValueError(offload)
+    else:
+        raise ValueError(offload)
+    _align_rope_device(pipe, task)
+    return pipe
 
 
 def _call_pipe(
@@ -233,12 +267,26 @@ def _call_pipe(
         "output": ["videos", "audio", "sampling_rate"],
     }
     if job.task == "ref2va":
+        references = []
+        if job.image_path is not None:
+            references.append(MiniMaxH3ImageReference.from_file(str(job.image_path)))
+        if job.video_path is not None:
+            media = ensure_reference_slice(
+                job.video_path,
+                job.video_start_s,
+                job.video_end_s,
+                pad_to_s=job.aligned_s,
+            )
+            print(f"参照動画 {media}", flush=True)
+            references.append(MiniMaxH3VideoReference.from_file(str(media)))
+        if job.audio_path is not None:
+            references.append(MiniMaxH3AudioReference.from_file(str(job.audio_path)))
+        if not references:
+            raise ValueError("ref2va clip has no reference")
+        kwargs["references"] = references
+    elif job.task in ("fl2va", "i2va"):
         if job.image_path is None:
-            raise ValueError("ref2va clip has no image")
-        kwargs["references"] = [MiniMaxH3ImageReference.from_file(str(job.image_path))]
-    elif job.task == "fl2va":
-        if job.image_path is None:
-            raise ValueError("fl2va clip has no image")
+            raise ValueError(f"{job.task} clip has no image")
         still = Image.open(job.image_path)
         try:
             frame = still.convert("RGB")
@@ -257,31 +305,80 @@ def _attach_stage_timers(pipe: ModularPipeline, task: str) -> dict[str, float]:
     """Wall time of text-encoder, denoiser, and VAE forwards, after CUDA sync."""
     totals = {"text": 0.0, "denoise": 0.0, "vae": 0.0}
 
-    def wrap(module, key: str) -> None:
-        original = module.forward
-
-        def wrapped(*args, **kwargs):
-            if torch.cuda.is_available():
-                torch.cuda.synchronize()
-            start = time.perf_counter()
-            try:
-                return original(*args, **kwargs)
-            finally:
-                if torch.cuda.is_available():
-                    torch.cuda.synchronize()
-                totals[key] += time.perf_counter() - start
-
-        module.forward = wrapped
+    def sync() -> None:
+        if torch.cuda.is_available():
+            torch.cuda.synchronize()
 
     text = getattr(pipe, "text_encoder", None)
     if text is not None:
-        wrap(text, "text")
-    wrap(_denoiser(pipe, task), "denoise")
+        attach_forward_timer(text, totals, "text", sync)
+    attach_forward_timer(_denoiser(pipe, task), totals, "denoise", sync)
     for name in ("vae", "audio_vae"):
         module = getattr(pipe, name, None)
         if module is not None:
-            wrap(module, "vae")
+            attach_forward_timer(module, totals, "vae", sync)
     return totals
+
+
+def _note_failure(out_path: Path, stage: str, exc: BaseException) -> None:
+    text = failure_text(stage, exc)
+    print(text, flush=True)
+    note = out_path.with_suffix(".error.txt")
+    try:
+        note.parent.mkdir(parents=True, exist_ok=True)
+        note.write_text(text + "\n", encoding="utf-8")
+        print("理由を書いた", note, flush=True)
+    except OSError as write_exc:
+        print("理由のファイルは書けなかった", write_exc, flush=True)
+
+
+def _clear_failure(out_path: Path) -> None:
+    note = out_path.with_suffix(".error.txt")
+    if note.is_file():
+        note.unlink()
+
+
+class _PipeHold:
+    """One loaded pipeline, reused while task, offload, LoRA, shift, and weight dir stay the same."""
+
+    def __init__(self) -> None:
+        self.key: tuple | None = None
+        self.pipe: ModularPipeline | None = None
+        self.totals: dict[str, float] | None = None
+
+    def close(self) -> None:
+        self.pipe = None
+        self.totals = None
+        self.key = None
+        _release()
+
+    def take(
+        self,
+        job: ClipJob,
+        *,
+        offload: str,
+        model_dir: Path,
+        loras: list[LoraSpec],
+        video_shift: float,
+        width: int,
+        height: int,
+    ) -> tuple[ModularPipeline, dict[str, float], float]:
+        key = load_key(job.task, offload, loras, video_shift, model_dir)
+        where = f"offload={offload} canvas={width}x{height} frames={job.num_frames}"
+        if self.pipe is not None and self.totals is not None and self.key == key:
+            print(f"モデルは載せたまま次の本へ進む。{where}", flush=True)
+            for name in self.totals:
+                self.totals[name] = 0.0
+            return self.pipe, self.totals, 0.0
+        self.close()
+        print(f"load {job.task} {where}", flush=True)
+        started = time.perf_counter()
+        pipe = load_pipeline(job.task, offload, model_dir, loras, video_shift)
+        totals = _attach_stage_timers(pipe, job.task)
+        self.pipe = pipe
+        self.totals = totals
+        self.key = key
+        return pipe, totals, time.perf_counter() - started
 
 
 def generate_clip(
@@ -291,101 +388,165 @@ def generate_clip(
     model_dir: Path,
     loras: list[LoraSpec] | None = None,
     video_shift: float | None = None,
+    holder: _PipeHold | None = None,
 ) -> Path:
     job.out_path.parent.mkdir(parents=True, exist_ok=True)
     applied = list(loras or [])
     shift = float(job.video_shift if video_shift is None else video_shift)
+    own = holder is None
+    held = holder or _PipeHold()
     last_error: BaseException | None = None
-    for height, width, edge in job.canvases():
-        pipe = None
-        results = None
-        try:
-            print(f"load {job.task} offload={offload} canvas={width}x{height} frames={job.num_frames}", flush=True)
-            started = time.perf_counter()
-            pipe = load_pipeline(job.task, offload, model_dir, applied, shift)
-            load_s = time.perf_counter() - started
-            totals = _attach_stage_timers(pipe, job.task)
-            image_uri = None
-            if job.image_path is not None:
-                image_uri = job.image_path.resolve().as_uri()
-            request = job.request_json(edge if edge else max(width, height), image_uri)
-            request["resolved"] = {
-                "height": height,
-                "width": width,
-                "num_frames": job.num_frames,
-                "offload": offload,
-            }
-            request_path = job.out_path.with_suffix(".request.json")
-            request_path.write_text(json.dumps(request, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
-            results = _call_pipe(pipe, job, height=height, width=width)
-            encode_video(
-                results["videos"][0],
-                fps=FPS,
-                output_path=str(job.out_path),
-                audio=results["audio"][0],
-                audio_sample_rate=results["sampling_rate"],
-            )
-            print(
-                f"TIMING load={load_s:.3f} text={totals['text']:.3f} "
-                f"denoise={totals['denoise']:.3f} vae={totals['vae']:.3f}",
-                flush=True,
-            )
-            print(f"wrote {job.out_path}", flush=True)
-            return job.out_path
-        except Exception as exc:
-            if not _is_oom(exc):
-                raise
-            last_error = exc
-            print(f"OOM at {width}x{height}: {exc}", flush=True)
-        finally:
-            # Drop the pipeline before the next rung. The names stay in this frame until cleared.
+    try:
+        for height, width, edge in job.canvases():
             pipe = None
             results = None
-            _release()
-    raise RuntimeError(f"OOM が続き、{job.out_path.name} は出なかった") from last_error
+            try:
+                pipe, totals, load_s = held.take(
+                    job,
+                    offload=offload,
+                    model_dir=model_dir,
+                    loras=applied,
+                    video_shift=shift,
+                    width=width,
+                    height=height,
+                )
+                image_uri = None
+                if job.image_path is not None:
+                    image_uri = job.image_path.resolve().as_uri()
+                request = job.request_json(edge if edge else max(width, height), image_uri)
+                request["resolved"] = {
+                    "height": height,
+                    "width": width,
+                    "num_frames": job.num_frames,
+                    "offload": offload,
+                }
+                request_path = job.out_path.with_suffix(".request.json")
+                request_path.parent.mkdir(parents=True, exist_ok=True)
+                request_path.write_text(json.dumps(request, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+                encode_path = local_encode_path(job.out_path)
+                try:
+                    print("推論開始", flush=True)
+                    results = _call_pipe(pipe, job, height=height, width=width)
+                except Exception as exc:
+                    if _is_oom(exc):
+                        raise
+                    _note_failure(job.out_path, "推論", exc)
+                    raise
+                print(f"mp4 を書く {encode_path}", flush=True)
+                try:
+                    encode_path.parent.mkdir(parents=True, exist_ok=True)
+                    encode_video(
+                        results["videos"][0],
+                        fps=FPS,
+                        output_path=str(encode_path),
+                        audio=results["audio"][0],
+                        audio_sample_rate=results["sampling_rate"],
+                    )
+                    if encode_path != job.out_path:
+                        job.out_path.parent.mkdir(parents=True, exist_ok=True)
+                        shutil.copy2(encode_path, job.out_path)
+                        print(f"コピーした {job.out_path} bytes {job.out_path.stat().st_size}", flush=True)
+                except Exception as exc:
+                    if _is_oom(exc):
+                        raise
+                    _note_failure(job.out_path, "mp4", exc)
+                    if encode_path.is_file() and encode_path != job.out_path:
+                        print(
+                            f"ローカルには残っている {encode_path} {encode_path.stat().st_size} bytes",
+                            flush=True,
+                        )
+                    raise
+                _clear_failure(job.out_path)
+                print(
+                    f"TIMING load={load_s:.3f} text={totals['text']:.3f} "
+                    f"denoise={totals['denoise']:.3f} vae={totals['vae']:.3f}",
+                    flush=True,
+                )
+                print(f"wrote {job.out_path}", flush=True)
+                return job.out_path
+            except Exception as exc:
+                if not _is_oom(exc):
+                    held.close()
+                    raise
+                last_error = exc
+                print(f"OOM at {width}x{height}: {exc}", flush=True)
+                held.close()
+            finally:
+                # Drop this clip's frames. A reused pipeline stays on ``held``.
+                results = None
+                pipe = None
+                _release()
+        raise RuntimeError(f"OOM が続き、{job.out_path.name} は出なかった") from last_error
+    finally:
+        if own:
+            held.close()
 
 
-def run_plan(plan: Plan, model_dir: Path) -> int:
+def run_plan(plan: Plan, model_dir: Path, holder: _PipeHold | None = None) -> int:
     if plan.blocked:
         raise SystemExit(plan.blocked)
     # Reads the Drive snapshot. Does not download.
     require_present(model_dir, [job.task for job in plan.jobs])
+    own = holder is None
+    held = holder or _PipeHold()
     written: list[Path] = []
     made_new = False
     total = len(plan.jobs)
-    for index, job in enumerate(plan.jobs, start=1):
-        minimum = job.trim_s if job.trim_s is not None else job.requested_s
-        print(f"進捗 {index}/{total} {job.task} → {job.out_path}", flush=True)
-        if clip_is_done(job.out_path, min_seconds=minimum):
-            print(f"スキップ: {job.out_path} は Drive にある", flush=True)
-            written.append(job.out_path)
-            continue
-        print(f"生成開始 {index}/{total} {job.task}", flush=True)
-        written.append(
-            generate_clip(
-                job,
-                offload=plan.offload,
-                model_dir=model_dir,
-                loras=plan.loras,
-                video_shift=plan.video_shift,
+    try:
+        for index, job in enumerate(plan.jobs, start=1):
+            minimum = job.trim_s if job.trim_s is not None else job.requested_s
+            print(f"進捗 {index}/{total} {job.task} → {job.out_path}", flush=True)
+            if clip_is_done(job.out_path, min_seconds=minimum):
+                print(f"スキップ: {job.out_path} は Drive にある", flush=True)
+                print(f"kept {job.out_path}", flush=True)
+                written.append(job.out_path)
+                continue
+            print(f"生成開始 {index}/{total} {job.task}", flush=True)
+            written.append(
+                generate_clip(
+                    job,
+                    offload=plan.offload,
+                    model_dir=model_dir,
+                    loras=plan.loras,
+                    video_shift=plan.video_shift,
+                    holder=held,
+                )
             )
-        )
-        made_new = True
-        print(
-            f"Drive に保存 {index}/{total}: {job.out_path} bytes {job.out_path.stat().st_size}",
-            flush=True,
-        )
-    if plan.trim and len(plan.jobs) > 1:
-        delivery_min = sum(job.trim_s or 0 for job in plan.jobs)
-        if clip_is_done(plan.delivery_path, min_seconds=delivery_min) and not made_new:
-            print(f"スキップ: {plan.delivery_path} は Drive にある", flush=True)
-            return 0
-        parts = []
-        for job, path in zip(plan.jobs, written):
-            if job.trim_s is None:
-                raise ValueError(f"{job.out_path.name} に trim 秒が無い")
-            parts.append((path, job.trim_s))
-        print(f"進捗 結合 → {plan.delivery_path}", flush=True)
-        join_clips(parts, plan.delivery_path)
-        print(f"Drive に保存: {plan.delivery_path}", flush=True)
-    return 0
+            made_new = True
+            print(
+                f"Drive に保存 {index}/{total}: {job.out_path} bytes {job.out_path.stat().st_size}",
+                flush=True,
+            )
+        if plan.trim and len(plan.jobs) > 1:
+            delivery_min = sum(job.trim_s or 0 for job in plan.jobs)
+            if clip_is_done(plan.delivery_path, min_seconds=delivery_min) and not made_new:
+                print(f"スキップ: {plan.delivery_path} は Drive にある", flush=True)
+                return 0
+            parts = []
+            for job, path in zip(plan.jobs, written):
+                if job.trim_s is None:
+                    raise ValueError(f"{job.out_path.name} に trim 秒が無い")
+                parts.append((path, job.trim_s))
+            print(f"進捗 結合 → {plan.delivery_path}", flush=True)
+            join_clips(parts, plan.delivery_path)
+            print(f"Drive に保存: {plan.delivery_path}", flush=True)
+        return 0
+    finally:
+        if own:
+            held.close()
+
+
+def run_plans(plans: list[Plan], model_dir: Path) -> int:
+    """Bake several one-clip plans in this process. Matching weights stay loaded."""
+    holder = _PipeHold()
+    try:
+        total = len(plans)
+        for index, plan in enumerate(plans, start=1):
+            print(f"バッチ {index}/{total}", flush=True)
+            print(plan.report(), flush=True)
+            code = run_plan(plan, model_dir, holder)
+            if code != 0:
+                return code
+        return 0
+    finally:
+        holder.close()

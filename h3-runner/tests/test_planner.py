@@ -14,11 +14,12 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
-from h3_runner.cli import build_from_args, main, parse_args, resolve_vram_gb  # noqa: E402
+from h3_runner.cli import build_from_args, main, parse_args, plans_from_lines, resolve_vram_gb, runner_argv  # noqa: E402
 from h3_runner.ffmpeg_join import clip_is_done, join_command, probe_text_is_done  # noqa: E402
 from h3_runner.loras import (  # noqa: E402
     CIVITAI_COMBAT_VERSION,
     COMBAT_FILENAME,
+    LoraSpec,
     REPAIR_FILENAME,
     REPAIR_REPO,
     TURBO_FILENAME,
@@ -35,9 +36,18 @@ from h3_runner.official import (  # noqa: E402
     build_video_request,
     diffusers_accepts,
     frames_for_seconds,
+    pipeline_workflow,
     resolve_canvas_size,
 )
-from h3_runner.planner import choose_short_edges, orbis01_plan, sequence_proxy, within_fit_budget  # noqa: E402
+from h3_runner.planner import (  # noqa: E402
+    load_key,
+    choose_short_edges,
+    orbis01_plan,
+    sequence_proxy,
+    single_plan,
+    within_fit_budget,
+)
+from h3_runner.slice_media import slice_argv, slice_dest  # noqa: E402
 from h3_runner.weights import (  # noqa: E402
     LOCAL_FREE_FLOOR_BYTES,
     allow_patterns,
@@ -47,6 +57,9 @@ from h3_runner.weights import (  # noqa: E402
     folders_for_tasks,
     prepare_all,
     select_repo_files,
+    failure_text,
+    is_colab_drive,
+    local_encode_path,
     shard_is_current,
     snapshot_kwargs_for,
     stored_bytes,
@@ -432,6 +445,36 @@ class WeightsTest(unittest.TestCase):
         self.assertLess(load.index("enable_auto_cpu_offload"), load.index("_apply_shifts("))
         self.assertIn("set_shift", text)
         self.assertIn("int8 経路では LoRA を無効にする", text)
+        self.assertIn('set_attention_backend("native")', text)
+        self.assertIn("_align_rope_device", text)
+        self.assertIn("local_encode_path", text)
+        take = text[text.index("def take"): text.index("def generate_clip")]
+        self.assertLess(take.index("モデルは載せたまま次の本へ進む"), take.index("load_pipeline"))
+        self.assertIn("holder=held", text)
+        self.assertIn("def run_plans", text)
+        self.assertIn(".error.txt", text)
+        self.assertIn("MiniMaxH3VideoReference.from_file", text)
+        self.assertIn("ensure_reference_slice", text)
+        self.assertLess(text.index("推論開始"), text.index("encode_video("))
+
+
+class EncodePathTest(unittest.TestCase):
+    def test_a_drive_mp4_is_muxed_on_the_vm_disk(self) -> None:
+        src = Path("/content/drive/MyDrive/affi-bake/junjun_ranran/clips/01-hook.mp4")
+        dest = local_encode_path(src)
+        self.assertTrue(is_colab_drive(src))
+        self.assertFalse(is_colab_drive(dest))
+        self.assertEqual(dest.parts[-4:], ("affi-bake", "junjun_ranran", "clips", "01-hook.mp4"))
+
+    def test_a_local_mp4_path_stays(self) -> None:
+        src = Path("/content/affi-bake/junjun_ranran/clips/01-hook.mp4")
+        self.assertEqual(local_encode_path(src), src)
+
+    def test_failure_text_names_the_stage(self) -> None:
+        text = failure_text("推論", RuntimeError("device mismatch"))
+        self.assertIn("推論で止めた", text)
+        self.assertIn("RuntimeError", text)
+        self.assertIn("device mismatch", text)
 
 
 class SecretScanTest(unittest.TestCase):
@@ -685,6 +728,61 @@ class FastCliTest(unittest.TestCase):
         self.assertEqual(code, 0)
         self.assertEqual(TURBO_REPO, "lightx2v/Minimax-h3-Turbo")
 
+    def test_i2va_is_one_first_frame_on_the_fl2va_partition(self) -> None:
+        self.assertEqual(pipeline_workflow("i2va"), "fl2va")
+        self.assertEqual(pipeline_workflow("fl2va"), "fl2va")
+        body = build_video_request(
+            task="i2va",
+            prompt="The dog turns its head.",
+            duration_s=10,
+            aspect_ratio="9:16",
+            short_edge=768,
+            seed=0,
+            steps=9,
+            image_uri="still.jpg",
+        )
+        self.assertEqual(body["task"], "i2va")
+        self.assertEqual(body["conditions"], [{"type": "image", "uri": "still.jpg", "role": "keyframe", "frame_index": 0}])
+        self.assertEqual(folders_for("i2va"), folders_for("fl2va"))
+        plan = single_plan(
+            task="i2va",
+            prompt_path=ROOT / "prompts" / "orbis01_t2va_6s.txt",
+            image_path=Path("/tmp/still.jpg"),
+            duration_s=10,
+            aspect="9:16",
+            seed=0,
+            steps=9,
+            out_path=Path("/tmp/h3-out/i2v.mp4"),
+            short_edge=None,
+            width=None,
+            height=None,
+            vram_gb=95,
+            host_ram_gb=176.9,
+            offload="auto",
+            force=False,
+        )
+        self.assertEqual(plan.jobs[0].task, "i2va")
+        self.assertIn("最後のコマは渡さない", plan.report())
+        self.assertIn("pipeline_workflow(task)", (ROOT / "h3_runner" / "generate.py").read_text(encoding="utf-8"))
+        with self.assertRaises(ValueError):
+            single_plan(
+                task="i2va",
+                prompt_path=ROOT / "prompts" / "orbis01_t2va_6s.txt",
+                image_path=None,
+                duration_s=10,
+                aspect="9:16",
+                seed=0,
+                steps=9,
+                out_path=Path("/tmp/h3-out/i2v.mp4"),
+                short_edge=None,
+                width=None,
+                height=None,
+                vram_gb=95,
+                host_ram_gb=176.9,
+                offload="auto",
+                force=False,
+            )
+
     def test_notebook_has_the_fast_cells(self) -> None:
         notebook = json.loads((ROOT / "minimax_h3_still.ipynb").read_text(encoding="utf-8"))
         blobs = ["".join(cell["source"]) for cell in notebook["cells"]]
@@ -707,6 +805,160 @@ class FastCliTest(unittest.TestCase):
         self.assertIn("1344", test)
         self.assertIn('"--steps", "9"', test)
         self.assertIn("orbis01_6s.mp4", test)
+
+
+class SourceVideoTest(unittest.TestCase):
+    def test_ref2va_accepts_a_video_without_a_still(self) -> None:
+        plan = single_plan(
+            task="ref2va",
+            prompt_path=ROOT / "prompts" / "orbis01_ref2va_9s.txt",
+            image_path=None,
+            duration_s=8,
+            aspect="9:16",
+            seed=0,
+            steps=50,
+            out_path=Path("/tmp/h3-out/source.mp4"),
+            short_edge=None,
+            width=None,
+            height=None,
+            vram_gb=95,
+            host_ram_gb=176.9,
+            offload="auto",
+            force=False,
+            video_shift=12,
+            video_path=Path("/tmp/source.mp4"),
+            video_start_s=0,
+            video_end_s=8,
+        )
+        job = plan.jobs[0]
+        self.assertEqual(job.task, "ref2va")
+        self.assertEqual(job.video_path, Path("/tmp/source.mp4"))
+        self.assertEqual(job.video_start_s, 0)
+        self.assertEqual(job.video_end_s, 8)
+        self.assertEqual(plan.loras, [])
+        self.assertIn("FL2VA の LoRA は載せない", plan.report())
+        body = job.request_json(job.short_edges[0], None)
+        self.assertEqual(body["conditions"][0]["type"], "video")
+        self.assertEqual(body["conditions"][0]["start_s"], 0)
+        self.assertEqual(body["conditions"][0]["end_s"], 8)
+        self.assertEqual(body["flow_shift"], 12)
+
+    def test_fl2v_lora_is_refused_on_ref2va(self) -> None:
+        loras = [LoraSpec(path=Path(TURBO_FILENAME), scale=1.0, name="turbo")]
+        with self.assertRaises(ValueError) as raised:
+            single_plan(
+                task="ref2va",
+                prompt_path=ROOT / "prompts" / "orbis01_ref2va_9s.txt",
+                image_path=Path("/tmp/still.jpg"),
+                duration_s=8,
+                aspect="9:16",
+                seed=0,
+                steps=9,
+                out_path=Path("/tmp/h3-out/source.mp4"),
+                short_edge=None,
+                width=None,
+                height=None,
+                vram_gb=95,
+                host_ram_gb=176.9,
+                offload="auto",
+                force=False,
+                loras=loras,
+                video_path=Path("/tmp/source.mp4"),
+            )
+        self.assertIn("FL2VA の LoRA は ref2va に載せない", str(raised.exception))
+        self.assertIn(TURBO_FILENAME, str(raised.exception))
+
+    def test_a_source_video_is_not_dropped_onto_fl2va(self) -> None:
+        with self.assertRaises(ValueError) as raised:
+            single_plan(
+                task="fl2va",
+                prompt_path=ROOT / "prompts" / "orbis01_t2va_6s.txt",
+                image_path=Path("/tmp/still.jpg"),
+                duration_s=6,
+                aspect="9:16",
+                seed=0,
+                steps=9,
+                out_path=Path("/tmp/h3-out/drop.mp4"),
+                short_edge=None,
+                width=None,
+                height=None,
+                vram_gb=95,
+                host_ram_gb=176.9,
+                offload="auto",
+                force=False,
+                video_path=Path("/tmp/source.mp4"),
+            )
+        self.assertIn("ref2va を使う", str(raised.exception))
+
+    def test_slice_is_the_exact_range_on_the_24_fps_clock(self) -> None:
+        argv = slice_argv(Path("/tmp/source.mp4"), 8, 16, Path("/tmp/h3-ref/slice.mov"))
+        graph = argv[argv.index("-filter_complex") + 1]
+        self.assertIn("[0:v]trim=start=8.000:end=16.000,setpts=PTS-STARTPTS,fps=24", graph)
+        self.assertIn("[0:a]atrim=start=8.000:end=16.000,asetpts=PTS-STARTPTS", graph)
+        self.assertNotIn("tpad", graph)
+        self.assertNotIn("copy", argv)
+        self.assertNotIn("aac", argv)
+        self.assertEqual(argv[argv.index("-c:a") + 1], "pcm_s16le")
+        self.assertEqual(argv[argv.index("-t") + 1], "8.000")
+        dest = slice_dest(Path("/tmp/source.mp4"), 8, 16)
+        self.assertEqual(dest.name, "source-8.000-16.000.mov")
+
+    def test_a_longer_generation_holds_the_last_frame_in_silence(self) -> None:
+        argv = slice_argv(Path("/tmp/source.mp4"), 8, 13, Path("/tmp/h3-ref/slice.mov"), pad_s=0.167)
+        graph = argv[argv.index("-filter_complex") + 1]
+        self.assertIn("tpad=stop_mode=clone:stop_duration=0.167", graph)
+        self.assertIn("apad=pad_dur=0.167", graph)
+        self.assertEqual(argv[argv.index("-t") + 1], "5.167")
+        self.assertEqual(slice_dest(Path("/tmp/source.mp4"), 8, 13, 0.167).name, "source-8.000-13.000-p0.167.mov")
+        mute = slice_argv(Path("/tmp/mute.mp4"), 0, 5, Path("/tmp/h3-ref/m.mov"), has_audio=False)
+        self.assertIn("anullsrc=r=48000:cl=stereo", mute)
+        self.assertIn("[1:a]atrim=duration=5.000", mute[mute.index("-filter_complex") + 1])
+
+    def test_generation_pads_the_reference_to_its_own_length(self) -> None:
+        text = (ROOT / "h3_runner" / "generate.py").read_text(encoding="utf-8")
+        self.assertIn("pad_to_s=job.aligned_s", text)
+
+    def test_the_join_can_keep_pcm_for_the_master(self) -> None:
+        parts = [(Path("/tmp/a.mp4"), 5.0), (Path("/tmp/b.mp4"), 6.0)]
+        pcm = join_command(parts, Path("/tmp/master.mov"), audio="pcm")
+        self.assertEqual(pcm[pcm.index("-c:a") + 1], "pcm_s16le")
+        self.assertNotIn("-ar", pcm)
+        aac = join_command(parts, Path("/tmp/out.mp4"))
+        self.assertEqual(aac[aac.index("-c:a") + 1], "aac")
+        self.assertEqual(aac[aac.index("-ar") + 1], "32000")
+        with self.assertRaises(ValueError):
+            join_command(parts, Path("/tmp/x.mp4"), audio="mp3")
+
+
+class BatchLoadTest(unittest.TestCase):
+    def _line(self, name: str, task: str = "t2va") -> str:
+        return (
+            "python3 h3-runner/run_h3.py --task "
+            + task
+            + " --prompt-file /tmp/p.txt --duration 6 --aspect 9:16 --seed 0 --steps 9 --out /tmp/"
+            + name
+            + ".mp4 --vram-gb 95 --host-ram-gb 176.9 --offload bf16 --video-shift 6 "
+            "--lora /tmp/turbo.safetensors:1 --lora /tmp/repair.safetensors:0.6"
+        )
+
+    def test_runner_argv_drops_the_python_prefix(self) -> None:
+        self.assertEqual(runner_argv(self._line("a")), runner_argv(" ".join(runner_argv(self._line("a")))))
+        self.assertEqual(runner_argv(self._line("a"))[:2], ["--task", "t2va"])
+
+    def test_two_clips_share_one_weight_key(self) -> None:
+        plans, cache = plans_from_lines([self._line("a"), self._line("b")])
+        self.assertIsNone(cache)
+        self.assertEqual([plan.jobs[0].out_path.name for plan in plans], ["a.mp4", "b.mp4"])
+        weights = Path("/content/drive/MyDrive/h3-weights/MiniMax-H3")
+        left = load_key(plans[0].jobs[0].task, plans[0].offload, plans[0].loras, plans[0].video_shift, weights)
+        right = load_key(plans[1].jobs[0].task, plans[1].offload, plans[1].loras, plans[1].video_shift, weights)
+        self.assertEqual(left, right)
+        other = load_key("fl2va", plans[0].offload, plans[0].loras, plans[0].video_shift, weights)
+        self.assertNotEqual(left, other)
+
+    def test_a_batch_refuses_weight_preparation(self) -> None:
+        with self.assertRaises(SystemExit):
+            plans_from_lines(["python3 h3-runner/run_h3.py --prepare-weights --cache-dir /tmp/h3 --vram-gb 95 --host-ram-gb 176.9"])
 
 
 if __name__ == "__main__":
