@@ -1,0 +1,173 @@
+{
+  "schema": "affi-h3-ready/v1",
+  "構成": "cushion_stack",
+  "人": "出さない",
+  "客の動物": "キジトラの短毛",
+  "ツッコミの動物": "グレーのマンチカン",
+  "丁寧の動物": "白いスコティッシュフォールド",
+  "場所": "昼の部屋。ソファのクッションの山。",
+  "セリフ": "stories/cushion_stack_lines.txt",
+  "duration_s": 45.8,
+  "picture": "絵は口の開閉だけ。せりふは声用。声は、各行の start_s から mouth_s 秒に、あとから合わせる。",
+  "timing": [
+    {
+      "id": "c01",
+      "role": "guest",
+      "role_ja": "客",
+      "start_s": 0.0,
+      "end_s": 2.4,
+      "mouth_s": 2.4,
+      "text": "中、狭い"
+    },
+    {
+      "id": "c02",
+      "role": "polite",
+      "role_ja": "丁寧",
+      "start_s": 2.4,
+      "end_s": 5.2,
+      "mouth_s": 2.8,
+      "text": "クッションの山です"
+    },
+    {
+      "id": "c03",
+      "role": "retort",
+      "role_ja": "ツッコミ",
+      "start_s": 9.6,
+      "end_s": 12.4,
+      "mouth_s": 2.8,
+      "text": "下の一段、抜こ"
+    },
+    {
+      "id": "c04",
+      "role": "polite",
+      "role_ja": "丁寧",
+      "start_s": 12.4,
+      "end_s": 15.2,
+      "mouth_s": 2.8,
+      "text": "崩れますよ"
+    },
+    {
+      "id": "c05",
+      "role": "guest",
+      "role_ja": "客",
+      "start_s": 19.6,
+      "end_s": 21.8,
+      "mouth_s": 2.2,
+      "text": "動くな"
+    },
+    {
+      "id": "c06",
+      "role": "polite",
+      "role_ja": "丁寧",
+      "start_s": 26.2,
+      "end_s": 28.8,
+      "mouth_s": 2.6,
+      "text": "耳、出てます"
+    },
+    {
+      "id": "c07",
+      "role": "guest",
+      "role_ja": "客",
+      "start_s": 28.8,
+      "end_s": 31.6,
+      "mouth_s": 2.8,
+      "text": "改装、成功や"
+    },
+    {
+      "id": "c08",
+      "role": "retort",
+      "role_ja": "ツッコミ",
+      "start_s": 36.0,
+      "end_s": 38.6,
+      "mouth_s": 2.6,
+      "text": "一段、低くなった"
+    },
+    {
+      "id": "c09",
+      "role": "polite",
+      "role_ja": "丁寧",
+      "start_s": 38.6,
+      "end_s": 41.4,
+      "mouth_s": 2.8,
+      "text": "出口を作ります"
+    }
+  ],
+  "tts": {
+    "guest": {
+      "role_ja": "客",
+      "voice": "espeak:ja",
+      "lines": [
+        {
+          "id": "c01",
+          "start_s": 0.0,
+          "mouth_s": 2.4,
+          "text": "中、狭い"
+        },
+        {
+          "id": "c05",
+          "start_s": 19.6,
+          "mouth_s": 2.2,
+          "text": "動くな"
+        },
+        {
+          "id": "c07",
+          "start_s": 28.8,
+          "mouth_s": 2.8,
+          "text": "改装、成功や"
+        }
+      ]
+    },
+    "polite": {
+      "role_ja": "丁寧",
+      "voice": "ja-JP-NanamiNeural",
+      "lines": [
+        {
+          "id": "c02",
+          "start_s": 2.4,
+          "mouth_s": 2.8,
+          "text": "クッションの山です"
+        },
+        {
+          "id": "c04",
+          "start_s": 12.4,
+          "mouth_s": 2.8,
+          "text": "崩れますよ"
+        },
+        {
+          "id": "c06",
+          "start_s": 26.2,
+          "mouth_s": 2.6,
+          "text": "耳、出てます"
+        },
+        {
+          "id": "c09",
+          "start_s": 38.6,
+          "mouth_s": 2.8,
+          "text": "出口を作ります"
+        }
+      ]
+    },
+    "retort": {
+      "role_ja": "ツッコミ",
+      "voice": "ja-JP-KeitaNeural",
+      "lines": [
+        {
+          "id": "c03",
+          "start_s": 9.6,
+          "mouth_s": 2.8,
+          "text": "下の一段、抜こ"
+        },
+        {
+          "id": "c08",
+          "start_s": 36.0,
+          "mouth_s": 2.6,
+          "text": "一段、低くなった"
+        }
+      ]
+    }
+  },
+  "upload": {
+    "title": "クッションの山から、耳だけ出ていた",
+    "description": "クッションの山から、客の耳だけ出ていた。下の一段を抜いても耳は出たまま。丁寧が出口の隙間を作る。\n"
+  }
+}

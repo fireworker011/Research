@@ -1,0 +1,173 @@
+{
+  "schema": "affi-h3-ready/v1",
+  "構成": "laundry_sock",
+  "人": "出さない",
+  "客の動物": "キジトラの短毛",
+  "ツッコミの動物": "グレーのマンチカン",
+  "丁寧の動物": "白いスコティッシュフォールド",
+  "場所": "昼の洗面所。洗濯かごと窓の光。",
+  "セリフ": "stories/laundry_sock_lines.txt",
+  "duration_s": 48.8,
+  "picture": "絵は口の開閉だけ。せりふは声用。声は、各行の start_s から mouth_s 秒に、あとから合わせる。",
+  "timing": [
+    {
+      "id": "c01",
+      "role": "retort",
+      "role_ja": "ツッコミ",
+      "start_s": 0.0,
+      "end_s": 2.4,
+      "mouth_s": 2.4,
+      "text": "片っぽ、ないやん"
+    },
+    {
+      "id": "c02",
+      "role": "polite",
+      "role_ja": "丁寧",
+      "start_s": 6.8,
+      "end_s": 9.8,
+      "mouth_s": 3.0,
+      "text": "底まで見ますね"
+    },
+    {
+      "id": "c03",
+      "role": "polite",
+      "role_ja": "丁寧",
+      "start_s": 14.2,
+      "end_s": 16.4,
+      "mouth_s": 2.2,
+      "text": "ありません"
+    },
+    {
+      "id": "c04",
+      "role": "guest",
+      "role_ja": "客",
+      "start_s": 16.4,
+      "end_s": 19.0,
+      "mouth_s": 2.6,
+      "text": "頭に乗ってる"
+    },
+    {
+      "id": "c05",
+      "role": "retort",
+      "role_ja": "ツッコミ",
+      "start_s": 23.4,
+      "end_s": 25.8,
+      "mouth_s": 2.4,
+      "text": "それ、右やろ"
+    },
+    {
+      "id": "c06",
+      "role": "guest",
+      "role_ja": "客",
+      "start_s": 25.8,
+      "end_s": 28.0,
+      "mouth_s": 2.2,
+      "text": "左で寝る"
+    },
+    {
+      "id": "c07",
+      "role": "polite",
+      "role_ja": "丁寧",
+      "start_s": 32.2,
+      "end_s": 35.0,
+      "mouth_s": 2.8,
+      "text": "首も違います"
+    },
+    {
+      "id": "c08",
+      "role": "retort",
+      "role_ja": "ツッコミ",
+      "start_s": 35.0,
+      "end_s": 37.6,
+      "mouth_s": 2.6,
+      "text": "洗濯かごや"
+    },
+    {
+      "id": "c09",
+      "role": "guest",
+      "role_ja": "客",
+      "start_s": 42.0,
+      "end_s": 44.4,
+      "mouth_s": 2.4,
+      "text": "もう一回、頭"
+    }
+  ],
+  "tts": {
+    "retort": {
+      "role_ja": "ツッコミ",
+      "voice": "ja-JP-KeitaNeural",
+      "lines": [
+        {
+          "id": "c01",
+          "start_s": 0.0,
+          "mouth_s": 2.4,
+          "text": "片っぽ、ないやん"
+        },
+        {
+          "id": "c05",
+          "start_s": 23.4,
+          "mouth_s": 2.4,
+          "text": "それ、右やろ"
+        },
+        {
+          "id": "c08",
+          "start_s": 35.0,
+          "mouth_s": 2.6,
+          "text": "洗濯かごや"
+        }
+      ]
+    },
+    "polite": {
+      "role_ja": "丁寧",
+      "voice": "ja-JP-NanamiNeural",
+      "lines": [
+        {
+          "id": "c02",
+          "start_s": 6.8,
+          "mouth_s": 3.0,
+          "text": "底まで見ますね"
+        },
+        {
+          "id": "c03",
+          "start_s": 14.2,
+          "mouth_s": 2.2,
+          "text": "ありません"
+        },
+        {
+          "id": "c07",
+          "start_s": 32.2,
+          "mouth_s": 2.8,
+          "text": "首も違います"
+        }
+      ]
+    },
+    "guest": {
+      "role_ja": "客",
+      "voice": "espeak:ja",
+      "lines": [
+        {
+          "id": "c04",
+          "start_s": 16.4,
+          "mouth_s": 2.6,
+          "text": "頭に乗ってる"
+        },
+        {
+          "id": "c06",
+          "start_s": 25.8,
+          "mouth_s": 2.2,
+          "text": "左で寝る"
+        },
+        {
+          "id": "c09",
+          "start_s": 42.0,
+          "mouth_s": 2.4,
+          "text": "もう一回、頭"
+        }
+      ]
+    }
+  },
+  "upload": {
+    "title": "片っぽの靴下が、頭に乗っていた",
+    "description": "洗濯かごの片っぽが、客の頭に乗っていた。右だと言われて首にずらし、首も違うと言われてかごへ戻る。もう一回かぶろうとして、前足が止まる。\n"
+  }
+}

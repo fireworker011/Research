@@ -1,0 +1,179 @@
+{
+  "schema": "affi-h3-ready/v1",
+  "構成": "suitcase_tail",
+  "人": "成人の飼い主。ゆるい部屋着。髪はひとつ結び。",
+  "客の動物": "キジトラの短毛",
+  "ツッコミの動物": "グレーのマンチカン",
+  "丁寧の動物": "白いスコティッシュフォールド",
+  "場所": "昼の部屋。開いた旅行の荷物。",
+  "セリフ": "stories/suitcase_tail_lines.txt",
+  "duration_s": 45.4,
+  "picture": "絵は口の開閉だけ。せりふは声用。声は、各行の start_s から mouth_s 秒に、あとから合わせる。",
+  "timing": [
+    {
+      "id": "c01",
+      "role": "retort",
+      "role_ja": "ツッコミ",
+      "start_s": 0.0,
+      "end_s": 2.4,
+      "mouth_s": 2.4,
+      "text": "空き、あるやん"
+    },
+    {
+      "id": "c02",
+      "role": "polite",
+      "role_ja": "丁寧",
+      "start_s": 2.4,
+      "end_s": 5.6,
+      "mouth_s": 3.2,
+      "text": "旅行の荷物です"
+    },
+    {
+      "id": "c03",
+      "role": "owner",
+      "role_ja": "飼い主",
+      "start_s": 10.0,
+      "end_s": 12.2,
+      "mouth_s": 2.2,
+      "text": "どいて"
+    },
+    {
+      "id": "c04",
+      "role": "retort",
+      "role_ja": "ツッコミ",
+      "start_s": 12.2,
+      "end_s": 14.8,
+      "mouth_s": 2.6,
+      "text": "同乗でええか"
+    },
+    {
+      "id": "c05",
+      "role": "guest",
+      "role_ja": "客",
+      "start_s": 19.2,
+      "end_s": 21.8,
+      "mouth_s": 2.6,
+      "text": "しっぽ、出てる"
+    },
+    {
+      "id": "c06",
+      "role": "retort",
+      "role_ja": "ツッコミ",
+      "start_s": 21.8,
+      "end_s": 24.2,
+      "mouth_s": 2.4,
+      "text": "通気や"
+    },
+    {
+      "id": "c07",
+      "role": "polite",
+      "role_ja": "丁寧",
+      "start_s": 28.6,
+      "end_s": 31.6,
+      "mouth_s": 3.0,
+      "text": "そこで止まります"
+    },
+    {
+      "id": "c08",
+      "role": "owner",
+      "role_ja": "飼い主",
+      "start_s": 31.6,
+      "end_s": 33.8,
+      "mouth_s": 2.2,
+      "text": "降りて"
+    },
+    {
+      "id": "c09",
+      "role": "retort",
+      "role_ja": "ツッコミ",
+      "start_s": 38.2,
+      "end_s": 41.0,
+      "mouth_s": 2.8,
+      "text": "荷物の顔、やめた"
+    }
+  ],
+  "tts": {
+    "retort": {
+      "role_ja": "ツッコミ",
+      "voice": "ja-JP-KeitaNeural",
+      "lines": [
+        {
+          "id": "c01",
+          "start_s": 0.0,
+          "mouth_s": 2.4,
+          "text": "空き、あるやん"
+        },
+        {
+          "id": "c04",
+          "start_s": 12.2,
+          "mouth_s": 2.6,
+          "text": "同乗でええか"
+        },
+        {
+          "id": "c06",
+          "start_s": 21.8,
+          "mouth_s": 2.4,
+          "text": "通気や"
+        },
+        {
+          "id": "c09",
+          "start_s": 38.2,
+          "mouth_s": 2.8,
+          "text": "荷物の顔、やめた"
+        }
+      ]
+    },
+    "polite": {
+      "role_ja": "丁寧",
+      "voice": "ja-JP-NanamiNeural",
+      "lines": [
+        {
+          "id": "c02",
+          "start_s": 2.4,
+          "mouth_s": 3.2,
+          "text": "旅行の荷物です"
+        },
+        {
+          "id": "c07",
+          "start_s": 28.6,
+          "mouth_s": 3.0,
+          "text": "そこで止まります"
+        }
+      ]
+    },
+    "owner": {
+      "role_ja": "飼い主",
+      "voice": "gtts:ja",
+      "lines": [
+        {
+          "id": "c03",
+          "start_s": 10.0,
+          "mouth_s": 2.2,
+          "text": "どいて"
+        },
+        {
+          "id": "c08",
+          "start_s": 31.6,
+          "mouth_s": 2.2,
+          "text": "降りて"
+        }
+      ]
+    },
+    "guest": {
+      "role_ja": "客",
+      "voice": "espeak:ja",
+      "lines": [
+        {
+          "id": "c05",
+          "start_s": 19.2,
+          "mouth_s": 2.6,
+          "text": "しっぽ、出てる"
+        }
+      ]
+    }
+  },
+  "upload": {
+    "title": "荷物に入って、しっぽだけ出た",
+    "description": "開いた荷物に入って、しっぽだけ外に出た。通気だと言う。横に降りて座る。\n"
+  }
+}

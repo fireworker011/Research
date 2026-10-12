@@ -1,0 +1,173 @@
+{
+  "schema": "affi-h3-ready/v1",
+  "構成": "yarn_line",
+  "人": "出さない",
+  "客の動物": "キジトラの短毛",
+  "ツッコミの動物": "グレーのマンチカン",
+  "丁寧の動物": "白いスコティッシュフォールド",
+  "場所": "昼の床とソファ。毛糸の玉。",
+  "セリフ": "stories/yarn_line_lines.txt",
+  "duration_s": 45.0,
+  "picture": "絵は口の開閉だけ。せりふは声用。声は、各行の start_s から mouth_s 秒に、あとから合わせる。",
+  "timing": [
+    {
+      "id": "c01",
+      "role": "retort",
+      "role_ja": "ツッコミ",
+      "start_s": 0.0,
+      "end_s": 2.4,
+      "mouth_s": 2.4,
+      "text": "丸いの、ある"
+    },
+    {
+      "id": "c02",
+      "role": "polite",
+      "role_ja": "丁寧",
+      "start_s": 2.4,
+      "end_s": 5.2,
+      "mouth_s": 2.8,
+      "text": "ほどけますから"
+    },
+    {
+      "id": "c03",
+      "role": "retort",
+      "role_ja": "ツッコミ",
+      "start_s": 9.6,
+      "end_s": 11.8,
+      "mouth_s": 2.2,
+      "text": "今の一発や"
+    },
+    {
+      "id": "c04",
+      "role": "polite",
+      "role_ja": "丁寧",
+      "start_s": 16.2,
+      "end_s": 19.2,
+      "mouth_s": 3.0,
+      "text": "線になりました"
+    },
+    {
+      "id": "c05",
+      "role": "guest",
+      "role_ja": "客",
+      "start_s": 19.2,
+      "end_s": 21.4,
+      "mouth_s": 2.2,
+      "text": "長いね"
+    },
+    {
+      "id": "c06",
+      "role": "retort",
+      "role_ja": "ツッコミ",
+      "start_s": 25.8,
+      "end_s": 28.6,
+      "mouth_s": 2.8,
+      "text": "伸ばしただけや"
+    },
+    {
+      "id": "c07",
+      "role": "polite",
+      "role_ja": "丁寧",
+      "start_s": 28.6,
+      "end_s": 31.2,
+      "mouth_s": 2.6,
+      "text": "丸に戻します"
+    },
+    {
+      "id": "c08",
+      "role": "retort",
+      "role_ja": "ツッコミ",
+      "start_s": 35.6,
+      "end_s": 38.0,
+      "mouth_s": 2.4,
+      "text": "戻らんわ"
+    },
+    {
+      "id": "c09",
+      "role": "guest",
+      "role_ja": "客",
+      "start_s": 38.0,
+      "end_s": 40.6,
+      "mouth_s": 2.6,
+      "text": "そのまま飾ろ"
+    }
+  ],
+  "tts": {
+    "retort": {
+      "role_ja": "ツッコミ",
+      "voice": "ja-JP-KeitaNeural",
+      "lines": [
+        {
+          "id": "c01",
+          "start_s": 0.0,
+          "mouth_s": 2.4,
+          "text": "丸いの、ある"
+        },
+        {
+          "id": "c03",
+          "start_s": 9.6,
+          "mouth_s": 2.2,
+          "text": "今の一発や"
+        },
+        {
+          "id": "c06",
+          "start_s": 25.8,
+          "mouth_s": 2.8,
+          "text": "伸ばしただけや"
+        },
+        {
+          "id": "c08",
+          "start_s": 35.6,
+          "mouth_s": 2.4,
+          "text": "戻らんわ"
+        }
+      ]
+    },
+    "polite": {
+      "role_ja": "丁寧",
+      "voice": "ja-JP-NanamiNeural",
+      "lines": [
+        {
+          "id": "c02",
+          "start_s": 2.4,
+          "mouth_s": 2.8,
+          "text": "ほどけますから"
+        },
+        {
+          "id": "c04",
+          "start_s": 16.2,
+          "mouth_s": 3.0,
+          "text": "線になりました"
+        },
+        {
+          "id": "c07",
+          "start_s": 28.6,
+          "mouth_s": 2.6,
+          "text": "丸に戻します"
+        }
+      ]
+    },
+    "guest": {
+      "role_ja": "客",
+      "voice": "espeak:ja",
+      "lines": [
+        {
+          "id": "c05",
+          "start_s": 19.2,
+          "mouth_s": 2.2,
+          "text": "長いね"
+        },
+        {
+          "id": "c09",
+          "start_s": 38.0,
+          "mouth_s": 2.6,
+          "text": "そのまま飾ろ"
+        }
+      ]
+    }
+  },
+  "upload": {
+    "title": "毛糸を一回たたいて、線のままにした",
+    "description": "毛糸の玉を一回たたいて、線にした。丸には戻らない。線のまま、三匹が座る。\n"
+  }
+}

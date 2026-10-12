@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import json
+import re
 import sys
 from pathlib import Path
 
@@ -250,6 +252,136 @@ def test_homage_pack_keeps_measured_times_and_drops_the_words(tmp_path: Path) ->
     many = [{"start_s": index, "end_s": index + 0.4, "speaker": str(index)} for index in range(6)]
     with pytest.raises(ValueError, match="5役より多い"):
         structure.homage_pack(duration_s=8, cuts=[], lines=many)
+
+
+def _ready_names() -> tuple[list[str], list[str]]:
+    index = structure.story_index()
+    h3 = [
+        row["name"]
+        for row in index
+        if row["pattern"] == "junjun_ranran" and row["name"] not in {"pet_sheet", "paw_stamp"}
+    ]
+    ira = [row["name"] for row in index if row["name"].startswith("irasutoya_")]
+    return h3, ira
+
+
+def _ira_plain(text: str) -> str:
+    cleaned = re.sub(r"「[^」]*」", "", text)
+    return re.sub(r"[、。]{2,}", "、", cleaned).strip(" 、。")
+
+
+def test_ready_inputs_fill_thirty_scripts() -> None:
+    h3_names, ira_names = _ready_names()
+    assert len(h3_names) == 15
+    assert len(ira_names) == 15
+    page = (ROOT / "stories" / "READY.md").read_text(encoding="utf-8")
+    assert page.count("| H3 |") == 15
+    assert page.count("| いらすとや |") == 15
+    voices_h3 = {
+        "retort": "ja-JP-KeitaNeural",
+        "polite": "ja-JP-NanamiNeural",
+        "guest": "espeak:ja",
+        "owner": "gtts:ja",
+    }
+    for name in h3_names:
+        assert f"`ready/{name}.json`" in page
+        data = json.loads((ROOT / "stories" / "ready" / f"{name}.json").read_text(encoding="utf-8"))
+        assert data["schema"] == "affi-h3-ready/v1"
+        assert data["構成"] == name
+        pack = structure.load(structure.pack_file(name))
+        ids = [row["id"] for row in pack["captions"]]
+        spoken = structure.parse_lines(structure.read_lines(data["セリフ"]), ids)
+        assert spoken == structure.parse_lines((ROOT / "stories" / f"{name}_lines.txt").read_text(encoding="utf-8"), ids)
+        filled = structure.fill(
+            pack,
+            person=data["人"],
+            animals={
+                "guest": data["客の動物"],
+                "retort": data["ツッコミの動物"],
+                "polite": data["丁寧の動物"],
+            },
+            place=data["場所"],
+            lines=spoken,
+        )
+        assert structure.blocked(filled) == []
+        text = structure.picture_prompt(filled, 0.0, float(filled["duration_s"]))
+        assert "No one speaks." in text
+        for line in spoken.values():
+            assert line not in text
+        shots = {shot["id"]: shot for shot in pack["shots"]}
+        assert [row["id"] for row in data["timing"]] == ids
+        heard: dict[str, list[str]] = {}
+        for row, cap in zip(data["timing"], pack["captions"]):
+            shot = shots[cap["shot"]]
+            assert row["role"] == cap["role"]
+            assert row["text"] == spoken[cap["id"]]
+            assert abs(row["start_s"] - float(shot["start_s"])) < 0.001
+            assert abs(row["end_s"] - float(shot["end_s"])) < 0.001
+            assert abs(row["mouth_s"] - float(cap["mouth_s"])) < 0.001
+            assert abs((row["end_s"] - row["start_s"]) - row["mouth_s"]) < 0.001
+            heard.setdefault(row["role"], []).append(row["text"])
+        used = []
+        for role, lines in heard.items():
+            bucket = data["tts"][role]
+            assert bucket["voice"] == voices_h3[role]
+            assert [item["text"] for item in bucket["lines"]] == lines
+            used.append(bucket["voice"])
+        assert len(used) == len(set(used))
+        assert data["upload"]["title"].strip()
+        assert data["upload"]["description"].strip()
+        assert "http" not in data["upload"]["description"]
+        assert f"{data['duration_s']:.3f}秒" in page
+    for name in ira_names:
+        assert f"`ready/{name}.json`" in page
+        data = json.loads((ROOT / "stories" / "ready" / f"{name}.json").read_text(encoding="utf-8"))
+        scene = json.loads((ROOT / "stories" / f"{name}.json").read_text(encoding="utf-8"))
+        assert data["schema"] == "affi-irasutoya-ready/v1"
+        assert data["hook"] == scene["title"]
+        assert data["series_character"] == scene["series_character"]
+        assert data["punchline"] == scene["punchline"]
+        assert data["closing"] == ""
+        assert len(data["bullets"]) == 3
+        blob = "\n".join([*data["bullets"], data["punchline"], data["hook"]])
+        quotes = re.findall(r"「([^」]+)」", blob)
+        spoken_scenes = [item for item in scene["scenes"] if str(item["text"]).strip()]
+        assert quotes[0] == spoken_scenes[0]["text"]
+        assert _ira_plain(data["bullets"][0]) == spoken_scenes[1]["text"]
+        assert _ira_plain(data["bullets"][1]) == spoken_scenes[2]["text"]
+        assert _ira_plain(data["bullets"][2]) == spoken_scenes[3]["text"]
+        assert data["punchline"] == spoken_scenes[4]["text"]
+        cursor = 0.0
+        tts_texts: dict[str, list[str]] = {}
+        assert len(data["timing"]) == len(scene["scenes"])
+        for row, item in zip(data["timing"], scene["scenes"]):
+            mouth = round(float(item["duration_hint"]), 3)
+            assert row["start_s"] == round(cursor, 3)
+            assert row["end_s"] == round(cursor + mouth, 3)
+            assert row["text"] == item["text"]
+            assert row["speaker"] == item["speaker"]
+            if item["text"]:
+                assert row["speak"] is True
+                assert row["mouth_s"] == mouth
+                tts_texts.setdefault(item["speaker"], []).append(item["text"])
+            else:
+                assert row["speak"] is False
+                assert row["mouth_s"] == 0.0
+            cursor += mouth
+        assert abs(cursor - 27.65) < 0.001
+        assert data["duration_s"] == 27.65
+        for speaker, lines in tts_texts.items():
+            bucket = data["tts"][speaker]
+            assert [item["text"] for item in bucket["lines"]] == lines
+            assert bucket["voice"].startswith("VOICEVOX:")
+        assert set(data["tts"]) == {"rival", "narrator", "hero"}
+        assert data["tts"]["rival"]["style_id"] == 11
+        assert data["tts"]["narrator"]["style_id"] == 2
+        assert data["tts"]["hero"]["style_id"] == 34
+        description = data["upload"]["description"]
+        assert data["upload"]["title"] == data["hook"]
+        for line in scene["scenes"][-1]["telop"].splitlines():
+            assert line in description
+        assert "あなたならどうする" not in json.dumps(data, ensure_ascii=False)
+        assert "http" not in description
 
 
 def test_line_fit_stops_only_when_the_sheet_asks() -> None:

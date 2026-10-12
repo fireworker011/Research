@@ -1,0 +1,173 @@
+{
+  "schema": "affi-h3-ready/v1",
+  "構成": "soil_nose",
+  "人": "出さない",
+  "客の動物": "キジトラの短毛",
+  "ツッコミの動物": "グレーのマンチカン",
+  "丁寧の動物": "白いスコティッシュフォールド",
+  "場所": "昼の窓辺。植木鉢。",
+  "セリフ": "stories/soil_nose_lines.txt",
+  "duration_s": 50.4,
+  "picture": "絵は口の開閉だけ。せりふは声用。声は、各行の start_s から mouth_s 秒に、あとから合わせる。",
+  "timing": [
+    {
+      "id": "c01",
+      "role": "polite",
+      "role_ja": "丁寧",
+      "start_s": 0.0,
+      "end_s": 2.6,
+      "mouth_s": 2.6,
+      "text": "土が減ってます"
+    },
+    {
+      "id": "c02",
+      "role": "retort",
+      "role_ja": "ツッコミ",
+      "start_s": 2.6,
+      "end_s": 5.0,
+      "mouth_s": 2.4,
+      "text": "味見してへん"
+    },
+    {
+      "id": "c03",
+      "role": "polite",
+      "role_ja": "丁寧",
+      "start_s": 9.4,
+      "end_s": 12.2,
+      "mouth_s": 2.8,
+      "text": "鼻に付いてます"
+    },
+    {
+      "id": "c04",
+      "role": "retort",
+      "role_ja": "ツッコミ",
+      "start_s": 16.6,
+      "end_s": 19.4,
+      "mouth_s": 2.8,
+      "text": "匂いを見ただけ"
+    },
+    {
+      "id": "c05",
+      "role": "polite",
+      "role_ja": "丁寧",
+      "start_s": 19.4,
+      "end_s": 22.8,
+      "mouth_s": 3.4,
+      "text": "匂いと味は違います"
+    },
+    {
+      "id": "c06",
+      "role": "guest",
+      "role_ja": "客",
+      "start_s": 27.2,
+      "end_s": 29.6,
+      "mouth_s": 2.4,
+      "text": "植木は無事"
+    },
+    {
+      "id": "c07",
+      "role": "retort",
+      "role_ja": "ツッコミ",
+      "start_s": 34.0,
+      "end_s": 36.8,
+      "mouth_s": 2.8,
+      "text": "顔だけ畑や"
+    },
+    {
+      "id": "c08",
+      "role": "polite",
+      "role_ja": "丁寧",
+      "start_s": 36.8,
+      "end_s": 39.4,
+      "mouth_s": 2.6,
+      "text": "もう一回拭きます"
+    },
+    {
+      "id": "c09",
+      "role": "guest",
+      "role_ja": "客",
+      "start_s": 43.8,
+      "end_s": 46.0,
+      "mouth_s": 2.2,
+      "text": "お土産やな"
+    }
+  ],
+  "tts": {
+    "polite": {
+      "role_ja": "丁寧",
+      "voice": "ja-JP-NanamiNeural",
+      "lines": [
+        {
+          "id": "c01",
+          "start_s": 0.0,
+          "mouth_s": 2.6,
+          "text": "土が減ってます"
+        },
+        {
+          "id": "c03",
+          "start_s": 9.4,
+          "mouth_s": 2.8,
+          "text": "鼻に付いてます"
+        },
+        {
+          "id": "c05",
+          "start_s": 19.4,
+          "mouth_s": 3.4,
+          "text": "匂いと味は違います"
+        },
+        {
+          "id": "c08",
+          "start_s": 36.8,
+          "mouth_s": 2.6,
+          "text": "もう一回拭きます"
+        }
+      ]
+    },
+    "retort": {
+      "role_ja": "ツッコミ",
+      "voice": "ja-JP-KeitaNeural",
+      "lines": [
+        {
+          "id": "c02",
+          "start_s": 2.6,
+          "mouth_s": 2.4,
+          "text": "味見してへん"
+        },
+        {
+          "id": "c04",
+          "start_s": 16.6,
+          "mouth_s": 2.8,
+          "text": "匂いを見ただけ"
+        },
+        {
+          "id": "c07",
+          "start_s": 34.0,
+          "mouth_s": 2.8,
+          "text": "顔だけ畑や"
+        }
+      ]
+    },
+    "guest": {
+      "role_ja": "客",
+      "voice": "espeak:ja",
+      "lines": [
+        {
+          "id": "c06",
+          "start_s": 27.2,
+          "mouth_s": 2.4,
+          "text": "植木は無事"
+        },
+        {
+          "id": "c09",
+          "start_s": 43.8,
+          "mouth_s": 2.2,
+          "text": "お土産やな"
+        }
+      ]
+    }
+  },
+  "upload": {
+    "title": "植木は無事で、鼻だけ土が残った",
+    "description": "植木の土は無事で、ツッコミの鼻だけ粒が残った。拭っても、ひげに一粒残る。三匹が鉢の前に座る。\n"
+  }
+}

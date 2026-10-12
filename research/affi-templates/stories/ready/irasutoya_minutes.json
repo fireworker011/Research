@@ -1,0 +1,133 @@
+{
+  "schema": "affi-irasutoya-ready/v1",
+  "hook": "会議に遅れて結論をひっくり返した相手が、昨日の自分の文を読んだ話",
+  "series_character": "遅刻発言君",
+  "bullets": [
+    "会議に遅れてきて、最初の結論だけひっくり返した「俺の意見、入れとけ」",
+    "録音してた",
+    "録音の頭だけ、チャットに置いた"
+  ],
+  "punchline": "ひっくり返した結論は、相手が昨日自分で書いた文だった",
+  "closing": "",
+  "duration_s": 27.65,
+  "picture": "絵は口の開閉だけ。本編のテロップは空。声は、各行の start_s から mouth_s 秒に、あとから合わせる。クレジットの2.2秒は名前の表示だけ。",
+  "timing": [
+    {
+      "id": 1,
+      "role": "hook",
+      "speaker": "rival",
+      "start_s": 0.0,
+      "end_s": 2.37,
+      "mouth_s": 2.37,
+      "text": "俺の意見、入れとけ",
+      "speak": true
+    },
+    {
+      "id": 2,
+      "role": "develop",
+      "speaker": "narrator",
+      "start_s": 2.37,
+      "end_s": 7.9,
+      "mouth_s": 5.53,
+      "text": "会議に遅れてきて、最初の結論だけひっくり返した",
+      "speak": true
+    },
+    {
+      "id": 3,
+      "role": "develop",
+      "speaker": "narrator",
+      "start_s": 7.9,
+      "end_s": 8.87,
+      "mouth_s": 0.97,
+      "text": "録音してた",
+      "speak": true
+    },
+    {
+      "id": 4,
+      "role": "develop",
+      "speaker": "hero",
+      "start_s": 8.87,
+      "end_s": 14.4,
+      "mouth_s": 5.53,
+      "text": "録音の頭だけ、チャットに置いた",
+      "speak": true
+    },
+    {
+      "id": 5,
+      "role": "punch",
+      "speaker": "narrator",
+      "start_s": 14.4,
+      "end_s": 25.45,
+      "mouth_s": 11.05,
+      "text": "ひっくり返した結論は、相手が昨日自分で書いた文だった",
+      "speak": true
+    },
+    {
+      "id": 6,
+      "role": "credit",
+      "speaker": "narrator",
+      "start_s": 25.45,
+      "end_s": 27.65,
+      "mouth_s": 0.0,
+      "text": "",
+      "speak": false
+    }
+  ],
+  "tts": {
+    "rival": {
+      "role_ja": "相手",
+      "voice": "VOICEVOX:玄野武宏",
+      "style_id": 11,
+      "lines": [
+        {
+          "id": 1,
+          "start_s": 0.0,
+          "mouth_s": 2.37,
+          "text": "俺の意見、入れとけ"
+        }
+      ]
+    },
+    "narrator": {
+      "role_ja": "ナレーション",
+      "voice": "VOICEVOX:四国めたん",
+      "style_id": 2,
+      "lines": [
+        {
+          "id": 2,
+          "start_s": 2.37,
+          "mouth_s": 5.53,
+          "text": "会議に遅れてきて、最初の結論だけひっくり返した"
+        },
+        {
+          "id": 3,
+          "start_s": 7.9,
+          "mouth_s": 0.97,
+          "text": "録音してた"
+        },
+        {
+          "id": 5,
+          "start_s": 14.4,
+          "mouth_s": 11.05,
+          "text": "ひっくり返した結論は、相手が昨日自分で書いた文だった"
+        }
+      ]
+    },
+    "hero": {
+      "role_ja": "主人公",
+      "voice": "VOICEVOX:白上虎太郎",
+      "style_id": 34,
+      "lines": [
+        {
+          "id": 4,
+          "start_s": 8.87,
+          "mouth_s": 5.53,
+          "text": "録音の頭だけ、チャットに置いた"
+        }
+      ]
+    }
+  },
+  "upload": {
+    "title": "会議に遅れて結論をひっくり返した相手が、昨日の自分の文を読んだ話",
+    "description": "「俺の意見、入れとけ」\n会議に遅れてきて、最初の結論だけひっくり返した。録音してた。録音の頭だけ、チャットに置いた。ひっくり返した結論は、相手が昨日自分で書いた文だった。\n\nVOICEVOX:四国めたん\nVOICEVOX:白上虎太郎\nVOICEVOX:玄野武宏\nVOICEVOX:剣崎雌雄\n"
+  }
+}

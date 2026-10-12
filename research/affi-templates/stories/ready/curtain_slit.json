@@ -1,0 +1,158 @@
+{
+  "schema": "affi-h3-ready/v1",
+  "構成": "curtain_slit",
+  "人": "出さない",
+  "客の動物": "キジトラの短毛",
+  "ツッコミの動物": "グレーのマンチカン",
+  "丁寧の動物": "白いスコティッシュフォールド",
+  "場所": "朝の窓。カーテンと床。",
+  "セリフ": "stories/curtain_slit_lines.txt",
+  "duration_s": 47.2,
+  "picture": "絵は口の開閉だけ。せりふは声用。声は、各行の start_s から mouth_s 秒に、あとから合わせる。",
+  "timing": [
+    {
+      "id": "c01",
+      "role": "retort",
+      "role_ja": "ツッコミ",
+      "start_s": 0.0,
+      "end_s": 2.6,
+      "mouth_s": 2.6,
+      "text": "まぶしい。閉め"
+    },
+    {
+      "id": "c02",
+      "role": "polite",
+      "role_ja": "丁寧",
+      "start_s": 7.0,
+      "end_s": 9.4,
+      "mouth_s": 2.4,
+      "text": "朝ですよ"
+    },
+    {
+      "id": "c03",
+      "role": "retort",
+      "role_ja": "ツッコミ",
+      "start_s": 13.8,
+      "end_s": 16.2,
+      "mouth_s": 2.4,
+      "text": "それで十分や"
+    },
+    {
+      "id": "c04",
+      "role": "guest",
+      "role_ja": "客",
+      "start_s": 16.2,
+      "end_s": 18.4,
+      "mouth_s": 2.2,
+      "text": "僕もそこ"
+    },
+    {
+      "id": "c05",
+      "role": "retort",
+      "role_ja": "ツッコミ",
+      "start_s": 22.8,
+      "end_s": 25.6,
+      "mouth_s": 2.8,
+      "text": "一匹分しかない"
+    },
+    {
+      "id": "c06",
+      "role": "polite",
+      "role_ja": "丁寧",
+      "start_s": 30.0,
+      "end_s": 33.2,
+      "mouth_s": 3.2,
+      "text": "三匹で影になってます"
+    },
+    {
+      "id": "c07",
+      "role": "retort",
+      "role_ja": "ツッコミ",
+      "start_s": 33.2,
+      "end_s": 35.8,
+      "mouth_s": 2.6,
+      "text": "自分で消した"
+    },
+    {
+      "id": "c08",
+      "role": "polite",
+      "role_ja": "丁寧",
+      "start_s": 40.2,
+      "end_s": 42.8,
+      "mouth_s": 2.6,
+      "text": "開け直しますね"
+    }
+  ],
+  "tts": {
+    "retort": {
+      "role_ja": "ツッコミ",
+      "voice": "ja-JP-KeitaNeural",
+      "lines": [
+        {
+          "id": "c01",
+          "start_s": 0.0,
+          "mouth_s": 2.6,
+          "text": "まぶしい。閉め"
+        },
+        {
+          "id": "c03",
+          "start_s": 13.8,
+          "mouth_s": 2.4,
+          "text": "それで十分や"
+        },
+        {
+          "id": "c05",
+          "start_s": 22.8,
+          "mouth_s": 2.8,
+          "text": "一匹分しかない"
+        },
+        {
+          "id": "c07",
+          "start_s": 33.2,
+          "mouth_s": 2.6,
+          "text": "自分で消した"
+        }
+      ]
+    },
+    "polite": {
+      "role_ja": "丁寧",
+      "voice": "ja-JP-NanamiNeural",
+      "lines": [
+        {
+          "id": "c02",
+          "start_s": 7.0,
+          "mouth_s": 2.4,
+          "text": "朝ですよ"
+        },
+        {
+          "id": "c06",
+          "start_s": 30.0,
+          "mouth_s": 3.2,
+          "text": "三匹で影になってます"
+        },
+        {
+          "id": "c08",
+          "start_s": 40.2,
+          "mouth_s": 2.6,
+          "text": "開け直しますね"
+        }
+      ]
+    },
+    "guest": {
+      "role_ja": "客",
+      "voice": "espeak:ja",
+      "lines": [
+        {
+          "id": "c04",
+          "start_s": 16.2,
+          "mouth_s": 2.2,
+          "text": "僕もそこ"
+        }
+      ]
+    }
+  },
+  "upload": {
+    "title": "光の筋に三匹入って、自分で影にした",
+    "description": "朝の光がまぶしくて、カーテンを少し閉めた。光は一本の筋になり、三匹がそこに入って自分たちで影にする。開け直すと、筋が戻る。\n"
+  }
+}

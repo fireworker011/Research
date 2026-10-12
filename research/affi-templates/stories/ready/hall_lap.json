@@ -1,0 +1,173 @@
+{
+  "schema": "affi-h3-ready/v1",
+  "構成": "hall_lap",
+  "人": "出さない",
+  "客の動物": "キジトラの短毛",
+  "ツッコミの動物": "グレーのマンチカン",
+  "丁寧の動物": "白いスコティッシュフォールド",
+  "場所": "夜の廊下。電球と木の床。",
+  "セリフ": "stories/hall_lap_lines.txt",
+  "duration_s": 45.2,
+  "picture": "絵は口の開閉だけ。せりふは声用。声は、各行の start_s から mouth_s 秒に、あとから合わせる。",
+  "timing": [
+    {
+      "id": "c01",
+      "role": "polite",
+      "role_ja": "丁寧",
+      "start_s": 0.0,
+      "end_s": 2.8,
+      "mouth_s": 2.8,
+      "text": "夜です。静かにして"
+    },
+    {
+      "id": "c02",
+      "role": "retort",
+      "role_ja": "ツッコミ",
+      "start_s": 2.8,
+      "end_s": 5.0,
+      "mouth_s": 2.2,
+      "text": "往復してええ"
+    },
+    {
+      "id": "c03",
+      "role": "guest",
+      "role_ja": "客",
+      "start_s": 9.4,
+      "end_s": 11.8,
+      "mouth_s": 2.4,
+      "text": "僕も一回"
+    },
+    {
+      "id": "c04",
+      "role": "polite",
+      "role_ja": "丁寧",
+      "start_s": 16.2,
+      "end_s": 19.0,
+      "mouth_s": 2.8,
+      "text": "二回になってます"
+    },
+    {
+      "id": "c05",
+      "role": "retort",
+      "role_ja": "ツッコミ",
+      "start_s": 19.0,
+      "end_s": 21.6,
+      "mouth_s": 2.6,
+      "text": "往復は一回や"
+    },
+    {
+      "id": "c06",
+      "role": "polite",
+      "role_ja": "丁寧",
+      "start_s": 26.0,
+      "end_s": 29.2,
+      "mouth_s": 3.2,
+      "text": "往復は二回数えます"
+    },
+    {
+      "id": "c07",
+      "role": "guest",
+      "role_ja": "客",
+      "start_s": 29.2,
+      "end_s": 31.4,
+      "mouth_s": 2.2,
+      "text": "もう寝よ"
+    },
+    {
+      "id": "c08",
+      "role": "retort",
+      "role_ja": "ツッコミ",
+      "start_s": 35.8,
+      "end_s": 38.4,
+      "mouth_s": 2.6,
+      "text": "終了の合図や"
+    },
+    {
+      "id": "c09",
+      "role": "polite",
+      "role_ja": "丁寧",
+      "start_s": 38.4,
+      "end_s": 40.8,
+      "mouth_s": 2.4,
+      "text": "では、おやすみ"
+    }
+  ],
+  "tts": {
+    "polite": {
+      "role_ja": "丁寧",
+      "voice": "ja-JP-NanamiNeural",
+      "lines": [
+        {
+          "id": "c01",
+          "start_s": 0.0,
+          "mouth_s": 2.8,
+          "text": "夜です。静かにして"
+        },
+        {
+          "id": "c04",
+          "start_s": 16.2,
+          "mouth_s": 2.8,
+          "text": "二回になってます"
+        },
+        {
+          "id": "c06",
+          "start_s": 26.0,
+          "mouth_s": 3.2,
+          "text": "往復は二回数えます"
+        },
+        {
+          "id": "c09",
+          "start_s": 38.4,
+          "mouth_s": 2.4,
+          "text": "では、おやすみ"
+        }
+      ]
+    },
+    "retort": {
+      "role_ja": "ツッコミ",
+      "voice": "ja-JP-KeitaNeural",
+      "lines": [
+        {
+          "id": "c02",
+          "start_s": 2.8,
+          "mouth_s": 2.2,
+          "text": "往復してええ"
+        },
+        {
+          "id": "c05",
+          "start_s": 19.0,
+          "mouth_s": 2.6,
+          "text": "往復は一回や"
+        },
+        {
+          "id": "c08",
+          "start_s": 35.8,
+          "mouth_s": 2.6,
+          "text": "終了の合図や"
+        }
+      ]
+    },
+    "guest": {
+      "role_ja": "客",
+      "voice": "espeak:ja",
+      "lines": [
+        {
+          "id": "c03",
+          "start_s": 9.4,
+          "mouth_s": 2.4,
+          "text": "僕も一回"
+        },
+        {
+          "id": "c07",
+          "start_s": 29.2,
+          "mouth_s": 2.2,
+          "text": "もう寝よ"
+        }
+      ]
+    }
+  },
+  "upload": {
+    "title": "一回だけ走ると言って、往復した",
+    "description": "夜の廊下で、一回だけ走ると言った。客も走り、往復が二回になる。終了と言って、廊下の端で丸くなる。\n"
+  }
+}

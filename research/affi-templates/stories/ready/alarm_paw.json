@@ -1,0 +1,173 @@
+{
+  "schema": "affi-h3-ready/v1",
+  "構成": "alarm_paw",
+  "人": "成人の飼い主。ゆるい部屋着。髪はひとつ結び。",
+  "客の動物": "キジトラの短毛",
+  "ツッコミの動物": "グレーのマンチカン",
+  "丁寧の動物": "白いスコティッシュフォールド",
+  "場所": "夜明け前の寝室。ベッドの上の光る電話。",
+  "セリフ": "stories/alarm_paw_lines.txt",
+  "duration_s": 45.4,
+  "picture": "絵は口の開閉だけ。せりふは声用。声は、各行の start_s から mouth_s 秒に、あとから合わせる。",
+  "timing": [
+    {
+      "id": "c01",
+      "role": "retort",
+      "role_ja": "ツッコミ",
+      "start_s": 0.0,
+      "end_s": 2.4,
+      "mouth_s": 2.4,
+      "text": "うるさい。止めた"
+    },
+    {
+      "id": "c02",
+      "role": "polite",
+      "role_ja": "丁寧",
+      "start_s": 6.8,
+      "end_s": 9.4,
+      "mouth_s": 2.6,
+      "text": "まだ暗いです"
+    },
+    {
+      "id": "c03",
+      "role": "retort",
+      "role_ja": "ツッコミ",
+      "start_s": 9.4,
+      "end_s": 12.2,
+      "mouth_s": 2.8,
+      "text": "対応、終わりや"
+    },
+    {
+      "id": "c04",
+      "role": "owner",
+      "role_ja": "飼い主",
+      "start_s": 16.6,
+      "end_s": 18.8,
+      "mouth_s": 2.2,
+      "text": "五時なん？"
+    },
+    {
+      "id": "c05",
+      "role": "polite",
+      "role_ja": "丁寧",
+      "start_s": 18.8,
+      "end_s": 21.8,
+      "mouth_s": 3.0,
+      "text": "数字は見えてません"
+    },
+    {
+      "id": "c06",
+      "role": "owner",
+      "role_ja": "飼い主",
+      "start_s": 26.2,
+      "end_s": 28.8,
+      "mouth_s": 2.6,
+      "text": "ほんまに早い"
+    },
+    {
+      "id": "c07",
+      "role": "retort",
+      "role_ja": "ツッコミ",
+      "start_s": 28.8,
+      "end_s": 31.4,
+      "mouth_s": 2.6,
+      "text": "なら続き寝る"
+    },
+    {
+      "id": "c08",
+      "role": "polite",
+      "role_ja": "丁寧",
+      "start_s": 35.8,
+      "end_s": 38.6,
+      "mouth_s": 2.8,
+      "text": "また光りますよ"
+    },
+    {
+      "id": "c09",
+      "role": "retort",
+      "role_ja": "ツッコミ",
+      "start_s": 38.6,
+      "end_s": 41.0,
+      "mouth_s": 2.4,
+      "text": "次も止める"
+    }
+  ],
+  "tts": {
+    "retort": {
+      "role_ja": "ツッコミ",
+      "voice": "ja-JP-KeitaNeural",
+      "lines": [
+        {
+          "id": "c01",
+          "start_s": 0.0,
+          "mouth_s": 2.4,
+          "text": "うるさい。止めた"
+        },
+        {
+          "id": "c03",
+          "start_s": 9.4,
+          "mouth_s": 2.8,
+          "text": "対応、終わりや"
+        },
+        {
+          "id": "c07",
+          "start_s": 28.8,
+          "mouth_s": 2.6,
+          "text": "なら続き寝る"
+        },
+        {
+          "id": "c09",
+          "start_s": 38.6,
+          "mouth_s": 2.4,
+          "text": "次も止める"
+        }
+      ]
+    },
+    "polite": {
+      "role_ja": "丁寧",
+      "voice": "ja-JP-NanamiNeural",
+      "lines": [
+        {
+          "id": "c02",
+          "start_s": 6.8,
+          "mouth_s": 2.6,
+          "text": "まだ暗いです"
+        },
+        {
+          "id": "c05",
+          "start_s": 18.8,
+          "mouth_s": 3.0,
+          "text": "数字は見えてません"
+        },
+        {
+          "id": "c08",
+          "start_s": 35.8,
+          "mouth_s": 2.8,
+          "text": "また光りますよ"
+        }
+      ]
+    },
+    "owner": {
+      "role_ja": "飼い主",
+      "voice": "gtts:ja",
+      "lines": [
+        {
+          "id": "c04",
+          "start_s": 16.6,
+          "mouth_s": 2.2,
+          "text": "五時なん？"
+        },
+        {
+          "id": "c06",
+          "start_s": 26.2,
+          "mouth_s": 2.6,
+          "text": "ほんまに早い"
+        }
+      ]
+    }
+  },
+  "upload": {
+    "title": "鳴る前に電話を止めて、また寝る",
+    "description": "鳴る前に、ツッコミが電話へ前足を置いた。画面の数字は見えず、人が時刻を見て驚く。またその上で寝る。\n"
+  }
+}

@@ -1,0 +1,133 @@
+{
+  "schema": "affi-irasutoya-ready/v1",
+  "hook": "勝手に傘を持った相手の椅子だけ、しずくで濡れていた話",
+  "series_character": "傘借り君",
+  "bullets": [
+    "帰りの雨で、出口の自分の傘が無かった「傘、一本借りるわ」",
+    "晴れ間だ",
+    "折り畳みを、相手の引き出しに戻した"
+  ],
+  "punchline": "相手の椅子だけ、傘のしずくで濡れていた",
+  "closing": "",
+  "duration_s": 27.65,
+  "picture": "絵は口の開閉だけ。本編のテロップは空。声は、各行の start_s から mouth_s 秒に、あとから合わせる。クレジットの2.2秒は名前の表示だけ。",
+  "timing": [
+    {
+      "id": 1,
+      "role": "hook",
+      "speaker": "rival",
+      "start_s": 0.0,
+      "end_s": 2.37,
+      "mouth_s": 2.37,
+      "text": "傘、一本借りるわ",
+      "speak": true
+    },
+    {
+      "id": 2,
+      "role": "develop",
+      "speaker": "narrator",
+      "start_s": 2.37,
+      "end_s": 7.9,
+      "mouth_s": 5.53,
+      "text": "帰りの雨で、出口の自分の傘が無かった",
+      "speak": true
+    },
+    {
+      "id": 3,
+      "role": "develop",
+      "speaker": "narrator",
+      "start_s": 7.9,
+      "end_s": 8.87,
+      "mouth_s": 0.97,
+      "text": "晴れ間だ",
+      "speak": true
+    },
+    {
+      "id": 4,
+      "role": "develop",
+      "speaker": "hero",
+      "start_s": 8.87,
+      "end_s": 14.4,
+      "mouth_s": 5.53,
+      "text": "折り畳みを、相手の引き出しに戻した",
+      "speak": true
+    },
+    {
+      "id": 5,
+      "role": "punch",
+      "speaker": "narrator",
+      "start_s": 14.4,
+      "end_s": 25.45,
+      "mouth_s": 11.05,
+      "text": "相手の椅子だけ、傘のしずくで濡れていた",
+      "speak": true
+    },
+    {
+      "id": 6,
+      "role": "credit",
+      "speaker": "narrator",
+      "start_s": 25.45,
+      "end_s": 27.65,
+      "mouth_s": 0.0,
+      "text": "",
+      "speak": false
+    }
+  ],
+  "tts": {
+    "rival": {
+      "role_ja": "相手",
+      "voice": "VOICEVOX:玄野武宏",
+      "style_id": 11,
+      "lines": [
+        {
+          "id": 1,
+          "start_s": 0.0,
+          "mouth_s": 2.37,
+          "text": "傘、一本借りるわ"
+        }
+      ]
+    },
+    "narrator": {
+      "role_ja": "ナレーション",
+      "voice": "VOICEVOX:四国めたん",
+      "style_id": 2,
+      "lines": [
+        {
+          "id": 2,
+          "start_s": 2.37,
+          "mouth_s": 5.53,
+          "text": "帰りの雨で、出口の自分の傘が無かった"
+        },
+        {
+          "id": 3,
+          "start_s": 7.9,
+          "mouth_s": 0.97,
+          "text": "晴れ間だ"
+        },
+        {
+          "id": 5,
+          "start_s": 14.4,
+          "mouth_s": 11.05,
+          "text": "相手の椅子だけ、傘のしずくで濡れていた"
+        }
+      ]
+    },
+    "hero": {
+      "role_ja": "主人公",
+      "voice": "VOICEVOX:白上虎太郎",
+      "style_id": 34,
+      "lines": [
+        {
+          "id": 4,
+          "start_s": 8.87,
+          "mouth_s": 5.53,
+          "text": "折り畳みを、相手の引き出しに戻した"
+        }
+      ]
+    }
+  },
+  "upload": {
+    "title": "勝手に傘を持った相手の椅子だけ、しずくで濡れていた話",
+    "description": "「傘、一本借りるわ」\n帰りの雨で、出口の自分の傘が無かった。晴れ間だ。折り畳みを、相手の引き出しに戻した。相手の椅子だけ、傘のしずくで濡れていた。\n\nVOICEVOX:四国めたん\nVOICEVOX:白上虎太郎\nVOICEVOX:玄野武宏\nVOICEVOX:剣崎雌雄\n"
+  }
+}
