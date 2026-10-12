@@ -83,10 +83,12 @@ def probe_wav(path: Path) -> tuple[float, int, int]:
 def fits_note(duration: float | None, available: float | None) -> str:
     if duration is None or available is None:
         return "声は作らない"
-    if duration <= available + 1e-3:
-        return "入る"
     rate = duration / available
-    return f"自然長が区間より長い。finish.sh は声を {rate:.3f} 倍にして収め、絵は切らない"
+    if rate <= 1.0 + 1e-3:
+        return "入る"
+    if rate <= 1.1:
+        return f"自然長が区間より長い。finish.sh は声を {rate:.3f} 倍にして収め、絵は切らない"
+    return f"窓の1.1倍を超える（{rate:.3f}倍）。文を短くする。倍速では収めない"
 
 
 def main() -> None:
@@ -148,8 +150,23 @@ def main() -> None:
         label = record["text"] if record["text"] else "（無し）"
         print(f"{pack['rel']} {label} {record['duration_sec']}")
 
-    if spoken != 50 or silent != 10:
-        raise SystemExit(f"声 {spoken} 無言 {silent}（50 と 10 であるべき）")
+    if spoken != 60 or silent != 0:
+        raise SystemExit(f"声 {spoken} 無言 {silent}（60 と 0 であるべき）")
+    too_long = []
+    for pack in packs:
+        voice = pack["voice"]
+        if not voice["narration"]:
+            continue
+        data = json.loads((pack["dir"] / "voice" / "speech-length.json").read_text())
+        if voice["window_start_sec"] is None:
+            available = float(pack["picture_sec"])
+        else:
+            available = float(voice["window_end_sec"]) - float(voice["window_start_sec"])
+        rate = float(data["duration_sec"]) / available
+        if rate > 1.1:
+            too_long.append(f"{pack['rel']} {rate:.3f}倍 {voice['text']}")
+    if too_long:
+        raise SystemExit("窓の1.1倍を超える。倍速にせず文を短くする:\n" + "\n".join(too_long))
     write_summary(packs)
     print(f"spoke {spoken} silent {silent} speaker_id={speaker_id} version={version}")
 
@@ -159,8 +176,9 @@ def write_summary(packs: list[dict]) -> None:
     rows.append("長さは書き出した WAV を ffprobe で測った秒。推定ではない。")
     rows.append(f"話者は {SPEAKER_NAME}（{STYLE_NAME}）。ペットのナレーション、婚活の1文、美容の1文、すべてこの声。")
     rows.append(f"この声を投稿に使うときは説明へ `{CREDIT}` を書く。規約: https://www.meimeihimari.com/terms-of-use")
-    rows.append("最終の置き位置は絵ができたあと。`finish.sh` は絵の秒を変えず、声が窓からはみ出すときだけ声を速くする。")
-    rows.append("2026-10-12 のペット10本はナレーション無し。WAV は作っていない。")
+    rows.append("最終の置き位置は絵ができたあと。`finish.sh` は絵の秒を変えず、声が窓を 1.1 倍以内ではみ出すときだけ声を速くする。")
+    rows.append("1.1 倍を超えるときは倍速にせず、文を短くして測り直す。ペットは 2026-10-12 の 10 本も日記の 1 文。")
+    rows.append("`2026-10-13/pet/06-white-tail` の文は「しっぽの先、1回。」。")
     rows.append("")
     rows.append("| 順 | パック | 文 | 測った秒 | 置く区間 | 絵の秒 | 収まり |")
     rows.append("| --- | --- | --- | --- | --- | --- | --- |")
