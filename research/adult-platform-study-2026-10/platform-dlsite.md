@@ -123,3 +123,20 @@ not 8の dl_count 中央値 1、お気に入り中央値 4.5、表示価格中�
 ## 作品数
 
 サークルページから取れた作品IDの数。161行中40行が50。注記のとおり、全作品数とは限らない。
+
+## 2回目（2026-10-12）
+
+maniax 音声を、週間ランキング3〜4ページ、30日間1〜2ページ、累計1ページから28サークル足した。発売カレンダーは2026-08-20から2026-09-27の各日。音声の not_selling を55、漫画20、小説15、CG集12、ゲーム8足した。
+
+合わせると maniax 音声は selling 40、not_selling 67。
+
+- dl_count の中央値は 2063.5 と 5。低側は選定でカレンダー作品の販売数を25以下にしている。CSV の latest_sales_count は、取得作品のうち最も新しい作品の dl_count で、enrich の上限は40以下、取得作品の最大は120以下。
+- お気に入りは selling の最小810、not_selling の最大114。範囲は重ならない。中央値は 3938.5 と 23。
+- 表示価格の中央値は1232円と550円。selling の最小は792円（マジチョロドミネーション、週間ランキングページ順位31、dl_count 672）。1回目の週間上位12件の最小990円より下の表示価格が、深い順位にはある。not_selling の最大は2464円で、価格の範囲は重なる。
+- 発売間隔の中央値は65日（間隔が取れた38件）と8日（67件）。
+- 声優列は selling 39/40、not_selling 51/67。1回目の24ページは声優セルを開き直して一致した。2回目の83件はセルの開き直しをしていない。声優セルが空のときは一覧の作者リンクが入る実装のままである。
+- options の AIP は、2回目の音声 selling 28件では0、not_selling 55件では36。1回目は0/12と11/12。合わせると 0/40 と 47/67。2回目の「その他」欄は開いていない。
+- 説明の「トラック」は 34/40 と 26/67。1回目の10/12と3/12より差は狭い。
+- 直近作品の割引は 28/40 と 38/67。
+
+出典: `https://www.dlsite.com/maniax/ranking/week?category=voice&page=3` と page=4、`https://www.dlsite.com/maniax/ranking/month?category=voice&page=1` と page=2、`https://www.dlsite.com/maniax/ranking/total?category=voice&page=1`、`https://www.dlsite.com/maniax/new/=/date/2026-08-20` から `2026-09-27` の各日。数字は product info ajax。
