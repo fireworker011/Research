@@ -1,0 +1,182 @@
+{
+  "title": "返すと言ったメモの裏に、硬貨が貼りついたままの話",
+  "series_character": "メモ財布君",
+  "punchline": "返すと言った紙の裏に、硬貨が貼りついたままや",
+  "closing": "",
+  "audio_note": "声は後乗せ。口パク秒は各シーンの mouth_s。話者が画面にいる行だけ口を開ける。ナレーションと黒カードとクレジットは口を閉じたまま。",
+  "ideas": [
+    "型1。無地のメモを斜めに持つ。紙を一回めくる。裏に硬貨が貼りついて、顔が止まる。",
+    "型2。誰の硬貨かを一問にする。つり銭口に朝の硬貨が出る。つまみを一回戻す。",
+    "型3。端を自分側へ寄せた絵が問い。次の一枚で、手帳のペン差しに硬貨。"
+  ],
+  "adopted": 1,
+  "imagine": [
+    {
+      "sec": 2.0,
+      "prompt": "2.0秒。固定カメラ。会社員が無地のメモを斜めに持って立っている。硬貨が紙の上にある。動きは紙が一回傾くだけ。光はオフィスの蛍光灯でフラット。紙は薄いマット。硬貨に数字は入れない。キャラは参照画像で固定。紙に文字は書かない。画面の文字は無い。"
+    },
+    {
+      "sec": 4.0,
+      "prompt": "4.0秒。固定カメラ。同じ会社員の手元。無地のメモを一回だけめくる。動きはめくる一回だけ。光は同じ蛍光灯。紙の裏はザラついたマット。硬貨に数字は入れない。キャラは参照画像で固定。紙に文字は書かない。画面の文字は無い。"
+    },
+    {
+      "sec": 4.0,
+      "prompt": "4.0秒。固定カメラ。めくった紙の裏に硬貨が貼りついている。動きは会社員の顔が一回止まって固まるだけ。光は蛍光灯。硬貨は金属。硬貨に数字は入れない。キャラは参照画像で固定。紙に文字は書かない。画面の文字は無い。"
+    }
+  ],
+  "scenes": [
+    {
+      "id": 1,
+      "role": "hook",
+      "speaker": "rival",
+      "style_id": 11,
+      "credit": "VOICEVOX:玄野武宏",
+      "text": "メモしとけ。後でな",
+      "mouth_s": 2.37,
+      "telop": "",
+      "bg": "office",
+      "characters": [
+        {
+          "id": "rival_smug",
+          "who": "rival",
+          "label": "メモ財布君"
+        }
+      ],
+      "props": [],
+      "code_props": [],
+      "effect": "zoom",
+      "sfx": "none",
+      "duration_hint": 2.37
+    },
+    {
+      "id": 2,
+      "role": "develop",
+      "speaker": "narrator",
+      "style_id": 2,
+      "credit": "VOICEVOX:四国めたん",
+      "text": "デスクの無地メモに、硬貨を乗せたまま置いた",
+      "mouth_s": 0,
+      "telop": "",
+      "bg": "office",
+      "characters": [
+        {
+          "id": "hero_trouble",
+          "who": "hero",
+          "label": ""
+        }
+      ],
+      "props": [],
+      "code_props": [
+        "papers"
+      ],
+      "effect": "none",
+      "sfx": "paper",
+      "duration_hint": 5.53
+    },
+    {
+      "id": 3,
+      "role": "develop",
+      "speaker": "narrator",
+      "style_id": 2,
+      "credit": "VOICEVOX:四国めたん",
+      "text": "紙が財布",
+      "mouth_s": 0,
+      "telop": "",
+      "bg": "card",
+      "characters": [],
+      "props": [],
+      "code_props": [],
+      "effect": "none",
+      "sfx": "whoosh",
+      "duration_hint": 0.97
+    },
+    {
+      "id": 4,
+      "role": "develop",
+      "speaker": "hero",
+      "style_id": 34,
+      "credit": "VOICEVOX:白上虎太郎",
+      "text": "貼りついた側を、一回だけめくって見た",
+      "mouth_s": 5.53,
+      "telop": "",
+      "bg": "office",
+      "characters": [
+        {
+          "id": "hero_angry",
+          "who": "hero",
+          "label": ""
+        }
+      ],
+      "props": [],
+      "code_props": [
+        "papers"
+      ],
+      "effect": "shake",
+      "sfx": "paper",
+      "duration_hint": 5.53
+    },
+    {
+      "id": 5,
+      "role": "punch",
+      "speaker": "narrator",
+      "style_id": 2,
+      "credit": "VOICEVOX:四国めたん",
+      "text": "返すと言った紙の裏に、硬貨が貼りついたままや",
+      "mouth_s": 0,
+      "telop": "",
+      "bg": "office",
+      "characters": [
+        {
+          "id": "rival_pale",
+          "who": "rival",
+          "label": "メモ財布君"
+        }
+      ],
+      "props": [],
+      "code_props": [
+        "papers"
+      ],
+      "effect": "zoom",
+      "sfx": "coin",
+      "duration_hint": 11.05
+    },
+    {
+      "id": 6,
+      "role": "credit",
+      "speaker": "narrator",
+      "style_id": 2,
+      "credit": "VOICEVOX:四国めたん",
+      "text": "",
+      "mouth_s": 0,
+      "telop": "VOICEVOX:四国めたん\nVOICEVOX:白上虎太郎\nVOICEVOX:玄野武宏\nVOICEVOX:剣崎雌雄",
+      "bg": "credit",
+      "characters": [],
+      "props": [],
+      "effect": "none",
+      "sfx": "none",
+      "duration_hint": 2.2,
+      "series_note": "メモ財布君"
+    }
+  ],
+  "credits": [
+    "VOICEVOX:玄野武宏",
+    "VOICEVOX:四国めたん",
+    "VOICEVOX:白上虎太郎",
+    "VOICEVOX:剣崎雌雄"
+  ],
+  "asset_ids": [
+    "rival_smug",
+    "hero_trouble",
+    "hero_angry",
+    "rival_pale"
+  ],
+  "score": {
+    "最初3秒": 18,
+    "テンポ": 16,
+    "見やすさ": 18,
+    "参考の型との一致": 16,
+    "壊れ": 20,
+    "合計": 88,
+    "メモ": "フックは2.37秒。絵の型は12秒の4拍で、顔が止まる拍は結果のショットに重ねた。本編の尺は ogori の27.650秒。本編テロップは空。Imagineは3つ。金額は置いていない。"
+  }
+}
