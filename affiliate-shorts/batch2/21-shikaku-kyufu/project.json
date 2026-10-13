@@ -1,0 +1,585 @@
+{
+  "template": "qa",
+  "title": "資格講座、申し込む前に見るのは？",
+  "punchline": "給付の検索で講座名を入れた。対象かどうか、そこに出た",
+  "brief": {
+    "template": "qa",
+    "hook": "資格講座、申し込む前に見るのは？",
+    "series_character": "申込係",
+    "bullets": [
+      "合格の宣伝",
+      "テキストの厚さ「全部やれば受かる」",
+      "受講の期限",
+      "給付の対象か「どうせ対象外だ」"
+    ],
+    "punchline": "給付の検索で講座名を入れた。対象かどうか、そこに出た",
+    "closing": "先に見るのは給付の対象か",
+    "lines": {
+      "not_answer": "それは答えじゃない",
+      "boss_line": "その講座は何だ",
+      "answer_landed": "答えは給付の対象だ"
+    },
+    "asset_urls": {
+      "hero_trouble": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhxJL1uWPRrar9S-FPxNv7FCtcDsBUM5B8ItxCoPVFnqtsBKjv7TyPF54QNeSpcg2QCm3Fn8maHs9AscQD5Bmegje_6Zdt2xtzqXkriOKe76Aq37zUYxI0kfBoONd8SbYE_loSyJw3rkVY8/s800/businessman1_nayami.png",
+      "hero_angry": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjNZa7ijupIB1glzdfPBDcjiYSmA5vivkbKmqryJ9C11F00i6aifmrQbVGFJcJBgN9SnkUMuQsor8OqrhFv6cc7Qc6_gBEHZjOgV457XveJw0jakqDI2_boGirQKY4h1DpFj4S-tddLG4k/s800/business02_angry.png",
+      "hero_tired": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEi5O7ebIPQwPb7j8zWG0W4g3EN_nlmRZvPEfGKxwGsCnV44eGJARhg0Zz2mBNr7m9BK61Ebp00-9v4cX_V-YkzlJB5YAj7Dpb9slFkX2GG7xGyXKCYl1wMwzi6eWXoCHVuQIFSjsaL-5CM/s800/tsukareta_business_man.png",
+      "hero_smile": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhy3dDvRMBHJ-tn1A2AUBt4iUbmcOXxRuHUegd9lKUBveMfLADwYFD0QsmGhDqoctcd1lk7bY5wO3M04TuC_EVB8TcyirHiMlsvyn-HPGcHJHl6wMEEcrZb5vc-YuKF8ddVD16Wadzfqurn/s800/businessman5_ureshii.png",
+      "rival_smug": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgmfOy1dvPW5nkAXq91r1d2JpatnBWDQHwMOsQRfjoJK3UhP4qRvRGgzacoQu3ogBLYq4zj0tYolJd4_6rjS4tUa8DR5lSj_PQaqXzd6Cs_DivuxoRAkIygU6GV36iS3QhIj3oa6vnevpY/s800/pose_doyagao_man.png",
+      "rival_pale": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEi2aqf82E2vPsRDjhHRSzVXSzvLd3t_6ZfH1Y3w-eKILaooOeCEu21h_g4F819e-TL4u8S4e1XZ1AOI9gfMkJp6IZTFCyIGUBiiHq86qEeKe59JE7Bk3nOgPvpQo6JxhiGDIPJyXcnSb3cF/s800/money_tsuchou_shock_man.png",
+      "rival_bow": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjiEZczawhFUZ4JguLwDcUFj6zRJGy-WWRp2Kb4TtoVWHZ9g8yq9XODYEg26GqfVRSJriWVWCF9Ue8I-2BymjSb4VDlhDPJ59Noegdwdyumf1WkAkg3szuae8_DiBQl44Is1TgJXJZ6H0E/s800/pose_syazai_man.png",
+      "boss_angry": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjHP6Z99Wq0Hf3Ii9NZk1tUIlGBQKW7fKhHjtlIM9lUmiU_XIwwBCW_IRu91RKhlhBE0qMKWiNUq8ISkpgdER-nzCs8YEtseVITZD6V0B9f9kJ4OUtHzWVCiXpFrZ3QEjpAWzsVr9eEi8pQ/s800/pose_sugoi_okoru_man.png",
+      "mug": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgSgOkZbP1J1A0YQrFdOYyAu3IVUzr7gTOxUqJTbvTFK7HG6kSEm3WsCyJ83Z7yDuueR2JZ2pFs6SlJYVQt6qMd-M_6dbuJqgI226j9lcaewgHc-oFIowbziSd9vXoHbFExejAccEk9SNeF/s800/syokki_mug_cup.png"
+    }
+  },
+  "scenes": [
+    {
+      "id": 1,
+      "role": "hook",
+      "speaker": "narrator",
+      "style_id": 2,
+      "credit": "VOICEVOX:四国めたん",
+      "text": "資格講座、申し込む前に見るのは？",
+      "telop": "資格講座、\n申し込む前に見るのは？",
+      "bg": "office",
+      "characters": [
+        {
+          "id": "hero_trouble",
+          "who": "hero",
+          "label": ""
+        }
+      ],
+      "props": [],
+      "code_props": [],
+      "effect": "zoom",
+      "sfx": "notify",
+      "duration_hint": 2.2,
+      "tone": "question",
+      "hold": 1.6,
+      "voice_path": "/tmp/irasu-rest/21-shikaku-kyufu/audio/scene_01.wav",
+      "voice_seconds": 2.677,
+      "duration": 3.0
+    },
+    {
+      "id": 2,
+      "role": "develop",
+      "speaker": "narrator",
+      "style_id": 2,
+      "credit": "VOICEVOX:四国めたん",
+      "text": "よくある答え、合格の宣伝",
+      "telop": "よくある答え、合格の宣伝",
+      "bg": "office",
+      "characters": [
+        {
+          "id": "hero_trouble",
+          "who": "hero",
+          "label": ""
+        }
+      ],
+      "props": [],
+      "code_props": [
+        "papers"
+      ],
+      "effect": "none",
+      "sfx": "tick",
+      "duration_hint": 2.2,
+      "tone": "guess",
+      "voice_path": "/tmp/irasu-rest/21-shikaku-kyufu/audio/scene_02.wav",
+      "voice_seconds": 1.984,
+      "duration": 2.125
+    },
+    {
+      "id": 3,
+      "role": "develop",
+      "speaker": "rival",
+      "style_id": 11,
+      "credit": "VOICEVOX:玄野武宏",
+      "text": "全部やれば受かる",
+      "telop": "全部やれば受かる",
+      "bg": "office",
+      "characters": [
+        {
+          "id": "rival_smug",
+          "who": "rival",
+          "label": "申込係"
+        }
+      ],
+      "props": [],
+      "code_props": [],
+      "effect": "none",
+      "sfx": "none",
+      "duration_hint": 2.2,
+      "tone": "guess",
+      "voice_path": "/tmp/irasu-rest/21-shikaku-kyufu/audio/scene_03.wav",
+      "voice_seconds": 0.971,
+      "duration": 1.125
+    },
+    {
+      "id": 4,
+      "role": "develop",
+      "speaker": "narrator",
+      "style_id": 2,
+      "credit": "VOICEVOX:四国めたん",
+      "text": "テキストの厚さ",
+      "telop": "テキストの厚さ",
+      "bg": "office",
+      "characters": [
+        {
+          "id": "rival_smug",
+          "who": "rival",
+          "label": "申込係"
+        }
+      ],
+      "props": [],
+      "code_props": [],
+      "effect": "none",
+      "sfx": "tick",
+      "duration_hint": 2.2,
+      "tone": "guess",
+      "voice_path": "/tmp/irasu-rest/21-shikaku-kyufu/audio/scene_04.wav",
+      "voice_seconds": 0.992,
+      "duration": 1.125
+    },
+    {
+      "id": 5,
+      "role": "develop",
+      "speaker": "narrator",
+      "style_id": 2,
+      "credit": "VOICEVOX:四国めたん",
+      "text": "受講の期限",
+      "telop": "受講の期限",
+      "bg": "office_night",
+      "characters": [
+        {
+          "id": "hero_tired",
+          "who": "hero",
+          "label": ""
+        }
+      ],
+      "props": [],
+      "code_props": [],
+      "effect": "none",
+      "sfx": "tick",
+      "duration_hint": 2.2,
+      "tone": "guess",
+      "voice_path": "/tmp/irasu-rest/21-shikaku-kyufu/audio/scene_05.wav",
+      "voice_seconds": 0.853,
+      "duration": 1.0
+    },
+    {
+      "id": 6,
+      "role": "develop",
+      "speaker": "hero",
+      "style_id": 34,
+      "credit": "VOICEVOX:白上虎太郎",
+      "text": "それは答えじゃない",
+      "telop": "それは答えじゃない",
+      "bg": "office",
+      "characters": [
+        {
+          "id": "hero_angry",
+          "who": "hero",
+          "label": ""
+        }
+      ],
+      "props": [],
+      "code_props": [],
+      "effect": "lines",
+      "sfx": "none",
+      "duration_hint": 2.2,
+      "tone": "guess",
+      "voice_path": "/tmp/irasu-rest/21-shikaku-kyufu/audio/scene_06.wav",
+      "voice_seconds": 1.152,
+      "duration": 1.2916666666666667
+    },
+    {
+      "id": 7,
+      "role": "develop",
+      "speaker": "narrator",
+      "style_id": 2,
+      "credit": "VOICEVOX:四国めたん",
+      "text": "給付の対象か",
+      "telop": "給付の対象か",
+      "bg": "office",
+      "characters": [
+        {
+          "id": "hero_trouble",
+          "who": "hero",
+          "label": ""
+        }
+      ],
+      "props": [],
+      "code_props": [],
+      "effect": "none",
+      "sfx": "tick",
+      "duration_hint": 2.2,
+      "tone": "guess",
+      "voice_path": "/tmp/irasu-rest/21-shikaku-kyufu/audio/scene_07.wav",
+      "voice_seconds": 1.109,
+      "duration": 1.25
+    },
+    {
+      "id": 8,
+      "role": "punch",
+      "speaker": "narrator",
+      "style_id": 2,
+      "credit": "VOICEVOX:四国めたん",
+      "text": "答えは、給付の検索で講座名を入れた",
+      "telop": "答えは、給付の\n検索で講座名を入れた",
+      "bg": "chat",
+      "characters": [
+        {
+          "id": "hero_smile",
+          "who": "hero",
+          "label": ""
+        }
+      ],
+      "props": [],
+      "code_props": [],
+      "effect": "zoom",
+      "sfx": "shock",
+      "duration_hint": 2.2,
+      "tone": "answer",
+      "voice_path": "/tmp/irasu-rest/21-shikaku-kyufu/audio/scene_08.wav",
+      "voice_seconds": 2.325,
+      "duration": 2.4583333333333335
+    },
+    {
+      "id": 9,
+      "role": "punch",
+      "speaker": "boss",
+      "style_id": 21,
+      "credit": "VOICEVOX:剣崎雌雄",
+      "text": "その講座は何だ",
+      "telop": "その講座は何だ",
+      "bg": "office",
+      "characters": [
+        {
+          "id": "boss_angry",
+          "who": "boss",
+          "label": ""
+        }
+      ],
+      "props": [],
+      "code_props": [],
+      "effect": "shake",
+      "sfx": "shock",
+      "duration_hint": 2.2,
+      "tone": "answer",
+      "voice_path": "/tmp/irasu-rest/21-shikaku-kyufu/audio/scene_09.wav",
+      "voice_seconds": 0.971,
+      "duration": 1.0833333333333333
+    },
+    {
+      "id": 10,
+      "role": "punch",
+      "speaker": "rival",
+      "style_id": 11,
+      "credit": "VOICEVOX:玄野武宏",
+      "text": "どうせ対象外だ",
+      "telop": "どうせ対象外だ",
+      "bg": "office",
+      "characters": [
+        {
+          "id": "rival_smug",
+          "who": "rival",
+          "label": "申込係"
+        }
+      ],
+      "props": [],
+      "code_props": [],
+      "effect": "none",
+      "sfx": "none",
+      "duration_hint": 2.2,
+      "tone": "answer",
+      "voice_path": "/tmp/irasu-rest/21-shikaku-kyufu/audio/scene_10.wav",
+      "voice_seconds": 0.875,
+      "duration": 1.0
+    },
+    {
+      "id": 11,
+      "role": "punch",
+      "speaker": "narrator",
+      "style_id": 2,
+      "credit": "VOICEVOX:四国めたん",
+      "text": "対象かどうか、そこに出た",
+      "telop": "対象かどうか、そこに出た",
+      "bg": "office",
+      "characters": [
+        {
+          "id": "hero_smile",
+          "who": "hero",
+          "label": ""
+        }
+      ],
+      "props": [],
+      "code_props": [],
+      "effect": "zoom",
+      "sfx": "coin",
+      "duration_hint": 2.2,
+      "tone": "answer",
+      "voice_path": "/tmp/irasu-rest/21-shikaku-kyufu/audio/scene_11.wav",
+      "voice_seconds": 1.525,
+      "duration": 1.625
+    },
+    {
+      "id": 12,
+      "role": "close",
+      "speaker": "narrator",
+      "style_id": 2,
+      "credit": "VOICEVOX:四国めたん",
+      "text": "先に見るのは給付の対象か",
+      "telop": "先に見るのは給付の対象か",
+      "bg": "lines",
+      "characters": [
+        {
+          "id": "hero_smile",
+          "who": "hero",
+          "label": ""
+        }
+      ],
+      "props": [],
+      "code_props": [],
+      "effect": "zoom",
+      "sfx": "notify",
+      "duration_hint": 2.2,
+      "tone": "question",
+      "voice_path": "/tmp/irasu-rest/21-shikaku-kyufu/audio/scene_12.wav",
+      "voice_seconds": 1.995,
+      "duration": 2.25
+    },
+    {
+      "id": 13,
+      "role": "close",
+      "speaker": "narrator",
+      "style_id": 2,
+      "credit": "VOICEVOX:四国めたん",
+      "text": "答えは給付の対象だ",
+      "telop": "答えは給付の対象だ",
+      "bg": "lines",
+      "characters": [
+        {
+          "id": "hero_smile",
+          "who": "hero",
+          "label": ""
+        }
+      ],
+      "props": [],
+      "code_props": [],
+      "effect": "none",
+      "sfx": "none",
+      "duration_hint": 2.2,
+      "tone": "answer",
+      "voice_path": "/tmp/irasu-rest/21-shikaku-kyufu/audio/scene_13.wav",
+      "voice_seconds": 1.664,
+      "duration": 1.9166666666666667
+    },
+    {
+      "id": 14,
+      "role": "credit",
+      "speaker": "narrator",
+      "style_id": 2,
+      "credit": "VOICEVOX:四国めたん",
+      "text": "",
+      "telop": "VOICEVOX:四国めたん\nVOICEVOX:玄野武宏\nVOICEVOX:白上虎太郎\nVOICEVOX:剣崎雌雄",
+      "bg": "credit",
+      "characters": [],
+      "props": [],
+      "code_props": [],
+      "effect": "none",
+      "sfx": "none",
+      "duration_hint": 2.2,
+      "series_note": "申込係",
+      "voice_path": "/tmp/irasu-rest/21-shikaku-kyufu/audio/scene_14.wav",
+      "voice_seconds": 0.15,
+      "duration": 2.0
+    }
+  ],
+  "credits": [
+    "VOICEVOX:四国めたん",
+    "VOICEVOX:玄野武宏",
+    "VOICEVOX:白上虎太郎",
+    "VOICEVOX:剣崎雌雄"
+  ],
+  "asset_ids": [
+    "hero_trouble",
+    "rival_smug",
+    "hero_tired",
+    "hero_angry",
+    "hero_smile",
+    "boss_angry"
+  ],
+  "asset_report": {
+    "count": 6,
+    "limit": 20,
+    "within_limit": true,
+    "accepted": [
+      {
+        "id": "hero_trouble",
+        "kind": "person",
+        "path": "/tmp/irasu-rest/21-shikaku-kyufu/assets/hero_trouble.png",
+        "url": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhxJL1uWPRrar9S-FPxNv7FCtcDsBUM5B8ItxCoPVFnqtsBKjv7TyPF54QNeSpcg2QCm3Fn8maHs9AscQD5Bmegje_6Zdt2xtzqXkriOKe76Aq37zUYxI0kfBoONd8SbYE_loSyJw3rkVY8/s800/businessman1_nayami.png",
+        "title": "pinned",
+        "alt": "hero_trouble",
+        "link": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhxJL1uWPRrar9S-FPxNv7FCtcDsBUM5B8ItxCoPVFnqtsBKjv7TyPF54QNeSpcg2QCm3Fn8maHs9AscQD5Bmegje_6Zdt2xtzqXkriOKe76Aq37zUYxI0kfBoONd8SbYE_loSyJw3rkVY8/s800/businessman1_nayami.png",
+        "page": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhxJL1uWPRrar9S-FPxNv7FCtcDsBUM5B8ItxCoPVFnqtsBKjv7TyPF54QNeSpcg2QCm3Fn8maHs9AscQD5Bmegje_6Zdt2xtzqXkriOKe76Aq37zUYxI0kfBoONd8SbYE_loSyJw3rkVY8/s800/businessman1_nayami.png"
+      },
+      {
+        "id": "rival_smug",
+        "kind": "person",
+        "path": "/tmp/irasu-rest/21-shikaku-kyufu/assets/rival_smug.png",
+        "url": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgmfOy1dvPW5nkAXq91r1d2JpatnBWDQHwMOsQRfjoJK3UhP4qRvRGgzacoQu3ogBLYq4zj0tYolJd4_6rjS4tUa8DR5lSj_PQaqXzd6Cs_DivuxoRAkIygU6GV36iS3QhIj3oa6vnevpY/s800/pose_doyagao_man.png",
+        "title": "pinned",
+        "alt": "rival_smug",
+        "link": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgmfOy1dvPW5nkAXq91r1d2JpatnBWDQHwMOsQRfjoJK3UhP4qRvRGgzacoQu3ogBLYq4zj0tYolJd4_6rjS4tUa8DR5lSj_PQaqXzd6Cs_DivuxoRAkIygU6GV36iS3QhIj3oa6vnevpY/s800/pose_doyagao_man.png",
+        "page": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgmfOy1dvPW5nkAXq91r1d2JpatnBWDQHwMOsQRfjoJK3UhP4qRvRGgzacoQu3ogBLYq4zj0tYolJd4_6rjS4tUa8DR5lSj_PQaqXzd6Cs_DivuxoRAkIygU6GV36iS3QhIj3oa6vnevpY/s800/pose_doyagao_man.png"
+      },
+      {
+        "id": "hero_tired",
+        "kind": "person",
+        "path": "/tmp/irasu-rest/21-shikaku-kyufu/assets/hero_tired.png",
+        "url": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEi5O7ebIPQwPb7j8zWG0W4g3EN_nlmRZvPEfGKxwGsCnV44eGJARhg0Zz2mBNr7m9BK61Ebp00-9v4cX_V-YkzlJB5YAj7Dpb9slFkX2GG7xGyXKCYl1wMwzi6eWXoCHVuQIFSjsaL-5CM/s800/tsukareta_business_man.png",
+        "title": "pinned",
+        "alt": "hero_tired",
+        "link": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEi5O7ebIPQwPb7j8zWG0W4g3EN_nlmRZvPEfGKxwGsCnV44eGJARhg0Zz2mBNr7m9BK61Ebp00-9v4cX_V-YkzlJB5YAj7Dpb9slFkX2GG7xGyXKCYl1wMwzi6eWXoCHVuQIFSjsaL-5CM/s800/tsukareta_business_man.png",
+        "page": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEi5O7ebIPQwPb7j8zWG0W4g3EN_nlmRZvPEfGKxwGsCnV44eGJARhg0Zz2mBNr7m9BK61Ebp00-9v4cX_V-YkzlJB5YAj7Dpb9slFkX2GG7xGyXKCYl1wMwzi6eWXoCHVuQIFSjsaL-5CM/s800/tsukareta_business_man.png"
+      },
+      {
+        "id": "hero_angry",
+        "kind": "person",
+        "path": "/tmp/irasu-rest/21-shikaku-kyufu/assets/hero_angry.png",
+        "url": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjNZa7ijupIB1glzdfPBDcjiYSmA5vivkbKmqryJ9C11F00i6aifmrQbVGFJcJBgN9SnkUMuQsor8OqrhFv6cc7Qc6_gBEHZjOgV457XveJw0jakqDI2_boGirQKY4h1DpFj4S-tddLG4k/s800/business02_angry.png",
+        "title": "pinned",
+        "alt": "hero_angry",
+        "link": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjNZa7ijupIB1glzdfPBDcjiYSmA5vivkbKmqryJ9C11F00i6aifmrQbVGFJcJBgN9SnkUMuQsor8OqrhFv6cc7Qc6_gBEHZjOgV457XveJw0jakqDI2_boGirQKY4h1DpFj4S-tddLG4k/s800/business02_angry.png",
+        "page": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjNZa7ijupIB1glzdfPBDcjiYSmA5vivkbKmqryJ9C11F00i6aifmrQbVGFJcJBgN9SnkUMuQsor8OqrhFv6cc7Qc6_gBEHZjOgV457XveJw0jakqDI2_boGirQKY4h1DpFj4S-tddLG4k/s800/business02_angry.png"
+      },
+      {
+        "id": "hero_smile",
+        "kind": "person",
+        "path": "/tmp/irasu-rest/21-shikaku-kyufu/assets/hero_smile.png",
+        "url": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhy3dDvRMBHJ-tn1A2AUBt4iUbmcOXxRuHUegd9lKUBveMfLADwYFD0QsmGhDqoctcd1lk7bY5wO3M04TuC_EVB8TcyirHiMlsvyn-HPGcHJHl6wMEEcrZb5vc-YuKF8ddVD16Wadzfqurn/s800/businessman5_ureshii.png",
+        "title": "pinned",
+        "alt": "hero_smile",
+        "link": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhy3dDvRMBHJ-tn1A2AUBt4iUbmcOXxRuHUegd9lKUBveMfLADwYFD0QsmGhDqoctcd1lk7bY5wO3M04TuC_EVB8TcyirHiMlsvyn-HPGcHJHl6wMEEcrZb5vc-YuKF8ddVD16Wadzfqurn/s800/businessman5_ureshii.png",
+        "page": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhy3dDvRMBHJ-tn1A2AUBt4iUbmcOXxRuHUegd9lKUBveMfLADwYFD0QsmGhDqoctcd1lk7bY5wO3M04TuC_EVB8TcyirHiMlsvyn-HPGcHJHl6wMEEcrZb5vc-YuKF8ddVD16Wadzfqurn/s800/businessman5_ureshii.png"
+      },
+      {
+        "id": "boss_angry",
+        "kind": "person",
+        "path": "/tmp/irasu-rest/21-shikaku-kyufu/assets/boss_angry.png",
+        "url": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjHP6Z99Wq0Hf3Ii9NZk1tUIlGBQKW7fKhHjtlIM9lUmiU_XIwwBCW_IRu91RKhlhBE0qMKWiNUq8ISkpgdER-nzCs8YEtseVITZD6V0B9f9kJ4OUtHzWVCiXpFrZ3QEjpAWzsVr9eEi8pQ/s800/pose_sugoi_okoru_man.png",
+        "title": "pinned",
+        "alt": "boss_angry",
+        "link": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjHP6Z99Wq0Hf3Ii9NZk1tUIlGBQKW7fKhHjtlIM9lUmiU_XIwwBCW_IRu91RKhlhBE0qMKWiNUq8ISkpgdER-nzCs8YEtseVITZD6V0B9f9kJ4OUtHzWVCiXpFrZ3QEjpAWzsVr9eEi8pQ/s800/pose_sugoi_okoru_man.png",
+        "page": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjHP6Z99Wq0Hf3Ii9NZk1tUIlGBQKW7fKhHjtlIM9lUmiU_XIwwBCW_IRu91RKhlhBE0qMKWiNUq8ISkpgdER-nzCs8YEtseVITZD6V0B9f9kJ4OUtHzWVCiXpFrZ3QEjpAWzsVr9eEi8pQ/s800/pose_sugoi_okoru_man.png"
+      }
+    ],
+    "rejected": []
+  },
+  "asset_paths": {
+    "hero_trouble": "/tmp/irasu-rest/21-shikaku-kyufu/assets/hero_trouble.png",
+    "rival_smug": "/tmp/irasu-rest/21-shikaku-kyufu/assets/rival_smug.png",
+    "hero_tired": "/tmp/irasu-rest/21-shikaku-kyufu/assets/hero_tired.png",
+    "hero_angry": "/tmp/irasu-rest/21-shikaku-kyufu/assets/hero_angry.png",
+    "hero_smile": "/tmp/irasu-rest/21-shikaku-kyufu/assets/hero_smile.png",
+    "boss_angry": "/tmp/irasu-rest/21-shikaku-kyufu/assets/boss_angry.png"
+  },
+  "layout": {
+    "telop_y_ratio": 0.86,
+    "character_x_ratio": 0.5,
+    "screenshot_count": 0
+  },
+  "settings": {
+    "speed": 1.22,
+    "hook_speed": 1.08,
+    "telop_scale": 1.0,
+    "sfx_gain": 0.18,
+    "bgm_gain": 0.045,
+    "mouth_gain": 1.0,
+    "bgm": true,
+    "tail": 0.18,
+    "role_speed": {
+      "hook": 1.08,
+      "develop": 1.22,
+      "punch": 1.4,
+      "close": 1.1,
+      "credit": 1.22
+    },
+    "role_tail": {
+      "hook": 0.34,
+      "develop": 0.14,
+      "punch": 0.12,
+      "close": 0.24,
+      "credit": 0.0
+    }
+  },
+  "telop_style": {
+    "bar": "round",
+    "stroke": 5,
+    "size": 84,
+    "slide": 0.24,
+    "y_ratio": 0.86,
+    "bar_fill": [
+      0,
+      0,
+      0,
+      170
+    ],
+    "bar_fills": {},
+    "colors": {
+      "hook": [
+        255,
+        226,
+        40,
+        255
+      ],
+      "question": [
+        255,
+        226,
+        40,
+        255
+      ],
+      "develop": [
+        214,
+        216,
+        226,
+        255
+      ],
+      "guess": [
+        214,
+        216,
+        226,
+        255
+      ],
+      "answer": [
+        176,
+        255,
+        176,
+        255
+      ],
+      "punch": [
+        176,
+        255,
+        176,
+        255
+      ],
+      "close": [
+        255,
+        226,
+        40,
+        255
+      ],
+      "credit": [
+        255,
+        255,
+        255,
+        255
+      ]
+    }
+  },
+  "terms": {
+    "irasutoya": "いらすとやは1つの制作物につき20点まで商用無料（同じ絵の重複は1点）。21点以上の商用利用は有償。クレジット表記は不要。素材そのものの再配布や、イラストを主体にした商品化は不可。背景はコード描画にして点数をキャラと小物に使っている。",
+    "voicevox": "使った声はクレジットが要る。四国めたん、白上虎太郎、玄野武宏、剣崎雌雄はクレジットを書けば商用可。青山龍星は個人事業・法人だと事前許可が要るので使っていない。効果音とBGMはこの場で合成したオリジナルなのでクレジット不要。"
+  },
+  "notes": []
+}
