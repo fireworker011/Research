@@ -26,8 +26,8 @@ WAV は 44.1kHz、16bit、ステレオ。MP3 は 320kbps。
 | `05-homon-nurse_track-01.mp3` | 本編MP3 | 243.64秒（4:04） | 9746852 bytes | -16.2 |
 | `05-homon-nurse_track-02-part-01.wav` | 本編WAV | 504.99秒（8:25） | 89079884 bytes | -15.9 |
 | `05-homon-nurse_track-02-part-01.mp3` | 本編MP3 | 505.03秒（8:25） | 20202101 bytes | -15.9 |
-| `05-homon-nurse_track-02-part-02.wav` | 本編WAV | 169.07秒（2:49） | 29823156 bytes | -17.9 |
-| `05-homon-nurse_track-02-part-02.mp3` | 本編MP3 | 169.12秒（2:49） | 6765758 bytes | -17.9 |
+| `05-homon-nurse_track-02-part-02.wav` | 本編WAV | 169.07秒（2:49） | 29823190 bytes | -16.0 |
+| `05-homon-nurse_track-02-part-02.mp3` | 本編MP3 | 169.12秒（2:49） | 6765758 bytes | -16.0 |
 | `05-homon-nurse_track-03-part-01.wav` | 本編WAV | 504.99秒（8:25） | 89079884 bytes | -16.0 |
 | `05-homon-nurse_track-03-part-01.mp3` | 本編MP3 | 505.03秒（8:25） | 20202101 bytes | -16.0 |
 | `05-homon-nurse_track-03-part-02.wav` | 本編WAV | 388.71秒（6:29） | 68568900 bytes | -16.4 |
@@ -43,8 +43,6 @@ WAV は 44.1kHz、16bit、ステレオ。MP3 は 320kbps。
 
 | ファイル | サイズ | 中身 |
 | --- | --- | --- |
-| `05-homon-nurse_honpen-mp3_01.zip` | 16400332 bytes | `05-homon-nurse_track-01.mp3`、`05-homon-nurse_track-02-part-01.mp3`、`05-homon-nurse_track-02-part-02.mp3`、`05-homon-nurse_track-03-part-01.mp3`、`05-homon-nurse_track-03-part-02.mp3`、`05-homon-nurse_track-04.mp3`、`05-homon-nurse_track-05.mp3` |
-| `05-homon-nurse_honpen-wav_01.zip` | 51565519 bytes | `05-homon-nurse_track-01.wav`、`05-homon-nurse_track-02-part-01.wav`、`05-homon-nurse_track-02-part-02.wav`、`05-homon-nurse_track-03-part-01.wav`、`05-homon-nurse_track-03-part-02.wav`、`05-homon-nurse_track-04.wav`、`05-homon-nurse_track-05.wav` |
+| `05-homon-nurse_honpen-mp3_01.zip` | 16400521 bytes | `05-homon-nurse_track-01.mp3`、`05-homon-nurse_track-02-part-01.mp3`、`05-homon-nurse_track-02-part-02.mp3`、`05-homon-nurse_track-03-part-01.mp3`、`05-homon-nurse_track-03-part-02.mp3`、`05-homon-nurse_track-04.mp3`、`05-homon-nurse_track-05.mp3` |
+| `05-homon-nurse_honpen-wav_01.zip` | 51574438 bytes | `05-homon-nurse_track-01.wav`、`05-homon-nurse_track-02-part-01.wav`、`05-homon-nurse_track-02-part-02.wav`、`05-homon-nurse_track-03-part-01.wav`、`05-homon-nurse_track-03-part-02.wav`、`05-homon-nurse_track-04.wav`、`05-homon-nurse_track-05.wav` |
 | `05-homon-nurse_trial.zip` | 1007673 bytes | `05-homon-nurse_trial.mp3` |
-
-`05-homon-nurse_track-02-part-02` の WAV と MP3 は -17.9 LUFS。他のファイルと同じ -16 LUFS 付近へ直した版は作ったが、成果物の置き場が保存を完了せず、置いてあるファイルは測ったこの値のまま。zip の中身も、この測ったファイル。
