@@ -1,0 +1,22 @@
+{
+  "narration": true,
+  "text": "クッションを、1回触った。",
+  "pack": "2026-10-14/pet/07-gray-tap",
+  "line": "pet",
+  "picture_sec": 5,
+  "window_start_sec": 1,
+  "window_end_sec": 4,
+  "wav": "narration.wav",
+  "duration_sec": 2.112,
+  "sample_rate": 24000,
+  "channels": 1,
+  "engine": "VOICEVOX",
+  "engine_version": "0.25.2",
+  "speaker_name": "冥鳴ひまり",
+  "speaker_style": "ノーマル",
+  "speaker_id": 14,
+  "speed_scale": 1.0,
+  "pitch_scale": 0.0,
+  "intonation_scale": 1.0,
+  "credit": "VOICEVOX:冥鳴ひまり"
+}

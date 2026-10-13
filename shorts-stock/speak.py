@@ -150,8 +150,8 @@ def main() -> None:
         label = record["text"] if record["text"] else "（無し）"
         print(f"{pack['rel']} {label} {record['duration_sec']}")
 
-    if spoken != 60 or silent != 0:
-        raise SystemExit(f"声 {spoken} 無言 {silent}（60 と 0 であるべき）")
+    if spoken != len(packs) or silent != 0:
+        raise SystemExit(f"声 {spoken} 無言 {silent}（{len(packs)} と 0 であるべき）")
     too_long = []
     for pack in packs:
         voice = pack["voice"]
@@ -179,6 +179,7 @@ def write_summary(packs: list[dict]) -> None:
     rows.append("最終の置き位置は絵ができたあと。`finish.sh` は絵の秒を変えず、声が窓を 1.1 倍以内ではみ出すときだけ声を速くする。")
     rows.append("1.1 倍を超えるときは倍速にせず、文を短くして測り直す。ペットは 2026-10-12 の 10 本も日記の 1 文。")
     rows.append("`2026-10-13/pet/06-white-tail` の文は「しっぽの先、1回。」。")
+    rows.append("2026-10-14 はペット、婚活、美容を 10 本ずつ足した。説明には `VOICEVOX:冥鳴ひまり` を書いてある。")
     rows.append("")
     rows.append("| 順 | パック | 文 | 測った秒 | 置く区間 | 絵の秒 | 収まり |")
     rows.append("| --- | --- | --- | --- | --- | --- | --- |")

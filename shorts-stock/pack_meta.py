@@ -13,7 +13,7 @@ LINES = (
     ("konkatsu", "婚活"),
     ("beauty", "美容"),
 )
-DATES = ("2026-10-12", "2026-10-13")
+DATES = ("2026-10-12", "2026-10-13", "2026-10-14")
 
 _SHOT_HEAD = re.compile(
     r"^## ショット(\d+)\u3000(\d+)\u2013(\d+)秒（(\d+)秒）\s*$",
@@ -140,8 +140,9 @@ def iter_packs() -> list[dict]:
                         "picture_sec": sum(shot["length_sec"] for shot in shots),
                     }
                 )
-    if len(packs) != 60:
-        raise SystemExit(f"パック数が {len(packs)}（60であるべき）")
+    expected = len(DATES) * len(LINES) * 10
+    if len(packs) != expected:
+        raise SystemExit(f"パック数が {len(packs)}（{expected}であるべき）")
     return packs
 
 
