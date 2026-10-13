@@ -1,0 +1,176 @@
+{
+  "title": "つり銭口の硬貨が、朝に自分で入れたものだった話",
+  "series_character": "つり銭口君",
+  "punchline": "朝に自分で入れた硬貨が、つり銭口へ残っとった",
+  "closing": "",
+  "audio_note": "声は後乗せ。口パク秒は各シーンの mouth_s。話者が画面にいる行だけ口を開ける。ナレーションと黒カードとクレジットは口を閉じたまま。",
+  "ideas": [
+    "型1。無地のメモを斜めに持つ。紙を一回めくる。裏に硬貨が貼りついて、顔が止まる。",
+    "型2。誰の硬貨かを一問にする。つり銭口に朝の硬貨が出る。つまみを一回戻す。",
+    "型3。端を自分側へ寄せた絵が問い。次の一枚で、手帳のペン差しに硬貨。"
+  ],
+  "adopted": 2,
+  "imagine": [
+    {
+      "sec": 2.0,
+      "prompt": "2.0秒。固定カメラ。会社員が自販機の前で首を一回かしげる。動きは首をかしげる一回だけ。光は自販機横の蛍光灯。服はフラットな塗り。ボタンに文字は書かない。硬貨に数字は入れない。キャラは参照画像で固定。画面の文字は無い。"
+    },
+    {
+      "sec": 4.0,
+      "prompt": "4.0秒。固定カメラ。同じ自販機のつり銭口から、硬貨が一回だけ出てくる。動きは硬貨が出る一回だけ。光はつり銭口の金属の反射。口金はプラスチック。硬貨に数字は入れない。キャラは参照画像で固定。画面の文字は無い。"
+    },
+    {
+      "sec": 4.0,
+      "prompt": "4.0秒。固定カメラ。同じ会社員の手元。投入口のつまみを一回だけ奥へ戻す。動きは戻す一回だけ。光は手元の影。つまみはプラスチック。硬貨に数字は入れない。キャラは参照画像で固定。画面の文字は無い。"
+    }
+  ],
+  "scenes": [
+    {
+      "id": 1,
+      "role": "hook",
+      "speaker": "rival",
+      "style_id": 11,
+      "credit": "VOICEVOX:玄野武宏",
+      "text": "これ、誰の硬貨や",
+      "mouth_s": 2.37,
+      "telop": "",
+      "bg": "office",
+      "characters": [
+        {
+          "id": "rival_smug",
+          "who": "rival",
+          "label": "つり銭口君"
+        }
+      ],
+      "props": [],
+      "code_props": [],
+      "effect": "zoom",
+      "sfx": "none",
+      "duration_hint": 2.37
+    },
+    {
+      "id": 2,
+      "role": "develop",
+      "speaker": "narrator",
+      "style_id": 2,
+      "credit": "VOICEVOX:四国めたん",
+      "text": "自販機のつり銭口に、硬貨が一つ残っとった",
+      "mouth_s": 0,
+      "telop": "",
+      "bg": "office",
+      "characters": [
+        {
+          "id": "hero_trouble",
+          "who": "hero",
+          "label": ""
+        }
+      ],
+      "props": [],
+      "code_props": [],
+      "effect": "none",
+      "sfx": "coin",
+      "duration_hint": 5.53
+    },
+    {
+      "id": 3,
+      "role": "develop",
+      "speaker": "narrator",
+      "style_id": 2,
+      "credit": "VOICEVOX:四国めたん",
+      "text": "朝のだ",
+      "mouth_s": 0,
+      "telop": "",
+      "bg": "card",
+      "characters": [],
+      "props": [],
+      "code_props": [],
+      "effect": "none",
+      "sfx": "whoosh",
+      "duration_hint": 0.97
+    },
+    {
+      "id": 4,
+      "role": "develop",
+      "speaker": "hero",
+      "style_id": 12,
+      "credit": "VOICEVOX:白上虎太郎",
+      "text": "投入口のつまみを、一回だけ奥へ戻した",
+      "mouth_s": 5.53,
+      "telop": "",
+      "bg": "office",
+      "characters": [
+        {
+          "id": "hero_tired",
+          "who": "hero",
+          "label": ""
+        }
+      ],
+      "props": [],
+      "code_props": [],
+      "effect": "shake",
+      "sfx": "none",
+      "duration_hint": 5.53
+    },
+    {
+      "id": 5,
+      "role": "punch",
+      "speaker": "narrator",
+      "style_id": 2,
+      "credit": "VOICEVOX:四国めたん",
+      "text": "朝に自分で入れた硬貨が、つり銭口へ残っとった",
+      "mouth_s": 0,
+      "telop": "",
+      "bg": "office",
+      "characters": [
+        {
+          "id": "rival_pale",
+          "who": "rival",
+          "label": "つり銭口君"
+        }
+      ],
+      "props": [],
+      "code_props": [],
+      "effect": "zoom",
+      "sfx": "coin",
+      "duration_hint": 11.05
+    },
+    {
+      "id": 6,
+      "role": "credit",
+      "speaker": "narrator",
+      "style_id": 2,
+      "credit": "VOICEVOX:四国めたん",
+      "text": "",
+      "mouth_s": 0,
+      "telop": "VOICEVOX:四国めたん\nVOICEVOX:白上虎太郎\nVOICEVOX:玄野武宏\nVOICEVOX:剣崎雌雄",
+      "bg": "credit",
+      "characters": [],
+      "props": [],
+      "effect": "none",
+      "sfx": "none",
+      "duration_hint": 2.2,
+      "series_note": "つり銭口君"
+    }
+  ],
+  "credits": [
+    "VOICEVOX:玄野武宏",
+    "VOICEVOX:四国めたん",
+    "VOICEVOX:白上虎太郎",
+    "VOICEVOX:剣崎雌雄"
+  ],
+  "asset_ids": [
+    "rival_smug",
+    "hero_trouble",
+    "hero_tired",
+    "rival_pale"
+  ],
+  "score": {
+    "最初3秒": 18,
+    "テンポ": 16,
+    "見やすさ": 17,
+    "参考の型との一致": 16,
+    "壊れ": 20,
+    "合計": 87,
+    "メモ": "フックは2.37秒。絵の型は14秒の4拍で、最後のうなずきは独立ショットにしていない。答えは声とつり銭口の硬貨。本編の尺は ogori の27.650秒。本編テロップは空。金額は置いていない。"
+  }
+}

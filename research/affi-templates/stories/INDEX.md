@@ -38,3 +38,15 @@
 | irasutoya_receipt | 混ぜた経費の一枚が、相手の昼のゲームセンターだった話 | 27.650秒 | 主人公の会社員、相手の会社員 | irasutoya-ogori | まだ |
 | irasutoya_group | 通知を切ったつもりの相手の愚痴が、案件の全員に届いた話 | 27.650秒 | 主人公の会社員、相手の会社員 | irasutoya-ogori | まだ |
 | irasutoya_gate | 鼻先に止めた相手の車だけ、閉まるバーの手前で出られなくなった話 | 27.650秒 | 主人公の会社員、相手の会社員 | irasutoya-ogori | まだ |
+| pet_cam_tap | 固定の画でレンズを見て一歩寄り、鼻を一回つけて止まる | 10.000秒 | グレーのマンチカン | kata-pet-notice | まだ |
+| pet_chair_out | 暗い椅子から一歩で画の外へ出て、玄関の隅で丸くなる | 12.000秒 | グレーのマンチカン | kata-pet-move | まだ |
+| pet_cam_meow | 固定の画で一歩寄り、一回鳴いて口を閉じる | 8.800秒 | グレーのマンチカン | kata-pet-meow | まだ |
+| kon_notice_down | 通知の画面を一回なぞって、スマホを伏せる | 10.000秒 | 肩越しの大人（顔なし） | kata-konkatsu-swipe | まだ |
+| kon_read_stop | 既読の一箇所で指が止まり、画面を閉じる | 12.000秒 | 手元の大人（顔なし） | kata-konkatsu-stop | まだ |
+| kon_blank_day | 紙の空欄を一回指して、ペンを置く | 10.000秒 | 後ろ姿の大人（顔なし） | kata-konkatsu-paper | まだ |
+| beau_two_dab | 無地の瓶を二本、手の甲に一回ずつつける | 10.000秒 | 3Dの大人 | kata-beauty-order | まだ |
+| beau_pad_aside | コットンを机の外へ一回どけ、無地の瓶が一つ残る | 12.000秒 | 3Dの大人 | kata-beauty-aside | まだ |
+| beau_cheek_once | 同じ画角のまま、頬に一回つけて止まる | 12.000秒 | 3Dの大人 | kata-beauty-dab | まだ |
+| kinmemo_paper | 返すと言ったメモの裏に、硬貨が貼りついたままの話 | 27.650秒 | 主人公の会社員、相手の会社員 | irasutoya-ogori | まだ |
+| kinmemo_slot | つり銭口の硬貨が、朝に自分で入れたものだった話 | 27.650秒 | 主人公の会社員、相手の会社員 | irasutoya-ogori | まだ |
+| kinmemo_loop | 自分側へ寄せた端の硬貨が、手帳のペン差しに入っていた話 | 27.650秒 | 主人公の会社員、相手の会社員 | irasutoya-ogori | まだ |
