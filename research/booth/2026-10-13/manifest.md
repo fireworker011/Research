@@ -10,7 +10,9 @@
 - `19/script_v2.md` … 校閲の1行と、指示どおりの効果音秒数
 - `19/changes.md` … 変えた行と、合成に渡した読み
 - `20/script.md` `21/script.md` … 台本。秒数は変えていないので `script_v2.md` は無い
+- `19/listing.md` … 19作目のDLsite専売の出品文。尺は商品JSONの収録欄。差し替え後の通しは測り直していない
 - `20/listing.md` `21/listing.md` … 出品文。20はDLsite専売の文、21はDLsite・FANZA・DiGiket
+- `20/cover-prompt.md` `21/cover-prompt.md` … 表紙プロンプト。文字なし。行為も裸も描かない
 - `20/readme.txt` `21/readme.txt` … zipに入れる説明
 - `20/files.txt` `21/files.txt` … zipの中身（packのあと）
 - `build_audio.py` … 合成と書き出し
@@ -29,7 +31,7 @@
 
 zipは testzip が通り、画像なし、入れ子なし、1個 100MB 未満かつ 300MB 未満です。
 
-20・21の効果音は合成です。Pincree は未使用です。キス音の差し替えは PC待ちです。表紙（Imagine）はブラウザ作業なので作っていません。
+20・21の効果音は合成です。Pincree は未使用です。キス音の差し替えは PC待ちです。表紙は文字なしで作り、`/opt/cursor/artifacts/booth-2026-10-13/20/cover/` と `21/cover/` に置いた。プロンプトは `20/cover-prompt.md` と `21/cover-prompt.md` です。本体zipには入れていません。
 
 19作目の part01 結合、試聴の作り直し、zipの作り直しは、前回の音声がこのVMに無いので PC待ちです。
 
