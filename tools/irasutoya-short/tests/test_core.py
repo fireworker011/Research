@@ -427,8 +427,12 @@ class PictureFirstTests(unittest.TestCase):
 class BatchBriefTests(unittest.TestCase):
     def test_batch2_and_batch3_scripts(self) -> None:
         root = Path(__file__).resolve().parents[3] / "affiliate-shorts"
-        folders = list((root / "batch2").glob("*/brief.json")) + list((root / "batch3").glob("*/brief.json"))
-        self.assertGreaterEqual(len(folders), 22)
+        folders = (
+            list((root / "batch2").glob("*/brief.json"))
+            + list((root / "batch3").glob("*/brief.json"))
+            + list((root / "batch4").glob("*/brief.json"))
+        )
+        self.assertGreaterEqual(len(folders), 34)
         for path in folders:
             brief = json.loads(path.read_text(encoding="utf-8"))
             script = generate_script(brief)
