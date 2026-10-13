@@ -1,4 +1,4 @@
-# いらすとや動画 22本
+# いらすとや動画 34本
 
 口パクは無し。静止画に、ゆっくりしたズームとパン。反応の場面だけ小さく揺らす。字幕は大きく、声は VOICEVOX。画面は 1080x1920。投稿はしない。CTA も URL も入れてない。
 
@@ -32,5 +32,17 @@ batch1 の `01-card-ranking`（22.00秒）は同じ作りの見本。batch1 の 
 | `batch3/32-bonus-tedori` | before_after | 賞与の額面だけ見てた | 22.88 |
 | `batch3/33-subsc-aruaru` | aruaru | サブスク、解約し忘れるあるある | 21.25 |
 | `batch3/34-kogaku-qa` | qa | 高額療養費、何を先に出す？ | 25.79 |
+| `batch4/35-juminzei-qa` | qa | 住民税は、いつから天引き？ | 23.38 |
+| `batch4/36-zangyo-rank` | ranking | 明細で先に探す残業の行 | 23.50 |
+| `batch4/37-tatekae-paper` | before_after | 立替の領収書、出してない | 21.33 |
+| `batch4/38-tsukin-aruaru` | aruaru | 通勤手当の届け出あるある | 20.58 |
+| `batch4/39-phone-bunkatsu` | sukatto | 端末の分割が残ってた | 20.92 |
+| `batch4/40-jutaku-kojo-qa` | qa | 住宅ローン控除、一年目は？ | 24.17 |
+| `batch4/41-hokenryo-rank` | ranking | 社会保険料が動く月 | 24.21 |
+| `batch4/42-yachin-koshin` | before_after | 家賃の更新月、見てない | 23.04 |
+| `batch4/43-shogaku-aruaru` | aruaru | 奨学金の引き落としあるある | 20.62 |
+| `batch4/44-kekkin-kojo` | sukatto | 有給が無い日の明細 | 22.04 |
+| `batch4/45-fuyo-shinkoku-qa` | qa | 扶養の申告書、出してる？ | 23.42 |
+| `batch4/46-taishoku-paper` | ranking | 退職金の前に出す紙 | 24.83 |
 
-動画ファイルは各フォルダの `out.mp4`。
+動画ファイルは各フォルダの `out.mp4`。batch4 の各フォルダに `UPLOAD.md` がある。金額は書いていない。投稿はしない。
