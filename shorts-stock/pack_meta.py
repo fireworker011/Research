@@ -13,20 +13,30 @@ LINES = (
     ("konkatsu", "婚活"),
     ("beauty", "美容"),
 )
-DATES = ("2026-10-12", "2026-10-13", "2026-10-14")
+FULL_DATES = ("2026-10-12", "2026-10-13", "2026-10-14")
+HELD_DATES = ("2026-10-14b",)
+DATES = FULL_DATES + HELD_DATES
+_HELD_COUNTS = {"2026-10-14b": 3}
 
+_NUM = r"\d+(?:\.\d+)?"
 _SHOT_HEAD = re.compile(
-    r"^## ショット(\d+)\u3000(\d+)\u2013(\d+)秒（(\d+)秒）\s*$",
+    rf"^## ショット(\d+)\u3000({_NUM})\u2013({_NUM})秒（({_NUM})秒）\s*$",
     re.M,
 )
 _ACTION = re.compile(r"^動作: (.+)$", re.M)
 _FENCE = re.compile(r"```text\n(.*?)\n```", re.S)
-_VOICE_ROW = re.compile(r"^\| (\d+)\u2013(\d+) \| (.+) \|$", re.M)
-_READ_LINE = re.compile(r"^読む文: (.+)$", re.M)
+_VOICE_ROW = re.compile(rf"^\| ({_NUM})\u2013({_NUM}) \| (.+) \|$", re.M)
 
 
 def shot_filename(index: int) -> str:
     return f"imagine/shot-{index:02d}.mp4"
+
+
+def as_number(text: str) -> int | float:
+    value = float(text)
+    if value.is_integer():
+        return int(value)
+    return value
 
 
 def parse_imagine(text: str, source: str) -> list[dict]:
@@ -36,10 +46,10 @@ def parse_imagine(text: str, source: str) -> list[dict]:
         if head is None:
             continue
         index = int(head.group(1))
-        start = int(head.group(2))
-        end = int(head.group(3))
-        length = int(head.group(4))
-        if end - start != length:
+        start = as_number(head.group(2))
+        end = as_number(head.group(3))
+        length = as_number(head.group(4))
+        if abs(float(end) - float(start) - float(length)) > 0.001:
             raise SystemExit(
                 f"{source}: ショット{index} の区間 {start}–{end} と長さ {length} が一致しない"
             )
@@ -48,8 +58,8 @@ def parse_imagine(text: str, source: str) -> list[dict]:
         if action is None or fence is None:
             raise SystemExit(f"{source}: ショット{index} に動作かプロンプトが無い")
         prompt = fence.group(1)
-        duration = re.match(r"Duration: (\d+) seconds\.", prompt)
-        if duration is None or int(duration.group(1)) != length:
+        duration = re.match(rf"Duration: ({_NUM}) seconds\.", prompt)
+        if duration is None or abs(float(duration.group(1)) - float(length)) > 0.001:
             raise SystemExit(f"{source}: ショット{index} の Duration が長さ {length} と違う")
         shots.append(
             {
@@ -82,17 +92,30 @@ def parse_voice(text: str, source: str) -> dict:
     rows = _VOICE_ROW.findall(text)
     spoken = [row for row in rows if row[2].strip() != "読まない"]
     if spoken:
-        if len(spoken) != 1:
-            raise SystemExit(f"{source}: 読む行が1行ではない")
-        line = spoken[0][2].strip()
-        read_line = _READ_LINE.search(text)
-        if read_line is not None and read_line.group(1).strip() != line:
+        lines = [
+            {
+                "text": row[2].strip(),
+                "window_start_sec": as_number(row[0]),
+                "window_end_sec": as_number(row[1]),
+            }
+            for row in spoken
+        ]
+        read_lines = [item.strip() for item in re.findall(r"^読む文: (.+)$", text, re.M)]
+        if read_lines and read_lines != [item["text"] for item in lines]:
             raise SystemExit(f"{source}: 表の文と「読む文」が違う")
+        if len(lines) == 1:
+            return {
+                "narration": True,
+                "text": lines[0]["text"],
+                "window_start_sec": lines[0]["window_start_sec"],
+                "window_end_sec": lines[0]["window_end_sec"],
+            }
         return {
             "narration": True,
-            "text": line,
-            "window_start_sec": int(spoken[0][0]),
-            "window_end_sec": int(spoken[0][1]),
+            "text": None,
+            "window_start_sec": None,
+            "window_end_sec": None,
+            "lines": lines,
         }
     fences = _FENCE.findall(text)
     if len(fences) != 1:
@@ -117,8 +140,11 @@ def iter_packs() -> list[dict]:
             if not root.is_dir():
                 raise SystemExit(f"無い: {root}")
             slugs = sorted(path.name for path in root.iterdir() if (path / "IMAGINE.md").is_file())
-            if len(slugs) != 10:
-                raise SystemExit(f"{date}/{line_id}: パックが {len(slugs)} 本（10本であるべき）")
+            expected_slugs = 10 if date in FULL_DATES else _HELD_COUNTS[date]
+            if len(slugs) != expected_slugs:
+                raise SystemExit(
+                    f"{date}/{line_id}: パックが {len(slugs)} 本（{expected_slugs}本であるべき）"
+                )
             for slug in slugs:
                 order += 1
                 pack_dir = root / slug
@@ -140,7 +166,7 @@ def iter_packs() -> list[dict]:
                         "picture_sec": sum(shot["length_sec"] for shot in shots),
                     }
                 )
-    expected = len(DATES) * len(LINES) * 10
+    expected = len(FULL_DATES) * len(LINES) * 10 + sum(_HELD_COUNTS.values()) * len(LINES)
     if len(packs) != expected:
         raise SystemExit(f"パック数が {len(packs)}（{expected}であるべき）")
     return packs

@@ -1,0 +1,46 @@
+{
+  "narration": true,
+  "text": null,
+  "pack": "2026-10-14b/pet/03-cam-meow",
+  "line": "pet",
+  "picture_sec": 8.8,
+  "window_start_sec": null,
+  "window_end_sec": null,
+  "wav": "narration.wav",
+  "duration_sec": 8.8,
+  "lines": [
+    {
+      "text": "こっち、見とる",
+      "window_start_sec": 0,
+      "window_end_sec": 2,
+      "duration_sec": 1.664,
+      "wav": "line-01.wav"
+    },
+    {
+      "text": "一歩だけ、近い",
+      "window_start_sec": 2,
+      "window_end_sec": 6,
+      "duration_sec": 1.738667,
+      "wav": "line-02.wav"
+    },
+    {
+      "text": "にゃ",
+      "window_start_sec": 6,
+      "window_end_sec": 8.8,
+      "duration_sec": 0.469333,
+      "wav": "line-03.wav"
+    }
+  ],
+  "sample_rate": 24000,
+  "channels": 1,
+  "engine": "VOICEVOX",
+  "engine_version": "0.25.2",
+  "speaker_name": "冥鳴ひまり",
+  "speaker_style": "ノーマル",
+  "speaker_id": 14,
+  "speed_scale": 1.0,
+  "pitch_scale": 0.0,
+  "intonation_scale": 1.0,
+  "credit": "VOICEVOX:冥鳴ひまり",
+  "placed": "各文を窓の頭に置いた。窓を超えるときだけ、その文を速くしてから置いた。"
+}

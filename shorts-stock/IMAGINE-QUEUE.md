@@ -1,13 +1,16 @@
 # Imagine 待ち行列
 
+ナオミチが待ち行列を保留にした。未生成の一覧も、「保留（未開始）」も、Imagine は始めない。生成を頼まない。
+
 使い順は婚活、美容、ペット。各ラインは日付の古い順、パックは 01 から。
 2026-10-12 のペット 01–10 は Imagine 済みで結合済みなので、この待ち行列には入れない。
+2026-10-14b は下の「保留（未開始）」だけに置く。上の一覧には入れない。
 プロンプトは各 `IMAGINE.md` のショット用 text ブロックをそのまま写した。声のブロックはショットではないので入れていない。
 
-未生成のパック 80 本、ショット 122 本。
+未生成のパック 80 本、ショット 122 本。保留のまま。今は作らない。
 
 「ファイル」は `finish.sh` が読むパス。`imagine/shot-01.mp4` から順に置く。
-「保存名」は Grok Build がダウンロードして Drive に上げる名前。`<line>-<pack>-<shot>.mp4`。pack はフォルダ名、shot は `shot-01` のようにファイルの幹。
+「保存名」は、保留が解けたときにダウンロードする名前。`<line>-<pack>-<shot>.mp4`。pack はフォルダ名、shot は `shot-01` のようにファイルの幹。
 アプリの秒数が 6 秒刻みしか無いときは、6 秒で書き出し、同じ保存名のまま置く。`finish.sh` は各ファイルの頭から、ここに書いた秒だけを使う。声の長さに合わせて絵を切り直さない。
 ショットの中で音楽とせりふは生成しない。声と BGM は `finish.sh` が後から乗せる。
 
@@ -2956,6 +2959,633 @@ The white Scottish fold sits on a plain sand-colored rug. The face starts visibl
 One action: the cat places one front paw over its face once and stops.
 One camera move: the camera stays locked and does not pan, tilt, zoom, or follow.
 Sound: one soft shift, then room tone.
+No text, subtitles, captions, letters, numbers, logos, brand names, watermarks, buttons, or end cards. No call to action.
+No music and no spoken words inside this clip.
+```
+
+## 保留（未開始）
+
+2026-10-14b。Imagine は始めない。生成を頼まない。投稿しない。
+パック 9 本、ショット 27 本。
+
+| 順 | 保存名 | ファイル | 長さ | 動作 |
+| --- | --- | --- | --- | --- |
+| 保留-1-1 | `konkatsu-01-notice-down-shot-01.mp4` | `shorts-stock/2026-10-14b/konkatsu/01-notice-down/imagine/shot-01.mp4` | 2秒 | 肩越しに、ぼかしたスマホ画面だけが見える |
+| 保留-1-2 | `konkatsu-01-notice-down-shot-02.mp4` | `shorts-stock/2026-10-14b/konkatsu/01-notice-down/imagine/shot-02.mp4` | 4秒 | 指がぼかした画面を一回横へなぞる |
+| 保留-1-3 | `konkatsu-01-notice-down-shot-03.mp4` | `shorts-stock/2026-10-14b/konkatsu/01-notice-down/imagine/shot-03.mp4` | 4秒 | 指がスマホを一回伏せる |
+| 保留-2-1 | `konkatsu-02-read-stop-shot-01.mp4` | `shorts-stock/2026-10-14b/konkatsu/02-read-stop/imagine/shot-01.mp4` | 2秒 | スマホを持った手が止まる |
+| 保留-2-2 | `konkatsu-02-read-stop-shot-02.mp4` | `shorts-stock/2026-10-14b/konkatsu/02-read-stop/imagine/shot-02.mp4` | 5秒 | 指がぼかした画面の一箇所で止まる |
+| 保留-2-3 | `konkatsu-02-read-stop-shot-03.mp4` | `shorts-stock/2026-10-14b/konkatsu/02-read-stop/imagine/shot-03.mp4` | 5秒 | 指が画面を一回閉じる |
+| 保留-3-1 | `konkatsu-03-blank-day-shot-01.mp4` | `shorts-stock/2026-10-14b/konkatsu/03-blank-day/imagine/shot-01.mp4` | 2秒 | 机の上の空の紙だけが落ち着く |
+| 保留-3-2 | `konkatsu-03-blank-day-shot-02.mp4` | `shorts-stock/2026-10-14b/konkatsu/03-blank-day/imagine/shot-02.mp4` | 4秒 | 手が空のマスを一回指す |
+| 保留-3-3 | `konkatsu-03-blank-day-shot-03.mp4` | `shorts-stock/2026-10-14b/konkatsu/03-blank-day/imagine/shot-03.mp4` | 4秒 | 手がペンを机に一回置く |
+| 保留-4-1 | `beauty-01-two-dab-shot-01.mp4` | `shorts-stock/2026-10-14b/beauty/01-two-dab/imagine/shot-01.mp4` | 4秒 | 無地のすりガラス瓶のまま、手の甲に一回つける |
+| 保留-4-2 | `beauty-01-two-dab-shot-02.mp4` | `shorts-stock/2026-10-14b/beauty/01-two-dab/imagine/shot-02.mp4` | 2秒 | 無地の瓶を、もう一本の無地の瓶へ一回持ち替える |
+| 保留-4-3 | `beauty-01-two-dab-shot-03.mp4` | `shorts-stock/2026-10-14b/beauty/01-two-dab/imagine/shot-03.mp4` | 4秒 | 持ち替えた無地の瓶で、手の甲に一回つける |
+| 保留-5-1 | `beauty-02-pad-aside-shot-01.mp4` | `shorts-stock/2026-10-14b/beauty/02-pad-aside/imagine/shot-01.mp4` | 2秒 | 白いコットンを一回持ち上げる |
+| 保留-5-2 | `beauty-02-pad-aside-shot-02.mp4` | `shorts-stock/2026-10-14b/beauty/02-pad-aside/imagine/shot-02.mp4` | 5秒 | コットンを机の外へ一回滑らせる |
+| 保留-5-3 | `beauty-02-pad-aside-shot-03.mp4` | `shorts-stock/2026-10-14b/beauty/02-pad-aside/imagine/shot-03.mp4` | 5秒 | 手がフレームの外へ出て、無地の瓶が一つ残る |
+| 保留-6-1 | `beauty-03-cheek-once-shot-01.mp4` | `shorts-stock/2026-10-14b/beauty/03-cheek-once/imagine/shot-01.mp4` | 2秒 | 同じ画角で、手が頬の前で一回止まる |
+| 保留-6-2 | `beauty-03-cheek-once-shot-02.mp4` | `shorts-stock/2026-10-14b/beauty/03-cheek-once/imagine/shot-02.mp4` | 5秒 | 無地のすりガラス瓶で頬に一回つける |
+| 保留-6-3 | `beauty-03-cheek-once-shot-03.mp4` | `shorts-stock/2026-10-14b/beauty/03-cheek-once/imagine/shot-03.mp4` | 5秒 | 塗る前と同じ画角で、手が下がって止まる |
+| 保留-7-1 | `pet-01-cam-tap-shot-01.mp4` | `shorts-stock/2026-10-14b/pet/01-cam-tap/imagine/shot-01.mp4` | 2秒 | グレーのマンチカンがレンズの方を見る |
+| 保留-7-2 | `pet-01-cam-tap-shot-02.mp4` | `shorts-stock/2026-10-14b/pet/01-cam-tap/imagine/shot-02.mp4` | 4秒 | グレーのマンチカンが一歩だけ寄る |
+| 保留-7-3 | `pet-01-cam-tap-shot-03.mp4` | `shorts-stock/2026-10-14b/pet/01-cam-tap/imagine/shot-03.mp4` | 4秒 | グレーのマンチカンが鼻をレンズに一回つけて止まる |
+| 保留-8-1 | `pet-02-chair-out-shot-01.mp4` | `shorts-stock/2026-10-14b/pet/02-chair-out/imagine/shot-01.mp4` | 2秒 | 暗い部屋の椅子にグレーのマンチカンが一匹いる |
+| 保留-8-2 | `pet-02-chair-out-shot-02.mp4` | `shorts-stock/2026-10-14b/pet/02-chair-out/imagine/shot-02.mp4` | 5秒 | グレーのマンチカンが一歩でフレームの外へ出る |
+| 保留-8-3 | `pet-02-chair-out-shot-03.mp4` | `shorts-stock/2026-10-14b/pet/02-chair-out/imagine/shot-03.mp4` | 5秒 | 玄関の隅でグレーのマンチカンが体を一回丸める |
+| 保留-9-1 | `pet-03-cam-meow-shot-01.mp4` | `shorts-stock/2026-10-14b/pet/03-cam-meow/imagine/shot-01.mp4` | 2秒 | グレーのマンチカンがレンズの方を見る |
+| 保留-9-2 | `pet-03-cam-meow-shot-02.mp4` | `shorts-stock/2026-10-14b/pet/03-cam-meow/imagine/shot-02.mp4` | 4秒 | グレーのマンチカンが一歩だけ寄る |
+| 保留-9-3 | `pet-03-cam-meow-shot-03.mp4` | `shorts-stock/2026-10-14b/pet/03-cam-meow/imagine/shot-03.mp4` | 2.8秒 | グレーのマンチカンが口を一回開いて閉じる |
+
+### 婚活
+
+#### 保留-1. `2026-10-14b/konkatsu/01-notice-down`
+
+絵の合計: 10秒。ショット 3 本。
+
+##### imagine/shot-01.mp4（2秒、0–2秒）
+
+動作: 肩越しに、ぼかしたスマホ画面だけが見える
+
+保存名: `konkatsu-01-notice-down-shot-01.mp4`
+
+ファイル: `shorts-stock/2026-10-14b/konkatsu/01-notice-down/imagine/shot-01.mp4`
+
+```text
+Duration: 2 seconds. Vertical 9:16.
+Photoreal over-the-shoulder fixed camera. Warm room bulb. Matte phone body.
+Reference image REF-KON-HAND, attach the same still on every shot: one adult right hand, short bare nails, no polish, no rings, plain gray cuff at the wrist. The face stays out of frame. Do not redesign the hand.
+Over-the-shoulder framing. No face, no hair in frame. A plain black phone with no logo. The screen is a soft color blur with no letters, numbers, or a face.
+Only the hand and the blurred screen are in frame.
+One action: the thumb touches the edge of the blurred screen once.
+One camera move: the camera stays locked and does not pan, tilt, zoom, or follow.
+Sound: quiet room tone only.
+No text, subtitles, captions, letters, numbers, logos, brand names, watermarks, buttons, or end cards. No call to action.
+No music and no spoken words inside this clip.
+```
+
+##### imagine/shot-02.mp4（4秒、2–6秒）
+
+動作: 指がぼかした画面を一回横へなぞる
+
+保存名: `konkatsu-01-notice-down-shot-02.mp4`
+
+ファイル: `shorts-stock/2026-10-14b/konkatsu/01-notice-down/imagine/shot-02.mp4`
+
+```text
+Duration: 4 seconds. Vertical 9:16.
+Photoreal over-the-shoulder fixed camera, same framing. Same warm bulb. Matte skin.
+Reference image REF-KON-HAND, attach the same still on every shot: one adult right hand, short bare nails, no polish, no rings, plain gray cuff at the wrist. The face stays out of frame. Do not redesign the hand.
+Over-the-shoulder framing. No face, no hair in frame. A plain black phone with no logo. The screen is a soft color blur with no letters, numbers, or a face.
+One action: one finger swipes sideways once across the blurred screen.
+One camera move: the camera stays locked and does not follow.
+Sound: one soft swipe, then room tone.
+No text, subtitles, captions, letters, numbers, logos, brand names, watermarks, buttons, or end cards. No call to action.
+No music and no spoken words inside this clip.
+```
+
+##### imagine/shot-03.mp4（4秒、6–10秒）
+
+動作: 指がスマホを一回伏せる
+
+保存名: `konkatsu-01-notice-down-shot-03.mp4`
+
+ファイル: `shorts-stock/2026-10-14b/konkatsu/01-notice-down/imagine/shot-03.mp4`
+
+```text
+Duration: 4 seconds. Vertical 9:16.
+Photoreal over-the-shoulder fixed camera. A small spot of light on a wood desk.
+Reference image REF-KON-HAND, attach the same still on every shot: one adult right hand, short bare nails, no polish, no rings, plain gray cuff at the wrist. The face stays out of frame. Do not redesign the hand.
+Over-the-shoulder framing. No face, no hair in frame. A plain black phone with no logo. The screen is a soft color blur with no letters, numbers, or a face.
+One action: the finger turns the phone face-down once. The screen ends facing the desk.
+One camera move: the camera stays locked and does not follow.
+Sound: one soft set-down, then room tone.
+No text, subtitles, captions, letters, numbers, logos, brand names, watermarks, buttons, or end cards. No call to action.
+No music and no spoken words inside this clip.
+```
+
+#### 保留-2. `2026-10-14b/konkatsu/02-read-stop`
+
+絵の合計: 12秒。ショット 3 本。
+
+##### imagine/shot-01.mp4（2秒、0–2秒）
+
+動作: スマホを持った手が止まる
+
+保存名: `konkatsu-02-read-stop-shot-01.mp4`
+
+ファイル: `shorts-stock/2026-10-14b/konkatsu/02-read-stop/imagine/shot-01.mp4`
+
+```text
+Duration: 2 seconds. Vertical 9:16.
+Photoreal top-down fixed camera. A white desk lamp. Matte phone body.
+Reference image REF-KON-HAND, attach the same still on every shot: one adult right hand, short bare nails, no polish, no rings, plain gray cuff at the wrist. The face stays out of frame. Do not redesign the hand.
+Top-down fixed camera. No face in frame. A plain black phone with no logo. The screen is a soft color blur with no letters, numbers, ages, or a face.
+The hand holds the phone.
+One action: a finger stops once above the blurred screen and lowers.
+One camera move: the camera stays locked and does not pan, tilt, zoom, or follow.
+Sound: quiet room tone only.
+No text, subtitles, captions, letters, numbers, logos, brand names, watermarks, buttons, or end cards. No call to action.
+No music and no spoken words inside this clip.
+```
+
+##### imagine/shot-02.mp4（5秒、2–7秒）
+
+動作: 指がぼかした画面の一箇所で止まる
+
+保存名: `konkatsu-02-read-stop-shot-02.mp4`
+
+ファイル: `shorts-stock/2026-10-14b/konkatsu/02-read-stop/imagine/shot-02.mp4`
+
+```text
+Duration: 5 seconds. Vertical 9:16.
+Photoreal top-down fixed camera, same framing. Same desk lamp. Matte skin.
+Reference image REF-KON-HAND, attach the same still on every shot: one adult right hand, short bare nails, no polish, no rings, plain gray cuff at the wrist. The face stays out of frame. Do not redesign the hand.
+Top-down fixed camera. No face in frame. A plain black phone with no logo. The screen is a soft color blur with no letters, numbers, ages, or a face.
+One action: the fingertip stops on one spot of the blur and holds there. It does not tap.
+One camera move: the camera stays locked and does not follow.
+Sound: quiet room tone only.
+No text, subtitles, captions, letters, numbers, logos, brand names, watermarks, buttons, or end cards. No call to action.
+No music and no spoken words inside this clip.
+```
+
+##### imagine/shot-03.mp4（5秒、7–12秒）
+
+動作: 指が画面を一回閉じる
+
+保存名: `konkatsu-02-read-stop-shot-03.mp4`
+
+ファイル: `shorts-stock/2026-10-14b/konkatsu/02-read-stop/imagine/shot-03.mp4`
+
+```text
+Duration: 5 seconds. Vertical 9:16.
+Photoreal top-down fixed camera. After the close, the hand is in shadow. A metal hinge is visible, with no letters.
+Reference image REF-KON-HAND, attach the same still on every shot: one adult right hand, short bare nails, no polish, no rings, plain gray cuff at the wrist. The face stays out of frame. Do not redesign the hand.
+Top-down fixed camera. No face in frame. A plain black phone with no logo. The screen is a soft color blur with no letters, numbers, ages, or a face.
+One action: the finger closes the phone once.
+One camera move: the camera stays locked and does not follow.
+Sound: one soft close, then room tone.
+No text, subtitles, captions, letters, numbers, logos, brand names, watermarks, buttons, or end cards. No call to action.
+No music and no spoken words inside this clip.
+```
+
+#### 保留-3. `2026-10-14b/konkatsu/03-blank-day`
+
+絵の合計: 10秒。ショット 3 本。
+
+##### imagine/shot-01.mp4（2秒、0–2秒）
+
+動作: 机の上の空の紙だけが落ち着く
+
+保存名: `konkatsu-03-blank-day-shot-01.mp4`
+
+ファイル: `shorts-stock/2026-10-14b/konkatsu/03-blank-day/imagine/shot-01.mp4`
+
+```text
+Duration: 2 seconds. Vertical 9:16.
+Photoreal fixed camera from behind an adult. Daylight from a window. Matte paper.
+Seen from behind. The back of the head, shoulders, and one hand. The face never turns and is not visible. No face in frame. The hand matches REF-KON-HAND: short bare nails, no polish, no rings. A sheet of paper on the desk has empty boxes and no letters, no numbers, no headings.
+One action: the paper settles once on the desk.
+One camera move: the camera stays locked and does not pan, tilt, zoom, or follow.
+Sound: one soft paper shift, then room tone.
+No text, subtitles, captions, letters, numbers, logos, brand names, watermarks, buttons, or end cards. No call to action.
+No music and no spoken words inside this clip.
+```
+
+##### imagine/shot-02.mp4（4秒、2–6秒）
+
+動作: 手が空のマスを一回指す
+
+保存名: `konkatsu-03-blank-day-shot-02.mp4`
+
+ファイル: `shorts-stock/2026-10-14b/konkatsu/03-blank-day/imagine/shot-02.mp4`
+
+```text
+Duration: 4 seconds. Vertical 9:16.
+Photoreal fixed camera from behind, same framing. Same window light. Matte skin.
+Seen from behind. The back of the head, shoulders, and one hand. The face never turns and is not visible. No face in frame. The hand matches REF-KON-HAND: short bare nails, no polish, no rings. A sheet of paper on the desk has empty boxes and no letters, no numbers, no headings.
+One action: the hand points once at one empty box. Nothing is written.
+One camera move: the camera stays locked and does not follow.
+Sound: quiet room tone only.
+No text, subtitles, captions, letters, numbers, logos, brand names, watermarks, buttons, or end cards. No call to action.
+No music and no spoken words inside this clip.
+```
+
+##### imagine/shot-03.mp4（4秒、6–10秒）
+
+動作: 手がペンを机に一回置く
+
+保存名: `konkatsu-03-blank-day-shot-03.mp4`
+
+ファイル: `shorts-stock/2026-10-14b/konkatsu/03-blank-day/imagine/shot-03.mp4`
+
+```text
+Duration: 4 seconds. Vertical 9:16.
+Photoreal fixed camera from behind. A thin shadow from a black matte pen. The pen has no logo and no letters.
+Seen from behind. The back of the head, shoulders, and one hand. The face never turns and is not visible. No face in frame. The hand matches REF-KON-HAND: short bare nails, no polish, no rings. A sheet of paper on the desk has empty boxes and no letters, no numbers, no headings.
+One action: the hand sets the pen on the desk once.
+One camera move: the camera stays locked and does not follow.
+Sound: one soft set-down, then room tone.
+No text, subtitles, captions, letters, numbers, logos, brand names, watermarks, buttons, or end cards. No call to action.
+No music and no spoken words inside this clip.
+```
+
+### 美容
+
+#### 保留-4. `2026-10-14b/beauty/01-two-dab`
+
+絵の合計: 10秒。ショット 3 本。
+
+##### imagine/shot-01.mp4（4秒、0–4秒）
+
+動作: 無地のすりガラス瓶のまま、手の甲に一回つける
+
+保存名: `beauty-01-two-dab-shot-01.mp4`
+
+ファイル: `shorts-stock/2026-10-14b/beauty/01-two-dab/imagine/shot-01.mp4`
+
+```text
+Duration: 4 seconds. Vertical 9:16.
+Photoreal 3D close-up, fixed camera. White light at a washstand. A frosted unlabeled bottle.
+Reference image REF-BEAU-3D, attach the same still on every shot of this pack: one 3D adult, mouth out of frame, short bare nails, no polish, no rings, no watch. Do not redesign this person.
+Close-up of the hands only. The mouth stays out of frame. No labels and no logos on either bottle. No third bottle.
+The hands already hold the frosted bottle.
+One action: the hands dab the back of the other hand once.
+One camera move: the camera stays locked and does not pan, tilt, zoom, or follow.
+Sound: one soft dab, then room tone.
+No text, subtitles, captions, letters, numbers, logos, brand names, watermarks, buttons, or end cards. No call to action.
+No music and no spoken words inside this clip.
+```
+
+##### imagine/shot-02.mp4（2秒、4–6秒）
+
+動作: 無地の瓶を、もう一本の無地の瓶へ一回持ち替える
+
+保存名: `beauty-01-two-dab-shot-02.mp4`
+
+ファイル: `shorts-stock/2026-10-14b/beauty/01-two-dab/imagine/shot-02.mp4`
+
+```text
+Duration: 2 seconds. Vertical 9:16.
+Photoreal 3D close-up, same framing. Same white light. The second bottle is matte and unlabeled.
+Reference image REF-BEAU-3D, attach the same still on every shot of this pack: one 3D adult, mouth out of frame, short bare nails, no polish, no rings, no watch. Do not redesign this person.
+Close-up of the hands only. The mouth stays out of frame. No labels and no logos on either bottle. No third bottle.
+One action: the hands switch once from the frosted bottle to the matte bottle.
+One camera move: the camera stays locked and does not follow.
+Sound: one soft switch, then room tone.
+No text, subtitles, captions, letters, numbers, logos, brand names, watermarks, buttons, or end cards. No call to action.
+No music and no spoken words inside this clip.
+```
+
+##### imagine/shot-03.mp4（4秒、6–10秒）
+
+動作: 持ち替えた無地の瓶で、手の甲に一回つける
+
+保存名: `beauty-01-two-dab-shot-03.mp4`
+
+ファイル: `shorts-stock/2026-10-14b/beauty/01-two-dab/imagine/shot-03.mp4`
+
+```text
+Duration: 4 seconds. Vertical 9:16.
+Photoreal 3D close-up, same framing. Soft light on the back of the hand. Matte 3D skin.
+Reference image REF-BEAU-3D, attach the same still on every shot of this pack: one 3D adult, mouth out of frame, short bare nails, no polish, no rings, no watch. Do not redesign this person.
+Close-up of the hands only. The mouth stays out of frame. No labels and no logos on either bottle. No third bottle.
+The hands hold the matte unlabeled bottle.
+One action: the hands dab the back of the hand once with that bottle.
+One camera move: the camera stays locked and does not follow.
+Sound: one soft dab, then room tone.
+No text, subtitles, captions, letters, numbers, logos, brand names, watermarks, buttons, or end cards. No call to action.
+No music and no spoken words inside this clip.
+```
+
+#### 保留-5. `2026-10-14b/beauty/02-pad-aside`
+
+絵の合計: 12秒。ショット 3 本。
+
+##### imagine/shot-01.mp4（2秒、0–2秒）
+
+動作: 白いコットンを一回持ち上げる
+
+保存名: `beauty-02-pad-aside-shot-01.mp4`
+
+ファイル: `shorts-stock/2026-10-14b/beauty/02-pad-aside/imagine/shot-01.mp4`
+
+```text
+Duration: 2 seconds. Vertical 9:16.
+Photoreal 3D close-up, fixed camera. White light at a washstand. A plain white cotton pad, fibers visible, no print.
+Reference image REF-BEAU-3D, attach the same still on every shot of this pack: one 3D adult, mouth out of frame, short bare nails, no polish, no rings, no watch. Do not redesign this person.
+Close-up of the hands. The mouth stays out of frame. No logos.
+One action: the hands lift the cotton pad once.
+One camera move: the camera stays locked and does not pan, tilt, zoom, or follow.
+Sound: quiet room tone only.
+No text, subtitles, captions, letters, numbers, logos, brand names, watermarks, buttons, or end cards. No call to action.
+No music and no spoken words inside this clip.
+```
+
+##### imagine/shot-02.mp4（5秒、2–7秒）
+
+動作: コットンを机の外へ一回滑らせる
+
+保存名: `beauty-02-pad-aside-shot-02.mp4`
+
+ファイル: `shorts-stock/2026-10-14b/beauty/02-pad-aside/imagine/shot-02.mp4`
+
+```text
+Duration: 5 seconds. Vertical 9:16.
+Photoreal 3D close-up, same framing. Same white light. A white matte desk.
+Reference image REF-BEAU-3D, attach the same still on every shot of this pack: one 3D adult, mouth out of frame, short bare nails, no polish, no rings, no watch. Do not redesign this person.
+Close-up of the hands. The mouth stays out of frame. No logos.
+One action: the hands slide the cotton pad once off the right edge of the desk.
+One camera move: the camera stays locked and does not follow.
+Sound: one soft slide, then room tone.
+No text, subtitles, captions, letters, numbers, logos, brand names, watermarks, buttons, or end cards. No call to action.
+No music and no spoken words inside this clip.
+```
+
+##### imagine/shot-03.mp4（5秒、7–12秒）
+
+動作: 手がフレームの外へ出て、無地の瓶が一つ残る
+
+保存名: `beauty-02-pad-aside-shot-03.mp4`
+
+ファイル: `shorts-stock/2026-10-14b/beauty/02-pad-aside/imagine/shot-03.mp4`
+
+```text
+Duration: 5 seconds. Vertical 9:16.
+Photoreal 3D close-up, same framing. Soft light beside one frosted unlabeled bottle.
+Reference image REF-BEAU-3D, attach the same still on every shot of this pack: one 3D adult, mouth out of frame, short bare nails, no polish, no rings, no watch. Do not redesign this person.
+Close-up of the hands. The mouth stays out of frame. No logos.
+No cotton remains. No second bottle.
+One action: the hands leave the frame once. One frosted unlabeled bottle stays on the desk.
+One camera move: the camera stays locked and does not follow.
+Sound: quiet room tone only.
+No text, subtitles, captions, letters, numbers, logos, brand names, watermarks, buttons, or end cards. No call to action.
+No music and no spoken words inside this clip.
+```
+
+#### 保留-6. `2026-10-14b/beauty/03-cheek-once`
+
+絵の合計: 12秒。ショット 3 本。
+
+##### imagine/shot-01.mp4（2秒、0–2秒）
+
+動作: 同じ画角で、手が頬の前で一回止まる
+
+保存名: `beauty-03-cheek-once-shot-01.mp4`
+
+ファイル: `shorts-stock/2026-10-14b/beauty/03-cheek-once/imagine/shot-01.mp4`
+
+```text
+Duration: 2 seconds. Vertical 9:16.
+Photoreal 3D close-up, fixed camera. Soft daylight. Matte 3D skin.
+Reference image REF-BEAU-3D, attach the same still on every shot of this pack: one 3D adult, mouth out of frame, short bare nails, no polish, no rings, no watch. Do not redesign this person.
+Close fixed camera on a 3D cheek. The mouth stays out of frame. Same framing in every shot. No before-and-after and no claim of a change. No logo.
+One action: the fingers stop once in front of the cheek.
+One camera move: the camera stays locked and does not pan, tilt, zoom, or follow.
+Sound: quiet room tone only.
+No text, subtitles, captions, letters, numbers, logos, brand names, watermarks, buttons, or end cards. No call to action.
+No music and no spoken words inside this clip.
+```
+
+##### imagine/shot-02.mp4（5秒、2–7秒）
+
+動作: 無地のすりガラス瓶で頬に一回つける
+
+保存名: `beauty-03-cheek-once-shot-02.mp4`
+
+ファイル: `shorts-stock/2026-10-14b/beauty/03-cheek-once/imagine/shot-02.mp4`
+
+```text
+Duration: 5 seconds. Vertical 9:16.
+Photoreal 3D close-up, the same fixed framing. Same daylight. A frosted unlabeled bottle.
+Reference image REF-BEAU-3D, attach the same still on every shot of this pack: one 3D adult, mouth out of frame, short bare nails, no polish, no rings, no watch. Do not redesign this person.
+Close fixed camera on a 3D cheek. The mouth stays out of frame. Same framing in every shot. No before-and-after and no claim of a change. No logo.
+One action: the bottle dabs the cheek once.
+One camera move: the camera stays locked and does not move closer.
+Sound: one soft dab, then room tone.
+No text, subtitles, captions, letters, numbers, logos, brand names, watermarks, buttons, or end cards. No call to action.
+No music and no spoken words inside this clip.
+```
+
+##### imagine/shot-03.mp4（5秒、7–12秒）
+
+動作: 塗る前と同じ画角で、手が下がって止まる
+
+保存名: `beauty-03-cheek-once-shot-03.mp4`
+
+ファイル: `shorts-stock/2026-10-14b/beauty/03-cheek-once/imagine/shot-03.mp4`
+
+```text
+Duration: 5 seconds. Vertical 9:16.
+Photoreal 3D close-up, the same framing as before the dab. Same daylight. Matte 3D skin.
+Reference image REF-BEAU-3D, attach the same still on every shot of this pack: one 3D adult, mouth out of frame, short bare nails, no polish, no rings, no watch. Do not redesign this person.
+Close fixed camera on a 3D cheek. The mouth stays out of frame. Same framing in every shot. No before-and-after and no claim of a change. No logo.
+One action: the hand lowers once from the cheek and stops.
+One camera move: the camera stays locked and does not follow.
+Sound: quiet room tone only.
+No text, subtitles, captions, letters, numbers, logos, brand names, watermarks, buttons, or end cards. No call to action.
+No music and no spoken words inside this clip.
+```
+
+### ペット
+
+#### 保留-7. `2026-10-14b/pet/01-cam-tap`
+
+絵の合計: 10秒。ショット 3 本。
+
+##### imagine/shot-01.mp4（2秒、0–2秒）
+
+動作: グレーのマンチカンがレンズの方を見る
+
+保存名: `pet-01-cam-tap-shot-01.mp4`
+
+ファイル: `shorts-stock/2026-10-14b/pet/01-cam-tap/imagine/shot-01.mp4`
+
+```text
+Duration: 2 seconds. Vertical 9:16.
+Photoreal fixed camera in a room. Thin daylight from a window. No clock overlay.
+Reference image REF-GRAY, attach the same still on every shot: one adult gray munchkin, solid blue-gray short fur, no stripes, no white patches, short legs, round head, upright open ears, amber eyes, no collar. Do not redesign this cat. No second cat, no dog, no human.
+Mouth stays closed.
+The gray munchkin is at the back of the room.
+One action: the cat turns its head once toward the lens.
+One camera move: the camera stays locked and does not pan, tilt, zoom, or follow.
+Sound: quiet room tone only.
+No text, subtitles, captions, letters, numbers, logos, brand names, watermarks, buttons, or end cards. No call to action.
+No music and no spoken words inside this clip.
+```
+
+##### imagine/shot-02.mp4（4秒、2–6秒）
+
+動作: グレーのマンチカンが一歩だけ寄る
+
+保存名: `pet-01-cam-tap-shot-02.mp4`
+
+ファイル: `shorts-stock/2026-10-14b/pet/01-cam-tap/imagine/shot-02.mp4`
+
+```text
+Duration: 4 seconds. Vertical 9:16.
+Photoreal fixed camera, same room and same framing. Low indirect light on the floor. The floor is carpet.
+Reference image REF-GRAY, attach the same still on every shot: one adult gray munchkin, solid blue-gray short fur, no stripes, no white patches, short legs, round head, upright open ears, amber eyes, no collar. Do not redesign this cat. No second cat, no dog, no human.
+Mouth stays closed.
+The gray munchkin is already looking toward the lens.
+One action: the cat puts one front paw forward, one step only.
+One camera move: the camera stays locked and does not follow.
+Sound: one soft paw step, then room tone.
+No text, subtitles, captions, letters, numbers, logos, brand names, watermarks, buttons, or end cards. No call to action.
+No music and no spoken words inside this clip.
+```
+
+##### imagine/shot-03.mp4（4秒、6–10秒）
+
+動作: グレーのマンチカンが鼻をレンズに一回つけて止まる
+
+保存名: `pet-01-cam-tap-shot-03.mp4`
+
+ファイル: `shorts-stock/2026-10-14b/pet/01-cam-tap/imagine/shot-03.mp4`
+
+```text
+Duration: 4 seconds. Vertical 9:16.
+Photoreal fixed camera, close to the lens. White light from the lens side. Short fur on the nose.
+Reference image REF-GRAY, attach the same still on every shot: one adult gray munchkin, solid blue-gray short fur, no stripes, no white patches, short legs, round head, upright open ears, amber eyes, no collar. Do not redesign this cat. No second cat, no dog, no human.
+Mouth stays closed.
+The gray munchkin is close to the lens.
+One action: the cat touches the lens once with its nose and stops.
+One camera move: the camera stays locked and does not follow.
+Sound: one soft nose tap, then room tone.
+No text, subtitles, captions, letters, numbers, logos, brand names, watermarks, buttons, or end cards. No call to action.
+No music and no spoken words inside this clip.
+```
+
+#### 保留-8. `2026-10-14b/pet/02-chair-out`
+
+絵の合計: 12秒。ショット 3 本。
+
+##### imagine/shot-01.mp4（2秒、0–2秒）
+
+動作: 暗い部屋の椅子にグレーのマンチカンが一匹いる
+
+保存名: `pet-02-chair-out-shot-01.mp4`
+
+ファイル: `shorts-stock/2026-10-14b/pet/02-chair-out/imagine/shot-01.mp4`
+
+```text
+Duration: 2 seconds. Vertical 9:16.
+Photoreal fixed camera. A dark room, one dim bulb. A chair with matte fabric. No clock overlay.
+Reference image REF-GRAY, attach the same still on every shot: one adult gray munchkin, solid blue-gray short fur, no stripes, no white patches, short legs, round head, upright open ears, amber eyes, no collar. Do not redesign this cat. No second cat, no dog, no human.
+Mouth stays closed.
+The gray munchkin sits alone on the chair.
+One action: one ear moves once. The cat stays on the chair.
+One camera move: the camera stays locked and does not pan, tilt, zoom, or follow.
+Sound: quiet room tone only.
+No text, subtitles, captions, letters, numbers, logos, brand names, watermarks, buttons, or end cards. No call to action.
+No music and no spoken words inside this clip.
+```
+
+##### imagine/shot-02.mp4（5秒、2–7秒）
+
+動作: グレーのマンチカンが一歩でフレームの外へ出る
+
+保存名: `pet-02-chair-out-shot-02.mp4`
+
+ファイル: `shorts-stock/2026-10-14b/pet/02-chair-out/imagine/shot-02.mp4`
+
+```text
+Duration: 5 seconds. Vertical 9:16.
+Photoreal fixed camera, same framing. A hallway foot light. The floor is wood.
+Reference image REF-GRAY, attach the same still on every shot: one adult gray munchkin, solid blue-gray short fur, no stripes, no white patches, short legs, round head, upright open ears, amber eyes, no collar. Do not redesign this cat. No second cat, no dog, no human.
+Mouth stays closed.
+The gray munchkin is at the edge of the frame.
+One action: the cat takes one step and leaves through the left edge of the frame.
+One camera move: the camera stays locked and does not follow.
+Sound: one soft paw step, then room tone.
+No text, subtitles, captions, letters, numbers, logos, brand names, watermarks, buttons, or end cards. No call to action.
+No music and no spoken words inside this clip.
+```
+
+##### imagine/shot-03.mp4（5秒、7–12秒）
+
+動作: 玄関の隅でグレーのマンチカンが体を一回丸める
+
+保存名: `pet-02-chair-out-shot-03.mp4`
+
+ファイル: `shorts-stock/2026-10-14b/pet/02-chair-out/imagine/shot-03.mp4`
+
+```text
+Duration: 5 seconds. Vertical 9:16.
+Photoreal fixed camera in a different place: the corner of an entrance. One white bulb. The floor is tile.
+Reference image REF-GRAY, attach the same still on every shot: one adult gray munchkin, solid blue-gray short fur, no stripes, no white patches, short legs, round head, upright open ears, amber eyes, no collar. Do not redesign this cat. No second cat, no dog, no human.
+Mouth stays closed.
+The gray munchkin is in the corner, not yet curled.
+One action: the cat curls its body once and stops.
+One camera move: the camera stays locked and does not follow.
+Sound: one soft shift, then room tone.
+No text, subtitles, captions, letters, numbers, logos, brand names, watermarks, buttons, or end cards. No call to action.
+No music and no spoken words inside this clip.
+```
+
+#### 保留-9. `2026-10-14b/pet/03-cam-meow`
+
+絵の合計: 8.8秒。ショット 3 本。
+
+##### imagine/shot-01.mp4（2秒、0–2秒）
+
+動作: グレーのマンチカンがレンズの方を見る
+
+保存名: `pet-03-cam-meow-shot-01.mp4`
+
+ファイル: `shorts-stock/2026-10-14b/pet/03-cam-meow/imagine/shot-01.mp4`
+
+```text
+Duration: 2 seconds. Vertical 9:16.
+Photoreal fixed camera. Evening orange light. Short dry fur. No clock overlay.
+Reference image REF-GRAY, attach the same still on every shot: one adult gray munchkin, solid blue-gray short fur, no stripes, no white patches, short legs, round head, upright open ears, amber eyes, no collar. Do not redesign this cat. No second cat, no dog, no human.
+Mouth stays closed.
+The gray munchkin is on the floor.
+One action: the cat turns its head once toward the lens.
+One camera move: the camera stays locked and does not pan, tilt, zoom, or follow.
+Sound: quiet room tone only.
+No text, subtitles, captions, letters, numbers, logos, brand names, watermarks, buttons, or end cards. No call to action.
+No music and no spoken words inside this clip.
+```
+
+##### imagine/shot-02.mp4（4秒、2–6秒）
+
+動作: グレーのマンチカンが一歩だけ寄る
+
+保存名: `pet-03-cam-meow-shot-02.mp4`
+
+ファイル: `shorts-stock/2026-10-14b/pet/03-cam-meow/imagine/shot-02.mp4`
+
+```text
+Duration: 4 seconds. Vertical 9:16.
+Photoreal fixed camera, same framing. A thin light under a shelf. The floor is wood.
+Reference image REF-GRAY, attach the same still on every shot: one adult gray munchkin, solid blue-gray short fur, no stripes, no white patches, short legs, round head, upright open ears, amber eyes, no collar. Do not redesign this cat. No second cat, no dog, no human.
+Mouth stays closed.
+The gray munchkin is already looking toward the lens.
+One action: the cat takes one step closer to the lens.
+One camera move: the camera stays locked and does not follow.
+Sound: one soft paw step, then room tone.
+No text, subtitles, captions, letters, numbers, logos, brand names, watermarks, buttons, or end cards. No call to action.
+No music and no spoken words inside this clip.
+```
+
+##### imagine/shot-03.mp4（2.8秒、6–8.8秒）
+
+動作: グレーのマンチカンが口を一回開いて閉じる
+
+保存名: `pet-03-cam-meow-shot-03.mp4`
+
+ファイル: `shorts-stock/2026-10-14b/pet/03-cam-meow/imagine/shot-03.mp4`
+
+```text
+Duration: 2.8 seconds. Vertical 9:16.
+Photoreal fixed camera. Soft light from the front. Short fur around the mouth.
+Reference image REF-GRAY, attach the same still on every shot: one adult gray munchkin, solid blue-gray short fur, no stripes, no white patches, short legs, round head, upright open ears, amber eyes, no collar. Do not redesign this cat. No second cat, no dog, no human.
+The gray munchkin faces the lens. The mouth starts closed.
+One action: the mouth opens once and closes. Do not add a second meow.
+One camera move: the camera stays locked and does not follow.
+Sound: quiet room tone only. The narration is added later. Do not put a separate meow track in this clip.
 No text, subtitles, captions, letters, numbers, logos, brand names, watermarks, buttons, or end cards. No call to action.
 No music and no spoken words inside this clip.
 ```

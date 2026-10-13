@@ -13,7 +13,7 @@ import urllib.parse
 import urllib.request
 from pathlib import Path
 
-from pack_meta import STOCK, iter_packs
+from pack_meta import STOCK, atempo_chain, iter_packs
 
 BASE = os.environ.get("VOICEVOX_URL", "http://127.0.0.1:50021").rstrip("/")
 SPEAKER_NAME = "冥鳴ひまり"
@@ -80,6 +80,56 @@ def probe_wav(path: Path) -> tuple[float, int, int]:
     return duration, int(stream["sample_rate"]), int(stream["channels"])
 
 
+def fmt_num(value: int | float) -> str:
+    number = float(value)
+    if number.is_integer():
+        return str(int(number))
+    return str(number)
+
+
+def write_fitted(src: Path, dest: Path, rate: float) -> None:
+    chain = atempo_chain(rate)
+    if not chain:
+        dest.write_bytes(src.read_bytes())
+        return
+    subprocess.check_call(
+        ["ffmpeg", "-y", "-nostdin", "-loglevel", "error", "-i", str(src), "-af", chain, str(dest)]
+    )
+
+
+def place_timeline(segments: list[tuple[Path, float]], picture_sec: float, dest: Path) -> None:
+    """Place each line at its window start. The picture length is not changed."""
+    inputs: list[str] = []
+    filters: list[str] = []
+    pads: list[str] = []
+    for index, (path, start) in enumerate(segments):
+        inputs.extend(["-i", str(path)])
+        delay = int(round(start * 1000))
+        filters.append(
+            f"[{index}:a]adelay={delay}|{delay},apad=whole_dur={picture_sec},atrim=0:{picture_sec}[a{index}]"
+        )
+        pads.append(f"[a{index}]")
+    filters.append(
+        "".join(pads)
+        + f"amix=inputs={len(segments)}:duration=longest:dropout_transition=0:normalize=0,atrim=0:{picture_sec}[a]"
+    )
+    subprocess.check_call(
+        [
+            "ffmpeg",
+            "-y",
+            "-nostdin",
+            "-loglevel",
+            "error",
+            *inputs,
+            "-filter_complex",
+            ";".join(filters),
+            "-map",
+            "[a]",
+            str(dest),
+        ]
+    )
+
+
 def fits_note(duration: float | None, available: float | None) -> str:
     if duration is None or available is None:
         return "声は作らない"
@@ -121,6 +171,57 @@ def main() -> None:
                 }
             )
             silent += 1
+        elif voice.get("lines"):
+            fitted: list[tuple[Path, float]] = []
+            line_records: list[dict] = []
+            sample_rate = None
+            channels = None
+            speed_scale = None
+            for index, item in enumerate(voice["lines"], start=1):
+                wav, query = synthesize(item["text"], speaker_id)
+                raw_path = voice_dir / f"line-{index:02d}.wav"
+                raw_path.write_bytes(wav)
+                duration, sample_rate, channels = probe_wav(raw_path)
+                available = float(item["window_end_sec"]) - float(item["window_start_sec"])
+                rate = duration / available if duration > available else 1.0
+                fit_path = voice_dir / f"line-{index:02d}-fit.wav"
+                write_fitted(raw_path, fit_path, rate)
+                fitted.append((fit_path, float(item["window_start_sec"])))
+                speed_scale = query.get("speedScale")
+                line_records.append(
+                    {
+                        "text": item["text"],
+                        "window_start_sec": item["window_start_sec"],
+                        "window_end_sec": item["window_end_sec"],
+                        "duration_sec": duration,
+                        "wav": raw_path.name,
+                    }
+                )
+            timeline = voice_dir / "narration.wav"
+            place_timeline(fitted, float(pack["picture_sec"]), timeline)
+            for path, _start in fitted:
+                path.unlink()
+            timeline_sec, _sample_rate, _channels = probe_wav(timeline)
+            record.update(
+                {
+                    "wav": "narration.wav",
+                    "duration_sec": timeline_sec,
+                    "lines": line_records,
+                    "sample_rate": sample_rate,
+                    "channels": channels,
+                    "engine": "VOICEVOX",
+                    "engine_version": version,
+                    "speaker_name": SPEAKER_NAME,
+                    "speaker_style": STYLE_NAME,
+                    "speaker_id": speaker_id,
+                    "speed_scale": speed_scale,
+                    "pitch_scale": query.get("pitchScale"),
+                    "intonation_scale": query.get("intonationScale"),
+                    "credit": CREDIT,
+                    "placed": "各文を窓の頭に置いた。窓を超えるときだけ、その文を速くしてから置いた。",
+                }
+            )
+            spoken += 1
         else:
             wav, query = synthesize(voice["text"], speaker_id)
             wav_path = voice_dir / "narration.wav"
@@ -147,7 +248,10 @@ def main() -> None:
         (voice_dir / "speech-length.json").write_text(
             json.dumps(record, ensure_ascii=False, indent=2) + "\n"
         )
-        label = record["text"] if record["text"] else "（無し）"
+        if record.get("lines"):
+            label = " / ".join(item["text"] for item in record["lines"])
+        else:
+            label = record["text"] if record["text"] else "（無し）"
         print(f"{pack['rel']} {label} {record['duration_sec']}")
 
     if spoken != len(packs) or silent != 0:
@@ -158,6 +262,13 @@ def main() -> None:
         if not voice["narration"]:
             continue
         data = json.loads((pack["dir"] / "voice" / "speech-length.json").read_text())
+        if data.get("lines"):
+            for item in data["lines"]:
+                available = float(item["window_end_sec"]) - float(item["window_start_sec"])
+                rate = float(item["duration_sec"]) / available
+                if rate > 1.1:
+                    too_long.append(f"{pack['rel']} {rate:.3f}倍 {item['text']}")
+            continue
         if voice["window_start_sec"] is None:
             available = float(pack["picture_sec"])
         else:
@@ -180,11 +291,21 @@ def write_summary(packs: list[dict]) -> None:
     rows.append("1.1 倍を超えるときは倍速にせず、文を短くして測り直す。ペットは 2026-10-12 の 10 本も日記の 1 文。")
     rows.append("`2026-10-13/pet/06-white-tail` の文は「しっぽの先、1回。」。")
     rows.append("2026-10-14 はペット、婚活、美容を 10 本ずつ足した。説明には `VOICEVOX:冥鳴ひまり` を書いてある。")
+    rows.append("2026-10-14b は台本のショットごとに1文。Imagine は保留（未開始）。")
     rows.append("")
     rows.append("| 順 | パック | 文 | 測った秒 | 置く区間 | 絵の秒 | 収まり |")
     rows.append("| --- | --- | --- | --- | --- | --- | --- |")
     for pack in packs:
         data = json.loads((pack["dir"] / "voice" / "speech-length.json").read_text())
+        if data.get("lines"):
+            for item in data["lines"]:
+                window = f"{fmt_num(item['window_start_sec'])}–{fmt_num(item['window_end_sec'])}秒"
+                available = float(item["window_end_sec"]) - float(item["window_start_sec"])
+                note = fits_note(float(item["duration_sec"]), available)
+                rows.append(
+                    f"| {pack['order']} | `{pack['rel']}` | {item['text']} | {float(item['duration_sec']):.3f} | {window} | {data['picture_sec']} | {note} |"
+                )
+            continue
         if data["window_start_sec"] is None:
             window = "指定なし（絵の頭から）"
             available = float(data["picture_sec"])
