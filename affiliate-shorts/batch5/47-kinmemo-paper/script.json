@@ -1,0 +1,153 @@
+{
+  "template": "sukatto",
+  "title": "返すと言ったメモの裏に、硬貨が貼りついたままの話",
+  "series_character": "メモ財布君",
+  "punchline": "返すと言った紙の裏に、硬貨が貼りついたままや",
+  "closing": "",
+  "scenes": [
+    {
+      "id": 1,
+      "role": "hook",
+      "speaker": "rival",
+      "style_id": 11,
+      "credit": "VOICEVOX:玄野武宏",
+      "text": "メモしとけ。後でな",
+      "telop": "メモしとけ。後でな",
+      "bg": "office",
+      "characters": [
+        {
+          "id": "rival_smug",
+          "who": "rival",
+          "label": ""
+        }
+      ],
+      "props": [],
+      "code_props": [],
+      "effect": "zoom",
+      "sfx": "none",
+      "duration_hint": 2.37
+    },
+    {
+      "id": 2,
+      "role": "develop",
+      "speaker": "narrator",
+      "style_id": 2,
+      "credit": "VOICEVOX:四国めたん",
+      "text": "デスクの無地メモに、硬貨を乗せたまま置いた",
+      "telop": "デスクの無地メモに、\n硬貨を乗せたまま置いた",
+      "bg": "office",
+      "characters": [
+        {
+          "id": "hero_trouble",
+          "who": "hero",
+          "label": ""
+        }
+      ],
+      "props": [],
+      "code_props": [
+        "papers"
+      ],
+      "effect": "none",
+      "sfx": "paper",
+      "duration_hint": 5.53
+    },
+    {
+      "id": 3,
+      "role": "develop",
+      "speaker": "narrator",
+      "style_id": 2,
+      "credit": "VOICEVOX:四国めたん",
+      "text": "紙が財布",
+      "telop": "紙が財布",
+      "bg": "office",
+      "characters": [
+        {
+          "id": "hero_trouble",
+          "who": "hero",
+          "label": ""
+        }
+      ],
+      "props": [],
+      "code_props": [],
+      "effect": "none",
+      "sfx": "whoosh",
+      "duration_hint": 0.97
+    },
+    {
+      "id": 4,
+      "role": "develop",
+      "speaker": "hero",
+      "style_id": 34,
+      "credit": "VOICEVOX:白上虎太郎",
+      "text": "貼りついた側を、一回だけめくって見た",
+      "telop": "貼りついた側を、\n一回だけめくって見た",
+      "bg": "office",
+      "characters": [
+        {
+          "id": "hero_angry",
+          "who": "hero",
+          "label": ""
+        }
+      ],
+      "props": [],
+      "code_props": [
+        "papers"
+      ],
+      "effect": "shake",
+      "sfx": "paper",
+      "duration_hint": 5.53
+    },
+    {
+      "id": 5,
+      "role": "punch",
+      "speaker": "narrator",
+      "style_id": 2,
+      "credit": "VOICEVOX:四国めたん",
+      "text": "返すと言った紙の裏に、硬貨が貼りついたままや",
+      "telop": "返すと言った紙の裏に、\n硬貨が貼りついたままや",
+      "bg": "office",
+      "characters": [
+        {
+          "id": "hero_trouble",
+          "who": "hero",
+          "label": ""
+        }
+      ],
+      "props": [],
+      "code_props": [
+        "papers"
+      ],
+      "effect": "zoom",
+      "sfx": "coin",
+      "duration_hint": 11.05
+    },
+    {
+      "id": 6,
+      "role": "credit",
+      "speaker": "narrator",
+      "style_id": 2,
+      "credit": "VOICEVOX:四国めたん",
+      "text": "",
+      "telop": "VOICEVOX:四国めたん\nVOICEVOX:白上虎太郎\nVOICEVOX:玄野武宏\nVOICEVOX:剣崎雌雄",
+      "bg": "credit",
+      "characters": [],
+      "props": [],
+      "code_props": [],
+      "effect": "none",
+      "sfx": "none",
+      "duration_hint": 2.2
+    }
+  ],
+  "credits": [
+    "VOICEVOX:玄野武宏",
+    "VOICEVOX:四国めたん",
+    "VOICEVOX:白上虎太郎"
+  ],
+  "asset_ids": [
+    "rival_smug",
+    "hero_trouble",
+    "hero_angry"
+  ],
+  "source": "research/affi-templates/stories",
+  "mouth": "ignored"
+}

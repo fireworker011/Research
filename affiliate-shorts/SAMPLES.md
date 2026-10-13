@@ -1,4 +1,4 @@
-# いらすとや動画 34本
+# いらすとや動画 37本
 
 口パクは無し。静止画に、ゆっくりしたズームとパン。反応の場面だけ小さく揺らす。字幕は大きく、声は VOICEVOX。画面は 1080x1920。投稿はしない。CTA も URL も入れてない。
 
@@ -44,5 +44,8 @@ batch1 の `01-card-ranking`（22.00秒）は同じ作りの見本。batch1 の 
 | `batch4/44-kekkin-kojo` | sukatto | 有給が無い日の明細 | 22.04 |
 | `batch4/45-fuyo-shinkoku-qa` | qa | 扶養の申告書、出してる？ | 23.42 |
 | `batch4/46-taishoku-paper` | ranking | 退職金の前に出す紙 | 24.83 |
+| `batch5/47-kinmemo-paper` | kinmemo | 返すと言ったメモの裏に、硬貨が貼りついたままの話 | 20.58 |
+| `batch5/48-kinmemo-slot` | kinmemo | つり銭口の硬貨が、朝に自分で入れたものだった話 | 20.54 |
+| `batch5/49-kinmemo-loop` | kinmemo | 自分側へ寄せた端の硬貨が、手帳のペン差しに入っていた話 | 20.58 |
 
-動画ファイルは各フォルダの `out.mp4`。batch4 の各フォルダに `UPLOAD.md` がある。金額は書いていない。投稿はしない。
+動画ファイルは各フォルダの `out.mp4`。batch4 と batch5 の各フォルダに `UPLOAD.md` がある。金額は書いていない。投稿はしない。batch5 は PR #210 の台本を、口パク無しの静止画で書き出している。

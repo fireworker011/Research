@@ -1,0 +1,147 @@
+{
+  "template": "sukatto",
+  "title": "つり銭口の硬貨が、朝に自分で入れたものだった話",
+  "series_character": "つり銭口君",
+  "punchline": "朝に自分で入れた硬貨が、つり銭口へ残っとった",
+  "closing": "",
+  "scenes": [
+    {
+      "id": 1,
+      "role": "hook",
+      "speaker": "rival",
+      "style_id": 11,
+      "credit": "VOICEVOX:玄野武宏",
+      "text": "これ、誰の硬貨や",
+      "telop": "これ、誰の硬貨や",
+      "bg": "office",
+      "characters": [
+        {
+          "id": "rival_smug",
+          "who": "rival",
+          "label": ""
+        }
+      ],
+      "props": [],
+      "code_props": [],
+      "effect": "zoom",
+      "sfx": "none",
+      "duration_hint": 2.37
+    },
+    {
+      "id": 2,
+      "role": "develop",
+      "speaker": "narrator",
+      "style_id": 2,
+      "credit": "VOICEVOX:四国めたん",
+      "text": "自販機のつり銭口に、硬貨が一つ残っとった",
+      "telop": "自販機のつり銭口に、\n硬貨が一つ残っとった",
+      "bg": "office",
+      "characters": [
+        {
+          "id": "hero_trouble",
+          "who": "hero",
+          "label": ""
+        }
+      ],
+      "props": [],
+      "code_props": [],
+      "effect": "none",
+      "sfx": "coin",
+      "duration_hint": 5.53
+    },
+    {
+      "id": 3,
+      "role": "develop",
+      "speaker": "narrator",
+      "style_id": 2,
+      "credit": "VOICEVOX:四国めたん",
+      "text": "朝のだ",
+      "telop": "朝のだ",
+      "bg": "office",
+      "characters": [
+        {
+          "id": "hero_trouble",
+          "who": "hero",
+          "label": ""
+        }
+      ],
+      "props": [],
+      "code_props": [],
+      "effect": "none",
+      "sfx": "whoosh",
+      "duration_hint": 0.97
+    },
+    {
+      "id": 4,
+      "role": "develop",
+      "speaker": "hero",
+      "style_id": 12,
+      "credit": "VOICEVOX:白上虎太郎",
+      "text": "投入口のつまみを、一回だけ奥へ戻した",
+      "telop": "投入口のつまみを、\n一回だけ奥へ戻した",
+      "bg": "office",
+      "characters": [
+        {
+          "id": "hero_tired",
+          "who": "hero",
+          "label": ""
+        }
+      ],
+      "props": [],
+      "code_props": [],
+      "effect": "shake",
+      "sfx": "none",
+      "duration_hint": 5.53
+    },
+    {
+      "id": 5,
+      "role": "punch",
+      "speaker": "narrator",
+      "style_id": 2,
+      "credit": "VOICEVOX:四国めたん",
+      "text": "朝に自分で入れた硬貨が、つり銭口へ残っとった",
+      "telop": "朝に自分で入れた硬貨が、\nつり銭口へ残っとった",
+      "bg": "office",
+      "characters": [
+        {
+          "id": "hero_trouble",
+          "who": "hero",
+          "label": ""
+        }
+      ],
+      "props": [],
+      "code_props": [],
+      "effect": "zoom",
+      "sfx": "coin",
+      "duration_hint": 11.05
+    },
+    {
+      "id": 6,
+      "role": "credit",
+      "speaker": "narrator",
+      "style_id": 2,
+      "credit": "VOICEVOX:四国めたん",
+      "text": "",
+      "telop": "VOICEVOX:四国めたん\nVOICEVOX:白上虎太郎\nVOICEVOX:玄野武宏\nVOICEVOX:剣崎雌雄",
+      "bg": "credit",
+      "characters": [],
+      "props": [],
+      "code_props": [],
+      "effect": "none",
+      "sfx": "none",
+      "duration_hint": 2.2
+    }
+  ],
+  "credits": [
+    "VOICEVOX:玄野武宏",
+    "VOICEVOX:四国めたん",
+    "VOICEVOX:白上虎太郎"
+  ],
+  "asset_ids": [
+    "rival_smug",
+    "hero_trouble",
+    "hero_tired"
+  ],
+  "source": "research/affi-templates/stories",
+  "mouth": "ignored"
+}
