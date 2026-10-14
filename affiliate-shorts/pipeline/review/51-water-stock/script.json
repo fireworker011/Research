@@ -1,0 +1,200 @@
+{
+  "id": "51-water-stock",
+  "channel": "sonae",
+  "title": "止まった水道の、一日の水",
+  "theme": "備蓄の水の量",
+  "hook": "水道が出るなら、備えの水は要らんやろ",
+  "mouth_overlay": false,
+  "thumbnail": {
+    "id": "hero_trouble",
+    "emotion": "trouble",
+    "source_url": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhxJL1uWPRrar9S-FPxNv7FCtcDsBUM5B8ItxCoPVFnqtsBKjv7TyPF54QNeSpcg2QCm3Fn8maHs9AscQD5Bmegje_6Zdt2xtzqXkriOKe76Aq37zUYxI0kfBoONd8SbYE_loSyJw3rkVY8/s800/businessman1_nayami.png"
+  },
+  "facts_used": [
+    "3日分",
+    "1人1日3リットル",
+    "1週間分",
+    "生活用水"
+  ],
+  "sources": [
+    {
+      "name": "首相官邸「災害が起きる前にできること」",
+      "url": "https://www.kantei.go.jp/jp/headline/bousai/sonae.html",
+      "claim": "飲料水 3日分（1人1日3リットルが目安）。大規模災害発生時には「1週間分」の備蓄が望ましい。飲料水とは別に生活用水も必要。"
+    },
+    {
+      "name": "内閣府「自然災害への備えは万全ですか？」",
+      "url": "https://www.bousai.go.jp/kyoiku/hokenkyousai/check.html",
+      "claim": "各家庭で最低3日間、できれば一週間過ごせるよう、飲料水（一人1日3リットル）、食料等を備蓄する。"
+    }
+  ],
+  "lines": [
+    {
+      "speaker": "rival",
+      "character": "rival_smug",
+      "emotion": "smug",
+      "text": "水道が出るなら、備えの水は要らんやろ",
+      "caption": "水道が出るなら、\n備えの水は要らんやろ",
+      "role": "hook",
+      "effect": "zoom",
+      "sfx": "none",
+      "who": "rival",
+      "source_url": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgmfOy1dvPW5nkAXq91r1d2JpatnBWDQHwMOsQRfjoJK3UhP4qRvRGgzacoQu3ogBLYq4zj0tYolJd4_6rjS4tUa8DR5lSj_PQaqXzd6Cs_DivuxoRAkIygU6GV36iS3QhIj3oa6vnevpY/s800/pose_doyagao_man.png",
+      "recolor": false,
+      "label": "",
+      "tag": "",
+      "style_id": 11,
+      "credit": "VOICEVOX:玄野武宏",
+      "voice_seconds": 2.016,
+      "duration": 3.125
+    },
+    {
+      "speaker": "narrator",
+      "character": "hero_trouble",
+      "emotion": "trouble",
+      "text": "止まったときのために、飲む水を別に置く",
+      "caption": "止まったときのために、\n飲む水を別に置く",
+      "role": "develop",
+      "effect": "none",
+      "sfx": "none",
+      "who": "hero",
+      "source_url": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhxJL1uWPRrar9S-FPxNv7FCtcDsBUM5B8ItxCoPVFnqtsBKjv7TyPF54QNeSpcg2QCm3Fn8maHs9AscQD5Bmegje_6Zdt2xtzqXkriOKe76Aq37zUYxI0kfBoONd8SbYE_loSyJw3rkVY8/s800/businessman1_nayami.png",
+      "recolor": false,
+      "label": "",
+      "tag": "",
+      "style_id": 2,
+      "credit": "VOICEVOX:四国めたん",
+      "voice_seconds": 2.496,
+      "duration": 3.7083333333333335
+    },
+    {
+      "speaker": "hero",
+      "character": "hero_smile",
+      "emotion": "smile",
+      "text": "一人一日三リットル。三日分が目安や",
+      "caption": "一人一日三リットル。\n三日分が目安",
+      "role": "develop",
+      "effect": "zoom",
+      "sfx": "tick",
+      "who": "hero",
+      "source_url": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhy3dDvRMBHJ-tn1A2AUBt4iUbmcOXxRuHUegd9lKUBveMfLADwYFD0QsmGhDqoctcd1lk7bY5wO3M04TuC_EVB8TcyirHiMlsvyn-HPGcHJHl6wMEEcrZb5vc-YuKF8ddVD16Wadzfqurn/s800/businessman5_ureshii.png",
+      "recolor": false,
+      "label": "",
+      "tag": "",
+      "style_id": 12,
+      "credit": "VOICEVOX:白上虎太郎",
+      "voice_seconds": 2.923,
+      "duration": 4.208333333333333
+    },
+    {
+      "speaker": "narrator",
+      "character": "hero_tired",
+      "emotion": "tired",
+      "text": "飲む水とは別に、生活用水も要る",
+      "caption": "飲む水とは別に、\n生活用水も要る",
+      "role": "develop",
+      "effect": "none",
+      "sfx": "none",
+      "who": "hero",
+      "source_url": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEi5O7ebIPQwPb7j8zWG0W4g3EN_nlmRZvPEfGKxwGsCnV44eGJARhg0Zz2mBNr7m9BK61Ebp00-9v4cX_V-YkzlJB5YAj7Dpb9slFkX2GG7xGyXKCYl1wMwzi6eWXoCHVuQIFSjsaL-5CM/s800/tsukareta_business_man.png",
+      "recolor": false,
+      "label": "",
+      "tag": "",
+      "style_id": 2,
+      "credit": "VOICEVOX:四国めたん",
+      "voice_seconds": 2.592,
+      "duration": 3.7916666666666665
+    },
+    {
+      "speaker": "narrator",
+      "character": "hero_trouble",
+      "emotion": "trouble",
+      "text": "大きな災害なら、備蓄は一週間分が望ましい",
+      "caption": "大きな災害なら、\n一週間分が望ましい",
+      "role": "punch",
+      "effect": "zoom",
+      "sfx": "rise",
+      "who": "hero",
+      "source_url": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhxJL1uWPRrar9S-FPxNv7FCtcDsBUM5B8ItxCoPVFnqtsBKjv7TyPF54QNeSpcg2QCm3Fn8maHs9AscQD5Bmegje_6Zdt2xtzqXkriOKe76Aq37zUYxI0kfBoONd8SbYE_loSyJw3rkVY8/s800/businessman1_nayami.png",
+      "recolor": false,
+      "label": "",
+      "tag": "",
+      "style_id": 2,
+      "credit": "VOICEVOX:四国めたん",
+      "voice_seconds": 3.125,
+      "duration": 5.916666666666667
+    },
+    {
+      "speaker": "narrator",
+      "character": "",
+      "who": "",
+      "emotion": "",
+      "text": "",
+      "caption": "VOICEVOX:玄野武宏\nVOICEVOX:四国めたん\nVOICEVOX:白上虎太郎\nイラスト：いらすとや",
+      "role": "credit",
+      "effect": "none",
+      "sfx": "none",
+      "label": "",
+      "tag": "",
+      "style_id": 2,
+      "credit": "VOICEVOX:玄野武宏",
+      "source_url": "",
+      "voice_seconds": 0.2,
+      "duration": 3.25
+    }
+  ],
+  "generator": "json",
+  "channel_name": "30秒そなえ帳",
+  "genre": "防災グッズ・備え",
+  "caption": {
+    "bar": "none",
+    "stroke": 8,
+    "credit_stroke": 5,
+    "size": 104,
+    "credit_size": 64,
+    "min_size": 72,
+    "credit_min_size": 40,
+    "y_ratio": 0.86,
+    "credit_y_ratio": 0.5,
+    "colors": {
+      "hook": [
+        255,
+        226,
+        40,
+        255
+      ],
+      "develop": [
+        255,
+        255,
+        255,
+        255
+      ],
+      "punch": [
+        255,
+        226,
+        40,
+        255
+      ],
+      "credit": [
+        255,
+        255,
+        255,
+        255
+      ]
+    }
+  },
+  "credits": [
+    "VOICEVOX:玄野武宏",
+    "VOICEVOX:四国めたん",
+    "VOICEVOX:白上虎太郎"
+  ],
+  "tags": [
+    "防災",
+    "備え",
+    "備蓄",
+    "shorts"
+  ],
+  "name_status": "working",
+  "style_signature": "bousai:C5-P3-T4-F5-H2-M6-B6-L2-A6",
+  "thumb_signature": "thumb:C5-P3-T4-F5"
+}

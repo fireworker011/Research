@@ -1,0 +1,163 @@
+{
+  "id": "50-clearfile-coin",
+  "channel": "draft",
+  "title": "渡したクリアファイルの奥に、硬貨が残っていた話",
+  "theme": "クリアファイルの奥の硬貨",
+  "hook": "ファイルに入れとけ。後でな",
+  "mouth_overlay": false,
+  "lines": [
+    {
+      "speaker": "rival",
+      "character": "rival_smug",
+      "emotion": "smug",
+      "text": "ファイルに入れとけ。後でな",
+      "caption": "ファイルに入れとけ。\n後でな",
+      "role": "hook",
+      "effect": "zoom",
+      "sfx": "none",
+      "who": "rival",
+      "source_url": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgmfOy1dvPW5nkAXq91r1d2JpatnBWDQHwMOsQRfjoJK3UhP4qRvRGgzacoQu3ogBLYq4zj0tYolJd4_6rjS4tUa8DR5lSj_PQaqXzd6Cs_DivuxoRAkIygU6GV36iS3QhIj3oa6vnevpY/s800/pose_doyagao_man.png",
+      "label": "",
+      "tag": "",
+      "style_id": 11,
+      "credit": "VOICEVOX:玄野武宏",
+      "voice_seconds": 0.928,
+      "duration": 2.1666666666666665
+    },
+    {
+      "speaker": "narrator",
+      "character": "hero_trouble",
+      "emotion": "trouble",
+      "text": "クリアファイルの奥のポケットへ、硬貨を落としたまま渡した",
+      "caption": "クリアファイルの奥に、\n硬貨を落としたまま渡した",
+      "role": "develop",
+      "effect": "none",
+      "sfx": "paper",
+      "who": "hero",
+      "source_url": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhxJL1uWPRrar9S-FPxNv7FCtcDsBUM5B8ItxCoPVFnqtsBKjv7TyPF54QNeSpcg2QCm3Fn8maHs9AscQD5Bmegje_6Zdt2xtzqXkriOKe76Aq37zUYxI0kfBoONd8SbYE_loSyJw3rkVY8/s800/businessman1_nayami.png",
+      "label": "",
+      "tag": "",
+      "style_id": 2,
+      "credit": "VOICEVOX:四国めたん",
+      "voice_seconds": 3.093,
+      "duration": 3.625
+    },
+    {
+      "speaker": "narrator",
+      "character": "hero_trouble",
+      "emotion": "trouble",
+      "text": "ファイルが財布",
+      "caption": "ファイルが財布",
+      "role": "develop",
+      "effect": "none",
+      "sfx": "whoosh",
+      "who": "hero",
+      "source_url": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhxJL1uWPRrar9S-FPxNv7FCtcDsBUM5B8ItxCoPVFnqtsBKjv7TyPF54QNeSpcg2QCm3Fn8maHs9AscQD5Bmegje_6Zdt2xtzqXkriOKe76Aq37zUYxI0kfBoONd8SbYE_loSyJw3rkVY8/s800/businessman1_nayami.png",
+      "label": "",
+      "tag": "",
+      "style_id": 2,
+      "credit": "VOICEVOX:四国めたん",
+      "voice_seconds": 0.8,
+      "duration": 2.3333333333333335
+    },
+    {
+      "speaker": "hero",
+      "character": "hero_angry",
+      "emotion": "angry",
+      "text": "ポケットの底を、一回だけめくって見た",
+      "caption": "ポケットの底を、\n一回だけめくって見た",
+      "role": "develop",
+      "effect": "shake",
+      "sfx": "paper",
+      "who": "hero",
+      "source_url": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjNZa7ijupIB1glzdfPBDcjiYSmA5vivkbKmqryJ9C11F00i6aifmrQbVGFJcJBgN9SnkUMuQsor8OqrhFv6cc7Qc6_gBEHZjOgV457XveJw0jakqDI2_boGirQKY4h1DpFj4S-tddLG4k/s800/business02_angry.png",
+      "label": "",
+      "tag": "",
+      "style_id": 34,
+      "credit": "VOICEVOX:白上虎太郎",
+      "voice_seconds": 2.368,
+      "duration": 2.9166666666666665
+    },
+    {
+      "speaker": "narrator",
+      "character": "hero_trouble",
+      "emotion": "trouble",
+      "text": "渡したファイルの奥に、硬貨が残ったままや",
+      "caption": "渡したファイルの奥に、\n硬貨が残ったままや",
+      "role": "punch",
+      "effect": "zoom",
+      "sfx": "coin",
+      "who": "hero",
+      "source_url": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhxJL1uWPRrar9S-FPxNv7FCtcDsBUM5B8ItxCoPVFnqtsBKjv7TyPF54QNeSpcg2QCm3Fn8maHs9AscQD5Bmegje_6Zdt2xtzqXkriOKe76Aq37zUYxI0kfBoONd8SbYE_loSyJw3rkVY8/s800/businessman1_nayami.png",
+      "label": "",
+      "tag": "",
+      "style_id": 2,
+      "credit": "VOICEVOX:四国めたん",
+      "voice_seconds": 2.443,
+      "duration": 7.333333333333333
+    },
+    {
+      "speaker": "narrator",
+      "character": "",
+      "who": "",
+      "emotion": "",
+      "text": "",
+      "caption": "VOICEVOX:玄野武宏\nVOICEVOX:四国めたん\nVOICEVOX:白上虎太郎",
+      "role": "credit",
+      "effect": "none",
+      "sfx": "none",
+      "label": "",
+      "tag": "",
+      "style_id": 2,
+      "credit": "VOICEVOX:玄野武宏",
+      "source_url": "",
+      "voice_seconds": 0.2,
+      "duration": 2.2083333333333335
+    }
+  ],
+  "generator": "json",
+  "channel_name": "",
+  "genre": "",
+  "caption": {
+    "bar": "none",
+    "stroke": 8,
+    "credit_stroke": 5,
+    "size": 104,
+    "credit_size": 64,
+    "min_size": 72,
+    "credit_min_size": 40,
+    "y_ratio": 0.86,
+    "credit_y_ratio": 0.5,
+    "colors": {
+      "hook": [
+        255,
+        226,
+        40,
+        255
+      ],
+      "develop": [
+        255,
+        255,
+        255,
+        255
+      ],
+      "punch": [
+        255,
+        226,
+        40,
+        255
+      ],
+      "credit": [
+        255,
+        255,
+        255,
+        255
+      ]
+    }
+  },
+  "credits": [
+    "VOICEVOX:玄野武宏",
+    "VOICEVOX:四国めたん",
+    "VOICEVOX:白上虎太郎"
+  ]
+}

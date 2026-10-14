@@ -1,0 +1,139 @@
+# 仮のチャンネル名。確定ではない。
+# 声と字幕は draft と同じ。事実の数量は台本の出典に書いたものだけを使う。
+id: sonae
+name: "30秒そなえ帳"
+name_status: working
+genre: "防災グッズ・備え"
+require_sources: true
+tags:
+  - 防災
+  - 備え
+  - 備蓄
+  - shorts
+voices:
+  narrator:
+    style_id: 2
+    credit: "VOICEVOX:四国めたん"
+  hero:
+    style_id: 12
+    angry_style_id: 34
+    credit: "VOICEVOX:白上虎太郎"
+  rival:
+    style_id: 11
+    credit: "VOICEVOX:玄野武宏"
+  boss:
+    style_id: 21
+    credit: "VOICEVOX:剣崎雌雄"
+caption:
+  bar: none
+  stroke: 8
+  credit_stroke: 5
+  size: 104
+  credit_size: 64
+  min_size: 72
+  credit_min_size: 40
+  y_ratio: 0.86
+  credit_y_ratio: 0.5
+  colors:
+    hook: [255, 226, 40, 255]
+    develop: [255, 255, 255, 255]
+    punch: [255, 226, 40, 255]
+    credit: [255, 255, 255, 255]
+credits:
+  on_screen: voices
+  illustration: "イラスト：いらすとや"
+  note: "いらすとやはクレジット表記不要。出典URLはレビュー用。動画の中にURLは出していない。効果音とBGMは合成したオリジナル。イラストは背景と字幕の一部で、内容の主体にはしていない。"
+upload_template: |
+  # 投稿用
+
+  ## タイトル
+
+  {title}
+
+  ## 説明
+
+  {title}
+
+  テーマ: {theme}
+  {channel_line}{genre_line}{name_note}{voices}
+
+  {credits_note}
+
+  ## タグ
+
+  {tags}
+
+  ## 事実の根拠
+
+  {sources}
+
+  動画で言っている数量は、上のページに書いてあるものだけです。
+
+  ## 投稿
+
+  しない。
+style:
+  line: bousai
+  axes:
+    C:
+      - {code: C1, label: 地図・図解}
+      - {code: C2, label: チェックリスト}
+      - {code: C3, label: 部屋の中の再現}
+      - {code: C4, label: Q&A}
+      - {code: C5, label: 時系列タイムライン}
+      - {code: C6, label: 持ち物の並べ}
+    P:
+      - {code: P1, label: 白×オレンジ}
+      - {code: P2, label: 紺×黄}
+      - {code: P3, label: グレー×赤}
+      - {code: P4, label: 緑×白}
+      - {code: P5, label: 黒×黄}
+      - {code: P6, label: 水色×紺}
+    T:
+      - {code: T1, label: 上帯}
+      - {code: T2, label: 下帯}
+      - {code: T3, label: 左リスト}
+      - {code: T4, label: 中央大}
+      - {code: T5, label: 吹き出し}
+      - {code: T6, label: ラベル}
+    F:
+      - {code: F1, label: 太ゴ}
+      - {code: F2, label: 丸ゴ}
+      - {code: F3, label: UD ゴシック}
+      - {code: F4, label: 明朝}
+      - {code: F5, label: 角ゴ細+太}
+      - {code: F6, label: 手書き}
+    H:
+      - {code: H1, label: 質問}
+      - {code: H2, label: 数字}
+      - {code: H3, label: その時の状況}
+      - {code: H4, label: 警報音風の効果音}
+      - {code: H5, label: よくある誤解}
+      - {code: H6, label: 持ち物の1つから}
+    M:
+      - {code: M1, label: 1.5秒}
+      - {code: M2, label: 2.5秒}
+      - {code: M3, label: 4秒}
+      - {code: M4, label: 速から遅}
+      - {code: M5, label: リスト送り}
+      - {code: M6, label: 紙芝居}
+    B:
+      - {code: B1, label: なし}
+      - {code: B2, label: 落ち着いたピアノ}
+      - {code: B3, label: アンビエント}
+      - {code: B4, label: 環境音}
+      - {code: B5, label: 軽いシンセ}
+      - {code: B6, label: アコギ}
+    L:
+      - {code: L1, label: 15-20秒, min: 15, max: 20}
+      - {code: L2, label: 21-30秒, min: 21, max: 30}
+      - {code: L3, label: 31-40秒, min: 31, max: 40}
+      - {code: L4, label: 41-50秒, min: 41, max: 50}
+      - {code: L5, label: 51-60秒, min: 51, max: 60}
+    A:
+      - {code: A1, label: 図解中心}
+      - {code: A2, label: 人物+図解}
+      - {code: A3, label: 物の写真風}
+      - {code: A4, label: 地図}
+      - {code: A5, label: 文字カード}
+      - {code: A6, label: イラスト（いらすとや20枚以下）}

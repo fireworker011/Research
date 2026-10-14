@@ -1,0 +1,3 @@
+date,line,video_id,status,signature,thumb_signature,shared_axes_with_prev,shared_axes_max_last5,bgm_track,length_sec,irasutoya_count,credit_ok,notes
+2026-10-14,kane,14,published,kane:C1-P1-T2-F1-H1-M2-B1-L2-A1,thumb:C1-P1-T1-F1,-,-,none,28,12,yes,公開済みの基準。ルール表に署名があるのはこの1本だけ。ほかの公開4本の署名は表に無かったので入れていない。
+2026-10-14,bousai,51-water-stock,review,bousai:C5-P3-T4-F5-H2-M6-B6-L2-A6,thumb:C5-P3-T4-F5,1,1,B6,24.0,4,yes,bousai:C5-P3-T4-F5-H2-M6-B6-L2-A6。直前との共有 1。直近5本の最大 1

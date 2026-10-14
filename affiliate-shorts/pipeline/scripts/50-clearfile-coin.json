@@ -1,0 +1,60 @@
+{
+  "id": "50-clearfile-coin",
+  "channel": "draft",
+  "title": "渡したクリアファイルの奥に、硬貨が残っていた話",
+  "theme": "クリアファイルの奥の硬貨",
+  "hook": "ファイルに入れとけ。後でな",
+  "mouth_overlay": false,
+  "lines": [
+    {
+      "speaker": "rival",
+      "character": "rival_smug",
+      "emotion": "smug",
+      "text": "ファイルに入れとけ。後でな",
+      "caption": "ファイルに入れとけ。\n後でな",
+      "role": "hook",
+      "effect": "zoom",
+      "sfx": "none"
+    },
+    {
+      "speaker": "narrator",
+      "character": "hero_trouble",
+      "emotion": "trouble",
+      "text": "クリアファイルの奥のポケットへ、硬貨を落としたまま渡した",
+      "caption": "クリアファイルの奥に、\n硬貨を落としたまま渡した",
+      "role": "develop",
+      "effect": "none",
+      "sfx": "paper"
+    },
+    {
+      "speaker": "narrator",
+      "character": "hero_trouble",
+      "emotion": "trouble",
+      "text": "ファイルが財布",
+      "caption": "ファイルが財布",
+      "role": "develop",
+      "effect": "none",
+      "sfx": "whoosh"
+    },
+    {
+      "speaker": "hero",
+      "character": "hero_angry",
+      "emotion": "angry",
+      "text": "ポケットの底を、一回だけめくって見た",
+      "caption": "ポケットの底を、\n一回だけめくって見た",
+      "role": "develop",
+      "effect": "shake",
+      "sfx": "paper"
+    },
+    {
+      "speaker": "narrator",
+      "character": "hero_trouble",
+      "emotion": "trouble",
+      "text": "渡したファイルの奥に、硬貨が残ったままや",
+      "caption": "渡したファイルの奥に、\n硬貨が残ったままや",
+      "role": "punch",
+      "effect": "zoom",
+      "sfx": "coin"
+    }
+  ]
+}

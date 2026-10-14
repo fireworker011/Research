@@ -1,0 +1,136 @@
+# 名前とジャンルは未定。決まったら name と genre を埋める。
+# ここを変えると、声・字幕・クレジット・UPLOAD.md が一緒に切り替わる。
+id: draft
+name: ""
+genre: ""
+tags:
+  - 会社員
+  - 硬貨
+  - shorts
+voices:
+  narrator:
+    style_id: 2
+    credit: "VOICEVOX:四国めたん"
+  hero:
+    style_id: 12
+    angry_style_id: 34
+    credit: "VOICEVOX:白上虎太郎"
+  rival:
+    style_id: 11
+    credit: "VOICEVOX:玄野武宏"
+  boss:
+    style_id: 21
+    credit: "VOICEVOX:剣崎雌雄"
+caption:
+  bar: none
+  stroke: 8
+  credit_stroke: 5
+  size: 104
+  credit_size: 64
+  min_size: 72
+  credit_min_size: 40
+  y_ratio: 0.86
+  credit_y_ratio: 0.5
+  colors:
+    hook: [255, 226, 40, 255]
+    develop: [255, 255, 255, 255]
+    punch: [255, 226, 40, 255]
+    credit: [255, 255, 255, 255]
+credits:
+  on_screen: voices
+  illustration: "イラスト：いらすとや"
+  note: "いらすとやはクレジット表記不要。出典URLはレビュー用。動画の中にURLは出していない。効果音とBGMは合成したオリジナル。"
+upload_template: |
+  # 投稿用
+
+  ## タイトル
+
+  {title}
+
+  ## 説明
+
+  {title}
+
+  #PR
+  フィクションです。体験談でも、収益の保証でもありません。
+  テーマ: {theme}
+  {channel_line}{genre_line}{voices}
+
+  （リンクをプロフィールに置く前に出すときは、`#PR` の行とタグの #PR を外す。URL はどこにも書かない。イラストの出典URLは credits.json。）
+
+  ## タグ
+
+  {tags}
+
+  ## 事実の根拠
+
+  {theme}の寸劇。金額は無い。
+
+  ## 投稿
+
+  しない。
+style:
+  line: kane
+  axes:
+    C:
+      - {code: C1, label: 中央1人+下テロップ}
+      - {code: C2, label: 左右2人の対話}
+      - {code: C3, label: 明細・書類アップ+人物小}
+      - {code: C4, label: ランキング縦リスト}
+      - {code: C5, label: Q&A 2分割}
+      - {code: C6, label: 4コマ風の枠}
+    P:
+      - {code: P1, label: 白×紺}
+      - {code: P2, label: クリーム×赤}
+      - {code: P3, label: ミント×黒}
+      - {code: P4, label: 黄×濃グレー}
+      - {code: P5, label: 薄紫×白}
+      - {code: P6, label: 夜の紺×金}
+    T:
+      - {code: T1, label: 上部帯}
+      - {code: T2, label: 下部帯}
+      - {code: T3, label: 左縦書き}
+      - {code: T4, label: 吹き出し}
+      - {code: T5, label: 中央大きく1語}
+      - {code: T6, label: 右下付箋風}
+    F:
+      - {code: F1, label: ゴシック太}
+      - {code: F2, label: 丸ゴシック}
+      - {code: F3, label: 明朝}
+      - {code: F4, label: 手書き風}
+      - {code: F5, label: 角ゴ細+太の強調}
+      - {code: F6, label: ポップ体}
+    H:
+      - {code: H1, label: 質問から}
+      - {code: H2, label: 数字から}
+      - {code: H3, label: 失敗の結果から}
+      - {code: H4, label: セリフから}
+      - {code: H5, label: あるある宣言}
+      - {code: H6, label: 無音の書類アップから}
+    M:
+      - {code: M1, label: 1.5秒カット}
+      - {code: M2, label: 2.5秒}
+      - {code: M3, label: 4秒ゆっくり}
+      - {code: M4, label: 前半速く後半遅く}
+      - {code: M5, label: 一定+最後に溜め}
+      - {code: M6, label: 静止多めの紙芝居}
+    B:
+      - {code: B1, label: なし}
+      - {code: B2, label: 軽いピアノ}
+      - {code: B3, label: ローファイ}
+      - {code: B4, label: 木琴系コミカル}
+      - {code: B5, label: アコギ}
+      - {code: B6, label: 環境音のみ}
+    L:
+      - {code: L1, label: 15-20秒, min: 15, max: 20}
+      - {code: L2, label: 21-30秒, min: 21, max: 30}
+      - {code: L3, label: 31-40秒, min: 31, max: 40}
+      - {code: L4, label: 41-50秒, min: 41, max: 50}
+      - {code: L5, label: 51-60秒, min: 51, max: 60}
+    A:
+      - {code: A1, label: 人物2+小物3}
+      - {code: A2, label: 人物1+書類多め}
+      - {code: A3, label: 小物中心}
+      - {code: A4, label: 人物3以上の群像}
+      - {code: A5, label: 背景写真風+イラスト少}
+      - {code: A6, label: 図形・表中心}
