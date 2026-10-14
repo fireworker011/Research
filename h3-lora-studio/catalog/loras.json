@@ -783,6 +783,31 @@
         1.0
       ],
       "note": "Female climax reaction. Trigger Remoteorgasm. Not ejaculation; after-ejaculation uses hmcumshot-v2. Facial uses facial-cumshot-h3. Do not stack with cumshot."
+    },
+    {
+      "id": "progressive-acceleration-slider",
+      "filename": "progressive_acceleration_slider_v1.0.safetensors",
+      "repo": "civitai:2994324",
+      "file": "progressive_acceleration_slider_v1.0.safetensors",
+      "modes": [
+        "t2v",
+        "i2v"
+      ],
+      "arch": "fl2va",
+      "turbo": false,
+      "adult": false,
+      "motion_slider": true,
+      "trigger": "",
+      "default_strength": 4.0,
+      "source": "civitai",
+      "civitai_model_id": 2994324,
+      "civitai_version_id": 3395787,
+      "civitai_file_id": 3285711,
+      "strength_range": [
+        -8.0,
+        8.0
+      ],
+      "note": "Progressive Acceleration MMH3 Slider v1.0. No trigger. Recommended weight 4, range -8 to 8. Speeds any action up over the clip. Stands alone: no Turbo, no cinema. chain_punch uses it at 4."
     }
   ]
 }
