@@ -119,8 +119,8 @@ def _synthesize(project: dict, speaker: Speaker, audio_dir: Path, depth: int = 0
         scene["duration"] = max(scene["voice_seconds"] + scene_tail(settings, scene), floor)
     if project.get("style_axes"):
         status = fit_scene_durations(project)
-        if status == "speedup" and depth < 4:
-            scale_speeds(settings, 1.16, 1.12)
+        if status != "ok" and depth < 7:
+            scale_speeds(settings, 1.18, 1.14)
             _synthesize(project, speaker, audio_dir, depth + 1)
             return
         if status != "ok":

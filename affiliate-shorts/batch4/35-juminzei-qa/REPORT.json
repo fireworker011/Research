@@ -1,7 +1,7 @@
 {
   "out": "/workspace/affiliate-shorts/batch4/35-juminzei-qa/out.mp4",
   "template": "qa",
-  "duration_sec": 23.38,
+  "duration_sec": 54.21,
   "scene_count": 14,
   "asset_count": 6,
   "asset_limit": 20,
@@ -48,11 +48,16 @@
     "VOICEVOX:四国めたん",
     "VOICEVOX:玄野武宏",
     "VOICEVOX:白上虎太郎",
-    "VOICEVOX:剣崎雌雄"
+    "VOICEVOX:剣崎雌雄",
+    "イラスト：いらすとや"
   ],
   "terms": {
     "irasutoya": "いらすとやは1つの制作物につき20点まで商用無料（同じ絵の重複は1点）。21点以上の商用利用は有償。クレジット表記は不要。素材そのものの再配布や、イラストを主体にした商品化は不可。背景はコード描画にして点数をキャラと小物に使っている。",
     "voicevox": "使った声はクレジットが要る。四国めたん、白上虎太郎、玄野武宏、剣崎雌雄はクレジットを書けば商用可。青山龍星は個人事業・法人だと事前許可が要るので使っていない。効果音とBGMはこの場で合成したオリジナルなのでクレジット不要。"
   },
-  "within_20_30": true
+  "within_20_30": false,
+  "style_signature": "kane:C1-P4-T5-F4-H3-M3-B5-L5-A3",
+  "irasutoya_count": 1,
+  "within_style_length": true,
+  "style_thumb": "thumb:C1-P4-T5-F4"
 }

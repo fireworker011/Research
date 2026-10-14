@@ -62,9 +62,10 @@
       "sfx": "notify",
       "duration_hint": 2.2,
       "tone": "hook",
-      "voice_path": "/tmp/irasu-rest/33-subsc-aruaru/audio/scene_01.wav",
+      "voice_path": "/tmp/irasu-vary/33-subsc-aruaru/audio/scene_01.wav",
       "voice_seconds": 1.76,
-      "duration": 1.8333333333333333
+      "duration": 4.0,
+      "lead": 0.0
     },
     {
       "id": 2,
@@ -88,9 +89,10 @@
       "sfx": "tick",
       "duration_hint": 2.2,
       "tone": "item",
-      "voice_path": "/tmp/irasu-rest/33-subsc-aruaru/audio/scene_02.wav",
+      "voice_path": "/tmp/irasu-vary/33-subsc-aruaru/audio/scene_02.wav",
       "voice_seconds": 1.195,
-      "duration": 1.25
+      "duration": 4.0,
+      "lead": 0.0
     },
     {
       "id": 3,
@@ -114,9 +116,10 @@
       "sfx": "tick",
       "duration_hint": 2.2,
       "tone": "item",
-      "voice_path": "/tmp/irasu-rest/33-subsc-aruaru/audio/scene_03.wav",
+      "voice_path": "/tmp/irasu-vary/33-subsc-aruaru/audio/scene_03.wav",
       "voice_seconds": 0.981,
-      "duration": 1.0416666666666667
+      "duration": 4.0,
+      "lead": 0.0
     },
     {
       "id": 4,
@@ -140,9 +143,10 @@
       "sfx": "tick",
       "duration_hint": 2.2,
       "tone": "item",
-      "voice_path": "/tmp/irasu-rest/33-subsc-aruaru/audio/scene_04.wav",
+      "voice_path": "/tmp/irasu-vary/33-subsc-aruaru/audio/scene_04.wav",
       "voice_seconds": 1.515,
-      "duration": 1.5833333333333333
+      "duration": 4.0,
+      "lead": 0.0
     },
     {
       "id": 5,
@@ -166,9 +170,10 @@
       "sfx": "tick",
       "duration_hint": 2.2,
       "tone": "item",
-      "voice_path": "/tmp/irasu-rest/33-subsc-aruaru/audio/scene_05.wav",
+      "voice_path": "/tmp/irasu-vary/33-subsc-aruaru/audio/scene_05.wav",
       "voice_seconds": 1.376,
-      "duration": 1.4166666666666667
+      "duration": 4.0,
+      "lead": 0.0
     },
     {
       "id": 6,
@@ -192,9 +197,10 @@
       "sfx": "tick",
       "duration_hint": 2.2,
       "tone": "item",
-      "voice_path": "/tmp/irasu-rest/33-subsc-aruaru/audio/scene_06.wav",
+      "voice_path": "/tmp/irasu-vary/33-subsc-aruaru/audio/scene_06.wav",
       "voice_seconds": 1.717,
-      "duration": 1.7916666666666667
+      "duration": 4.0,
+      "lead": 0.0
     },
     {
       "id": 7,
@@ -218,9 +224,10 @@
       "sfx": "tick",
       "duration_hint": 2.2,
       "tone": "item",
-      "voice_path": "/tmp/irasu-rest/33-subsc-aruaru/audio/scene_07.wav",
+      "voice_path": "/tmp/irasu-vary/33-subsc-aruaru/audio/scene_07.wav",
       "voice_seconds": 1.248,
-      "duration": 1.2916666666666667
+      "duration": 4.0,
+      "lead": 0.0
     },
     {
       "id": 8,
@@ -244,9 +251,10 @@
       "sfx": "rise",
       "duration_hint": 2.2,
       "tone": "item",
-      "voice_path": "/tmp/irasu-rest/33-subsc-aruaru/audio/scene_08.wav",
+      "voice_path": "/tmp/irasu-vary/33-subsc-aruaru/audio/scene_08.wav",
       "voice_seconds": 0.928,
-      "duration": 1.0
+      "duration": 4.0,
+      "lead": 0.0
     },
     {
       "id": 9,
@@ -270,9 +278,10 @@
       "sfx": "rise",
       "duration_hint": 2.2,
       "tone": "punch",
-      "voice_path": "/tmp/irasu-rest/33-subsc-aruaru/audio/scene_09.wav",
+      "voice_path": "/tmp/irasu-vary/33-subsc-aruaru/audio/scene_09.wav",
       "voice_seconds": 1.845,
-      "duration": 1.9583333333333333
+      "duration": 4.0,
+      "lead": 0.0
     },
     {
       "id": 10,
@@ -296,9 +305,10 @@
       "sfx": "shock",
       "duration_hint": 2.2,
       "tone": "punch",
-      "voice_path": "/tmp/irasu-rest/33-subsc-aruaru/audio/scene_10.wav",
+      "voice_path": "/tmp/irasu-vary/33-subsc-aruaru/audio/scene_10.wav",
       "voice_seconds": 1.088,
-      "duration": 1.2083333333333333
+      "duration": 4.0,
+      "lead": 0.0
     },
     {
       "id": 11,
@@ -322,9 +332,10 @@
       "sfx": "coin",
       "duration_hint": 2.2,
       "tone": "punch",
-      "voice_path": "/tmp/irasu-rest/33-subsc-aruaru/audio/scene_11.wav",
+      "voice_path": "/tmp/irasu-vary/33-subsc-aruaru/audio/scene_11.wav",
       "voice_seconds": 1.451,
-      "duration": 1.5416666666666667
+      "duration": 4.0,
+      "lead": 0.0
     },
     {
       "id": 12,
@@ -348,9 +359,10 @@
       "sfx": "none",
       "duration_hint": 2.2,
       "tone": "close",
-      "voice_path": "/tmp/irasu-rest/33-subsc-aruaru/audio/scene_12.wav",
+      "voice_path": "/tmp/irasu-vary/33-subsc-aruaru/audio/scene_12.wav",
       "voice_seconds": 1.803,
-      "duration": 2.0
+      "duration": 4.0,
+      "lead": 0.0
     },
     {
       "id": 13,
@@ -374,9 +386,10 @@
       "sfx": "tick",
       "duration_hint": 2.2,
       "tone": "close",
-      "voice_path": "/tmp/irasu-rest/33-subsc-aruaru/audio/scene_13.wav",
+      "voice_path": "/tmp/irasu-vary/33-subsc-aruaru/audio/scene_13.wav",
       "voice_seconds": 1.173,
-      "duration": 1.3333333333333333
+      "duration": 4.0,
+      "lead": 0.0
     },
     {
       "id": 14,
@@ -385,7 +398,7 @@
       "style_id": 2,
       "credit": "VOICEVOX:四国めたん",
       "text": "",
-      "telop": "VOICEVOX:四国めたん\nVOICEVOX:剣崎雌雄",
+      "telop": "VOICEVOX:四国めたん\nVOICEVOX:剣崎雌雄\nイラスト：いらすとや",
       "bg": "credit",
       "characters": [],
       "props": [],
@@ -394,14 +407,16 @@
       "sfx": "none",
       "duration_hint": 2.2,
       "series_note": "更新係",
-      "voice_path": "/tmp/irasu-rest/33-subsc-aruaru/audio/scene_14.wav",
+      "voice_path": "/tmp/irasu-vary/33-subsc-aruaru/audio/scene_14.wav",
       "voice_seconds": 0.15,
-      "duration": 2.0
+      "duration": 2.2083333333333335,
+      "lead": 0.0
     }
   ],
   "credits": [
     "VOICEVOX:四国めたん",
-    "VOICEVOX:剣崎雌雄"
+    "VOICEVOX:剣崎雌雄",
+    "イラスト：いらすとや"
   ],
   "asset_ids": [
     "hero_trouble",
@@ -480,12 +495,12 @@
     "rejected": []
   },
   "asset_paths": {
-    "hero_trouble": "/tmp/irasu-rest/33-subsc-aruaru/assets/hero_trouble.png",
-    "rival_smug": "/tmp/irasu-rest/33-subsc-aruaru/assets/rival_smug.png",
-    "hero_tired": "/tmp/irasu-rest/33-subsc-aruaru/assets/hero_tired.png",
-    "hero_angry": "/tmp/irasu-rest/33-subsc-aruaru/assets/hero_angry.png",
-    "hero_smile": "/tmp/irasu-rest/33-subsc-aruaru/assets/hero_smile.png",
-    "boss_angry": "/tmp/irasu-rest/33-subsc-aruaru/assets/boss_angry.png"
+    "hero_trouble": "/tmp/irasu-vary/33-subsc-aruaru/assets/hero_trouble.png",
+    "rival_smug": "/tmp/irasu-vary/33-subsc-aruaru/assets/rival_smug.png",
+    "hero_tired": "/tmp/irasu-vary/33-subsc-aruaru/assets/hero_tired.png",
+    "hero_angry": "/tmp/irasu-vary/33-subsc-aruaru/assets/hero_angry.png",
+    "hero_smile": "/tmp/irasu-vary/33-subsc-aruaru/assets/hero_smile.png",
+    "boss_angry": "/tmp/irasu-vary/33-subsc-aruaru/assets/boss_angry.png"
   },
   "layout": {
     "telop_y_ratio": 0.8,
@@ -498,8 +513,8 @@
     "telop_scale": 1.0,
     "sfx_gain": 0.14,
     "bgm_gain": 0.045,
-    "mouth_gain": 1.0,
-    "bgm": true,
+    "mouth_gain": 0.0,
+    "bgm": false,
     "tail": 0.08,
     "role_speed": {
       "hook": 1.5,
@@ -514,7 +529,8 @@
       "punch": 0.1,
       "close": 0.18,
       "credit": 0.0
-    }
+    },
+    "bgm_kind": "B1"
   },
   "telop_style": {
     "bar": "pill",
@@ -572,5 +588,26 @@
     "irasutoya": "いらすとやは1つの制作物につき20点まで商用無料（同じ絵の重複は1点）。21点以上の商用利用は有償。クレジット表記は不要。素材そのものの再配布や、イラストを主体にした商品化は不可。背景はコード描画にして点数をキャラと小物に使っている。",
     "voicevox": "使った声はクレジットが要る。四国めたん、白上虎太郎、玄野武宏、剣崎雌雄はクレジットを書けば商用可。青山龍星は個人事業・法人だと事前許可が要るので使っていない。効果音とBGMはこの場で合成したオリジナルなのでクレジット不要。"
   },
-  "notes": []
+  "notes": [],
+  "style_signature": "kane:C1-P3-T3-F3-H1-M3-B1-L5-A1",
+  "style_axes": {
+    "C": "C1",
+    "P": "P3",
+    "T": "T3",
+    "F": "F3",
+    "H": "H1",
+    "M": "M3",
+    "B": "B1",
+    "L": "L5",
+    "A": "A1",
+    "line": "kane"
+  },
+  "style_cast": [
+    "hero_trouble",
+    "hero_tired"
+  ],
+  "style_used_assets": [
+    "hero_tired",
+    "hero_trouble"
+  ]
 }

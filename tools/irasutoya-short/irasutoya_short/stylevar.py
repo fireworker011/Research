@@ -752,7 +752,7 @@ def rhythm_ok(scenes: list[dict], tempo: str) -> bool:
         half = max(1, len(durations) // 2)
         early = sum(durations[:half]) / half
         late = sum(durations[half:]) / max(1, len(durations) - half)
-        return late >= early + 0.7
+        return late >= early + 0.5
     if tempo == "M5":
         return max(durations) >= mean + 0.7
     if tempo == "M6":
@@ -790,11 +790,52 @@ def fit_scene_durations(project: dict) -> str:
         frames[_grow_index(weights, frames)] += 1
     if not (lo_f <= sum(frames) <= hi_f):
         return "rhythm"
+    if not _shape_frames(frames, base, scenes, axes["M"]):
+        return "speedup"
     for scene, count in zip(scenes, frames):
         scene["duration"] = count / FPS
     if not rhythm_ok(scenes, axes["M"]):
-        return "rhythm"
+        return "speedup"
     return "ok"
+
+
+def _shape_frames(frames: list[int], base: list[int], scenes: list[dict], tempo: str) -> bool:
+    """合計は変えず、速い前半や最後の溜めが残るようにコマを移す。"""
+    content = _content_indexes(scenes)
+    if tempo == "M4":
+        half = max(1, len(content) // 2)
+        early = content[:half]
+        late = content[half:]
+        gap = int(round(0.5 * FPS))
+        for _ in range(20000):
+            early_mean = sum(frames[i] for i in early) / len(early)
+            late_mean = sum(frames[i] for i in late) / max(1, len(late))
+            if late_mean >= early_mean + gap:
+                return True
+            donors = [i for i in early if frames[i] > base[i]]
+            if not donors:
+                return False
+            donor = max(donors, key=lambda i: frames[i])
+            recv = min(late, key=lambda i: frames[i])
+            frames[donor] -= 1
+            frames[recv] += 1
+        return False
+    if tempo == "M5":
+        hold = content[-1]
+        others = [i for i in content if i != hold]
+        gap = int(round(0.7 * FPS))
+        for _ in range(20000):
+            mean = sum(frames[i] for i in content) / len(content)
+            if frames[hold] >= mean + gap:
+                return True
+            donors = [i for i in others if frames[i] > base[i]]
+            if not donors:
+                return False
+            donor = max(donors, key=lambda i: frames[i])
+            frames[donor] -= 1
+            frames[hold] += 1
+        return False
+    return True
 
 
 def length_ok(seconds: float, length_code: str) -> bool:

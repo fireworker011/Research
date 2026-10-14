@@ -59,9 +59,10 @@
       "sfx": "rise",
       "duration_hint": 2.2,
       "tone": "rank",
-      "voice_path": "/tmp/irasu-rest/19-car-lease-order/audio/scene_01.wav",
-      "voice_seconds": 1.035,
-      "duration": 1.125
+      "voice_path": "/tmp/irasu-vary/19-car-lease-order/audio/scene_01.wav",
+      "voice_seconds": 0.896,
+      "duration": 0.9166666666666666,
+      "lead": 0.0
     },
     {
       "id": 2,
@@ -85,9 +86,10 @@
       "sfx": "rise",
       "duration_hint": 2.2,
       "tone": "rank",
-      "voice_path": "/tmp/irasu-rest/19-car-lease-order/audio/scene_02.wav",
-      "voice_seconds": 1.781,
-      "duration": 1.9166666666666667
+      "voice_path": "/tmp/irasu-vary/19-car-lease-order/audio/scene_02.wav",
+      "voice_seconds": 1.557,
+      "duration": 1.5833333333333333,
+      "lead": 0.0
     },
     {
       "id": 3,
@@ -111,9 +113,10 @@
       "sfx": "tick",
       "duration_hint": 2.2,
       "tone": "rank",
-      "voice_path": "/tmp/irasu-rest/19-car-lease-order/audio/scene_03.wav",
-      "voice_seconds": 0.768,
-      "duration": 0.875
+      "voice_path": "/tmp/irasu-vary/19-car-lease-order/audio/scene_03.wav",
+      "voice_seconds": 0.651,
+      "duration": 0.6666666666666666,
+      "lead": 0.0
     },
     {
       "id": 4,
@@ -137,9 +140,10 @@
       "sfx": "none",
       "duration_hint": 2.2,
       "tone": "rank",
-      "voice_path": "/tmp/irasu-rest/19-car-lease-order/audio/scene_04.wav",
-      "voice_seconds": 0.864,
-      "duration": 1.0
+      "voice_path": "/tmp/irasu-vary/19-car-lease-order/audio/scene_04.wav",
+      "voice_seconds": 0.747,
+      "duration": 0.75,
+      "lead": 0.0
     },
     {
       "id": 5,
@@ -163,9 +167,10 @@
       "sfx": "rise",
       "duration_hint": 2.2,
       "tone": "rank",
-      "voice_path": "/tmp/irasu-rest/19-car-lease-order/audio/scene_05.wav",
-      "voice_seconds": 1.717,
-      "duration": 1.8333333333333333
+      "voice_path": "/tmp/irasu-vary/19-car-lease-order/audio/scene_05.wav",
+      "voice_seconds": 1.483,
+      "duration": 1.5,
+      "lead": 0.0
     },
     {
       "id": 6,
@@ -189,9 +194,10 @@
       "sfx": "tick",
       "duration_hint": 2.2,
       "tone": "rank",
-      "voice_path": "/tmp/irasu-rest/19-car-lease-order/audio/scene_06.wav",
-      "voice_seconds": 1.131,
-      "duration": 1.25
+      "voice_path": "/tmp/irasu-vary/19-car-lease-order/audio/scene_06.wav",
+      "voice_seconds": 1.003,
+      "duration": 1.0416666666666667,
+      "lead": 0.0
     },
     {
       "id": 7,
@@ -215,9 +221,10 @@
       "sfx": "none",
       "duration_hint": 2.2,
       "tone": "rank",
-      "voice_path": "/tmp/irasu-rest/19-car-lease-order/audio/scene_07.wav",
-      "voice_seconds": 1.259,
-      "duration": 1.375
+      "voice_path": "/tmp/irasu-vary/19-car-lease-order/audio/scene_07.wav",
+      "voice_seconds": 1.056,
+      "duration": 1.2916666666666667,
+      "lead": 0.0
     },
     {
       "id": 8,
@@ -242,9 +249,10 @@
       "duration_hint": 2.2,
       "tone": "rank",
       "hold": 1.8,
-      "voice_path": "/tmp/irasu-rest/19-car-lease-order/audio/scene_08.wav",
-      "voice_seconds": 2.88,
-      "duration": 3.1666666666666665
+      "voice_path": "/tmp/irasu-vary/19-car-lease-order/audio/scene_08.wav",
+      "voice_seconds": 2.453,
+      "duration": 2.6666666666666665,
+      "lead": 0.0
     },
     {
       "id": 9,
@@ -268,9 +276,10 @@
       "sfx": "shock",
       "duration_hint": 2.2,
       "tone": "punch",
-      "voice_path": "/tmp/irasu-rest/19-car-lease-order/audio/scene_09.wav",
-      "voice_seconds": 1.184,
-      "duration": 1.4583333333333333
+      "voice_path": "/tmp/irasu-vary/19-car-lease-order/audio/scene_09.wav",
+      "voice_seconds": 1.035,
+      "duration": 1.2916666666666667,
+      "lead": 0.0
     },
     {
       "id": 10,
@@ -294,9 +303,10 @@
       "sfx": "none",
       "duration_hint": 2.2,
       "tone": "punch",
-      "voice_path": "/tmp/irasu-rest/19-car-lease-order/audio/scene_10.wav",
-      "voice_seconds": 1.045,
-      "duration": 1.3333333333333333
+      "voice_path": "/tmp/irasu-vary/19-car-lease-order/audio/scene_10.wav",
+      "voice_seconds": 0.896,
+      "duration": 1.1666666666666667,
+      "lead": 0.0
     },
     {
       "id": 11,
@@ -320,9 +330,10 @@
       "sfx": "coin",
       "duration_hint": 2.2,
       "tone": "punch",
-      "voice_path": "/tmp/irasu-rest/19-car-lease-order/audio/scene_11.wav",
-      "voice_seconds": 2.133,
-      "duration": 2.4166666666666665
+      "voice_path": "/tmp/irasu-vary/19-car-lease-order/audio/scene_11.wav",
+      "voice_seconds": 1.813,
+      "duration": 2.0833333333333335,
+      "lead": 0.0
     },
     {
       "id": 12,
@@ -346,9 +357,10 @@
       "sfx": "none",
       "duration_hint": 2.2,
       "tone": "close",
-      "voice_path": "/tmp/irasu-rest/19-car-lease-order/audio/scene_12.wav",
-      "voice_seconds": 1.579,
-      "duration": 1.75
+      "voice_path": "/tmp/irasu-vary/19-car-lease-order/audio/scene_12.wav",
+      "voice_seconds": 1.376,
+      "duration": 1.6666666666666667,
+      "lead": 0.0
     },
     {
       "id": 13,
@@ -372,9 +384,10 @@
       "sfx": "rise",
       "duration_hint": 2.2,
       "tone": "close",
-      "voice_path": "/tmp/irasu-rest/19-car-lease-order/audio/scene_13.wav",
-      "voice_seconds": 1.291,
-      "duration": 1.4583333333333333
+      "voice_path": "/tmp/irasu-vary/19-car-lease-order/audio/scene_13.wav",
+      "voice_seconds": 1.12,
+      "duration": 1.375,
+      "lead": 0.0
     },
     {
       "id": 14,
@@ -383,7 +396,7 @@
       "style_id": 2,
       "credit": "VOICEVOX:四国めたん",
       "text": "",
-      "telop": "VOICEVOX:四国めたん\nVOICEVOX:玄野武宏\nVOICEVOX:白上虎太郎\nVOICEVOX:剣崎雌雄",
+      "telop": "VOICEVOX:四国めたん\nVOICEVOX:玄野武宏\nVOICEVOX:白上虎太郎\nVOICEVOX:剣崎雌雄\nイラスト：いらすとや",
       "bg": "credit",
       "characters": [],
       "props": [],
@@ -392,16 +405,18 @@
       "sfx": "none",
       "duration_hint": 2.2,
       "series_note": "返却係",
-      "voice_path": "/tmp/irasu-rest/19-car-lease-order/audio/scene_14.wav",
+      "voice_path": "/tmp/irasu-vary/19-car-lease-order/audio/scene_14.wav",
       "voice_seconds": 0.15,
-      "duration": 2.0
+      "duration": 2.0,
+      "lead": 0.0
     }
   ],
   "credits": [
     "VOICEVOX:四国めたん",
     "VOICEVOX:玄野武宏",
     "VOICEVOX:白上虎太郎",
-    "VOICEVOX:剣崎雌雄"
+    "VOICEVOX:剣崎雌雄",
+    "イラスト：いらすとや"
   ],
   "asset_ids": [
     "rival_smug",
@@ -480,12 +495,12 @@
     "rejected": []
   },
   "asset_paths": {
-    "rival_smug": "/tmp/irasu-rest/19-car-lease-order/assets/rival_smug.png",
-    "hero_trouble": "/tmp/irasu-rest/19-car-lease-order/assets/hero_trouble.png",
-    "hero_angry": "/tmp/irasu-rest/19-car-lease-order/assets/hero_angry.png",
-    "hero_tired": "/tmp/irasu-rest/19-car-lease-order/assets/hero_tired.png",
-    "hero_smile": "/tmp/irasu-rest/19-car-lease-order/assets/hero_smile.png",
-    "boss_angry": "/tmp/irasu-rest/19-car-lease-order/assets/boss_angry.png"
+    "rival_smug": "/tmp/irasu-vary/19-car-lease-order/assets/rival_smug.png",
+    "hero_trouble": "/tmp/irasu-vary/19-car-lease-order/assets/hero_trouble.png",
+    "hero_angry": "/tmp/irasu-vary/19-car-lease-order/assets/hero_angry.png",
+    "hero_tired": "/tmp/irasu-vary/19-car-lease-order/assets/hero_tired.png",
+    "hero_smile": "/tmp/irasu-vary/19-car-lease-order/assets/hero_smile.png",
+    "boss_angry": "/tmp/irasu-vary/19-car-lease-order/assets/boss_angry.png"
   },
   "layout": {
     "telop_y_ratio": 0.78,
@@ -493,20 +508,20 @@
     "screenshot_count": 0
   },
   "settings": {
-    "speed": 1.3,
-    "hook_speed": 1.55,
+    "speed": 1.534,
+    "hook_speed": 1.767,
     "telop_scale": 1.0,
     "sfx_gain": 0.26,
     "bgm_gain": 0.045,
-    "mouth_gain": 1.0,
+    "mouth_gain": 0.0,
     "bgm": true,
     "tail": 0.14,
     "role_speed": {
-      "hook": 1.55,
-      "develop": 1.3,
-      "punch": 1.16,
-      "close": 1.2,
-      "credit": 1.3
+      "hook": 1.767,
+      "develop": 1.534,
+      "punch": 1.369,
+      "close": 1.416,
+      "credit": 1.534
     },
     "role_tail": {
       "hook": 0.1,
@@ -514,7 +529,8 @@
       "punch": 0.28,
       "close": 0.16,
       "credit": 0.0
-    }
+    },
+    "bgm_kind": "B6"
   },
   "telop_style": {
     "bar": "square",
@@ -585,5 +601,24 @@
     "irasutoya": "いらすとやは1つの制作物につき20点まで商用無料（同じ絵の重複は1点）。21点以上の商用利用は有償。クレジット表記は不要。素材そのものの再配布や、イラストを主体にした商品化は不可。背景はコード描画にして点数をキャラと小物に使っている。",
     "voicevox": "使った声はクレジットが要る。四国めたん、白上虎太郎、玄野武宏、剣崎雌雄はクレジットを書けば商用可。青山龍星は個人事業・法人だと事前許可が要るので使っていない。効果音とBGMはこの場で合成したオリジナルなのでクレジット不要。"
   },
-  "notes": []
+  "notes": [],
+  "style_signature": "kane:C6-P1-T2-F1-H5-M4-B6-L1-A2",
+  "style_axes": {
+    "C": "C6",
+    "P": "P1",
+    "T": "T2",
+    "F": "F1",
+    "H": "H5",
+    "M": "M4",
+    "B": "B6",
+    "L": "L1",
+    "A": "A2",
+    "line": "kane"
+  },
+  "style_cast": [
+    "hero_trouble"
+  ],
+  "style_used_assets": [
+    "hero_trouble"
+  ]
 }

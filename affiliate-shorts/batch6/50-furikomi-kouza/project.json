@@ -33,9 +33,10 @@
       "effect": "zoom",
       "sfx": "none",
       "duration_hint": 2.0,
-      "voice_path": "/tmp/irasu-b6/50-furikomi-kouza/audio/scene_01.wav",
+      "voice_path": "/tmp/irasu-vary/50-furikomi-kouza/audio/scene_01.wav",
       "voice_seconds": 1.205,
-      "duration": 3.125
+      "duration": 2.2916666666666665,
+      "lead": 0.0
     },
     {
       "id": 2,
@@ -58,9 +59,10 @@
       "effect": "none",
       "sfx": "paper",
       "duration_hint": 2.2,
-      "voice_path": "/tmp/irasu-b6/50-furikomi-kouza/audio/scene_02.wav",
+      "voice_path": "/tmp/irasu-vary/50-furikomi-kouza/audio/scene_02.wav",
       "voice_seconds": 1.984,
-      "duration": 3.875
+      "duration": 2.2916666666666665,
+      "lead": 0.0
     },
     {
       "id": 3,
@@ -83,9 +85,10 @@
       "effect": "shake",
       "sfx": "none",
       "duration_hint": 2.2,
-      "voice_path": "/tmp/irasu-b6/50-furikomi-kouza/audio/scene_03.wav",
+      "voice_path": "/tmp/irasu-vary/50-furikomi-kouza/audio/scene_03.wav",
       "voice_seconds": 0.811,
-      "duration": 2.7083333333333335
+      "duration": 2.2916666666666665,
+      "lead": 0.0
     },
     {
       "id": 4,
@@ -108,9 +111,10 @@
       "effect": "none",
       "sfx": "none",
       "duration_hint": 2.2,
-      "voice_path": "/tmp/irasu-b6/50-furikomi-kouza/audio/scene_04.wav",
+      "voice_path": "/tmp/irasu-vary/50-furikomi-kouza/audio/scene_04.wav",
       "voice_seconds": 1.557,
-      "duration": 3.4583333333333335
+      "duration": 2.2916666666666665,
+      "lead": 0.0
     },
     {
       "id": 5,
@@ -133,9 +137,10 @@
       "effect": "zoom",
       "sfx": "coin",
       "duration_hint": 2.2,
-      "voice_path": "/tmp/irasu-b6/50-furikomi-kouza/audio/scene_05.wav",
+      "voice_path": "/tmp/irasu-vary/50-furikomi-kouza/audio/scene_05.wav",
       "voice_seconds": 1.781,
-      "duration": 3.6666666666666665
+      "duration": 5.583333333333333,
+      "lead": 0.0
     },
     {
       "id": 6,
@@ -144,7 +149,7 @@
       "style_id": 2,
       "credit": "VOICEVOX:四国めたん",
       "text": "",
-      "telop": "VOICEVOX:四国めたん\nVOICEVOX:白上虎太郎\nVOICEVOX:玄野武宏",
+      "telop": "VOICEVOX:玄野武宏\nVOICEVOX:四国めたん\nVOICEVOX:白上虎太郎\nイラスト：いらすとや",
       "bg": "credit",
       "characters": [],
       "props": [],
@@ -152,15 +157,17 @@
       "effect": "none",
       "sfx": "none",
       "duration_hint": 2.2,
-      "voice_path": "/tmp/irasu-b6/50-furikomi-kouza/audio/scene_06.wav",
+      "voice_path": "/tmp/irasu-vary/50-furikomi-kouza/audio/scene_06.wav",
       "voice_seconds": 0.15,
-      "duration": 3.75
+      "duration": 2.2083333333333335,
+      "lead": 0.0
     }
   ],
   "credits": [
+    "VOICEVOX:玄野武宏",
     "VOICEVOX:四国めたん",
     "VOICEVOX:白上虎太郎",
-    "VOICEVOX:玄野武宏"
+    "イラスト：いらすとや"
   ],
   "asset_ids": [
     "rival_smug",
@@ -217,10 +224,12 @@
     "rejected": []
   },
   "asset_paths": {
-    "rival_smug": "/tmp/irasu-b6/50-furikomi-kouza/assets/rival_smug.png",
-    "hero_trouble": "/tmp/irasu-b6/50-furikomi-kouza/assets/hero_trouble.png",
-    "hero_angry": "/tmp/irasu-b6/50-furikomi-kouza/assets/hero_angry.png",
-    "hero_tired": "/tmp/irasu-b6/50-furikomi-kouza/assets/hero_tired.png"
+    "rival_smug": "/tmp/irasu-vary/50-furikomi-kouza/assets/rival_smug.png",
+    "hero_trouble": "/tmp/irasu-vary/50-furikomi-kouza/assets/hero_trouble.png",
+    "hero_angry": "/tmp/irasu-vary/50-furikomi-kouza/assets/hero_angry.png",
+    "hero_tired": "/tmp/irasu-vary/50-furikomi-kouza/assets/hero_tired.png",
+    "hero_smile": "/tmp/irasu-vary/50-furikomi-kouza/assets/hero_smile.png",
+    "boss_angry": "/tmp/irasu-vary/50-furikomi-kouza/assets/boss_angry.png"
   },
   "layout": {
     "telop_y_ratio": 0.84,
@@ -233,7 +242,7 @@
     "telop_scale": 1.0,
     "sfx_gain": 0.22,
     "bgm_gain": 0.045,
-    "mouth_gain": 1.0,
+    "mouth_gain": 0.0,
     "bgm": true,
     "tail": 0.16,
     "role_speed": {
@@ -249,7 +258,8 @@
       "punch": 0.16,
       "close": 0.16,
       "credit": 0.0
-    }
+    },
+    "bgm_kind": "B2"
   },
   "telop_style": {
     "bar": "round",
@@ -301,5 +311,28 @@
     "irasutoya": "いらすとやは1つの制作物につき20点まで商用無料（同じ絵の重複は1点）。21点以上の商用利用は有償。クレジット表記は不要。素材そのものの再配布や、イラストを主体にした商品化は不可。背景はコード描画にして点数をキャラと小物に使っている。",
     "voicevox": "使った声はクレジットが要る。四国めたん、白上虎太郎、玄野武宏、剣崎雌雄はクレジットを書けば商用可。青山龍星は個人事業・法人だと事前許可が要るので使っていない。効果音とBGMはこの場で合成したオリジナルなのでクレジット不要。"
   },
-  "notes": []
+  "notes": [],
+  "style_signature": "kane:C3-P4-T6-F6-H5-M5-B2-L1-A4",
+  "style_axes": {
+    "C": "C3",
+    "P": "P4",
+    "T": "T6",
+    "F": "F6",
+    "H": "H5",
+    "M": "M5",
+    "B": "B2",
+    "L": "L1",
+    "A": "A4",
+    "line": "kane"
+  },
+  "style_cast": [
+    "hero_trouble",
+    "hero_tired",
+    "hero_angry"
+  ],
+  "style_used_assets": [
+    "hero_angry",
+    "hero_tired",
+    "hero_trouble"
+  ]
 }

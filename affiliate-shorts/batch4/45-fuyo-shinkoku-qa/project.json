@@ -55,9 +55,10 @@
       "duration_hint": 2.2,
       "tone": "question",
       "hold": 1.6,
-      "voice_path": "/tmp/irasu-b4/45-fuyo-shinkoku-qa/audio/scene_01.wav",
+      "voice_path": "/tmp/irasu-vary/45-fuyo-shinkoku-qa/audio/scene_01.wav",
       "voice_seconds": 2.112,
-      "duration": 2.4583333333333335
+      "duration": 2.125,
+      "lead": 0.0
     },
     {
       "id": 2,
@@ -83,9 +84,10 @@
       "sfx": "tick",
       "duration_hint": 2.2,
       "tone": "guess",
-      "voice_path": "/tmp/irasu-b4/45-fuyo-shinkoku-qa/audio/scene_02.wav",
+      "voice_path": "/tmp/irasu-vary/45-fuyo-shinkoku-qa/audio/scene_02.wav",
       "voice_seconds": 2.325,
-      "duration": 2.4583333333333335
+      "duration": 2.3333333333333335,
+      "lead": 0.0
     },
     {
       "id": 3,
@@ -109,9 +111,10 @@
       "sfx": "none",
       "duration_hint": 2.2,
       "tone": "guess",
-      "voice_path": "/tmp/irasu-b4/45-fuyo-shinkoku-qa/audio/scene_03.wav",
+      "voice_path": "/tmp/irasu-vary/45-fuyo-shinkoku-qa/audio/scene_03.wav",
       "voice_seconds": 0.96,
-      "duration": 1.0833333333333333
+      "duration": 1.0,
+      "lead": 0.0
     },
     {
       "id": 4,
@@ -135,9 +138,10 @@
       "sfx": "tick",
       "duration_hint": 2.2,
       "tone": "guess",
-      "voice_path": "/tmp/irasu-b4/45-fuyo-shinkoku-qa/audio/scene_04.wav",
+      "voice_path": "/tmp/irasu-vary/45-fuyo-shinkoku-qa/audio/scene_04.wav",
       "voice_seconds": 1.419,
-      "duration": 1.5416666666666667
+      "duration": 1.4583333333333333,
+      "lead": 0.0
     },
     {
       "id": 5,
@@ -161,9 +165,10 @@
       "sfx": "tick",
       "duration_hint": 2.2,
       "tone": "guess",
-      "voice_path": "/tmp/irasu-b4/45-fuyo-shinkoku-qa/audio/scene_05.wav",
+      "voice_path": "/tmp/irasu-vary/45-fuyo-shinkoku-qa/audio/scene_05.wav",
       "voice_seconds": 1.547,
-      "duration": 1.6666666666666667
+      "duration": 1.5833333333333333,
+      "lead": 0.0
     },
     {
       "id": 6,
@@ -187,9 +192,10 @@
       "sfx": "none",
       "duration_hint": 2.2,
       "tone": "guess",
-      "voice_path": "/tmp/irasu-b4/45-fuyo-shinkoku-qa/audio/scene_06.wav",
+      "voice_path": "/tmp/irasu-vary/45-fuyo-shinkoku-qa/audio/scene_06.wav",
       "voice_seconds": 1.152,
-      "duration": 1.2916666666666667
+      "duration": 1.1666666666666667,
+      "lead": 0.0
     },
     {
       "id": 7,
@@ -213,9 +219,10 @@
       "sfx": "tick",
       "duration_hint": 2.2,
       "tone": "guess",
-      "voice_path": "/tmp/irasu-b4/45-fuyo-shinkoku-qa/audio/scene_07.wav",
+      "voice_path": "/tmp/irasu-vary/45-fuyo-shinkoku-qa/audio/scene_07.wav",
       "voice_seconds": 1.611,
-      "duration": 1.75
+      "duration": 2.7916666666666665,
+      "lead": 0.0
     },
     {
       "id": 8,
@@ -239,9 +246,10 @@
       "sfx": "shock",
       "duration_hint": 2.2,
       "tone": "answer",
-      "voice_path": "/tmp/irasu-b4/45-fuyo-shinkoku-qa/audio/scene_08.wav",
+      "voice_path": "/tmp/irasu-vary/45-fuyo-shinkoku-qa/audio/scene_08.wav",
       "voice_seconds": 1.696,
-      "duration": 1.8333333333333333
+      "duration": 2.875,
+      "lead": 0.0
     },
     {
       "id": 9,
@@ -265,9 +273,10 @@
       "sfx": "shock",
       "duration_hint": 2.2,
       "tone": "answer",
-      "voice_path": "/tmp/irasu-b4/45-fuyo-shinkoku-qa/audio/scene_09.wav",
+      "voice_path": "/tmp/irasu-vary/45-fuyo-shinkoku-qa/audio/scene_09.wav",
       "voice_seconds": 0.853,
-      "duration": 0.9583333333333334
+      "duration": 2.0416666666666665,
+      "lead": 0.0
     },
     {
       "id": 10,
@@ -291,9 +300,10 @@
       "sfx": "none",
       "duration_hint": 2.2,
       "tone": "answer",
-      "voice_path": "/tmp/irasu-b4/45-fuyo-shinkoku-qa/audio/scene_10.wav",
+      "voice_path": "/tmp/irasu-vary/45-fuyo-shinkoku-qa/audio/scene_10.wav",
       "voice_seconds": 1.099,
-      "duration": 1.2083333333333333
+      "duration": 2.3333333333333335,
+      "lead": 0.0
     },
     {
       "id": 11,
@@ -317,9 +327,10 @@
       "sfx": "coin",
       "duration_hint": 2.2,
       "tone": "answer",
-      "voice_path": "/tmp/irasu-b4/45-fuyo-shinkoku-qa/audio/scene_11.wav",
+      "voice_path": "/tmp/irasu-vary/45-fuyo-shinkoku-qa/audio/scene_11.wav",
       "voice_seconds": 1.387,
-      "duration": 1.5
+      "duration": 2.625,
+      "lead": 0.0
     },
     {
       "id": 12,
@@ -343,9 +354,10 @@
       "sfx": "notify",
       "duration_hint": 2.2,
       "tone": "question",
-      "voice_path": "/tmp/irasu-b4/45-fuyo-shinkoku-qa/audio/scene_12.wav",
+      "voice_path": "/tmp/irasu-vary/45-fuyo-shinkoku-qa/audio/scene_12.wav",
       "voice_seconds": 1.589,
-      "duration": 1.8333333333333333
+      "duration": 2.8333333333333335,
+      "lead": 0.0
     },
     {
       "id": 13,
@@ -369,9 +381,10 @@
       "sfx": "none",
       "duration_hint": 2.2,
       "tone": "answer",
-      "voice_path": "/tmp/irasu-b4/45-fuyo-shinkoku-qa/audio/scene_13.wav",
+      "voice_path": "/tmp/irasu-vary/45-fuyo-shinkoku-qa/audio/scene_13.wav",
       "voice_seconds": 1.589,
-      "duration": 1.8333333333333333
+      "duration": 2.8333333333333335,
+      "lead": 0.0
     },
     {
       "id": 14,
@@ -380,7 +393,7 @@
       "style_id": 2,
       "credit": "VOICEVOX:四国めたん",
       "text": "",
-      "telop": "VOICEVOX:四国めたん\nVOICEVOX:玄野武宏\nVOICEVOX:白上虎太郎\nVOICEVOX:剣崎雌雄",
+      "telop": "VOICEVOX:四国めたん\nVOICEVOX:玄野武宏\nVOICEVOX:白上虎太郎\nVOICEVOX:剣崎雌雄\nイラスト：いらすとや",
       "bg": "credit",
       "characters": [],
       "props": [],
@@ -389,16 +402,18 @@
       "sfx": "none",
       "duration_hint": 2.2,
       "series_note": "申告係",
-      "voice_path": "/tmp/irasu-b4/45-fuyo-shinkoku-qa/audio/scene_14.wav",
+      "voice_path": "/tmp/irasu-vary/45-fuyo-shinkoku-qa/audio/scene_14.wav",
       "voice_seconds": 0.15,
-      "duration": 2.0
+      "duration": 2.0,
+      "lead": 0.0
     }
   ],
   "credits": [
     "VOICEVOX:四国めたん",
     "VOICEVOX:玄野武宏",
     "VOICEVOX:白上虎太郎",
-    "VOICEVOX:剣崎雌雄"
+    "VOICEVOX:剣崎雌雄",
+    "イラスト：いらすとや"
   ],
   "asset_ids": [
     "hero_trouble",
@@ -477,12 +492,12 @@
     "rejected": []
   },
   "asset_paths": {
-    "hero_trouble": "/tmp/irasu-b4/45-fuyo-shinkoku-qa/assets/hero_trouble.png",
-    "rival_smug": "/tmp/irasu-b4/45-fuyo-shinkoku-qa/assets/rival_smug.png",
-    "hero_tired": "/tmp/irasu-b4/45-fuyo-shinkoku-qa/assets/hero_tired.png",
-    "hero_angry": "/tmp/irasu-b4/45-fuyo-shinkoku-qa/assets/hero_angry.png",
-    "hero_smile": "/tmp/irasu-b4/45-fuyo-shinkoku-qa/assets/hero_smile.png",
-    "boss_angry": "/tmp/irasu-b4/45-fuyo-shinkoku-qa/assets/boss_angry.png"
+    "hero_trouble": "/tmp/irasu-vary/45-fuyo-shinkoku-qa/assets/hero_trouble.png",
+    "rival_smug": "/tmp/irasu-vary/45-fuyo-shinkoku-qa/assets/rival_smug.png",
+    "hero_tired": "/tmp/irasu-vary/45-fuyo-shinkoku-qa/assets/hero_tired.png",
+    "hero_angry": "/tmp/irasu-vary/45-fuyo-shinkoku-qa/assets/hero_angry.png",
+    "hero_smile": "/tmp/irasu-vary/45-fuyo-shinkoku-qa/assets/hero_smile.png",
+    "boss_angry": "/tmp/irasu-vary/45-fuyo-shinkoku-qa/assets/boss_angry.png"
   },
   "layout": {
     "telop_y_ratio": 0.86,
@@ -495,7 +510,7 @@
     "telop_scale": 1.0,
     "sfx_gain": 0.18,
     "bgm_gain": 0.045,
-    "mouth_gain": 1.0,
+    "mouth_gain": 0.0,
     "bgm": true,
     "tail": 0.18,
     "role_speed": {
@@ -511,7 +526,8 @@
       "punch": 0.12,
       "close": 0.24,
       "credit": 0.0
-    }
+    },
+    "bgm_kind": "B6"
   },
   "telop_style": {
     "bar": "round",
@@ -581,5 +597,24 @@
     "irasutoya": "いらすとやは1つの制作物につき20点まで商用無料（同じ絵の重複は1点）。21点以上の商用利用は有償。クレジット表記は不要。素材そのものの再配布や、イラストを主体にした商品化は不可。背景はコード描画にして点数をキャラと小物に使っている。",
     "voicevox": "使った声はクレジットが要る。四国めたん、白上虎太郎、玄野武宏、剣崎雌雄はクレジットを書けば商用可。青山龍星は個人事業・法人だと事前許可が要るので使っていない。効果音とBGMはこの場で合成したオリジナルなのでクレジット不要。"
   },
-  "notes": []
+  "notes": [],
+  "style_signature": "kane:C1-P4-T1-F4-H5-M4-B6-L2-A2",
+  "style_axes": {
+    "C": "C1",
+    "P": "P4",
+    "T": "T1",
+    "F": "F4",
+    "H": "H5",
+    "M": "M4",
+    "B": "B6",
+    "L": "L2",
+    "A": "A2",
+    "line": "kane"
+  },
+  "style_cast": [
+    "hero_trouble"
+  ],
+  "style_used_assets": [
+    "hero_trouble"
+  ]
 }

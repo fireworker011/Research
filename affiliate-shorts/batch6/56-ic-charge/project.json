@@ -33,9 +33,10 @@
       "effect": "zoom",
       "sfx": "none",
       "duration_hint": 2.0,
-      "voice_path": "/tmp/irasu-b6/56-ic-charge/audio/scene_01.wav",
+      "voice_path": "/tmp/irasu-vary/56-ic-charge/audio/scene_01.wav",
       "voice_seconds": 1.195,
-      "duration": 3.0
+      "duration": 1.4583333333333333,
+      "lead": 0.0
     },
     {
       "id": 2,
@@ -58,9 +59,10 @@
       "effect": "none",
       "sfx": "coin",
       "duration_hint": 2.2,
-      "voice_path": "/tmp/irasu-b6/56-ic-charge/audio/scene_02.wav",
+      "voice_path": "/tmp/irasu-vary/56-ic-charge/audio/scene_02.wav",
       "voice_seconds": 2.155,
-      "duration": 3.9583333333333335
+      "duration": 2.1666666666666665,
+      "lead": 0.0
     },
     {
       "id": 3,
@@ -83,9 +85,10 @@
       "effect": "shake",
       "sfx": "none",
       "duration_hint": 2.2,
-      "voice_path": "/tmp/irasu-b6/56-ic-charge/audio/scene_03.wav",
+      "voice_path": "/tmp/irasu-vary/56-ic-charge/audio/scene_03.wav",
       "voice_seconds": 1.067,
-      "duration": 2.875
+      "duration": 8.416666666666666,
+      "lead": 0.0
     },
     {
       "id": 4,
@@ -108,9 +111,10 @@
       "effect": "none",
       "sfx": "none",
       "duration_hint": 2.2,
-      "voice_path": "/tmp/irasu-b6/56-ic-charge/audio/scene_04.wav",
+      "voice_path": "/tmp/irasu-vary/56-ic-charge/audio/scene_04.wav",
       "voice_seconds": 1.397,
-      "duration": 3.2083333333333335
+      "duration": 8.375,
+      "lead": 0.0
     },
     {
       "id": 5,
@@ -133,9 +137,10 @@
       "effect": "zoom",
       "sfx": "coin",
       "duration_hint": 2.2,
-      "voice_path": "/tmp/irasu-b6/56-ic-charge/audio/scene_05.wav",
+      "voice_path": "/tmp/irasu-vary/56-ic-charge/audio/scene_05.wav",
       "voice_seconds": 2.123,
-      "duration": 3.9166666666666665
+      "duration": 8.375,
+      "lead": 0.0
     },
     {
       "id": 6,
@@ -144,7 +149,7 @@
       "style_id": 2,
       "credit": "VOICEVOX:四国めたん",
       "text": "",
-      "telop": "VOICEVOX:四国めたん\nVOICEVOX:白上虎太郎\nVOICEVOX:玄野武宏",
+      "telop": "VOICEVOX:玄野武宏\nVOICEVOX:四国めたん\nVOICEVOX:白上虎太郎\nイラスト：いらすとや",
       "bg": "credit",
       "characters": [],
       "props": [],
@@ -152,15 +157,17 @@
       "effect": "none",
       "sfx": "none",
       "duration_hint": 2.2,
-      "voice_path": "/tmp/irasu-b6/56-ic-charge/audio/scene_06.wav",
+      "voice_path": "/tmp/irasu-vary/56-ic-charge/audio/scene_06.wav",
       "voice_seconds": 0.15,
-      "duration": 3.625
+      "duration": 2.2083333333333335,
+      "lead": 0.0
     }
   ],
   "credits": [
+    "VOICEVOX:玄野武宏",
     "VOICEVOX:四国めたん",
     "VOICEVOX:白上虎太郎",
-    "VOICEVOX:玄野武宏"
+    "イラスト：いらすとや"
   ],
   "asset_ids": [
     "rival_smug",
@@ -217,10 +224,12 @@
     "rejected": []
   },
   "asset_paths": {
-    "rival_smug": "/tmp/irasu-b6/56-ic-charge/assets/rival_smug.png",
-    "hero_trouble": "/tmp/irasu-b6/56-ic-charge/assets/hero_trouble.png",
-    "hero_angry": "/tmp/irasu-b6/56-ic-charge/assets/hero_angry.png",
-    "hero_tired": "/tmp/irasu-b6/56-ic-charge/assets/hero_tired.png"
+    "rival_smug": "/tmp/irasu-vary/56-ic-charge/assets/rival_smug.png",
+    "hero_trouble": "/tmp/irasu-vary/56-ic-charge/assets/hero_trouble.png",
+    "hero_angry": "/tmp/irasu-vary/56-ic-charge/assets/hero_angry.png",
+    "hero_tired": "/tmp/irasu-vary/56-ic-charge/assets/hero_tired.png",
+    "hero_smile": "/tmp/irasu-vary/56-ic-charge/assets/hero_smile.png",
+    "boss_angry": "/tmp/irasu-vary/56-ic-charge/assets/boss_angry.png"
   },
   "layout": {
     "telop_y_ratio": 0.84,
@@ -233,7 +242,7 @@
     "telop_scale": 1.0,
     "sfx_gain": 0.22,
     "bgm_gain": 0.045,
-    "mouth_gain": 1.0,
+    "mouth_gain": 0.0,
     "bgm": true,
     "tail": 0.16,
     "role_speed": {
@@ -249,7 +258,8 @@
       "punch": 0.16,
       "close": 0.16,
       "credit": 0.0
-    }
+    },
+    "bgm_kind": "B2"
   },
   "telop_style": {
     "bar": "round",
@@ -301,5 +311,24 @@
     "irasutoya": "いらすとやは1つの制作物につき20点まで商用無料（同じ絵の重複は1点）。21点以上の商用利用は有償。クレジット表記は不要。素材そのものの再配布や、イラストを主体にした商品化は不可。背景はコード描画にして点数をキャラと小物に使っている。",
     "voicevox": "使った声はクレジットが要る。四国めたん、白上虎太郎、玄野武宏、剣崎雌雄はクレジットを書けば商用可。青山龍星は個人事業・法人だと事前許可が要るので使っていない。効果音とBGMはこの場で合成したオリジナルなのでクレジット不要。"
   },
-  "notes": []
+  "notes": [],
+  "style_signature": "kane:C1-P6-T4-F6-H2-M4-B2-L3-A3",
+  "style_axes": {
+    "C": "C1",
+    "P": "P6",
+    "T": "T4",
+    "F": "F6",
+    "H": "H2",
+    "M": "M4",
+    "B": "B2",
+    "L": "L3",
+    "A": "A3",
+    "line": "kane"
+  },
+  "style_cast": [
+    "hero_trouble"
+  ],
+  "style_used_assets": [
+    "hero_trouble"
+  ]
 }

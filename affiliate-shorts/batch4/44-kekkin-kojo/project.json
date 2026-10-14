@@ -58,9 +58,10 @@
       "effect": "zoom",
       "sfx": "none",
       "duration_hint": 2.2,
-      "voice_path": "/tmp/irasu-b4/44-kekkin-kojo/audio/scene_01.wav",
-      "voice_seconds": 1.184,
-      "duration": 1.3333333333333333
+      "voice_path": "/tmp/irasu-vary/44-kekkin-kojo/audio/scene_01.wav",
+      "voice_seconds": 1.067,
+      "duration": 1.0833333333333333,
+      "lead": 0.0
     },
     {
       "id": 2,
@@ -85,9 +86,10 @@
       "effect": "none",
       "sfx": "paper",
       "duration_hint": 2.2,
-      "voice_path": "/tmp/irasu-b4/44-kekkin-kojo/audio/scene_02.wav",
-      "voice_seconds": 1.781,
-      "duration": 1.9583333333333333
+      "voice_path": "/tmp/irasu-vary/44-kekkin-kojo/audio/scene_02.wav",
+      "voice_seconds": 1.557,
+      "duration": 1.5833333333333333,
+      "lead": 0.0
     },
     {
       "id": 3,
@@ -110,9 +112,10 @@
       "effect": "none",
       "sfx": "none",
       "duration_hint": 2.2,
-      "voice_path": "/tmp/irasu-b4/44-kekkin-kojo/audio/scene_03.wav",
-      "voice_seconds": 1.067,
-      "duration": 1.2083333333333333
+      "voice_path": "/tmp/irasu-vary/44-kekkin-kojo/audio/scene_03.wav",
+      "voice_seconds": 0.939,
+      "duration": 0.9583333333333334,
+      "lead": 0.0
     },
     {
       "id": 4,
@@ -135,9 +138,10 @@
       "effect": "none",
       "sfx": "whoosh",
       "duration_hint": 2.2,
-      "voice_path": "/tmp/irasu-b4/44-kekkin-kojo/audio/scene_04.wav",
-      "voice_seconds": 1.259,
-      "duration": 1.4166666666666667
+      "voice_path": "/tmp/irasu-vary/44-kekkin-kojo/audio/scene_04.wav",
+      "voice_seconds": 1.077,
+      "duration": 1.0833333333333333,
+      "lead": 0.0
     },
     {
       "id": 5,
@@ -160,9 +164,10 @@
       "effect": "shake",
       "sfx": "none",
       "duration_hint": 2.2,
-      "voice_path": "/tmp/irasu-b4/44-kekkin-kojo/audio/scene_05.wav",
-      "voice_seconds": 1.312,
-      "duration": 1.4583333333333333
+      "voice_path": "/tmp/irasu-vary/44-kekkin-kojo/audio/scene_05.wav",
+      "voice_seconds": 1.141,
+      "duration": 1.1666666666666667,
+      "lead": 0.0
     },
     {
       "id": 6,
@@ -185,9 +190,10 @@
       "effect": "none",
       "sfx": "none",
       "duration_hint": 2.2,
-      "voice_path": "/tmp/irasu-b4/44-kekkin-kojo/audio/scene_06.wav",
-      "voice_seconds": 1.941,
-      "duration": 2.0833333333333335
+      "voice_path": "/tmp/irasu-vary/44-kekkin-kojo/audio/scene_06.wav",
+      "voice_seconds": 1.675,
+      "duration": 1.7083333333333333,
+      "lead": 0.0
     },
     {
       "id": 7,
@@ -210,9 +216,10 @@
       "effect": "none",
       "sfx": "none",
       "duration_hint": 2.2,
-      "voice_path": "/tmp/irasu-b4/44-kekkin-kojo/audio/scene_07.wav",
-      "voice_seconds": 1.579,
-      "duration": 1.75
+      "voice_path": "/tmp/irasu-vary/44-kekkin-kojo/audio/scene_07.wav",
+      "voice_seconds": 1.323,
+      "duration": 1.3333333333333333,
+      "lead": 0.0
     },
     {
       "id": 8,
@@ -235,9 +242,10 @@
       "effect": "lines",
       "sfx": "none",
       "duration_hint": 2.2,
-      "voice_path": "/tmp/irasu-b4/44-kekkin-kojo/audio/scene_08.wav",
-      "voice_seconds": 0.96,
-      "duration": 1.125
+      "voice_path": "/tmp/irasu-vary/44-kekkin-kojo/audio/scene_08.wav",
+      "voice_seconds": 0.843,
+      "duration": 0.875,
+      "lead": 0.0
     },
     {
       "id": 9,
@@ -260,9 +268,10 @@
       "effect": "zoom",
       "sfx": "notify",
       "duration_hint": 2.2,
-      "voice_path": "/tmp/irasu-b4/44-kekkin-kojo/audio/scene_09.wav",
-      "voice_seconds": 1.643,
-      "duration": 1.7916666666666667
+      "voice_path": "/tmp/irasu-vary/44-kekkin-kojo/audio/scene_09.wav",
+      "voice_seconds": 1.387,
+      "duration": 1.4166666666666667,
+      "lead": 0.0
     },
     {
       "id": 10,
@@ -285,9 +294,10 @@
       "effect": "shake",
       "sfx": "shock",
       "duration_hint": 2.2,
-      "voice_path": "/tmp/irasu-b4/44-kekkin-kojo/audio/scene_10.wav",
-      "voice_seconds": 0.939,
-      "duration": 1.0833333333333333
+      "voice_path": "/tmp/irasu-vary/44-kekkin-kojo/audio/scene_10.wav",
+      "voice_seconds": 0.832,
+      "duration": 0.8333333333333334,
+      "lead": 0.0
     },
     {
       "id": 11,
@@ -310,9 +320,10 @@
       "effect": "none",
       "sfx": "none",
       "duration_hint": 2.2,
-      "voice_path": "/tmp/irasu-b4/44-kekkin-kojo/audio/scene_11.wav",
-      "voice_seconds": 0.736,
-      "duration": 0.9166666666666666
+      "voice_path": "/tmp/irasu-vary/44-kekkin-kojo/audio/scene_11.wav",
+      "voice_seconds": 0.64,
+      "duration": 0.6666666666666666,
+      "lead": 0.0
     },
     {
       "id": 12,
@@ -335,9 +346,10 @@
       "effect": "zoom",
       "sfx": "coin",
       "duration_hint": 2.2,
-      "voice_path": "/tmp/irasu-b4/44-kekkin-kojo/audio/scene_12.wav",
-      "voice_seconds": 1.803,
-      "duration": 1.9583333333333333
+      "voice_path": "/tmp/irasu-vary/44-kekkin-kojo/audio/scene_12.wav",
+      "voice_seconds": 1.568,
+      "duration": 1.5833333333333333,
+      "lead": 0.0
     },
     {
       "id": 13,
@@ -360,9 +372,10 @@
       "effect": "zoom",
       "sfx": "none",
       "duration_hint": 2.2,
-      "voice_path": "/tmp/irasu-b4/44-kekkin-kojo/audio/scene_13.wav",
-      "voice_seconds": 1.813,
-      "duration": 1.9583333333333333
+      "voice_path": "/tmp/irasu-vary/44-kekkin-kojo/audio/scene_13.wav",
+      "voice_seconds": 1.547,
+      "duration": 3.7083333333333335,
+      "lead": 0.0
     },
     {
       "id": 14,
@@ -371,7 +384,7 @@
       "style_id": 2,
       "credit": "VOICEVOX:四国めたん",
       "text": "",
-      "telop": "VOICEVOX:四国めたん\nVOICEVOX:玄野武宏\nVOICEVOX:白上虎太郎\nVOICEVOX:剣崎雌雄",
+      "telop": "VOICEVOX:四国めたん\nVOICEVOX:玄野武宏\nVOICEVOX:白上虎太郎\nVOICEVOX:剣崎雌雄\nイラスト：いらすとや",
       "bg": "credit",
       "characters": [],
       "props": [],
@@ -380,16 +393,18 @@
       "sfx": "none",
       "duration_hint": 2.2,
       "series_note": "勤怠係",
-      "voice_path": "/tmp/irasu-b4/44-kekkin-kojo/audio/scene_14.wav",
+      "voice_path": "/tmp/irasu-vary/44-kekkin-kojo/audio/scene_14.wav",
       "voice_seconds": 0.15,
-      "duration": 2.0
+      "duration": 2.0,
+      "lead": 0.0
     }
   ],
   "credits": [
     "VOICEVOX:四国めたん",
     "VOICEVOX:玄野武宏",
     "VOICEVOX:白上虎太郎",
-    "VOICEVOX:剣崎雌雄"
+    "VOICEVOX:剣崎雌雄",
+    "イラスト：いらすとや"
   ],
   "asset_ids": [
     "rival_smug",
@@ -468,12 +483,12 @@
     "rejected": []
   },
   "asset_paths": {
-    "rival_smug": "/tmp/irasu-b4/44-kekkin-kojo/assets/rival_smug.png",
-    "hero_trouble": "/tmp/irasu-b4/44-kekkin-kojo/assets/hero_trouble.png",
-    "hero_angry": "/tmp/irasu-b4/44-kekkin-kojo/assets/hero_angry.png",
-    "hero_tired": "/tmp/irasu-b4/44-kekkin-kojo/assets/hero_tired.png",
-    "hero_smile": "/tmp/irasu-b4/44-kekkin-kojo/assets/hero_smile.png",
-    "boss_angry": "/tmp/irasu-b4/44-kekkin-kojo/assets/boss_angry.png"
+    "rival_smug": "/tmp/irasu-vary/44-kekkin-kojo/assets/rival_smug.png",
+    "hero_trouble": "/tmp/irasu-vary/44-kekkin-kojo/assets/hero_trouble.png",
+    "hero_angry": "/tmp/irasu-vary/44-kekkin-kojo/assets/hero_angry.png",
+    "hero_tired": "/tmp/irasu-vary/44-kekkin-kojo/assets/hero_tired.png",
+    "hero_smile": "/tmp/irasu-vary/44-kekkin-kojo/assets/hero_smile.png",
+    "boss_angry": "/tmp/irasu-vary/44-kekkin-kojo/assets/boss_angry.png"
   },
   "layout": {
     "telop_y_ratio": 0.84,
@@ -481,20 +496,20 @@
     "screenshot_count": 0
   },
   "settings": {
-    "speed": 1.28,
-    "hook_speed": 1.48,
+    "speed": 1.51,
+    "hook_speed": 1.687,
     "telop_scale": 1.0,
     "sfx_gain": 0.22,
     "bgm_gain": 0.045,
-    "mouth_gain": 1.0,
+    "mouth_gain": 0.0,
     "bgm": true,
     "tail": 0.16,
     "role_speed": {
-      "hook": 1.48,
-      "develop": 1.28,
-      "punch": 1.28,
-      "close": 1.28,
-      "credit": 1.28
+      "hook": 1.687,
+      "develop": 1.51,
+      "punch": 1.51,
+      "close": 1.51,
+      "credit": 1.51
     },
     "role_tail": {
       "hook": 0.16,
@@ -502,7 +517,8 @@
       "punch": 0.16,
       "close": 0.16,
       "credit": 0.0
-    }
+    },
+    "bgm_kind": "B2"
   },
   "telop_style": {
     "bar": "round",
@@ -554,5 +570,28 @@
     "irasutoya": "いらすとやは1つの制作物につき20点まで商用無料（同じ絵の重複は1点）。21点以上の商用利用は有償。クレジット表記は不要。素材そのものの再配布や、イラストを主体にした商品化は不可。背景はコード描画にして点数をキャラと小物に使っている。",
     "voicevox": "使った声はクレジットが要る。四国めたん、白上虎太郎、玄野武宏、剣崎雌雄はクレジットを書けば商用可。青山龍星は個人事業・法人だと事前許可が要るので使っていない。効果音とBGMはこの場で合成したオリジナルなのでクレジット不要。"
   },
-  "notes": []
+  "notes": [],
+  "style_signature": "kane:C2-P6-T4-F3-H3-M5-B2-L1-A4",
+  "style_axes": {
+    "C": "C2",
+    "P": "P6",
+    "T": "T4",
+    "F": "F3",
+    "H": "H3",
+    "M": "M5",
+    "B": "B2",
+    "L": "L1",
+    "A": "A4",
+    "line": "kane"
+  },
+  "style_cast": [
+    "hero_trouble",
+    "hero_tired",
+    "hero_angry"
+  ],
+  "style_used_assets": [
+    "hero_angry",
+    "hero_tired",
+    "hero_trouble"
+  ]
 }

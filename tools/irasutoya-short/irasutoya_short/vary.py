@@ -228,10 +228,20 @@ def _child_env() -> tuple[str, dict[str, str]]:
     return package, env
 
 
+def load_plan(root: Path, jobs: list[dict]):
+    path = root / "affiliate-shorts" / "style-plan.json"
+    if not path.is_file():
+        signatures = assign_unpublished(jobs)
+        write_plan(root, jobs, signatures)
+        return signatures
+    rows = json.loads(path.read_text(encoding="utf-8"))
+    by_id = {row["video_id"]: parse_signature(row["signature"]) for row in rows}
+    return [by_id[job["video_id"]] for job in jobs]
+
+
 def render_all(root: Path, workers: int = 3, only: set[str] | None = None) -> None:
     jobs = load_jobs(root)
-    signatures = assign_unpublished(jobs)
-    write_plan(root, jobs, signatures)
+    signatures = load_plan(root, jobs)
     selected = [(job, signature) for job, signature in zip(jobs, signatures) if only is None or job["video_id"] in only]
     done: dict[str, dict] = {}
     errors: list[str] = []
