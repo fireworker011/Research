@@ -738,9 +738,19 @@ def assert_stack_budget(
     if STILL_ONLY_IDS & ids:
         raise SelectError("photoreal still is for keyframes, not the video body")
     if not nsfw:
-        if "act" in roles or "helper" in roles:
+        slider_acts = [
+            s
+            for s in specs
+            if s.get("role") == "act" and (index.get(str(s["id"])) or {}).get("motion_slider") is True
+        ]
+        if slider_acts:
+            if len(slider_acts) != 1 or roles.count("act") != 1:
+                raise SelectError("only one motion slider")
+            if "helper" in roles or "cinema" in roles or "turbo" in roles:
+                raise SelectError("a motion slider stands alone; do not stack turbo or cinema")
+        elif "act" in roles or "helper" in roles:
             raise SelectError("SFW stack is turbo plus one quality LoRA only")
-        if "turbo" not in roles:
+        elif "turbo" not in roles:
             raise SelectError("SFW fast+quality needs one turbo LoRA")
         for spec in specs:
             row = index.get(str(spec["id"])) or {}

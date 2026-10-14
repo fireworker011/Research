@@ -924,6 +924,22 @@ def test_refuses_ref2va_on_i2v(tmp_path: Path):
         raise AssertionError("expected SelectError")
 
 
+def test_chain_punch_is_the_acceleration_slider_alone():
+    data = select_loras(profile_name="chain_punch", mode="t2v", prompt_arg="（シーン）")
+    assert [row["id"] for row in data["stack"]] == ["progressive-acceleration-slider"]
+    assert data["stack"][0]["strength_model"] == 4.0
+    assert data["stack"][0]["role"] == "act"
+    assert data["nsfw"] is False
+    assert data["turbo"] is False
+    assert data["sampler"]["steps"] == 24
+    assert data["canvas"]["duration_s"] == 8.0
+    assert "Picture 1" not in data["prompt"]
+    assert "each fist is faster than the one before it" in data["prompt"]
+    i2v = select_loras(profile_name="chain_punch", mode="i2v", prompt_arg="（シーン）")
+    assert "Picture 1" in i2v["prompt"]
+    assert i2v["first_frame_required"] is True
+
+
 def test_sfw_daily_splits_turbo_and_quality():
     data = select_loras(profile_name="sfw_daily", mode="t2v", prompt_arg="（シーン）")
     assert data["nsfw"] is False

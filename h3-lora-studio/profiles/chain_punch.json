@@ -1,0 +1,36 @@
+{
+  "id": "chain_punch",
+  "adults_only": true,
+  "min_age": 21,
+  "nsfw": false,
+  "modes": ["t2v", "i2v"],
+  "allow_turbo": false,
+  "canvas": {
+    "t2v": { "width": 576, "height": 1024, "duration_s": 8.0, "aspect": "9:16" },
+    "i2v": { "width": 768, "height": 432, "duration_s": 8.0, "aspect": "16:9" }
+  },
+  "stack_plan": {
+    "act": { "id": "progressive-acceleration-slider", "strength": 4.0 }
+  },
+  "sampler": {
+    "sampler_name": "res_multistep",
+    "scheduler": "simple",
+    "steps": 24,
+    "video_shift": 12,
+    "audio_shift": 3,
+    "note": "Progressive Acceleration slider 4.0 alone. No Turbo. 24 steps. Card range is -8 to 8."
+  },
+  "disabled": [
+    "larry-v4",
+    "cinema-dy",
+    "astro-cinema-h3",
+    "minimax-h3-turbo-fl2v-4step",
+    "minimax-h3-turbo-fl2v-8step",
+    "minimax-h3-turbo-ref2v-4step"
+  ],
+  "scenes": {
+    "t2v": "integrated_multimodal_description: [Shot 1] Live-action, cinematic. A static medium-wide shot, slightly low, frames two adults in a dusty concrete yard under hard daylight. On the left, an adult man over 21 with short black hair wears a sleeveless dark-blue martial-arts top and loose black trousers, bare feet planted, fists closed, weight low. On the right, an adult man over 21 with short hair wears a grey work shirt and stands facing him at arm's length. The left man's first straight punch leaves the shoulder slowly and lands on the right man's upper chest. The next punch from the other shoulder is already faster. The punches then accelerate without a pause: each fist is faster than the one before it, the shoulders alternate, and the forearms turn into stacked translucent afterimages with thin pale motion trails crossing in front of the chest. The right man's shirt ripples at each impact and his shoes scrape backward through the dust. Near the end of the eight seconds the barrage stops on one heavy right straight punch into the same chest. A ring of dust blows outward. The right man slides back one step. The left man holds the extended fist. The camera does not move.\n\noverall_soundscape: One slow punch impact, then a tightening staccato of fists hitting cloth, each hit closer to the last, ending in one loud thud and a short scrape of shoes on concrete. No speech.\n\nnon_diegetic_music: N/A\n",
+    "i2v": "For the target video, at 0.00 seconds into the target video, <Picture 1> (from [Shot 1]) is fully referenced.\n\nintegrated_multimodal_description: [Shot 1] Live-action, cinematic. The opening is <Picture 1>: the same two adults, the same clothes, and the same yard. The camera stays a static shot. The left adult's first straight punch leaves the shoulder slowly and lands on the right adult's upper chest. The next punch from the other shoulder is already faster. The punches then accelerate without a pause: each fist is faster than the one before it, the shoulders alternate, and the forearms turn into stacked translucent afterimages with thin pale motion trails crossing in front of the chest. The right adult's shirt ripples at each impact and his shoes scrape backward through the dust. Near the end of the eight seconds the barrage stops on one heavy right straight punch into the same chest. A ring of dust blows outward. The right adult slides back one step. The left adult holds the extended fist.\n\noverall_soundscape: One slow punch impact, then a tightening staccato of fists hitting cloth, each hit closer to the last, ending in one loud thud and a short scrape of shoes on concrete. No speech.\n\nnon_diegetic_music: N/A\n"
+  },
+  "negative": "child, teen, loli, shota, underage, minor, cartoon, illustration, blood, gore"
+}
