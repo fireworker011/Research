@@ -1,7 +1,7 @@
 {
   "out": "/workspace/affiliate-shorts/batch6/53-jidou-teate/out.mp4",
   "template": "sukatto",
-  "duration_sec": 31.0,
+  "duration_sec": 16.17,
   "scene_count": 6,
   "asset_count": 4,
   "asset_limit": 20,
@@ -43,8 +43,8 @@
     "voicevox": "使った声はクレジットが要る。四国めたん、白上虎太郎、玄野武宏、剣崎雌雄はクレジットを書けば商用可。青山龍星は個人事業・法人だと事前許可が要るので使っていない。効果音とBGMはこの場で合成したオリジナルなのでクレジット不要。"
   },
   "within_20_30": false,
-  "style_signature": "kane:C4-P4-T6-F1-H5-M3-B1-L3-A2",
+  "style_signature": "kane:C4-P1-T6-F1-H5-M3-B1-L1-A2",
   "irasutoya_count": 1,
   "within_style_length": true,
-  "style_thumb": "thumb:C4-P4-T6-F1"
+  "style_thumb": "thumb:C4-P1-T6-F1"
 }

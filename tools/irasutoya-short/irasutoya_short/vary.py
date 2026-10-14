@@ -14,16 +14,20 @@ from pathlib import Path
 import numpy as np
 
 from irasutoya_short.pipeline import _persist, _render_from_project, _summary, _synthesize
+from irasutoya_short.qa import dead_air
 from irasutoya_short.sprites import load_rgba, mouth_levels
 from irasutoya_short.stylevar import (
     apply_signature,
     assign_unpublished,
     check_signature,
+    gaps_ok,
     kane_published_history,
+    length_code_for,
     length_ok,
     load_jobs,
     parse_signature,
     published_signatures,
+    repair_signature,
     result_row,
     seed_log_rows,
     write_log,
@@ -32,7 +36,7 @@ from irasutoya_short.templates import settings_for
 from irasutoya_short.tts import Speaker
 
 ROOT = Path(__file__).resolve().parents[3]
-RENDERER = "stills-vary-1"
+RENDERER = "stills-vary-4"
 POOLS = (
     Path("/tmp/irasu-rest/15-furusato-onestop/assets"),
     Path("/tmp/irasu-b4/35-juminzei-qa/assets"),
@@ -127,6 +131,28 @@ def _add_upload_credit(folder: Path) -> None:
     path.write_text("\n".join(lines) + "\n", encoding="utf-8")
 
 
+def _ahead(video_id: str) -> list[tuple]:
+    rows = json.loads((ROOT / "affiliate-shorts" / "style-plan.json").read_text(encoding="utf-8"))
+    ids = [str(row["video_id"]) for row in rows]
+    if video_id not in ids:
+        return []
+    start = ids.index(video_id) + 1
+    ahead = []
+    for row in rows[start : start + 5]:
+        ahead.append((parse_signature(row["signature"]), True))
+    return ahead
+
+
+def _history_before(video_id: str) -> list:
+    rows = json.loads((ROOT / "affiliate-shorts" / "style-plan.json").read_text(encoding="utf-8"))
+    history = kane_published_history()
+    for row in rows:
+        if str(row["video_id"]) == video_id:
+            break
+        history.append(parse_signature(row["signature"]))
+    return history
+
+
 def render_job(folder: str, signature_text: str) -> dict:
     folder_path = Path(folder)
     marker_path = folder_path / "style.json"
@@ -151,8 +177,23 @@ def render_job(folder: str, signature_text: str) -> dict:
         raise RuntimeError(f"{folder_path.name} のクレジットが足りません")
     _synthesize(project, Speaker(), work / "audio")
     total = sum(float(scene["duration"]) for scene in project["scenes"])
+    code = length_code_for(total)
+    if code is None:
+        raise RuntimeError(f"{folder_path.name} の尺 {total:.2f} が長さの枠に入りません")
+    if code != signature.L:
+        video_id = folder_path.name.split("-", 1)[0]
+        signature = repair_signature(
+            signature,
+            _history_before(video_id),
+            published_signatures(),
+            code,
+            _ahead(video_id),
+        )
+        apply_signature(project, signature)
     if not length_ok(total, signature.L):
         raise RuntimeError(f"{folder_path.name} の尺 {total:.2f} が {signature.L} に入りません")
+    if not gaps_ok(project["scenes"]):
+        raise RuntimeError(f"{folder_path.name} に1.5秒を超える隙間があります")
     out = work / "out.mp4"
     _render_from_project(project, work, out, preview=False)
     probed, width, height = _ffprobe(out)
@@ -160,6 +201,9 @@ def render_job(folder: str, signature_text: str) -> dict:
         raise RuntimeError(f"{folder_path.name} の画面が {width}x{height}")
     if abs(probed - total) > 0.15:
         raise RuntimeError(f"{folder_path.name} の ffprobe {probed:.2f} とシーン合計 {total:.2f} が違います")
+    air = dead_air(out)
+    if air:
+        raise RuntimeError(f"{folder_path.name} の無音か静止: {', '.join(air)}")
     used = list(project.get("style_used_assets") or [])
     if len(used) > 20 or (signature.A == "A6" and len(used) > 5):
         raise RuntimeError(f"{folder_path.name} のいらすとやが {len(used)} 枚です")
@@ -272,23 +316,27 @@ def render_all(root: Path, workers: int = 3, only: set[str] | None = None) -> No
         running = still
         if running:
             time.sleep(2)
-    if only is not None:
-        if errors:
-            raise RuntimeError("\n".join(errors))
-        return
-    if errors or len(done) != len(jobs):
+    if errors or (only is None and len(done) != len(jobs)):
         raise RuntimeError("書き出しが揃っていません\n" + "\n".join(errors))
     history = kane_published_history()
     published = published_signatures()
     rows = seed_log_rows()
     durations: dict[str, float] = {}
-    for job, signature in zip(jobs, signatures):
-        payload = done[job["video_id"]]
+    plan_rows = []
+    existing_plan = {
+        row["video_id"]: row
+        for row in json.loads((root / "affiliate-shorts" / "style-plan.json").read_text(encoding="utf-8"))
+    }
+    for job in jobs:
+        if job["video_id"] in done:
+            payload = done[job["video_id"]]
+        else:
+            marker = root / job["folder"] / "style.json"
+            payload = json.loads(marker.read_text(encoding="utf-8"))
+        signature = parse_signature(payload["signature"])
         report = check_signature(signature, history, published)
         if not report["ok"]:
-            raise RuntimeError(f"#{job['video_id']} {report['errors']}")
-        if payload["signature"] != signature.text():
-            raise RuntimeError(f"#{job['video_id']} の署名が計画と違います")
+            raise RuntimeError(f"#{job['video_id']} {signature.text()} {report['errors']}")
         rows.append(
             result_row(
                 signature,
@@ -303,7 +351,22 @@ def render_all(root: Path, workers: int = 3, only: set[str] | None = None) -> No
         )
         history.append(signature)
         durations[str(root / job["folder"])] = float(payload["duration"])
+        if job["video_id"] in done:
+            plan_rows.append(
+                {
+                    "video_id": job["video_id"],
+                    "folder": job["folder"],
+                    "signature": signature.text(),
+                    "thumb": signature.thumb(),
+                }
+            )
+        else:
+            plan_rows.append(existing_plan[job["video_id"]])
     write_log(root / "affiliate-shorts" / "style-log.csv", rows)
+    (root / "affiliate-shorts" / "style-plan.json").write_text(
+        json.dumps(plan_rows, ensure_ascii=False, indent=2) + "\n",
+        encoding="utf-8",
+    )
     update_samples(root, durations)
 
 

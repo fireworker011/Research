@@ -223,3 +223,209 @@ def inspect_image(path: str, title: str, alt: str, gender: str, kind: str) -> st
         if japanese:
             return f"文字が焼き込まれている: {japanese[0]}"
     return None
+
+
+AIR_LIMIT = 1.5
+SILENCE_NOISE = "-32dB"
+FREEZE_NOISE = "-45dB"
+
+
+def caption_overlaps_face(
+    telop: np.ndarray,
+    faces: list[tuple[int, int, int, int]],
+    pad: int = 0,
+) -> bool:
+    if telop.ndim != 3 or telop.shape[2] < 4 or not faces:
+        return False
+    alpha = telop[:, :, 3] > 40
+    height, width = alpha.shape
+    for box in faces:
+        x0 = max(0, int(box[0]) - pad)
+        y0 = max(0, int(box[1]) - pad)
+        x1 = min(width, int(box[2]) + pad)
+        y1 = min(height, int(box[3]) + pad)
+        if x1 <= x0 or y1 <= y0:
+            continue
+        if bool(alpha[y0:y1, x0:x1].any()):
+            return True
+    return False
+
+
+def caption_hits_edge(telop: np.ndarray, margin: int = 8) -> bool:
+    if telop.ndim != 3 or telop.shape[2] < 4 or margin <= 0:
+        return False
+    alpha = telop[:, :, 3] > 40
+    if not bool(alpha.any()):
+        return False
+    height, width = alpha.shape
+    return bool(
+        alpha[:, :margin].any()
+        or alpha[:, width - margin :].any()
+        or alpha[:margin, :].any()
+        or alpha[height - margin :, :].any()
+    )
+
+
+SAFE_MARGIN = 48
+
+
+def ink_bbox(image: np.ndarray, alpha_min: int = 40) -> tuple[int, int, int, int] | None:
+    if image.ndim != 3 or image.shape[2] < 4:
+        return None
+    ys, xs = np.where(image[:, :, 3] > alpha_min)
+    if len(xs) == 0:
+        return None
+    return int(xs.min()), int(ys.min()), int(xs.max()) + 1, int(ys.max()) + 1
+
+
+def box_inside(inner: tuple[int, int, int, int], outer: tuple[int, int, int, int]) -> bool:
+    return inner[0] >= outer[0] and inner[1] >= outer[1] and inner[2] <= outer[2] and inner[3] <= outer[3]
+
+
+def safe_box(width: int, height: int, margin: int = SAFE_MARGIN) -> tuple[int, int, int, int]:
+    return (margin, margin, width - margin, height - margin)
+
+
+def _erode_mask(mask: np.ndarray, radius: int) -> np.ndarray:
+    inner = mask
+    for _ in range(max(0, radius)):
+        up = np.zeros_like(inner)
+        down = np.zeros_like(inner)
+        left = np.zeros_like(inner)
+        right = np.zeros_like(inner)
+        up[1:] = inner[:-1]
+        down[:-1] = inner[1:]
+        left[:, 1:] = inner[:, :-1]
+        right[:, :-1] = inner[:, 1:]
+        inner = inner & up & down & left & right
+    return inner
+
+
+def glyphs_inside_rendered_frame(
+    full: np.ndarray,
+    boxed: np.ndarray,
+    box_alpha: np.ndarray,
+    margin: int = SAFE_MARGIN,
+    inset: int = 6,
+) -> list[str]:
+    """描いたフレームの差分から字の画素を取り、枠と安全域の中にあるかを見る。"""
+    if full.shape[:2] != boxed.shape[:2] or full.shape[:2] != box_alpha.shape[:2]:
+        return ["frame mismatch"]
+    diff = np.abs(full.astype(np.int16) - boxed.astype(np.int16)).sum(axis=2)
+    glyph = diff > 24
+    if not bool(glyph.any()):
+        return ["caption glyphs missing from the frame"]
+    problems: list[str] = []
+    box = box_alpha > 80
+    if bool((glyph & ~_erode_mask(box, inset)).any()):
+        problems.append("glyph pixels outside the caption box")
+    height, width = glyph.shape
+    ys, xs = np.where(glyph)
+    if (
+        int(xs.min()) < margin
+        or int(ys.min()) < margin
+        or int(xs.max()) >= width - margin
+        or int(ys.max()) >= height - margin
+    ):
+        problems.append("glyph pixels outside the safe area")
+    bar = box & ~glyph
+    if bool(bar.any()):
+        glyph_lum = 0.3 * full[glyph, 0] + 0.59 * full[glyph, 1] + 0.11 * full[glyph, 2]
+        bar_lum = 0.3 * boxed[bar, 0] + 0.59 * boxed[bar, 1] + 0.11 * boxed[bar, 2]
+        # 縁取りが画素の過半でも、字の本体が枠から離れていれば読める。
+        glyph_hi = float(np.percentile(glyph_lum, 80))
+        glyph_lo = float(np.percentile(glyph_lum, 20))
+        bar_med = float(np.median(bar_lum))
+        if abs(glyph_hi - bar_med) < 70 and abs(glyph_lo - bar_med) < 70:
+            problems.append("caption text is too close to the box color")
+    return problems
+
+
+def encoded_caption_problems(
+    extracted: np.ndarray,
+    full: np.ndarray,
+    boxed: np.ndarray,
+    box_alpha: np.ndarray,
+) -> list[str]:
+    """書き出したフレームが、描いた字と一致し、字が枠の中に残っているかを返す。"""
+    if extracted.shape != full.shape:
+        return ["encoded frame mismatch"]
+    problems = glyphs_inside_rendered_frame(full, boxed, box_alpha)
+    delta = np.abs(extracted.astype(np.int16) - full.astype(np.int16))
+    if float(delta.mean()) > 12:
+        problems.append("encoded frame does not match the drawn frame")
+    box = box_alpha > 80
+    if bool(box.any()) and float(delta[box].mean()) > 20:
+        problems.append("encoded caption does not match the drawn caption")
+    pre = np.abs(full.astype(np.int16) - boxed.astype(np.int16)).sum(axis=2) > 24
+    post = np.abs(extracted.astype(np.int16) - boxed.astype(np.int16)).sum(axis=2) > 18
+    if bool(pre.any()) and float(post[pre].mean()) < 0.8:
+        problems.append("caption glyphs missing from the encoded frame")
+    return problems
+
+
+def caption_fit_problems(
+    text_box: tuple[int, int, int, int] | None,
+    container: tuple[int, int, int, int] | None,
+    width: int,
+    height: int,
+) -> list[str]:
+    """テロップの字が枠の中にあり、枠が画面の安全域に収まるかを返す。"""
+    problems: list[str] = []
+    if text_box is None or container is None:
+        return ["caption missing"]
+    if not box_inside(text_box, container):
+        problems.append("caption outside its box")
+    safe = safe_box(width, height)
+    if not box_inside(container, safe) or not box_inside(text_box, safe):
+        problems.append("caption outside the safe area")
+    return problems
+
+
+def distinct_stills(frames: list[np.ndarray], needed: int) -> bool:
+    """見た目が needed 種類以上あるか。同じ絵の字幕違いでは足りない。"""
+    if needed <= 1:
+        return True
+    kept: list[np.ndarray] = []
+    for frame in frames:
+        step_y = max(1, frame.shape[0] // 80)
+        step_x = max(1, frame.shape[1] // 48)
+        small = frame[::step_y, ::step_x].astype(np.int16)
+        if all(float(np.mean(np.abs(small - prev))) >= 10.0 for prev in kept):
+            kept.append(small)
+    return len(kept) >= needed
+
+
+def dead_air(path: str, limit: float = AIR_LIMIT) -> list[str]:
+    """1.5秒を超える無音と、1.5秒を超える静止を返す。"""
+    problems: list[str] = []
+    problems.extend(_span_problems(path, "silence", f"silencedetect=n={SILENCE_NOISE}:d={limit}", limit))
+    problems.extend(_span_problems(path, "freeze", f"freezedetect=n={FREEZE_NOISE}:d={limit}", limit))
+    return problems
+
+
+def _span_problems(path: str, kind: str, filter_arg: str, limit: float) -> list[str]:
+    if shutil.which("ffmpeg") is None:
+        raise RuntimeError("ffmpeg がありません")
+    cmd = ["ffmpeg", "-hide_banner", "-i", str(path)]
+    if kind == "silence":
+        cmd.extend(["-af", filter_arg])
+        start_key, duration_key = "silence_start", "silence_duration"
+    else:
+        cmd.extend(["-vf", filter_arg])
+        start_key, duration_key = "freeze_start", "freeze_duration"
+    cmd.extend(["-f", "null", "-"])
+    proc = subprocess.run(cmd, capture_output=True, text=True)
+    text = proc.stderr
+    starts = [float(item) for item in re.findall(rf"{start_key}:\s*([0-9.]+)", text)]
+    durations = [float(item) for item in re.findall(rf"{duration_key}:\s*([0-9.]+)", text)]
+    if len(starts) > len(durations):
+        match = re.search(r"Duration:\s*(\d+):(\d+):(\d+(?:\.\d+)?)", text)
+        if match:
+            media = int(match.group(1)) * 3600 + int(match.group(2)) * 60 + float(match.group(3))
+            durations.append(max(0.0, media - starts[len(durations)]))
+    found: list[str] = []
+    for seconds in durations:
+        if seconds + 1e-3 >= limit:
+            found.append(f"{kind} {seconds:.2f}s")
+    return found

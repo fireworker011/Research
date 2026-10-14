@@ -91,7 +91,7 @@
       "tone": "item",
       "voice_path": "/tmp/irasu-vary/22-eikaiwa-aruaru/audio/scene_02.wav",
       "voice_seconds": 1.237,
-      "duration": 1.4583333333333333,
+      "duration": 1.2916666666666667,
       "lead": 0.0
     },
     {
@@ -118,7 +118,7 @@
       "tone": "item",
       "voice_path": "/tmp/irasu-vary/22-eikaiwa-aruaru/audio/scene_03.wav",
       "voice_seconds": 0.853,
-      "duration": 1.4583333333333333,
+      "duration": 0.875,
       "lead": 0.0
     },
     {
@@ -145,7 +145,7 @@
       "tone": "item",
       "voice_path": "/tmp/irasu-vary/22-eikaiwa-aruaru/audio/scene_04.wav",
       "voice_seconds": 1.141,
-      "duration": 1.4583333333333333,
+      "duration": 1.1666666666666667,
       "lead": 0.0
     },
     {
@@ -172,7 +172,7 @@
       "tone": "item",
       "voice_path": "/tmp/irasu-vary/22-eikaiwa-aruaru/audio/scene_05.wav",
       "voice_seconds": 0.619,
-      "duration": 1.4583333333333333,
+      "duration": 0.6666666666666666,
       "lead": 0.0
     },
     {
@@ -199,7 +199,7 @@
       "tone": "item",
       "voice_path": "/tmp/irasu-vary/22-eikaiwa-aruaru/audio/scene_06.wav",
       "voice_seconds": 1.216,
-      "duration": 1.4583333333333333,
+      "duration": 1.25,
       "lead": 0.0
     },
     {
@@ -226,7 +226,7 @@
       "tone": "item",
       "voice_path": "/tmp/irasu-vary/22-eikaiwa-aruaru/audio/scene_07.wav",
       "voice_seconds": 0.896,
-      "duration": 3.9166666666666665,
+      "duration": 1.0,
       "lead": 0.0
     },
     {
@@ -253,7 +253,7 @@
       "tone": "item",
       "voice_path": "/tmp/irasu-vary/22-eikaiwa-aruaru/audio/scene_08.wav",
       "voice_seconds": 0.928,
-      "duration": 3.9166666666666665,
+      "duration": 1.0416666666666667,
       "lead": 0.0
     },
     {
@@ -280,7 +280,7 @@
       "tone": "punch",
       "voice_path": "/tmp/irasu-vary/22-eikaiwa-aruaru/audio/scene_09.wav",
       "voice_seconds": 1.419,
-      "duration": 3.9166666666666665,
+      "duration": 1.5416666666666667,
       "lead": 0.0
     },
     {
@@ -307,7 +307,7 @@
       "tone": "punch",
       "voice_path": "/tmp/irasu-vary/22-eikaiwa-aruaru/audio/scene_10.wav",
       "voice_seconds": 1.003,
-      "duration": 3.9166666666666665,
+      "duration": 1.125,
       "lead": 0.0
     },
     {
@@ -334,7 +334,7 @@
       "tone": "punch",
       "voice_path": "/tmp/irasu-vary/22-eikaiwa-aruaru/audio/scene_11.wav",
       "voice_seconds": 1.152,
-      "duration": 3.9166666666666665,
+      "duration": 1.2916666666666667,
       "lead": 0.0
     },
     {
@@ -361,7 +361,7 @@
       "tone": "close",
       "voice_path": "/tmp/irasu-vary/22-eikaiwa-aruaru/audio/scene_12.wav",
       "voice_seconds": 1.184,
-      "duration": 3.9166666666666665,
+      "duration": 1.2916666666666667,
       "lead": 0.0
     },
     {
@@ -388,7 +388,7 @@
       "tone": "close",
       "voice_path": "/tmp/irasu-vary/22-eikaiwa-aruaru/audio/scene_13.wav",
       "voice_seconds": 1.173,
-      "duration": 3.9166666666666665,
+      "duration": 1.2916666666666667,
       "lead": 0.0
     },
     {
@@ -409,7 +409,7 @@
       "series_note": "夜枠係",
       "voice_path": "/tmp/irasu-vary/22-eikaiwa-aruaru/audio/scene_14.wav",
       "voice_seconds": 0.15,
-      "duration": 2.2083333333333335,
+      "duration": 1.0416666666666667,
       "lead": 0.0
     }
   ],
@@ -589,16 +589,16 @@
     "voicevox": "使った声はクレジットが要る。四国めたん、白上虎太郎、玄野武宏、剣崎雌雄はクレジットを書けば商用可。青山龍星は個人事業・法人だと事前許可が要るので使っていない。効果音とBGMはこの場で合成したオリジナルなのでクレジット不要。"
   },
   "notes": [],
-  "style_signature": "kane:C4-P4-T3-F3-H4-M4-B4-L3-A1",
+  "style_signature": "kane:C4-P4-T1-F3-H4-M4-B4-L1-A1",
   "style_axes": {
     "C": "C4",
     "P": "P4",
-    "T": "T3",
+    "T": "T1",
     "F": "F3",
     "H": "H4",
     "M": "M4",
     "B": "B4",
-    "L": "L3",
+    "L": "L1",
     "A": "A1",
     "line": "kane"
   },

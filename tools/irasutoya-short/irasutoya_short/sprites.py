@@ -118,6 +118,20 @@ def _blobs(mask: np.ndarray, step: int = 2, min_pts: int = 60) -> list[dict]:
     return found
 
 
+def head_box(rgba: np.ndarray) -> tuple[int, int, int, int] | None:
+    """顔の矩形。取れないときは、絵の上側を顔として扱う。"""
+    box = _face_box(rgba)
+    if box is not None:
+        return (int(box["left"]), int(box["top"]), int(box["right"]), int(box["bot"]))
+    alpha = rgba[:, :, 3] > 40
+    ys, xs = np.where(alpha)
+    if len(xs) == 0:
+        return None
+    top, bot = int(ys.min()), int(ys.max())
+    left, right = int(xs.min()), int(xs.max())
+    return (left, top, right, top + max(1, int((bot - top) * 0.42)))
+
+
 def _face_box(rgba: np.ndarray) -> dict | None:
     skin = _skin_mask(rgba)
     alpha = rgba[:, :, 3] > 40

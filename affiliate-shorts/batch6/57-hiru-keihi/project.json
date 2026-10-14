@@ -34,8 +34,8 @@
       "sfx": "none",
       "duration_hint": 2.0,
       "voice_path": "/tmp/irasu-vary/57-hiru-keihi/audio/scene_01.wav",
-      "voice_seconds": 0.757,
-      "duration": 1.4583333333333333,
+      "voice_seconds": 1.376,
+      "duration": 1.4166666666666667,
       "lead": 0.0
     },
     {
@@ -62,8 +62,8 @@
       "sfx": "paper",
       "duration_hint": 2.2,
       "voice_path": "/tmp/irasu-vary/57-hiru-keihi/audio/scene_02.wav",
-      "voice_seconds": 2.4,
-      "duration": 2.4166666666666665,
+      "voice_seconds": 4.416,
+      "duration": 4.458333333333333,
       "lead": 0.0
     },
     {
@@ -88,8 +88,8 @@
       "sfx": "none",
       "duration_hint": 2.2,
       "voice_path": "/tmp/irasu-vary/57-hiru-keihi/audio/scene_03.wav",
-      "voice_seconds": 0.779,
-      "duration": 3.9166666666666665,
+      "voice_seconds": 1.451,
+      "duration": 1.5833333333333333,
       "lead": 0.0
     },
     {
@@ -116,8 +116,8 @@
       "sfx": "paper",
       "duration_hint": 2.2,
       "voice_path": "/tmp/irasu-vary/57-hiru-keihi/audio/scene_04.wav",
-      "voice_seconds": 2.133,
-      "duration": 3.9166666666666665,
+      "voice_seconds": 3.947,
+      "duration": 4.083333333333333,
       "lead": 0.0
     },
     {
@@ -142,8 +142,8 @@
       "sfx": "none",
       "duration_hint": 2.2,
       "voice_path": "/tmp/irasu-vary/57-hiru-keihi/audio/scene_05.wav",
-      "voice_seconds": 1.888,
-      "duration": 3.9166666666666665,
+      "voice_seconds": 3.477,
+      "duration": 3.5833333333333335,
       "lead": 0.0
     },
     {
@@ -163,7 +163,7 @@
       "duration_hint": 2.2,
       "voice_path": "/tmp/irasu-vary/57-hiru-keihi/audio/scene_06.wav",
       "voice_seconds": 0.15,
-      "duration": 2.2083333333333335,
+      "duration": 1.0416666666666667,
       "lead": 0.0
     }
   ],
@@ -241,8 +241,8 @@
     "screenshot_count": 0
   },
   "settings": {
-    "speed": 1.28,
-    "hook_speed": 1.48,
+    "speed": 0.702,
+    "hook_speed": 0.812,
     "telop_scale": 1.0,
     "sfx_gain": 0.22,
     "bgm_gain": 0.045,
@@ -250,11 +250,11 @@
     "bgm": true,
     "tail": 0.16,
     "role_speed": {
-      "hook": 1.48,
-      "develop": 1.28,
-      "punch": 1.28,
-      "close": 1.28,
-      "credit": 1.28
+      "hook": 0.812,
+      "develop": 0.702,
+      "punch": 0.702,
+      "close": 0.702,
+      "credit": 0.702
     },
     "role_tail": {
       "hook": 0.16,

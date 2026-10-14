@@ -86,7 +86,7 @@
       "tone": "guess",
       "voice_path": "/tmp/irasu-vary/25-kakeibo-qa/audio/scene_02.wav",
       "voice_seconds": 2.496,
-      "duration": 2.5,
+      "duration": 2.5833333333333335,
       "lead": 0.0
     },
     {
@@ -113,7 +113,7 @@
       "tone": "guess",
       "voice_path": "/tmp/irasu-vary/25-kakeibo-qa/audio/scene_03.wav",
       "voice_seconds": 1.109,
-      "duration": 1.875,
+      "duration": 1.1666666666666667,
       "lead": 0.0
     },
     {
@@ -140,7 +140,7 @@
       "tone": "guess",
       "voice_path": "/tmp/irasu-vary/25-kakeibo-qa/audio/scene_04.wav",
       "voice_seconds": 1.451,
-      "duration": 2.2083333333333335,
+      "duration": 1.5416666666666667,
       "lead": 0.0
     },
     {
@@ -167,7 +167,7 @@
       "tone": "guess",
       "voice_path": "/tmp/irasu-vary/25-kakeibo-qa/audio/scene_05.wav",
       "voice_seconds": 1.355,
-      "duration": 2.1666666666666665,
+      "duration": 1.4166666666666667,
       "lead": 0.0
     },
     {
@@ -194,7 +194,7 @@
       "tone": "guess",
       "voice_path": "/tmp/irasu-vary/25-kakeibo-qa/audio/scene_06.wav",
       "voice_seconds": 1.152,
-      "duration": 1.9583333333333333,
+      "duration": 1.2083333333333333,
       "lead": 0.0
     },
     {
@@ -221,7 +221,7 @@
       "tone": "guess",
       "voice_path": "/tmp/irasu-vary/25-kakeibo-qa/audio/scene_07.wav",
       "voice_seconds": 1.163,
-      "duration": 1.9583333333333333,
+      "duration": 1.25,
       "lead": 0.0
     },
     {
@@ -248,7 +248,7 @@
       "tone": "answer",
       "voice_path": "/tmp/irasu-vary/25-kakeibo-qa/audio/scene_08.wav",
       "voice_seconds": 2.293,
-      "duration": 2.5,
+      "duration": 2.375,
       "lead": 0.0
     },
     {
@@ -275,7 +275,7 @@
       "tone": "answer",
       "voice_path": "/tmp/irasu-vary/25-kakeibo-qa/audio/scene_09.wav",
       "voice_seconds": 1.003,
-      "duration": 1.8333333333333333,
+      "duration": 1.0833333333333333,
       "lead": 0.0
     },
     {
@@ -302,7 +302,7 @@
       "tone": "answer",
       "voice_path": "/tmp/irasu-vary/25-kakeibo-qa/audio/scene_10.wav",
       "voice_seconds": 0.64,
-      "duration": 1.4583333333333333,
+      "duration": 0.7083333333333334,
       "lead": 0.0
     },
     {
@@ -329,7 +329,7 @@
       "tone": "answer",
       "voice_path": "/tmp/irasu-vary/25-kakeibo-qa/audio/scene_11.wav",
       "voice_seconds": 1.173,
-      "duration": 2.0,
+      "duration": 1.25,
       "lead": 0.0
     },
     {
@@ -356,7 +356,7 @@
       "tone": "question",
       "voice_path": "/tmp/irasu-vary/25-kakeibo-qa/audio/scene_12.wav",
       "voice_seconds": 1.856,
-      "duration": 2.5,
+      "duration": 1.9166666666666667,
       "lead": 0.0
     },
     {
@@ -383,7 +383,7 @@
       "tone": "answer",
       "voice_path": "/tmp/irasu-vary/25-kakeibo-qa/audio/scene_13.wav",
       "voice_seconds": 1.525,
-      "duration": 2.3333333333333335,
+      "duration": 1.5833333333333333,
       "lead": 0.0
     },
     {
@@ -404,7 +404,7 @@
       "series_note": "家計係",
       "voice_path": "/tmp/irasu-vary/25-kakeibo-qa/audio/scene_14.wav",
       "voice_seconds": 0.15,
-      "duration": 2.2083333333333335,
+      "duration": 1.0416666666666667,
       "lead": 0.0
     }
   ],

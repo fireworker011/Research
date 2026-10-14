@@ -60,7 +60,7 @@
       "duration_hint": 2.2,
       "voice_path": "/tmp/irasu-vary/39-phone-bunkatsu/audio/scene_01.wav",
       "voice_seconds": 1.323,
-      "duration": 1.3333333333333333,
+      "duration": 1.375,
       "lead": 0.0
     },
     {
@@ -88,7 +88,7 @@
       "duration_hint": 2.2,
       "voice_path": "/tmp/irasu-vary/39-phone-bunkatsu/audio/scene_02.wav",
       "voice_seconds": 1.568,
-      "duration": 1.5833333333333333,
+      "duration": 1.625,
       "lead": 0.0
     },
     {
@@ -114,7 +114,7 @@
       "duration_hint": 2.2,
       "voice_path": "/tmp/irasu-vary/39-phone-bunkatsu/audio/scene_03.wav",
       "voice_seconds": 0.864,
-      "duration": 0.875,
+      "duration": 0.9166666666666666,
       "lead": 0.0
     },
     {
@@ -166,7 +166,7 @@
       "duration_hint": 2.2,
       "voice_path": "/tmp/irasu-vary/39-phone-bunkatsu/audio/scene_05.wav",
       "voice_seconds": 0.875,
-      "duration": 0.875,
+      "duration": 0.9166666666666666,
       "lead": 0.0
     },
     {
@@ -218,7 +218,7 @@
       "duration_hint": 2.2,
       "voice_path": "/tmp/irasu-vary/39-phone-bunkatsu/audio/scene_07.wav",
       "voice_seconds": 1.6,
-      "duration": 3.1666666666666665,
+      "duration": 1.7083333333333333,
       "lead": 0.0
     },
     {
@@ -244,7 +244,7 @@
       "duration_hint": 2.2,
       "voice_path": "/tmp/irasu-vary/39-phone-bunkatsu/audio/scene_08.wav",
       "voice_seconds": 0.885,
-      "duration": 2.4583333333333335,
+      "duration": 1.0,
       "lead": 0.0
     },
     {
@@ -270,7 +270,7 @@
       "duration_hint": 2.2,
       "voice_path": "/tmp/irasu-vary/39-phone-bunkatsu/audio/scene_09.wav",
       "voice_seconds": 1.899,
-      "duration": 3.4583333333333335,
+      "duration": 2.0,
       "lead": 0.0
     },
     {
@@ -296,7 +296,7 @@
       "duration_hint": 2.2,
       "voice_path": "/tmp/irasu-vary/39-phone-bunkatsu/audio/scene_10.wav",
       "voice_seconds": 0.939,
-      "duration": 2.5,
+      "duration": 1.0416666666666667,
       "lead": 0.0
     },
     {
@@ -322,7 +322,7 @@
       "duration_hint": 2.2,
       "voice_path": "/tmp/irasu-vary/39-phone-bunkatsu/audio/scene_11.wav",
       "voice_seconds": 1.131,
-      "duration": 2.7083333333333335,
+      "duration": 1.25,
       "lead": 0.0
     },
     {
@@ -348,7 +348,7 @@
       "duration_hint": 2.2,
       "voice_path": "/tmp/irasu-vary/39-phone-bunkatsu/audio/scene_12.wav",
       "voice_seconds": 1.568,
-      "duration": 3.1666666666666665,
+      "duration": 1.7083333333333333,
       "lead": 0.0
     },
     {
@@ -374,7 +374,7 @@
       "duration_hint": 2.2,
       "voice_path": "/tmp/irasu-vary/39-phone-bunkatsu/audio/scene_13.wav",
       "voice_seconds": 1.579,
-      "duration": 3.1666666666666665,
+      "duration": 1.7083333333333333,
       "lead": 0.0
     },
     {
@@ -395,7 +395,7 @@
       "series_note": "端末係",
       "voice_path": "/tmp/irasu-vary/39-phone-bunkatsu/audio/scene_14.wav",
       "voice_seconds": 0.15,
-      "duration": 2.0,
+      "duration": 1.0416666666666667,
       "lead": 0.0
     }
   ],
@@ -571,7 +571,7 @@
     "voicevox": "使った声はクレジットが要る。四国めたん、白上虎太郎、玄野武宏、剣崎雌雄はクレジットを書けば商用可。青山龍星は個人事業・法人だと事前許可が要るので使っていない。効果音とBGMはこの場で合成したオリジナルなのでクレジット不要。"
   },
   "notes": [],
-  "style_signature": "kane:C4-P4-T1-F6-H1-M4-B5-L2-A6",
+  "style_signature": "kane:C4-P4-T1-F6-H1-M4-B5-L1-A6",
   "style_axes": {
     "C": "C4",
     "P": "P4",
@@ -580,7 +580,7 @@
     "H": "H1",
     "M": "M4",
     "B": "B5",
-    "L": "L2",
+    "L": "L1",
     "A": "A6",
     "line": "kane"
   },

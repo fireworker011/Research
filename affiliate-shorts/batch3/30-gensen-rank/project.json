@@ -61,7 +61,7 @@
       "tone": "rank",
       "voice_path": "/tmp/irasu-vary/30-gensen-rank/audio/scene_01.wav",
       "voice_seconds": 1.536,
-      "duration": 4.0,
+      "duration": 1.6666666666666667,
       "lead": 0.0
     },
     {
@@ -88,7 +88,7 @@
       "tone": "rank",
       "voice_path": "/tmp/irasu-vary/30-gensen-rank/audio/scene_02.wav",
       "voice_seconds": 1.685,
-      "duration": 4.0,
+      "duration": 1.7916666666666667,
       "lead": 0.0
     },
     {
@@ -115,7 +115,7 @@
       "tone": "rank",
       "voice_path": "/tmp/irasu-vary/30-gensen-rank/audio/scene_03.wav",
       "voice_seconds": 1.152,
-      "duration": 4.0,
+      "duration": 1.2916666666666667,
       "lead": 0.0
     },
     {
@@ -142,7 +142,7 @@
       "tone": "rank",
       "voice_path": "/tmp/irasu-vary/30-gensen-rank/audio/scene_04.wav",
       "voice_seconds": 0.864,
-      "duration": 4.0,
+      "duration": 1.0,
       "lead": 0.0
     },
     {
@@ -169,7 +169,7 @@
       "tone": "rank",
       "voice_path": "/tmp/irasu-vary/30-gensen-rank/audio/scene_05.wav",
       "voice_seconds": 2.4,
-      "duration": 4.0,
+      "duration": 2.5,
       "lead": 0.0
     },
     {
@@ -196,7 +196,7 @@
       "tone": "rank",
       "voice_path": "/tmp/irasu-vary/30-gensen-rank/audio/scene_06.wav",
       "voice_seconds": 1.515,
-      "duration": 4.0,
+      "duration": 1.625,
       "lead": 0.0
     },
     {
@@ -223,7 +223,7 @@
       "tone": "rank",
       "voice_path": "/tmp/irasu-vary/30-gensen-rank/audio/scene_07.wav",
       "voice_seconds": 1.995,
-      "duration": 4.0,
+      "duration": 2.125,
       "lead": 0.0
     },
     {
@@ -251,7 +251,7 @@
       "hold": 1.8,
       "voice_path": "/tmp/irasu-vary/30-gensen-rank/audio/scene_08.wav",
       "voice_seconds": 3.232,
-      "duration": 4.0,
+      "duration": 3.3333333333333335,
       "lead": 0.0
     },
     {
@@ -278,7 +278,7 @@
       "tone": "punch",
       "voice_path": "/tmp/irasu-vary/30-gensen-rank/audio/scene_09.wav",
       "voice_seconds": 0.971,
-      "duration": 4.0,
+      "duration": 1.0833333333333333,
       "lead": 0.0
     },
     {
@@ -305,7 +305,7 @@
       "tone": "punch",
       "voice_path": "/tmp/irasu-vary/30-gensen-rank/audio/scene_10.wav",
       "voice_seconds": 0.8,
-      "duration": 4.0,
+      "duration": 0.9166666666666666,
       "lead": 0.0
     },
     {
@@ -332,7 +332,7 @@
       "tone": "punch",
       "voice_path": "/tmp/irasu-vary/30-gensen-rank/audio/scene_11.wav",
       "voice_seconds": 1.365,
-      "duration": 4.0,
+      "duration": 1.5,
       "lead": 0.0
     },
     {
@@ -359,7 +359,7 @@
       "tone": "close",
       "voice_path": "/tmp/irasu-vary/30-gensen-rank/audio/scene_12.wav",
       "voice_seconds": 1.515,
-      "duration": 4.0,
+      "duration": 1.625,
       "lead": 0.0
     },
     {
@@ -386,7 +386,7 @@
       "tone": "close",
       "voice_path": "/tmp/irasu-vary/30-gensen-rank/audio/scene_13.wav",
       "voice_seconds": 1.195,
-      "duration": 4.0,
+      "duration": 1.3333333333333333,
       "lead": 0.0
     },
     {
@@ -407,7 +407,7 @@
       "series_note": "明細係",
       "voice_path": "/tmp/irasu-vary/30-gensen-rank/audio/scene_14.wav",
       "voice_seconds": 0.15,
-      "duration": 2.2083333333333335,
+      "duration": 1.0416666666666667,
       "lead": 0.0
     }
   ],
@@ -602,7 +602,7 @@
     "voicevox": "使った声はクレジットが要る。四国めたん、白上虎太郎、玄野武宏、剣崎雌雄はクレジットを書けば商用可。青山龍星は個人事業・法人だと事前許可が要るので使っていない。効果音とBGMはこの場で合成したオリジナルなのでクレジット不要。"
   },
   "notes": [],
-  "style_signature": "kane:C5-P2-T1-F5-H5-M3-B2-L5-A2",
+  "style_signature": "kane:C5-P2-T1-F5-H5-M3-B2-L2-A2",
   "style_axes": {
     "C": "C5",
     "P": "P2",
@@ -611,7 +611,7 @@
     "H": "H5",
     "M": "M3",
     "B": "B2",
-    "L": "L5",
+    "L": "L2",
     "A": "A2",
     "line": "kane"
   },

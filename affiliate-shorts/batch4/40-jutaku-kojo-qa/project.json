@@ -57,7 +57,7 @@
       "hold": 1.6,
       "voice_path": "/tmp/irasu-vary/40-jutaku-kojo-qa/audio/scene_01.wav",
       "voice_seconds": 2.485,
-      "duration": 4.0,
+      "duration": 2.625,
       "lead": 0.0
     },
     {
@@ -86,7 +86,7 @@
       "tone": "guess",
       "voice_path": "/tmp/irasu-vary/40-jutaku-kojo-qa/audio/scene_02.wav",
       "voice_seconds": 2.443,
-      "duration": 4.0,
+      "duration": 2.5833333333333335,
       "lead": 0.0
     },
     {
@@ -113,7 +113,7 @@
       "tone": "guess",
       "voice_path": "/tmp/irasu-vary/40-jutaku-kojo-qa/audio/scene_03.wav",
       "voice_seconds": 0.885,
-      "duration": 4.0,
+      "duration": 1.0,
       "lead": 0.0
     },
     {
@@ -140,7 +140,7 @@
       "tone": "guess",
       "voice_path": "/tmp/irasu-vary/40-jutaku-kojo-qa/audio/scene_04.wav",
       "voice_seconds": 1.227,
-      "duration": 4.0,
+      "duration": 1.3333333333333333,
       "lead": 0.0
     },
     {
@@ -167,7 +167,7 @@
       "tone": "guess",
       "voice_path": "/tmp/irasu-vary/40-jutaku-kojo-qa/audio/scene_05.wav",
       "voice_seconds": 1.365,
-      "duration": 4.0,
+      "duration": 1.5,
       "lead": 0.0
     },
     {
@@ -194,7 +194,7 @@
       "tone": "guess",
       "voice_path": "/tmp/irasu-vary/40-jutaku-kojo-qa/audio/scene_06.wav",
       "voice_seconds": 1.152,
-      "duration": 4.0,
+      "duration": 1.2916666666666667,
       "lead": 0.0
     },
     {
@@ -221,7 +221,7 @@
       "tone": "guess",
       "voice_path": "/tmp/irasu-vary/40-jutaku-kojo-qa/audio/scene_07.wav",
       "voice_seconds": 1.579,
-      "duration": 4.0,
+      "duration": 1.7083333333333333,
       "lead": 0.0
     },
     {
@@ -248,7 +248,7 @@
       "tone": "answer",
       "voice_path": "/tmp/irasu-vary/40-jutaku-kojo-qa/audio/scene_08.wav",
       "voice_seconds": 2.197,
-      "duration": 4.0,
+      "duration": 2.3333333333333335,
       "lead": 0.0
     },
     {
@@ -275,7 +275,7 @@
       "tone": "answer",
       "voice_path": "/tmp/irasu-vary/40-jutaku-kojo-qa/audio/scene_09.wav",
       "voice_seconds": 0.853,
-      "duration": 4.0,
+      "duration": 0.9583333333333334,
       "lead": 0.0
     },
     {
@@ -302,7 +302,7 @@
       "tone": "answer",
       "voice_path": "/tmp/irasu-vary/40-jutaku-kojo-qa/audio/scene_10.wav",
       "voice_seconds": 0.832,
-      "duration": 4.0,
+      "duration": 0.9583333333333334,
       "lead": 0.0
     },
     {
@@ -329,7 +329,7 @@
       "tone": "answer",
       "voice_path": "/tmp/irasu-vary/40-jutaku-kojo-qa/audio/scene_11.wav",
       "voice_seconds": 1.653,
-      "duration": 4.0,
+      "duration": 1.7916666666666667,
       "lead": 0.0
     },
     {
@@ -356,7 +356,7 @@
       "tone": "question",
       "voice_path": "/tmp/irasu-vary/40-jutaku-kojo-qa/audio/scene_12.wav",
       "voice_seconds": 1.664,
-      "duration": 4.0,
+      "duration": 1.7916666666666667,
       "lead": 0.0
     },
     {
@@ -383,7 +383,7 @@
       "tone": "answer",
       "voice_path": "/tmp/irasu-vary/40-jutaku-kojo-qa/audio/scene_13.wav",
       "voice_seconds": 1.653,
-      "duration": 4.0,
+      "duration": 1.7916666666666667,
       "lead": 0.0
     },
     {
@@ -404,7 +404,7 @@
       "series_note": "控除係",
       "voice_path": "/tmp/irasu-vary/40-jutaku-kojo-qa/audio/scene_14.wav",
       "voice_seconds": 0.15,
-      "duration": 2.2083333333333335,
+      "duration": 1.0416666666666667,
       "lead": 0.0
     }
   ],
@@ -598,7 +598,7 @@
     "voicevox": "使った声はクレジットが要る。四国めたん、白上虎太郎、玄野武宏、剣崎雌雄はクレジットを書けば商用可。青山龍星は個人事業・法人だと事前許可が要るので使っていない。効果音とBGMはこの場で合成したオリジナルなのでクレジット不要。"
   },
   "notes": [],
-  "style_signature": "kane:C6-P1-T6-F2-H4-M3-B4-L5-A1",
+  "style_signature": "kane:C6-P1-T6-F2-H4-M3-B4-L2-A1",
   "style_axes": {
     "C": "C6",
     "P": "P1",
@@ -607,7 +607,7 @@
     "H": "H4",
     "M": "M3",
     "B": "B4",
-    "L": "L5",
+    "L": "L2",
     "A": "A1",
     "line": "kane"
   },

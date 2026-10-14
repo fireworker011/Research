@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import subprocess
 import unittest
 from pathlib import Path
 
@@ -9,19 +10,29 @@ import numpy as np
 
 from irasutoya_short import sprites
 from irasutoya_short.sfx import bgm_loop
-from irasutoya_short.style_draw import PALETTES, build_still, font_path
+from irasutoya_short.qa import (
+    caption_fit_problems,
+    caption_hits_edge,
+    caption_overlaps_face,
+    dead_air,
+    distinct_stills,
+    encoded_caption_problems,
+    glyphs_inside_rendered_frame,
+)
+from irasutoya_short.textutil import layout_caption, orphan_punctuation_lines, short_caption_lines, wrap_caption_lines
+from irasutoya_short.render import blit, render_telop
+from irasutoya_short.style_draw import PALETTES, build_still, font_path, telop_placement
 from irasutoya_short.stylevar import (
     MATRIX,
     assign_unpublished,
     check_signature,
     credit_lines,
     fit_scene_durations,
+    gaps_ok,
     kane_published_history,
-    length_ok,
     load_jobs,
     parse_signature,
     published_signatures,
-    rhythm_ok,
     shared_axes,
 )
 
@@ -90,27 +101,32 @@ class SignatureRuleTests(unittest.TestCase):
 
 
 class DurationFitTests(unittest.TestCase):
-    def test_fast_cuts_land_in_l2(self) -> None:
+    def test_tight_cuts_do_not_pad_a_long_bucket(self) -> None:
         scenes = []
         for index in range(13):
             scenes.append({"role": "hook" if index == 0 else "body", "voice_seconds": 1.15, "text": "あ", "lead": 0.0})
         scenes.append({"role": "credit", "voice_seconds": 0.15, "text": "", "lead": 0.0})
-        project = {"style_axes": {"M": "M1", "L": "L2"}, "scenes": scenes}
-        self.assertEqual(fit_scene_durations(project), "ok")
-        total = sum(float(scene["duration"]) for scene in scenes)
-        self.assertTrue(length_ok(total, "L2"))
-        self.assertTrue(rhythm_ok(scenes, "M1"))
+        project = {"style_axes": {"M": "M5", "L": "L5"}, "scenes": scenes}
+        status = fit_scene_durations(project)
+        self.assertIn(status, ("ok", "retarget", "short"))
+        self.assertTrue(gaps_ok(scenes))
+        content = [scene for scene in scenes if scene["role"] != "credit"]
+        slack = max(float(scene["duration"]) - float(scene["voice_seconds"]) for scene in content)
+        self.assertLess(slack, 1.35)
+        self.assertLess(float(scenes[-1]["duration"]), 1.35)
+        self.assertLess(sum(float(scene["duration"]) for scene in scenes), 25)
 
-    def test_paper_theater_lands_in_l3(self) -> None:
+    def test_paper_theater_is_not_a_five_second_hold(self) -> None:
         scenes = []
         for index in range(5):
             scenes.append({"role": "hook" if index == 0 else "body", "voice_seconds": 1.0, "text": "あ", "lead": 0.0})
         scenes.append({"role": "credit", "voice_seconds": 0.15, "text": "", "lead": 0.0})
         project = {"style_axes": {"M": "M6", "L": "L3"}, "scenes": scenes}
-        self.assertEqual(fit_scene_durations(project), "ok")
-        total = sum(float(scene["duration"]) for scene in scenes)
-        self.assertTrue(length_ok(total, "L3"))
-        self.assertTrue(rhythm_ok(scenes, "M6"))
+        fit_scene_durations(project)
+        self.assertTrue(gaps_ok(scenes))
+        slack = max(float(scene["duration"]) - float(scene["voice_seconds"]) for scene in scenes if scene["role"] != "credit")
+        self.assertLess(slack, 1.35)
+        self.assertLess(sum(float(scene["duration"]) for scene in scenes), 15)
 
 
 class PictureVariationTests(unittest.TestCase):
@@ -185,6 +201,137 @@ class PictureVariationTests(unittest.TestCase):
         self.assertEqual(lines[0], "VOICEVOX:四国めたん")
         self.assertEqual(lines[1], "VOICEVOX:白上虎太郎")
         self.assertEqual(lines[-1], "イラスト：いらすとや")
+
+
+class CaptionAndAirTests(unittest.TestCase):
+    def test_caption_stays_off_a_face_and_inside_the_frame(self) -> None:
+        axes = {"C": "C1", "P": "P1", "T": "T5", "F": "F1", "H": "H2", "M": "M2", "B": "B2", "L": "L1", "A": "A1"}
+        placement = telop_placement(axes, {"role": "body"})
+        face = (400, 700, 700, 1100)
+        placement["faces"] = [face]
+        telop = render_telop("手取りはその残りだった", "body", 1080, 1920, 1.0, 0.5, "body", None, placement)
+        self.assertFalse(caption_overlaps_face(telop, [face]))
+        self.assertFalse(caption_hits_edge(telop))
+        wide = telop_placement(
+            {"C": "C5", "P": "P2", "T": "T1", "F": "F5", "H": "H5", "M": "M3", "B": "B2", "L": "L2", "A": "A2"},
+            {"role": "body"},
+        )
+        long = render_telop("源泉徴収票で先に見る欄は天引きの欄だけ見ろ", "body", 1080, 1920, 1.0, 0.5, "body", None, wide)
+        self.assertFalse(caption_hits_edge(long, 48))
+        self.assertEqual(caption_fit_problems(wide["text_box"], wide["container"], 1080, 1920), [])
+        self.assertEqual(orphan_punctuation_lines(wide["wrapped"]), [])
+
+    def test_caption_box_contains_the_glyphs(self) -> None:
+        axes = {"C": "C1", "P": "P1", "T": "T1", "F": "F1", "H": "H3", "M": "M1", "B": "B1", "L": "L1", "A": "A2"}
+        placement = telop_placement(axes, {"role": "hook"})
+        render_telop("ウォーターサーバーあるあ\nる", "hook", 1080, 1920, 1.0, 0.5, "hook", None, placement)
+        self.assertEqual(caption_fit_problems(placement["text_box"], placement["container"], 1080, 1920), [])
+        self.assertNotIn("、", orphan_punctuation_lines(placement["wrapped"]))
+        self.assertFalse(any(len(line.strip()) == 1 for line in placement["wrapped"].split("\n")))
+        comma = wrap_caption_lines("第3位、途中でやめにくい", 6, len)
+        self.assertEqual(orphan_punctuation_lines("\n".join(comma)), [])
+        self.assertEqual(short_caption_lines("\n".join(comma)), [])
+        self.assertTrue(orphan_punctuation_lines("第3位\n、"))
+        rank = layout_caption("第1位、契約書の返却の欄を読んだ")
+        self.assertEqual(len(rank), 2)
+        self.assertTrue(all(len(line) >= 7 for line in rank))
+        self.assertFalse(rank[1].startswith("の") or rank[1].startswith("欄"))
+        self.assertEqual(layout_caption("先に読むのは返却\nの欄"), ["先に読むのは返却の欄"])
+        self.assertEqual(layout_caption("ビフォー、引っ越しのときのまま"), ["ビフォー、引っ越しのときのまま"])
+        joined = layout_caption("ウォーターサーバーあるあ\nる")
+        self.assertTrue(all(len(line) >= 7 for line in joined))
+
+    def test_measured_glyphs_sit_inside_the_drawn_box(self) -> None:
+        axes = {"C": "C1", "P": "P4", "T": "T2", "F": "F1", "H": "H3", "M": "M1", "B": "B1", "L": "L1", "A": "A2"}
+        placement = telop_placement(axes, {"role": "body"})
+        telop = render_telop("第1位、契約書の\n返却の欄を読んだ", "body", 1080, 1920, 1.0, 0.5, "body", None, placement)
+        lines = [line for line in placement["wrapped"].split("\n") if line]
+        self.assertLessEqual(len(lines), 2)
+        self.assertTrue(all(len(line) >= 7 for line in lines))
+        wall = np.full((1920, 1080, 3), (255, 228, 120), dtype=np.uint8)
+        full = wall.copy()
+        boxed = wall.copy()
+        blit(full, telop, 0, 0)
+        blit(boxed, placement["box_overlay"], 0, 0)
+        box_alpha = placement["box_overlay"][:, :, 3]
+        self.assertEqual(glyphs_inside_rendered_frame(full, boxed, box_alpha), [])
+        self.assertEqual(encoded_caption_problems(full, full, boxed, box_alpha), [])
+        self.assertTrue(encoded_caption_problems(boxed, full, boxed, box_alpha))
+
+    def test_dark_bar_gets_light_letters(self) -> None:
+        axes = {"C": "C3", "P": "P4", "T": "T5", "F": "F5", "H": "H4", "M": "M5", "B": "B1", "L": "L2", "A": "A4"}
+        placement = telop_placement(axes, {"role": "body"})
+        fill = placement["fill"]
+        bar = placement["bar_fill"]
+        fill_lum = 0.3 * fill[0] + 0.59 * fill[1] + 0.11 * fill[2]
+        bar_lum = 0.3 * bar[0] + 0.59 * bar[1] + 0.11 * bar[2]
+        self.assertLess(bar_lum, 150)
+        self.assertGreater(fill_lum, 200)
+
+    def test_yellow_room_has_no_empty_cream_card(self) -> None:
+        book = _GreenBook()
+        axes = {"C": "C4", "P": "P4", "T": "T1", "F": "F1", "H": "H3", "M": "M1", "B": "B1", "L": "L1", "A": "A1"}
+        still = build_still({"role": "body", "telop": "あ"}, book, axes, ["hero"], 0, 4, set())
+        paper = np.array([255, 248, 220], dtype=np.int16)
+        close = np.abs(still.astype(np.int16) - paper).sum(axis=2) < 30
+        self.assertLess(int(close.sum()), 200)
+
+    def test_three_chapters_change_the_picture(self) -> None:
+        book = _GreenBook()
+        axes = {"C": "C1", "P": "P1", "T": "T1", "F": "F1", "H": "H3", "M": "M1", "B": "B1", "L": "L1", "A": "A2"}
+        stills = []
+        for index in range(6):
+            stills.append(
+                build_still(
+                    {"role": "body", "telop": "あ"},
+                    book,
+                    axes,
+                    ["hero"],
+                    index,
+                    6,
+                    set(),
+                    width=180,
+                    height=320,
+                )
+            )
+        self.assertTrue(distinct_stills(stills, 3))
+
+    def test_dead_air_flags_silence_and_a_held_frame(self) -> None:
+        frozen = _clip("/tmp/qa-frozen.mp4", moving=False, tone=False, frames=72)
+        moving = _clip("/tmp/qa-moving.mp4", moving=True, tone=True, frames=48)
+        self.assertTrue(any(item.startswith("silence") for item in dead_air(frozen)))
+        self.assertTrue(any(item.startswith("freeze") for item in dead_air(frozen)))
+        self.assertEqual(dead_air(moving), [])
+
+
+def _clip(path: str, *, moving: bool, tone: bool, frames: int) -> str:
+    width, height = 160, 160
+    base = np.zeros((height, width, 3), dtype=np.uint8)
+    base[:, :] = (230, 220, 200)
+    base[40:120, 50:110] = (30, 40, 90)
+    cmd = [
+        "ffmpeg", "-y", "-loglevel", "error",
+        "-f", "rawvideo", "-pix_fmt", "rgb24", "-s", f"{width}x{height}", "-r", "24",
+        "-i", "pipe:0",
+    ]
+    if tone:
+        cmd.extend(["-f", "lavfi", "-i", "sine=frequency=440:sample_rate=24000:duration=4"])
+    else:
+        cmd.extend(["-f", "lavfi", "-i", "anullsrc=r=24000:cl=mono"])
+    cmd.extend(["-t", f"{frames / 24:.3f}", "-c:v", "libx264", "-pix_fmt", "yuv420p", "-c:a", "aac", "-shortest", path])
+    proc = subprocess.Popen(cmd, stdin=subprocess.PIPE)
+    assert proc.stdin is not None
+    for index in range(frames):
+        frame = base
+        if moving:
+            shift = index // 2
+            frame = np.zeros_like(base)
+            frame[:, shift:] = base[:, : width - shift]
+            frame[:, :shift] = base[:, :1]
+        proc.stdin.write(frame.tobytes())
+    proc.stdin.close()
+    proc.wait(timeout=30)
+    return path
 
 
 class _GreenBook:
