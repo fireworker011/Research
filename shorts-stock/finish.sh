@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Join Imagine clips, then fit the voice to that picture.
 # Picture length starts as the shot lengths in IMAGINE.md.
-# STYLE.md may hold the last frame so the length reaches that pack's L band.
+# The last frame may be held for at most 1.5 seconds. It is not padded up to an L band.
 # The voice is sped up only when it does not fit. The picture is not recut to the voice.
 # BGM follows STYLE.md (B1 is silence). --bgm replaces that bed. Amplitude 0.15.
 # A no-BGM file is always written. Captions are not burned in. Text is on thumb.png.
@@ -404,7 +404,7 @@ report = {
     "sample_note": "色だけの試験映像。投稿しない。",
     "multishot_pack": "2026-10-12/konkatsu/01-profile",
     "multishot_picture_sec": float(sys.argv[3]),
-    "multishot_note": "shot-01 のファイルは 6 秒。台本は 2+4+4 秒。スタイルの L 帯まで最後のフレームを足す。",
+    "multishot_note": "shot-01 のファイルは 6 秒。台本は 2+4+4 秒。出力は台本の 10 秒。止め足しは 1.5 秒まで。",
     "silent_pack": "2026-10-12/pet/01-gray-sofa-rug",
     "silent_picture_sec": float(sys.argv[5]),
     "long_voice_sec": float(sys.argv[4]),

@@ -4,6 +4,7 @@ The matrix is STYLE-VARIATION.md. Comparison is inside one channel.
 A new video may share at most 2 axes with the previous video and at most 3
 with any of the last 5, and must not match any earlier signature exactly.
 The thumbnail must differ from the previous video in at least 2 of C, P, T.
+Length stays on the script. The last frame may be held for at most 1.5 seconds.
 """
 
 from __future__ import annotations
@@ -86,8 +87,9 @@ LABELS = {
     },
 }
 
-# Ranges are the matrix bands. A pack shorter than the band holds the last
-# frame up to the band's start. It is not cut down to a shorter band.
+# Ranges are the matrix bands. Output length is the script plus at most MAX_HOLD
+# of hold. A short script is not frozen forward into a longer band.
+MAX_HOLD = 1.5
 LENGTH_RANGE = {
     "pet": {
         "L1": (8.0, 12.0),
@@ -211,15 +213,48 @@ def asset_code(pack: dict) -> str:
     raise SystemExit(f"ラインが違う: {pack['line']}")
 
 
-def length_target(line: str, script_sec: float, code: str, pad_limit: float) -> float | None:
-    lo, hi = LENGTH_RANGE[line][code]
-    if script_sec > hi:
+def pace(codes: dict[str, str], script_sec: float) -> tuple[float, float]:
+    """Speed and opening hold. Restoring a sped picture to the script stays within the hold budget."""
+    speed = 1.0
+    start_hold = 0.5 if codes["M"] == "M6" else 0.0
+    if codes["M"] == "M4":
+        speed = 0.7
+    elif codes["M"] == "M5":
+        speed = 0.75
+    if start_hold > MAX_HOLD:
+        start_hold = MAX_HOLD
+    budget = MAX_HOLD - start_hold
+    if script_sec > 0 and speed < 1.0:
+        speed = max(speed, 1.0 - budget / float(script_sec))
+    return speed, start_hold
+
+
+def natural_length(script_sec: float, codes: dict[str, str]) -> float:
+    _speed, start_hold = pace(codes, script_sec)
+    return float(script_sec) + start_hold
+
+
+def length_target(line: str, script_sec: float, codes: dict[str, str]) -> float | None:
+    """Natural duration when this L code matches it. Never freezes forward into a longer band."""
+    target = natural_length(script_sec, codes)
+    script = float(script_sec)
+    if target - script > MAX_HOLD + 1e-6:
         return None
-    target = max(float(script_sec), lo)
-    if target - float(script_sec) > pad_limit:
-        return None
-    if target > hi:
-        return None
+    lo, hi = LENGTH_RANGE[line][codes["L"]]
+    if lo - 1e-6 <= script <= hi + 1e-6 and target <= script + MAX_HOLD + 1e-6:
+        return target
+    if lo - 1e-6 <= target <= hi + 1e-6:
+        return target
+    # Shorter than every band. L1 is the label, and the picture stays on the script.
+    if codes["L"] == "L1" and target < lo:
+        return target
+    return None
+
+
+def delivered_length(line: str, script_sec: float, codes: dict[str, str]) -> float:
+    target = length_target(line, script_sec, codes)
+    if target is None:
+        raise SystemExit(f"{codes['L']} は台本 {script_sec:g} 秒に合わない")
     return target
 
 
@@ -232,30 +267,93 @@ def label_of(line: str, code: str) -> str:
     return code
 
 
+def reachable_lengths(line: str, script_sec: float, codes: dict[str, str]) -> list[tuple[str, float]]:
+    found = []
+    for code in ("L1", "L2", "L3", "L4", "L5"):
+        trial = dict(codes)
+        trial["L"] = code
+        target = length_target(line, script_sec, trial)
+        if target is not None:
+            found.append((code, target))
+    found.sort(key=lambda item: (item[1] - float(script_sec), item[0]))
+    return found
+
+
+def length_notes(line: str, script_sec: float, target: float) -> str:
+    base = "未公開。直前は共有軸2まで、直近5本は3まで。完全一致は不可。"
+    lo = LENGTH_RANGE[line]["L1"][0]
+    if target + 1e-6 < lo:
+        return base + " 台本が最短の帯より短いので、長さは台本のまま。止め足しは1.5秒まで。"
+    hold = target - float(script_sec)
+    if hold > 0.05:
+        return base + " 止め足しは1.5秒まで。"
+    return base + " 止め足しはしない。"
+
+
 def pick_signature(index: int, line: str, script_sec: float, fixed_a: str, history: list[str]) -> tuple[str, float]:
-    rng = random.Random(1009 + index * 17)
-    lengths = ("L1", "L2", "L3", "L4", "L5")
-    for pad_limit in (20.0, 45.0):
-        reachable = [
-            code
-            for code in lengths
-            if length_target(line, script_sec, code, pad_limit) is not None
-        ]
-        if not reachable:
-            continue
-        for _attempt in range(30000):
-            codes = {axis: f"{axis}{rng.randint(1, 6)}" for axis in "CPTFHMB"}
-            codes["A"] = fixed_a
-            length_code = rng.choice(reachable)
-            target = length_target(line, script_sec, length_code, pad_limit)
-            if target is None:
-                continue
+    rng = random.Random(2003 + index * 19)
+    for _attempt in range(30000):
+        codes = {axis: f"{axis}{rng.randint(1, 6)}" for axis in "CPTFHMB"}
+        codes["A"] = fixed_a
+        reachable = reachable_lengths(line, script_sec, codes)
+        if reachable:
+            length_code, target = rng.choice(reachable)
             codes["L"] = length_code
-            signature = format_signature(line, codes)
-            ok, _reason = qa_against(signature, history)
-            if ok:
-                return signature, target
+        else:
+            codes["L"] = "L1"
+            target = natural_length(script_sec, codes)
+        signature = format_signature(line, codes)
+        ok, _reason = qa_against(signature, history)
+        if ok:
+            return signature, target
     raise SystemExit(f"署名が見つからない: {line} index={index}")
+
+
+def _accept(line: str, script_sec: float, codes: dict[str, str], history: list[str]) -> tuple[str, float] | None:
+    try:
+        target = delivered_length(line, script_sec, codes)
+    except SystemExit:
+        return None
+    signature = format_signature(line, codes)
+    if qa_against(signature, history)[0]:
+        return signature, target
+    return None
+
+
+def repair_signature(line: str, script_sec: float, signature: str, history: list[str]) -> tuple[str, float] | None:
+    """Change L first. Then the fewest other axes, leaving the thumbnail alone when that passes."""
+    codes = parse_signature(signature)
+    lengths = [code for code, _target in reachable_lengths(line, script_sec, codes)]
+    if not lengths:
+        return None
+    for length_code in lengths:
+        trial = dict(codes)
+        trial["L"] = length_code
+        hit = _accept(line, script_sec, trial, history)
+        if hit is not None:
+            return hit
+    edit_order = ("H", "M", "B", "T", "F", "P", "C")
+    base = lengths[0]
+    for axis in edit_order:
+        for number in range(1, 7):
+            trial = dict(codes)
+            trial["L"] = base
+            trial[axis] = f"{axis}{number}"
+            hit = _accept(line, script_sec, trial, history)
+            if hit is not None:
+                return hit
+    for index, first in enumerate(edit_order):
+        for second in edit_order[index + 1 :]:
+            for number_a in range(1, 7):
+                for number_b in range(1, 7):
+                    trial = dict(codes)
+                    trial["L"] = base
+                    trial[first] = f"{first}{number_a}"
+                    trial[second] = f"{second}{number_b}"
+                    hit = _accept(line, script_sec, trial, history)
+                    if hit is not None:
+                        return hit
+    return None
 
 
 def title_of(pack_dir: Path) -> str:
@@ -311,7 +409,7 @@ def style_markdown(pack: dict, signature: str, target: float, status: str, notes
     rows.append(f"署名: `{signature}`")
     rows.append(f"サムネ: `{thumb_signature(codes)}`")
     rows.append(f"状態: {status}")
-    rows.append(f"絵の目標: {target:g}秒。台本より短いときは台本の長さのまま。長いときは最後のフレームを止めて足す。声の長さには合わせない。")
+    rows.append(f"絵の目標: {target:g}秒。止め足しは1.5秒まで。帯まで届かないときは台本の長さのまま。声の長さには合わせない。")
     rows.append(f"クレジット: {CREDIT}")
     rows.append("")
     rows.append("| 軸 | 値 |")
@@ -336,27 +434,34 @@ def channel_packs() -> dict[str, list[dict]]:
     return grouped
 
 
+def resolve_signature(index: int, pack: dict, history: list[str]) -> tuple[str, float, str, str]:
+    """Keep a signature that already fits. Re-pick only when its length band does not."""
+    script_sec = float(pack["picture_sec"])
+    published = PUBLISHED.get(pack["rel"])
+    if published:
+        signature = published["signature"]
+        return signature, delivered_length(pack["line"], script_sec, parse_signature(signature)), "published", published["notes"]
+    fixed_a = asset_code(pack)
+    style_path = pack["dir"] / "STYLE.md"
+    old = load_style_signature(pack["dir"]) if style_path.is_file() else ""
+    if old and parse_signature(old)["A"] == fixed_a:
+        repaired = repair_signature(pack["line"], script_sec, old, history)
+        if repaired is not None:
+            signature, target = repaired
+            return signature, target, "ready", length_notes(pack["line"], script_sec, target)
+    signature, target = pick_signature(index, pack["line"], script_sec, fixed_a, history)
+    return signature, target, "ready", length_notes(pack["line"], script_sec, target)
+
+
 def assign_all(log_path: Path = LOG_PATH) -> list[dict]:
     grouped = channel_packs()
     rows: list[dict] = []
     for line, packs in grouped.items():
         history: list[str] = []
         for index, pack in enumerate(packs):
-            ensure_credit(pack["dir"] / "POST.md")
             script_sec = float(pack["picture_sec"])
-            published = PUBLISHED.get(pack["rel"])
-            if published:
-                signature = published["signature"]
-                codes = parse_signature(signature)
-                target = script_sec
-                status = "published"
-                notes = published["notes"]
-                video_id = published["video_id"]
-            else:
-                signature, target = pick_signature(index, line, script_sec, asset_code(pack), history)
-                status = "ready"
-                video_id = f"{index + 1:02d}"
-                notes = "未公開。直前は共有軸2まで、直近5本は3まで。完全一致は不可。"
+            signature, target, status, notes = resolve_signature(index, pack, history)
+            video_id = PUBLISHED[pack["rel"]]["video_id"] if pack["rel"] in PUBLISHED else f"{index + 1:02d}"
             history.append(signature)
             codes = parse_signature(signature)
             prev_share: str | int = "-"
@@ -366,9 +471,13 @@ def assign_all(log_path: Path = LOG_PATH) -> list[dict]:
                 last_share = max(shared_axes(signature, old) for old in history[-6:-1])
             if not credit_ok(pack["dir"]):
                 raise SystemExit(f"クレジットが無い: {pack['rel']}")
-            (pack["dir"] / "STYLE.md").write_text(
-                style_markdown(pack, signature, target, status, notes)
-            )
+            old_signature = ""
+            style_path = pack["dir"] / "STYLE.md"
+            if style_path.is_file():
+                old_signature = load_style_signature(pack["dir"])
+            style_path.write_text(style_markdown(pack, signature, target, status, notes))
+            if status != "published" and thumb_signature(parse_signature(old_signature or signature)) != thumb_signature(codes):
+                _write_thumb(pack["dir"], line, codes, title_of(pack["dir"]))
             bgm_names = BGM_TRACK_LINE.get(line, BGM_TRACK)
             rows.append(
                 {
@@ -409,6 +518,9 @@ def read_log(log_path: Path) -> list[dict]:
 
 def check_log(log_path: Path = LOG_PATH) -> None:
     rows = read_log(log_path)
+    packs_by_id: dict[str, dict[str, dict]] = {}
+    for line, packs in channel_packs().items():
+        packs_by_id[line] = {f"{index + 1:02d}": pack for index, pack in enumerate(packs)}
     by_line: dict[str, list[dict]] = {}
     for row in rows:
         by_line.setdefault(row["line"], []).append(row)
@@ -425,6 +537,14 @@ def check_log(log_path: Path = LOG_PATH) -> None:
                     raise SystemExit(f"{line} {row['video_id']}: ログの直前共有が3以上")
                 if row["shared_axes_max_last5"] != "-" and int(row["shared_axes_max_last5"]) > 3:
                     raise SystemExit(f"{line} {row['video_id']}: ログの直近5本共有が4以上")
+                pack = packs_by_id[line][row["video_id"]]
+                script_sec = float(pack["picture_sec"])
+                expected = delivered_length(line, script_sec, parse_signature(signature))
+                logged = float(row["length_sec"])
+                if abs(logged - expected) > 0.05:
+                    raise SystemExit(f"{line} {row['video_id']}: 長さ {logged} が台本 {script_sec} の目標 {expected} と違う")
+                if logged - script_sec > MAX_HOLD + 0.05 or script_sec - logged > 0.05:
+                    raise SystemExit(f"{line} {row['video_id']}: 止め足しが1.5秒を超える")
             if row["credit_ok"] != "yes":
                 raise SystemExit(f"{line} {row['video_id']}: クレジット")
             if int(row["irasutoya_count"]) > 20:
@@ -470,16 +590,12 @@ def grade_for(line: str, code: str) -> str:
 
 
 def video_filter(codes: dict[str, str], script_sec: float, target: float) -> str:
-    speed = 1.0
-    start_hold = 0.0
-    if codes["M"] == "M4":
-        speed = 0.7
-    elif codes["M"] == "M5":
-        speed = 0.75
-    elif codes["M"] == "M6":
-        start_hold = 0.5
-    played = script_sec * speed + start_hold
-    end_hold = max(0.0, target - played)
+    speed, start_hold = pace(codes, script_sec)
+    played = float(script_sec) * speed
+    end_hold = float(target) - played - start_hold
+    if end_hold < -0.05 or start_hold + end_hold > MAX_HOLD + 0.05:
+        raise SystemExit(f"止め足しが1.5秒を超える: start={start_hold:.3f} end={end_hold:.3f} target={target}")
+    end_hold = max(0.0, end_hold)
     parts = [
         geometry(codes["C"]),
         grade_for("", codes["P"]),
@@ -513,10 +629,7 @@ def plan(pack_dir: Path, script_sec: float) -> dict:
     signature = load_style_signature(pack_dir)
     codes = parse_signature(signature)
     line = signature.split(":", 1)[0]
-    lo, hi = LENGTH_RANGE[line][codes["L"]]
-    target = max(float(script_sec), lo)
-    if target > hi or float(script_sec) > hi:
-        raise SystemExit(f"長さ {script_sec} が {codes['L']} に入らない: {pack_dir}")
+    target = delivered_length(line, float(script_sec), codes)
     rel = pack_dir.resolve().relative_to(STOCK.resolve()).as_posix()
     # rel is date/line/slug
     history = []
@@ -645,7 +758,7 @@ def record(pack_dir: Path, measured_sec: float) -> None:
 
 
 def main(argv: list[str]) -> None:
-    if len(argv) == 2 and argv[1] == "assign":
+    if len(argv) == 2 and argv[1] in ("assign", "repick"):
         rows = assign_all()
         print(f"assigned {len(rows)}")
         return
@@ -664,7 +777,7 @@ def main(argv: list[str]) -> None:
     if len(argv) == 4 and argv[1] == "record":
         record(Path(argv[2]), float(argv[3]))
         return
-    raise SystemExit("usage: style_matrix.py assign|check|thumbs|plan PACK_DIR SCRIPT_SEC|record PACK_DIR MEASURED_SEC")
+    raise SystemExit("usage: style_matrix.py assign|repick|check|thumbs|plan PACK_DIR SCRIPT_SEC|record PACK_DIR MEASURED_SEC")
 
 
 if __name__ == "__main__":
