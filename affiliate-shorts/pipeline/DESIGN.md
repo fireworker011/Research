@@ -1,6 +1,8 @@
-# 会社員の金メモ ショートのライン
+# ショートのライン
 
 脳は台本、体は Python と ffmpeg。Premiere は使わない。CapCut は人が手で直すときだけ。このコマンドは mp4 をレビューフォルダに置くところまでで、YouTube にも X にも投稿しない。CTA も URL も動画の中に入れない。
+
+チャンネルの名前とジャンルは未定。出す先は、今までのチャンネルとは別の新しいチャンネル。名前が決まるまでは `channels/draft.yaml` の `name` と `genre` を空のままにする。決まったらそのファイルを埋めるか、`channels/<id>.yaml` を足す。動画、UPLOAD、QA には、空のままの名前は書かない。
 
 画面は既存の静止画と同じ。1080x1920、20秒以上30秒以下、いらすとやの会社員、ゆっくりしたズームとパン、反応の行だけ小さく揺らす、字幕は大きく、声は VOICEVOX。口の重ね絵は無し。頭の上の名札は無し。字幕の後ろの帯は無し。背景の窓は一枚のガラスで、中の桟は描かない。
 
@@ -11,7 +13,7 @@
 | 段 | 自動か | 入るもの | 出るもの |
 | --- | --- | --- | --- |
 | 1. 台本 | 自動。中身は手書きJSONか、テーマを型に埋めたもの | テーマ一文、または台本JSON | 検査済みの台本。声の番号と素材URLを足し、最後にクレジット行 |
-| 2. 声 | 自動。VOICEVOX | 行の text、話者、感情 | 行ごとの wav と、効果音と小さなBGMを足した mix.wav |
+| 2. 声 | 自動。VOICEVOX。話者の声はチャンネル設定 | 行の text、話者、感情 | 行ごとの wav と、効果音と小さなBGMを足した mix.wav |
 | 3. 素材 | 自動。ローカルの索引から選ぶ | 行の character と emotion | キャッシュしたPNG。出典URLは credits に残す。画像そのものはリポジトリに置かない |
 | 4. レイアウト | 自動 | 会社員1人、字幕、背景 | 1080x1920 のフレーム。字幕は動きのあとから載せる |
 | 5. 組み立て | 自動。ffmpeg | フレームと mix.wav | 作業フォルダの out.mp4 と、行ごとの絵 |
@@ -24,8 +26,8 @@
 
 ```json
 {
-  "id": "50-kinmemo-file",
-  "channel": "会社員の金メモ",
+  "id": "50-clearfile-coin",
+  "channel": "draft",
   "title": "動画のタイトル",
   "theme": "テーマの短い名",
   "hook": "最初の行の text と同じ",
@@ -48,7 +50,7 @@
 | 欄 | 意味 |
 | --- | --- |
 | id | レビューフォルダの名前 |
-| channel | `会社員の金メモ` だけ |
+| channel | `channels/<id>.yaml` の id。表示名ではない |
 | title | 投稿用タイトル。batch1 から batch5 のタイトルとは重ねない |
 | theme | 何の話か。金額は書かない |
 | hook | 冒頭の一文。最初の行の text と揃える |
@@ -63,18 +65,25 @@
 | effect | `none` / `zoom` / `shake`。shake の行だけ小さく揺らす |
 | sfx | `none` / `paper` / `whoosh` / `coin` / `shock` / `notify` / `tick` / `rise` |
 
-ナレーションは画面の会社員が違ってよい。それ以外は、話者と絵の役を揃える。名札（label, tag）と `#` と URL と金額は、検査の前に落とす。
+ナレーションは画面の人物が違ってよい。それ以外は、話者と絵の役を揃える。名札（label, tag）と `#` と URL と金額は、検査の前に落とす。
 
-声の割り当ては既存のまま。
+## チャンネル設定
 
-| 話者 | 声 | クレジット |
-| --- | --- | --- |
-| narrator | 四国めたん（style 2） | VOICEVOX:四国めたん |
-| hero | 白上虎太郎（普段 12、angry は 34） | VOICEVOX:白上虎太郎 |
-| rival | 玄野武宏（style 11） | VOICEVOX:玄野武宏 |
-| boss | 剣崎雌雄（style 21） | VOICEVOX:剣崎雌雄 |
+`channels/<id>.yaml`。
 
-青山龍星は使わない。
+| 欄 | 意味 |
+| --- | --- |
+| name | チャンネル名。未定なら空。空のあいだは UPLOAD にチャンネル名の行を出さない |
+| genre | ジャンル。未定なら空 |
+| tags | UPLOAD のタグ。動画の中には出さない |
+| voices | 話者ごとの style_id とクレジット。hero は angry_style_id を別にできる |
+| caption | 字幕の色、大きさ、位置、縁の太さ。bar は none。帯は付けない |
+| credits | 画面に出すのは使った声の名前。note は credits.json に書く出典の説明 |
+| upload_template | UPLOAD.md の型。`{title}` `{theme}` `{voices}` `{tags}` `{name}` `{genre}` `{channel_line}` `{genre_line}` `{credits_note}` |
+
+いまの声は draft に置いてある。ナレーションは四国めたん、主人公は白上虎太郎、相手は玄野武宏、上司は剣崎雌雄。青山龍星は使わない。
+
+試作の話は、会社員と硬貨のまま。チャンネル名とは別。
 
 ## 素材の索引
 
@@ -105,7 +114,7 @@ review/<id>/credits.json
 review/<id>/script.json
 ```
 
-作業フォルダは `/tmp/kanememo-pipeline/<id>`。レビューに出すのは pass のときだけ。
+作業フォルダは `/tmp/shorts-pipeline/<id>`。レビューに出すのは pass のときだけ。
 
 コンタクトシートは、各行の途中のフレームを2列に並べた1枚。人が通しで見る前の一覧。
 
@@ -135,15 +144,16 @@ review/<id>/script.json
 
 ```bash
 python3 affiliate-shorts/pipeline/run.py \
-  --script affiliate-shorts/pipeline/scripts/50-kinmemo-file.json
+  --script affiliate-shorts/pipeline/scripts/50-clearfile-coin.json
 ```
 
 テーマから型で埋めるとき:
 
 ```bash
 python3 affiliate-shorts/pipeline/run.py \
+  --channel draft \
   --theme "クリアファイルの奥の硬貨" \
-  --id 50-kinmemo-file
+  --id 50-clearfile-coin
 ```
 
 口と帯の検査だけ:

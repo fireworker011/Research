@@ -6,11 +6,12 @@ import json
 import re
 from pathlib import Path
 
+from channels import voice_for
+
 SPEAKERS = ("narrator", "hero", "rival", "boss")
 ROLES = ("hook", "develop", "punch", "credit")
 EFFECTS = ("none", "zoom", "shake")
 SFX = ("none", "paper", "whoosh", "shock", "notify", "coin", "tick", "rise")
-CHANNEL = "会社員の金メモ"
 
 PIPELINE_DIR = Path(__file__).resolve().parent
 SHORTS_DIR = PIPELINE_DIR.parent
@@ -55,7 +56,7 @@ def existing_titles(root: Path | None = None) -> set[str]:
     return titles
 
 
-def script_from_theme(theme: str, slug: str) -> dict:
+def script_from_theme(theme: str, slug: str, channel_id: str) -> dict:
     """LLM の代わりの型。オチの一文にテーマを入れる。試作は手書きJSONを使う。"""
     punch = " ".join(theme.strip().split())
     if not punch:
@@ -63,7 +64,7 @@ def script_from_theme(theme: str, slug: str) -> dict:
     title = punch if punch.endswith("話") else f"{punch}の話"
     return {
         "id": slug,
-        "channel": CHANNEL,
+        "channel": channel_id,
         "title": title,
         "theme": punch,
         "hook": "ファイルに入れとけ。後でな",
@@ -116,10 +117,10 @@ def _line_caption(line: dict) -> str:
     return caption.strip()
 
 
-def validate_script(data: dict, index: dict[str, dict], titles: set[str]) -> None:
+def validate_script(data: dict, index: dict[str, dict], titles: set[str], channel: dict) -> None:
     _require(data, "id")
-    if _require(data, "channel") != CHANNEL:
-        raise ValueError(f"チャンネルは {CHANNEL} です。")
+    if _require(data, "channel") != channel["id"]:
+        raise ValueError(f"台本の channel は設定 id {channel['id']} と揃えます。")
     title = _require(data, "title")
     if title in titles:
         raise ValueError(f"このタイトルは batch1-5 で使われています: {title}")
@@ -210,21 +211,7 @@ def assign_roles(lines: list[dict]) -> None:
                 line["role"] = "develop"
 
 
-def voice_for(speaker: str, emotion: str) -> tuple[int, str]:
-    if speaker == "narrator":
-        return 2, "VOICEVOX:四国めたん"
-    if speaker == "hero":
-        if emotion == "angry":
-            return 34, "VOICEVOX:白上虎太郎"
-        return 12, "VOICEVOX:白上虎太郎"
-    if speaker == "rival":
-        return 11, "VOICEVOX:玄野武宏"
-    if speaker == "boss":
-        return 21, "VOICEVOX:剣崎雌雄"
-    raise ValueError(f"未知の話者です: {speaker}")
-
-
-def resolve(data: dict, index: dict[str, dict]) -> dict:
+def resolve(data: dict, index: dict[str, dict], channel: dict) -> dict:
     """声と素材URLを足し、クレジットの行を後ろに付ける。"""
     lines = []
     credits: list[str] = []
@@ -238,7 +225,7 @@ def resolve(data: dict, index: dict[str, dict]) -> dict:
         line["sfx"] = line.get("sfx") or "none"
         line["label"] = ""
         line["tag"] = ""
-        style_id, credit = voice_for(str(line["speaker"]), str(line["emotion"]))
+        style_id, credit = voice_for(channel, str(line["speaker"]), str(line["emotion"]))
         line["style_id"] = style_id
         line["credit"] = credit
         if credit not in credits:
@@ -259,13 +246,17 @@ def resolve(data: dict, index: dict[str, dict]) -> dict:
             "sfx": "none",
             "label": "",
             "tag": "",
-            "style_id": 2,
+            "style_id": int(channel["voices"]["narrator"]["style_id"]),
             "credit": credits[0],
             "source_url": "",
         }
     )
     resolved = dict(data)
+    resolved["channel"] = channel["id"]
+    resolved["channel_name"] = str(channel.get("name") or "")
+    resolved["genre"] = str(channel.get("genre") or "")
     resolved["mouth_overlay"] = bool(data.get("mouth_overlay", False))
+    resolved["caption"] = channel["caption"]
     resolved["lines"] = lines
     resolved["credits"] = credits
     return resolved

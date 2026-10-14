@@ -1,6 +1,6 @@
 {
-  "id": "50-kinmemo-file",
-  "channel": "会社員の金メモ",
+  "id": "50-clearfile-coin",
+  "channel": "draft",
   "title": "渡したクリアファイルの奥に、硬貨が残っていた話",
   "theme": "クリアファイルの奥の硬貨",
   "hook": "ファイルに入れとけ。後でな",
@@ -116,6 +116,45 @@
     }
   ],
   "generator": "json",
+  "channel_name": "",
+  "genre": "",
+  "caption": {
+    "bar": "none",
+    "stroke": 8,
+    "credit_stroke": 5,
+    "size": 104,
+    "credit_size": 64,
+    "min_size": 72,
+    "credit_min_size": 40,
+    "y_ratio": 0.86,
+    "credit_y_ratio": 0.5,
+    "colors": {
+      "hook": [
+        255,
+        226,
+        40,
+        255
+      ],
+      "develop": [
+        255,
+        255,
+        255,
+        255
+      ],
+      "punch": [
+        255,
+        226,
+        40,
+        255
+      ],
+      "credit": [
+        255,
+        255,
+        255,
+        255
+      ]
+    }
+  },
   "credits": [
     "VOICEVOX:玄野武宏",
     "VOICEVOX:四国めたん",

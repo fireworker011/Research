@@ -1,0 +1,70 @@
+# 名前とジャンルは未定。決まったら name と genre を埋める。
+# ここを変えると、声・字幕・クレジット・UPLOAD.md が一緒に切り替わる。
+id: draft
+name: ""
+genre: ""
+tags:
+  - 会社員
+  - 硬貨
+  - shorts
+voices:
+  narrator:
+    style_id: 2
+    credit: "VOICEVOX:四国めたん"
+  hero:
+    style_id: 12
+    angry_style_id: 34
+    credit: "VOICEVOX:白上虎太郎"
+  rival:
+    style_id: 11
+    credit: "VOICEVOX:玄野武宏"
+  boss:
+    style_id: 21
+    credit: "VOICEVOX:剣崎雌雄"
+caption:
+  bar: none
+  stroke: 8
+  credit_stroke: 5
+  size: 104
+  credit_size: 64
+  min_size: 72
+  credit_min_size: 40
+  y_ratio: 0.86
+  credit_y_ratio: 0.5
+  colors:
+    hook: [255, 226, 40, 255]
+    develop: [255, 255, 255, 255]
+    punch: [255, 226, 40, 255]
+    credit: [255, 255, 255, 255]
+credits:
+  on_screen: voices
+  note: "いらすとやはクレジット表記不要。出典URLはレビュー用。動画の中にURLは出していない。効果音とBGMは合成したオリジナル。"
+upload_template: |
+  # 投稿用
+
+  ## タイトル
+
+  {title}
+
+  ## 説明
+
+  {title}
+
+  #PR
+  フィクションです。体験談でも、収益の保証でもありません。
+  テーマ: {theme}
+  {channel_line}{genre_line}{voices}
+
+  （リンクをプロフィールに置く前に出すときは、`#PR` の行とタグの #PR を外す。URL はどこにも書かない。イラストの出典URLは credits.json。）
+
+  ## タグ
+
+  {tags}
+
+  ## 事実の根拠
+
+  {theme}の寸劇。金額は無い。
+
+  ## 投稿
+
+  しない。

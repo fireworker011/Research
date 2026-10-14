@@ -83,30 +83,37 @@ def prepare_sprite(rgba: np.ndarray, line: dict, mouth_overlay: bool, height: in
     }
 
 
-def render_caption(text: str, role: str) -> tuple[np.ndarray, dict]:
+def _caption_fill(style: dict, role: str) -> tuple[int, int, int, int]:
+    colors = style["colors"]
+    if role in colors:
+        return colors[role]
+    return colors["develop"]
+
+
+def render_caption(text: str, role: str, style: dict) -> tuple[np.ndarray, dict]:
     overlay = np.zeros((HEIGHT, WIDTH, 4), dtype=np.uint8)
     info = {"role": role, "overflow": False, "has_box": False, "size": 0, "text": text}
     if not text.strip():
         return overlay, info
-    fill = (255, 226, 40, 255) if role in ("hook", "punch") else (255, 255, 255, 255)
+    fill = _caption_fill(style, role)
     max_w = int(WIDTH * 0.88)
     max_h = int(HEIGHT * 0.28)
-    size = 64 if role == "credit" else 104
-    floor = 40 if role == "credit" else 72
+    size = int(style["credit_size"] if role == "credit" else style["size"])
+    floor = int(style["credit_min_size"] if role == "credit" else style["min_size"])
     font = find_font(size)
     tw, th = _text_size(font, text)
     while size > floor and (tw > max_w or th > max_h):
         size -= 2
         font = find_font(size)
         tw, th = _text_size(font, text)
-    y_ratio = 0.50 if role == "credit" else 0.86
+    y_ratio = float(style["credit_y_ratio"] if role == "credit" else style["y_ratio"])
     top = int(HEIGHT * y_ratio - th / 2)
     top = max(24, min(HEIGHT - th - 36, top))
     left = (WIDTH - tw) // 2
     overflow = tw > max_w or th > max_h or left < 24 or top < 24 or left + tw > WIDTH - 24 or top + th > HEIGHT - 36
     img = Image.new("RGBA", (WIDTH, HEIGHT), (0, 0, 0, 0))
     draw = ImageDraw.Draw(img)
-    stroke = 5 if role == "credit" else 8
+    stroke = int(style["credit_stroke"] if role == "credit" else style["stroke"])
     for dx in range(-stroke, stroke + 1):
         for dy in range(-stroke, stroke + 1):
             if dx * dx + dy * dy > stroke * stroke:
@@ -296,7 +303,7 @@ def build(script: dict, work: Path, speaker: Speaker) -> dict:
                 "checked": True,
             }
         mouths.append(report)
-        overlay, info = render_caption(str(line["caption"]), str(line["role"]))
+        overlay, info = render_caption(str(line["caption"]), str(line["role"]), script["caption"])
         captions.append(overlay)
         caption_info.append(info)
     tags = []
