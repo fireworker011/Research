@@ -1,9 +1,12 @@
 #!/usr/bin/env bash
 # Join Imagine clips, then fit the voice to that picture.
-# Picture length is the shot lengths in IMAGINE.md.
+# Picture length starts as the shot lengths in IMAGINE.md.
+# STYLE.md may hold the last frame so the length reaches that pack's L band.
 # The voice is sped up only when it does not fit. The picture is not recut to the voice.
-# BGM, when given, is mixed at amplitude 0.15. A no-BGM file is always written.
-# Captions are not burned in.
+# BGM follows STYLE.md (B1 is silence). --bgm replaces that bed. Amplitude 0.15.
+# A no-BGM file is always written. Captions are not burned in. Text is on thumb.png.
+# Style QA is style_matrix.py: at most 2 shared axes with the previous video,
+# at most 3 with any of the last 5, never an exact match. See STYLE-VARIATION.md.
 set -euo pipefail
 
 ROOT=$(cd "$(dirname "$0")" && pwd)
@@ -167,6 +170,33 @@ PY
   python3 -c 'import sys; d=abs(float(sys.argv[1])-float(sys.argv[2])); raise SystemExit(0 if d<=0.05 else f"絵の長さがショット合計と違う: {sys.argv[1]} vs {sys.argv[2]}")' \
     "$picture_sec" "$script_sec"
 
+  if [[ -f "$pack/STYLE.md" ]]; then
+    python3 "$ROOT/style_matrix.py" plan "$pack" "$script_sec" >"$work/style.json"
+    local vf target hook lavfi
+    vf=$(python3 -c 'import json,sys; print(json.load(open(sys.argv[1],encoding="utf-8"))["vf"])' "$work/style.json")
+    target=$(python3 -c 'import json,sys; print(json.load(open(sys.argv[1],encoding="utf-8"))["target_sec"])' "$work/style.json")
+    hook=$(python3 -c 'import json,sys; print(json.load(open(sys.argv[1],encoding="utf-8"))["hook"])' "$work/style.json")
+    lavfi=$(python3 -c 'import json,sys; value=json.load(open(sys.argv[1],encoding="utf-8"))["bgm_lavfi"]; print("" if value is None else value)' "$work/style.json")
+    ffmpeg -y -nostdin -loglevel error -i "$work/picture.mp4" -vf "$vf" -an \
+      -c:v libx264 -preset veryfast -crf 18 -pix_fmt yuv420p -r 30 -video_track_timescale 30000 \
+      "$work/styled.mp4"
+    mv "$work/styled.mp4" "$work/picture.mp4"
+    ffmpeg -y -nostdin -loglevel error -i "$work/bed.wav" \
+      -af "apad=whole_dur=${target},atrim=0:${target}" -ar 48000 -ac 2 "$work/bed-long.wav"
+    mv "$work/bed-long.wav" "$work/bed.wav"
+    if [[ "$hook" == "H5" ]]; then
+      ffmpeg -y -nostdin -loglevel error -i "$work/bed.wav" -f lavfi -t 0.2 -i "sine=frequency=880:sample_rate=48000" \
+        -filter_complex "[1:a]apad=whole_dur=${target},atrim=0:${target},volume=0.4[tick];[0:a][tick]amix=inputs=2:duration=first:dropout_transition=0:normalize=0[a]" \
+        -map "[a]" -ar 48000 -ac 2 "$work/bed-hook.wav"
+      mv "$work/bed-hook.wav" "$work/bed.wav"
+    fi
+    if [[ -z "$bgm" && -n "$lavfi" ]]; then
+      ffmpeg -y -nostdin -loglevel error -f lavfi -i "$lavfi" -t "$target" -ar 48000 -ac 2 "$work/style-bgm.wav"
+      bgm="$work/style-bgm.wav"
+    fi
+    picture_sec=$target
+  fi
+
   local voice_wav="" voice_sec="" fit_json="null"
   local narration
   narration=$(python3 -c 'import json,sys; from pathlib import Path; m=json.loads(Path(sys.argv[1]).read_text()); print("yes" if m["voice"]["narration"] else "no")' "$work/meta.json")
@@ -227,6 +257,10 @@ log = {
 Path(sys.argv[8]).write_text(json.dumps(log, ensure_ascii=False, indent=2) + "\n")
 PY
 
+  if [[ "${FINISH_NO_LOG:-}" != "1" && -f "$pack/STYLE.md" ]]; then
+    python3 "$ROOT/style_matrix.py" record "$pack" "$picture_sec"
+  fi
+
   rm -rf "$work"
   echo "$nobgm"
   if [[ -n "$bgm" ]]; then
@@ -259,8 +293,13 @@ print(f"ok {file} dur={dur:.3f} 1080x1920")
 PY
 }
 
+style_target() {
+  python3 -c 'import re,sys; text=open(sys.argv[1],encoding="utf-8").read(); print(re.search(r"絵の目標: ([0-9.]+)", text).group(1))' "$1/STYLE.md"
+}
+
 self_test() {
   local tmp pack clips bgm
+  FINISH_NO_LOG=1
   tmp=$(mktemp -d)
   pack="$ROOT/2026-10-13/pet/01-gray-blink"
   clips="$tmp/pet-clips"
@@ -276,8 +315,10 @@ self_test() {
   fi
   finish_one "$pack" "$clips" "" "$tmp/pet-out" "$bgm"
   local stem="2026-10-13-pet-01-gray-blink"
-  assert_frame "$tmp/pet-out/${stem}.mp4" 5
-  assert_frame "$tmp/pet-out/${stem}-nobgm.mp4" 5
+  local pet_target
+  pet_target=$(style_target "$pack")
+  assert_frame "$tmp/pet-out/${stem}.mp4" "$pet_target"
+  assert_frame "$tmp/pet-out/${stem}-nobgm.mp4" "$pet_target"
   cp "$tmp/pet-out/${stem}.mp4" "$ROOT/samples/${stem}-placeholder.mp4"
   cp "$tmp/pet-out/${stem}-nobgm.mp4" "$ROOT/samples/${stem}-placeholder-nobgm.mp4"
   cp "$tmp/pet-out/${stem}-log.json" "$ROOT/samples/${stem}-placeholder-log.json"
@@ -289,8 +330,10 @@ self_test() {
   ffmpeg -y -nostdin -loglevel error -f lavfi -i "color=c=0x303030:s=1080x1920:r=30:d=4" -t 4 -an -c:v libx264 -pix_fmt yuv420p "$kclips/shot-02.mp4"
   ffmpeg -y -nostdin -loglevel error -f lavfi -i "color=c=0x404040:s=1080x1920:r=30:d=4" -t 4 -an -c:v libx264 -pix_fmt yuv420p "$kclips/shot-03.mp4"
   finish_one "$kpack" "$kclips" "" "$tmp/kon-out" "$bgm"
-  assert_frame "$tmp/kon-out/2026-10-12-konkatsu-01-profile.mp4" 10
-  assert_frame "$tmp/kon-out/2026-10-12-konkatsu-01-profile-nobgm.mp4" 10
+  local kon_target
+  kon_target=$(style_target "$kpack")
+  assert_frame "$tmp/kon-out/2026-10-12-konkatsu-01-profile.mp4" "$kon_target"
+  assert_frame "$tmp/kon-out/2026-10-12-konkatsu-01-profile-nobgm.mp4" "$kon_target"
   local multi_sec
   multi_sec=$(probe_duration "$tmp/kon-out/2026-10-12-konkatsu-01-profile.mp4")
 
@@ -301,7 +344,9 @@ self_test() {
   ffmpeg -y -nostdin -loglevel error -f lavfi -i "color=c=0x222222:s=1080x1920:r=30:d=5" -t 5 -an -c:v libx264 -pix_fmt yuv420p "$sclips/shot-02.mp4"
   ffmpeg -y -nostdin -loglevel error -f lavfi -i "color=c=0x333333:s=1080x1920:r=30:d=5" -t 5 -an -c:v libx264 -pix_fmt yuv420p "$sclips/shot-03.mp4"
   finish_one "$silent_pack" "$sclips" "" "$tmp/silent-out" ""
-  assert_frame "$tmp/silent-out/2026-10-12-pet-01-gray-sofa-rug-nobgm.mp4" 12
+  local silent_target
+  silent_target=$(style_target "$silent_pack")
+  assert_frame "$tmp/silent-out/2026-10-12-pet-01-gray-sofa-rug-nobgm.mp4" "$silent_target"
   local silent_sec
   silent_sec=$(probe_duration "$tmp/silent-out/2026-10-12-pet-01-gray-sofa-rug-nobgm.mp4")
   if [[ -f "$tmp/silent-out/2026-10-12-pet-01-gray-sofa-rug.mp4" ]]; then
@@ -315,7 +360,7 @@ self_test() {
   long_sec=$(probe_duration "$long")
   python3 -c 'import sys; raise SystemExit(0 if float(sys.argv[1])>8 else "長い声が足りない")' "$long_sec"
   finish_one "$pack" "$clips" "$long" "$tmp/long-out" ""
-  assert_frame "$tmp/long-out/${stem}-nobgm.mp4" 5
+  assert_frame "$tmp/long-out/${stem}-nobgm.mp4" "$pet_target"
 
   local sine="$tmp/sine.wav" quiet="$tmp/quiet.wav"
   ffmpeg -y -nostdin -loglevel error -f lavfi -i "sine=frequency=440:sample_rate=48000:duration=1" "$sine"
@@ -348,7 +393,7 @@ stretched = json.loads(Path(sys.argv[2]).read_text())
 rate = stretched["fit"]["atempo"]
 if rate <= 1.0:
     raise SystemExit(f"長い声なのに倍速していない: {rate}")
-if abs(stretched["picture_sec"] - 5) > 0.05:
+if abs(stretched["picture_sec"] - float(sample["picture_sec"])) > 0.05:
     raise SystemExit("絵が声に合わせて変わった")
 report = {
     "sample": "samples/2026-10-13-pet-01-gray-blink-placeholder.mp4",
@@ -359,7 +404,7 @@ report = {
     "sample_note": "色だけの試験映像。投稿しない。",
     "multishot_pack": "2026-10-12/konkatsu/01-profile",
     "multishot_picture_sec": float(sys.argv[3]),
-    "multishot_note": "shot-01 のファイルは 6 秒。出力は台本の 2+4+4 秒。",
+    "multishot_note": "shot-01 のファイルは 6 秒。台本は 2+4+4 秒。スタイルの L 帯まで最後のフレームを足す。",
     "silent_pack": "2026-10-12/pet/01-gray-sofa-rug",
     "silent_picture_sec": float(sys.argv[5]),
     "long_voice_sec": float(sys.argv[4]),
