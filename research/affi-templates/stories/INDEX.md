@@ -50,3 +50,7 @@
 | kinmemo_paper | 返すと言ったメモの裏に、硬貨が貼りついたままの話 | 27.650秒 | 主人公の会社員、相手の会社員 | irasutoya-ogori | まだ |
 | kinmemo_slot | つり銭口の硬貨が、朝に自分で入れたものだった話 | 27.650秒 | 主人公の会社員、相手の会社員 | irasutoya-ogori | まだ |
 | kinmemo_loop | 自分側へ寄せた端の硬貨が、手帳のペン差しに入っていた話 | 27.650秒 | 主人公の会社員、相手の会社員 | irasutoya-ogori | まだ |
+| pet_shelf_tail | 本棚のしっぽから一歩で下り、床の布袋で丸まって止まる | 15.000秒 | グレーのマンチカン | kata-pet-sill | まだ |
+| kon_chat_on | 黒かったトーク画面が点いて、一回なぞって伏せる | 15.000秒 | 上から見た手元の大人（顔なし） | kata-konkatsu-chat | まだ |
+| beau_wrist_one | 無地の瓶が上から来て、手首に一回つけて止まる | 15.000秒 | 3Dの大人 | kata-beauty-wrist | まだ |
+| kinmemo_envelope | 閉めた封筒を置いたあと、相手の顔だけ一回止まった話 | 15.000秒 | 主人公の会社員、相手の会社員 | irasutoya-ogori | まだ |

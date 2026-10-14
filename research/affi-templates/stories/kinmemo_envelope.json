@@ -1,0 +1,182 @@
+{
+  "title": "閉めた封筒を置いたあと、相手の顔だけ一回止まった話",
+  "series_character": "封筒止め君",
+  "punchline": "封筒は閉めたまま。顔だけが止まった",
+  "closing": "",
+  "audio_note": "声は後乗せ。口パク秒は各シーンの mouth_s。話者が画面にいる行だけ口を開ける。ナレーションと黒カードとクレジットは口を閉じたまま。",
+  "diff_from_existing": "硬貨3本は27.650秒で自慢の一言から入る。今回は閉めた封筒を持ったまま入り、15秒、反応は顔が一度止まるだけ。金額は置かない。",
+  "ideas": [
+    "閉めた封筒。無地の封筒を持って止まり、机に一回置き、相手の顔が一度止まる。",
+    "伏せた通知。光だけが点いたスマホを机に伏せて一回置き、相手が一度肩をすくめる。",
+    "無地のカード。数字の無いカードを一枚持って止まり、机に置き、相手が一度首を横に振る。"
+  ],
+  "adopted": 1,
+  "imagine": [
+    {
+      "sec": 5.0,
+      "prompt": "5.0秒。固定カメラ。会社員が無地の封筒を胸の前で持って止まる。動きは口が2秒開いて閉じる一回だけ。封筒は傾かない。光はオフィスの蛍光灯でフラット。紙はマット。封筒に文字も数字も書かない。キャラは参照画像で固定。画面の文字は無い。声は後乗せ。"
+    },
+    {
+      "sec": 5.0,
+      "prompt": "5.0秒。固定カメラ。同じ会社員の手元。無地の封筒を机に一回置く。動きは置く一回だけ。光は机の上の蛍光灯。机はグレーのマット。封筒に文字も数字も書かない。キャラは参照画像で固定。画面の文字は無い。"
+    },
+    {
+      "sec": 5.0,
+      "prompt": "5.0秒。固定カメラ。別の会社員の顔。動きは口が3.5秒開いて閉じ、閉じたあと表情が止まったままになる。動きは口の開閉一回だけ。光は同じ蛍光灯。肌はフラットな塗り。机の封筒に文字も数字も書かない。キャラは参照画像で固定。画面の文字は無い。声は後乗せ。"
+    }
+  ],
+  "scenes": [
+    {
+      "id": 1,
+      "role": "hook",
+      "speaker": "rival",
+      "style_id": 11,
+      "credit": "VOICEVOX:玄野武宏",
+      "text": "封筒は、閉めたまま",
+      "mouth_s": 2.0,
+      "telop": "",
+      "bg": "office",
+      "characters": [
+        {
+          "id": "rival_smug",
+          "who": "rival",
+          "label": "封筒止め君"
+        }
+      ],
+      "props": [],
+      "code_props": [
+        "papers"
+      ],
+      "effect": "zoom",
+      "sfx": "none",
+      "duration_hint": 2.0
+    },
+    {
+      "id": 2,
+      "role": "develop",
+      "speaker": "narrator",
+      "style_id": 2,
+      "credit": "VOICEVOX:四国めたん",
+      "text": "無地の封筒を、机の上に一回置いた",
+      "mouth_s": 0,
+      "telop": "",
+      "bg": "office",
+      "characters": [
+        {
+          "id": "rival_smug",
+          "who": "rival",
+          "label": "封筒止め君"
+        }
+      ],
+      "props": [],
+      "code_props": [
+        "papers"
+      ],
+      "effect": "none",
+      "sfx": "paper",
+      "duration_hint": 3.5
+    },
+    {
+      "id": 3,
+      "role": "develop",
+      "speaker": "narrator",
+      "style_id": 2,
+      "credit": "VOICEVOX:四国めたん",
+      "text": "止まった",
+      "mouth_s": 0,
+      "telop": "",
+      "bg": "card",
+      "characters": [],
+      "props": [],
+      "code_props": [],
+      "effect": "none",
+      "sfx": "whoosh",
+      "duration_hint": 1.0
+    },
+    {
+      "id": 4,
+      "role": "develop",
+      "speaker": "hero",
+      "style_id": 12,
+      "credit": "VOICEVOX:白上虎太郎",
+      "text": "見た。そこで止まった",
+      "mouth_s": 3.5,
+      "telop": "",
+      "bg": "office",
+      "characters": [
+        {
+          "id": "hero_trouble",
+          "who": "hero",
+          "label": ""
+        }
+      ],
+      "props": [],
+      "code_props": [],
+      "effect": "shake",
+      "sfx": "none",
+      "duration_hint": 3.5
+    },
+    {
+      "id": 5,
+      "role": "punch",
+      "speaker": "narrator",
+      "style_id": 2,
+      "credit": "VOICEVOX:四国めたん",
+      "text": "封筒は閉めたまま。顔だけが止まった",
+      "mouth_s": 0,
+      "telop": "",
+      "bg": "office",
+      "characters": [
+        {
+          "id": "hero_tired",
+          "who": "hero",
+          "label": ""
+        }
+      ],
+      "props": [],
+      "code_props": [
+        "papers"
+      ],
+      "effect": "zoom",
+      "sfx": "paper",
+      "duration_hint": 2.8
+    },
+    {
+      "id": 6,
+      "role": "credit",
+      "speaker": "narrator",
+      "style_id": 2,
+      "credit": "VOICEVOX:四国めたん",
+      "text": "",
+      "mouth_s": 0,
+      "telop": "VOICEVOX:四国めたん\nVOICEVOX:白上虎太郎\nVOICEVOX:玄野武宏\nVOICEVOX:剣崎雌雄",
+      "bg": "credit",
+      "characters": [],
+      "props": [],
+      "effect": "none",
+      "sfx": "none",
+      "duration_hint": 2.2,
+      "series_note": "封筒止め君"
+    }
+  ],
+  "credits": [
+    "VOICEVOX:玄野武宏",
+    "VOICEVOX:四国めたん",
+    "VOICEVOX:白上虎太郎",
+    "VOICEVOX:剣崎雌雄"
+  ],
+  "asset_ids": [
+    "rival_smug",
+    "hero_trouble",
+    "hero_tired"
+  ],
+  "score": {
+    "最初3秒": 17,
+    "テンポ": 16,
+    "見やすさ": 17,
+    "参考の型との一致": 13,
+    "壊れ": 18,
+    "合計": 81,
+    "メモ": "直近60日に3倍以上は無く、型は60日より前の1本。金額は置いていない。うなずきの拍は無い。尺は15秒。シーン構成は ogori の6つ。本編テロップは空。"
+  }
+}
