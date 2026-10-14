@@ -154,18 +154,6 @@ def _beat(index: int, n_scenes: int) -> int:
     return min(2, index * 3 // n_scenes)
 
 
-def _paper_reads(palette: dict) -> bool:
-    wall = palette["wall"]
-    paper = palette["paper"]
-    return sum(abs(paper[channel] - wall[channel]) for channel in range(3)) >= 80
-
-
-def _paper(draw: ImageDraw.ImageDraw, box: tuple[int, int, int, int], palette: dict) -> None:
-    if box[2] - box[0] < 36 or box[3] - box[1] < 36:
-        return
-    draw.rounded_rectangle(box, radius=8, fill=palette["paper"], outline=palette["ink"], width=2)
-
-
 def _paint_room(draw: ImageDraw.ImageDraw, axes: dict, palette: dict, index: int, n_scenes: int, width: int, height: int) -> None:
     beat = _beat(index, n_scenes)
     if axes["A"] == "A5":
@@ -176,44 +164,13 @@ def _paint_room(draw: ImageDraw.ImageDraw, axes: dict, palette: dict, index: int
         draw.rectangle((0, ground, width, height), fill=palette["floor"])
         return
     _wash(draw, palette, width, height)
-    if axes["C"] == "C5" and _paper_reads(palette):
-        split = int(height * (0.22 if beat == 2 else 0.46 if beat == 1 else 0.32))
-        draw.rectangle((36, 36, width - 36, split), fill=palette["paper"])
-        return
     floor_y = int(height * (0.46 if beat == 1 else 0.90 if beat == 2 else 0.72))
     draw.rectangle((0, floor_y, width, height), fill=palette["floor"])
 
 
 def _paint_props(draw: ImageDraw.ImageDraw, axes: dict, palette: dict, scene: dict, index: int, n_scenes: int, width: int, height: int) -> None:
-    if axes["A"] == "A5" or axes["C"] == "C5" or not _paper_reads(palette):
-        return
-    beat = _beat(index, n_scenes)
-    mix = axes["A"]
-    count = 2 if mix == "A2" else 1
-    if beat == 2 and mix not in {"A2", "A6"}:
-        return
-    lane = caption_lane(axes, scene, width, height)
-    fx0, fy0, fx1, fy1 = _free_box(lane, width, height)
-    span_w = fx1 - fx0
-    span_h = fy1 - fy0
-    if span_w < 80 or span_h < 80:
-        return
-    card_h = max(48, int(span_h * 0.22))
-    card_w = max(56, int(span_w * (0.36 if count == 2 else 0.46)))
-    top = fy0 + 12
-    if top + card_h > fy1 - 12:
-        return
-    gap = 28
-    if count == 2 and card_w * 2 + gap > span_w - 24:
-        count = 1
-    if count == 1:
-        left = fx1 - card_w - 16 if beat == 1 else fx0 + 16
-        _paper(draw, (left, top, left + card_w, top + card_h), palette)
-        return
-    left = fx0 + max(12, (span_w - (card_w * 2 + gap)) // 2)
-    _paper(draw, (left, top, left + card_w, top + card_h), palette)
-    second = left + card_w + gap
-    _paper(draw, (second, top, second + card_w, top + card_h), palette)
+    """空の紙やクリーム色の四角は置かない。"""
+    del draw, axes, palette, scene, index, n_scenes, width, height
 
 
 def _visible_cast(cast: list[str], index: int, n_scenes: int) -> list[str]:
@@ -407,14 +364,15 @@ def telop_placement(axes: dict, scene: dict, width: int = WIDTH, height: int = H
         y_ratio = 0.40
     if mode == "center":
         y_ratio = 0.48
-    wall = palette["wall"]
-    lum = 0.3 * wall[0] + 0.59 * wall[1] + 0.11 * wall[2]
-    if lum < 140:
+    bar = (*palette["accent"], 230)
+    if mode == "note":
+        bar = (*palette["paper"], 240)
+    # 字の色は壁ではなく、載せる枠の明るさで決める。
+    lum = 0.3 * bar[0] + 0.59 * bar[1] + 0.11 * bar[2]
+    if lum < 150:
         fill = (255, 248, 230, 255)
-        bar = (*palette["accent"], 230)
     else:
         fill = (20, 22, 28, 255)
-        bar = (*palette["accent"], 235)
     size = 96 if scene.get("role") == "credit" else 112
     if mode == "center":
         size = 132
@@ -430,7 +388,7 @@ def telop_placement(axes: dict, scene: dict, width: int = WIDTH, height: int = H
         "stroke": 3 if axes["F"] == "F5" else 7,
         "bar": "square" if axes["T"] == "T1" else "round",
         "fill": fill,
-        "bar_fill": bar if mode != "note" else (*palette["paper"], 240),
+        "bar_fill": bar,
         "emphasis": emphasis,
         "full_width": axes["T"] == "T1",
         "width": width,

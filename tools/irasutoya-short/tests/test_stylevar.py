@@ -10,9 +10,17 @@ import numpy as np
 
 from irasutoya_short import sprites
 from irasutoya_short.sfx import bgm_loop
-from irasutoya_short.qa import caption_fit_problems, caption_hits_edge, caption_overlaps_face, dead_air, distinct_stills
-from irasutoya_short.textutil import orphan_punctuation_lines, wrap_caption_lines
-from irasutoya_short.render import render_telop
+from irasutoya_short.qa import (
+    caption_fit_problems,
+    caption_hits_edge,
+    caption_overlaps_face,
+    dead_air,
+    distinct_stills,
+    encoded_caption_problems,
+    glyphs_inside_rendered_frame,
+)
+from irasutoya_short.textutil import layout_caption, orphan_punctuation_lines, short_caption_lines, wrap_caption_lines
+from irasutoya_short.render import blit, render_telop
 from irasutoya_short.style_draw import PALETTES, build_still, font_path, telop_placement
 from irasutoya_short.stylevar import (
     MATRIX,
@@ -222,7 +230,51 @@ class CaptionAndAirTests(unittest.TestCase):
         self.assertFalse(any(len(line.strip()) == 1 for line in placement["wrapped"].split("\n")))
         comma = wrap_caption_lines("第3位、途中でやめにくい", 6, len)
         self.assertEqual(orphan_punctuation_lines("\n".join(comma)), [])
+        self.assertEqual(short_caption_lines("\n".join(comma)), [])
         self.assertTrue(orphan_punctuation_lines("第3位\n、"))
+        rank = layout_caption("第1位、契約書の返却の欄を読んだ")
+        self.assertEqual(len(rank), 2)
+        self.assertTrue(all(len(line) >= 7 for line in rank))
+        self.assertFalse(rank[1].startswith("の") or rank[1].startswith("欄"))
+        self.assertEqual(layout_caption("先に読むのは返却\nの欄"), ["先に読むのは返却の欄"])
+        self.assertEqual(layout_caption("ビフォー、引っ越しのときのまま"), ["ビフォー、引っ越しのときのまま"])
+        joined = layout_caption("ウォーターサーバーあるあ\nる")
+        self.assertTrue(all(len(line) >= 7 for line in joined))
+
+    def test_measured_glyphs_sit_inside_the_drawn_box(self) -> None:
+        axes = {"C": "C1", "P": "P4", "T": "T2", "F": "F1", "H": "H3", "M": "M1", "B": "B1", "L": "L1", "A": "A2"}
+        placement = telop_placement(axes, {"role": "body"})
+        telop = render_telop("第1位、契約書の\n返却の欄を読んだ", "body", 1080, 1920, 1.0, 0.5, "body", None, placement)
+        lines = [line for line in placement["wrapped"].split("\n") if line]
+        self.assertLessEqual(len(lines), 2)
+        self.assertTrue(all(len(line) >= 7 for line in lines))
+        wall = np.full((1920, 1080, 3), (255, 228, 120), dtype=np.uint8)
+        full = wall.copy()
+        boxed = wall.copy()
+        blit(full, telop, 0, 0)
+        blit(boxed, placement["box_overlay"], 0, 0)
+        box_alpha = placement["box_overlay"][:, :, 3]
+        self.assertEqual(glyphs_inside_rendered_frame(full, boxed, box_alpha), [])
+        self.assertEqual(encoded_caption_problems(full, full, boxed, box_alpha), [])
+        self.assertTrue(encoded_caption_problems(boxed, full, boxed, box_alpha))
+
+    def test_dark_bar_gets_light_letters(self) -> None:
+        axes = {"C": "C3", "P": "P4", "T": "T5", "F": "F5", "H": "H4", "M": "M5", "B": "B1", "L": "L2", "A": "A4"}
+        placement = telop_placement(axes, {"role": "body"})
+        fill = placement["fill"]
+        bar = placement["bar_fill"]
+        fill_lum = 0.3 * fill[0] + 0.59 * fill[1] + 0.11 * fill[2]
+        bar_lum = 0.3 * bar[0] + 0.59 * bar[1] + 0.11 * bar[2]
+        self.assertLess(bar_lum, 150)
+        self.assertGreater(fill_lum, 200)
+
+    def test_yellow_room_has_no_empty_cream_card(self) -> None:
+        book = _GreenBook()
+        axes = {"C": "C4", "P": "P4", "T": "T1", "F": "F1", "H": "H3", "M": "M1", "B": "B1", "L": "L1", "A": "A1"}
+        still = build_still({"role": "body", "telop": "あ"}, book, axes, ["hero"], 0, 4, set())
+        paper = np.array([255, 248, 220], dtype=np.int16)
+        close = np.abs(still.astype(np.int16) - paper).sum(axis=2) < 30
+        self.assertLess(int(close.sum()), 200)
 
     def test_three_chapters_change_the_picture(self) -> None:
         book = _GreenBook()

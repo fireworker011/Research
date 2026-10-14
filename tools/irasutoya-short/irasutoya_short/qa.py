@@ -286,6 +286,84 @@ def safe_box(width: int, height: int, margin: int = SAFE_MARGIN) -> tuple[int, i
     return (margin, margin, width - margin, height - margin)
 
 
+def _erode_mask(mask: np.ndarray, radius: int) -> np.ndarray:
+    inner = mask
+    for _ in range(max(0, radius)):
+        up = np.zeros_like(inner)
+        down = np.zeros_like(inner)
+        left = np.zeros_like(inner)
+        right = np.zeros_like(inner)
+        up[1:] = inner[:-1]
+        down[:-1] = inner[1:]
+        left[:, 1:] = inner[:, :-1]
+        right[:, :-1] = inner[:, 1:]
+        inner = inner & up & down & left & right
+    return inner
+
+
+def glyphs_inside_rendered_frame(
+    full: np.ndarray,
+    boxed: np.ndarray,
+    box_alpha: np.ndarray,
+    margin: int = SAFE_MARGIN,
+    inset: int = 6,
+) -> list[str]:
+    """描いたフレームの差分から字の画素を取り、枠と安全域の中にあるかを見る。"""
+    if full.shape[:2] != boxed.shape[:2] or full.shape[:2] != box_alpha.shape[:2]:
+        return ["frame mismatch"]
+    diff = np.abs(full.astype(np.int16) - boxed.astype(np.int16)).sum(axis=2)
+    glyph = diff > 24
+    if not bool(glyph.any()):
+        return ["caption glyphs missing from the frame"]
+    problems: list[str] = []
+    box = box_alpha > 80
+    if bool((glyph & ~_erode_mask(box, inset)).any()):
+        problems.append("glyph pixels outside the caption box")
+    height, width = glyph.shape
+    ys, xs = np.where(glyph)
+    if (
+        int(xs.min()) < margin
+        or int(ys.min()) < margin
+        or int(xs.max()) >= width - margin
+        or int(ys.max()) >= height - margin
+    ):
+        problems.append("glyph pixels outside the safe area")
+    bar = box & ~glyph
+    if bool(bar.any()):
+        glyph_lum = 0.3 * full[glyph, 0] + 0.59 * full[glyph, 1] + 0.11 * full[glyph, 2]
+        bar_lum = 0.3 * boxed[bar, 0] + 0.59 * boxed[bar, 1] + 0.11 * boxed[bar, 2]
+        # 縁取りが画素の過半でも、字の本体が枠から離れていれば読める。
+        glyph_hi = float(np.percentile(glyph_lum, 80))
+        glyph_lo = float(np.percentile(glyph_lum, 20))
+        bar_med = float(np.median(bar_lum))
+        if abs(glyph_hi - bar_med) < 70 and abs(glyph_lo - bar_med) < 70:
+            problems.append("caption text is too close to the box color")
+    return problems
+
+
+def encoded_caption_problems(
+    extracted: np.ndarray,
+    full: np.ndarray,
+    boxed: np.ndarray,
+    box_alpha: np.ndarray,
+) -> list[str]:
+    """書き出したフレームが、描いた字と一致し、字が枠の中に残っているかを返す。"""
+    if extracted.shape != full.shape:
+        return ["encoded frame mismatch"]
+    problems = glyphs_inside_rendered_frame(full, boxed, box_alpha)
+    delta = np.abs(extracted.astype(np.int16) - full.astype(np.int16))
+    if float(delta.mean()) > 12:
+        problems.append("encoded frame does not match the drawn frame")
+    box = box_alpha > 80
+    if bool(box.any()) and float(delta[box].mean()) > 20:
+        problems.append("encoded caption does not match the drawn caption")
+    pre = np.abs(full.astype(np.int16) - boxed.astype(np.int16)).sum(axis=2) > 24
+    post = np.abs(extracted.astype(np.int16) - boxed.astype(np.int16)).sum(axis=2) > 18
+    if bool(pre.any()) and float(post[pre].mean()) < 0.8:
+        problems.append("caption glyphs missing from the encoded frame")
+    return problems
+
+
 def caption_fit_problems(
     text_box: tuple[int, int, int, int] | None,
     container: tuple[int, int, int, int] | None,
