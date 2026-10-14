@@ -223,3 +223,79 @@ def inspect_image(path: str, title: str, alt: str, gender: str, kind: str) -> st
         if japanese:
             return f"文字が焼き込まれている: {japanese[0]}"
     return None
+
+
+AIR_LIMIT = 1.5
+SILENCE_NOISE = "-32dB"
+FREEZE_NOISE = "-45dB"
+
+
+def caption_overlaps_face(
+    telop: np.ndarray,
+    faces: list[tuple[int, int, int, int]],
+    pad: int = 0,
+) -> bool:
+    if telop.ndim != 3 or telop.shape[2] < 4 or not faces:
+        return False
+    alpha = telop[:, :, 3] > 40
+    height, width = alpha.shape
+    for box in faces:
+        x0 = max(0, int(box[0]) - pad)
+        y0 = max(0, int(box[1]) - pad)
+        x1 = min(width, int(box[2]) + pad)
+        y1 = min(height, int(box[3]) + pad)
+        if x1 <= x0 or y1 <= y0:
+            continue
+        if bool(alpha[y0:y1, x0:x1].any()):
+            return True
+    return False
+
+
+def caption_hits_edge(telop: np.ndarray, margin: int = 8) -> bool:
+    if telop.ndim != 3 or telop.shape[2] < 4 or margin <= 0:
+        return False
+    alpha = telop[:, :, 3] > 40
+    if not bool(alpha.any()):
+        return False
+    height, width = alpha.shape
+    return bool(
+        alpha[:, :margin].any()
+        or alpha[:, width - margin :].any()
+        or alpha[:margin, :].any()
+        or alpha[height - margin :, :].any()
+    )
+
+
+def dead_air(path: str, limit: float = AIR_LIMIT) -> list[str]:
+    """1.5秒を超える無音と、1.5秒を超える静止を返す。"""
+    problems: list[str] = []
+    problems.extend(_span_problems(path, "silence", f"silencedetect=n={SILENCE_NOISE}:d={limit}", limit))
+    problems.extend(_span_problems(path, "freeze", f"freezedetect=n={FREEZE_NOISE}:d={limit}", limit))
+    return problems
+
+
+def _span_problems(path: str, kind: str, filter_arg: str, limit: float) -> list[str]:
+    if shutil.which("ffmpeg") is None:
+        raise RuntimeError("ffmpeg がありません")
+    cmd = ["ffmpeg", "-hide_banner", "-i", str(path)]
+    if kind == "silence":
+        cmd.extend(["-af", filter_arg])
+        start_key, duration_key = "silence_start", "silence_duration"
+    else:
+        cmd.extend(["-vf", filter_arg])
+        start_key, duration_key = "freeze_start", "freeze_duration"
+    cmd.extend(["-f", "null", "-"])
+    proc = subprocess.run(cmd, capture_output=True, text=True)
+    text = proc.stderr
+    starts = [float(item) for item in re.findall(rf"{start_key}:\s*([0-9.]+)", text)]
+    durations = [float(item) for item in re.findall(rf"{duration_key}:\s*([0-9.]+)", text)]
+    if len(starts) > len(durations):
+        match = re.search(r"Duration:\s*(\d+):(\d+):(\d+(?:\.\d+)?)", text)
+        if match:
+            media = int(match.group(1)) * 3600 + int(match.group(2)) * 60 + float(match.group(3))
+            durations.append(max(0.0, media - starts[len(durations)]))
+    found: list[str] = []
+    for seconds in durations:
+        if seconds + 1e-3 >= limit:
+            found.append(f"{kind} {seconds:.2f}s")
+    return found

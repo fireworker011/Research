@@ -119,11 +119,25 @@ def _synthesize(project: dict, speaker: Speaker, audio_dir: Path, depth: int = 0
         scene["duration"] = max(scene["voice_seconds"] + scene_tail(settings, scene), floor)
     if project.get("style_axes"):
         status = fit_scene_durations(project)
-        if status != "ok" and depth < 7:
-            scale_speeds(settings, 1.18, 1.14)
+        total = sum(float(scene["duration"]) for scene in project["scenes"])
+        if status == "short" and depth < 6:
+            voice = sum(
+                float(scene["voice_seconds"])
+                for scene in project["scenes"]
+                if scene.get("role") != "credit"
+            )
+            need = 16.0 - total
+            if voice <= 0.2 or need <= 0.05:
+                raise RuntimeError(f"尺を15秒まで戻せません: {project.get('style_signature')}")
+            factor = max(0.5, voice / (voice + need))
+            scale_speeds(settings, factor, factor)
             _synthesize(project, speaker, audio_dir, depth + 1)
             return
-        if status != "ok":
+        if status == "speedup" and depth < 6:
+            scale_speeds(settings, 1.16, 1.12)
+            _synthesize(project, speaker, audio_dir, depth + 1)
+            return
+        if status not in ("ok", "retarget"):
             raise RuntimeError(f"尺が署名に合いません: {status} {project.get('style_signature')}")
         return
     total = sum(float(s["duration"]) for s in project["scenes"])

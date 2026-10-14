@@ -12,8 +12,9 @@ from PIL import Image, ImageDraw, ImageFont
 from irasutoya_short.audio import fit_length, samples_for_frames, write_wav
 from irasutoya_short.backgrounds import concentration, render_bg
 from irasutoya_short.constants import FONT_CANDIDATES, FPS, HEIGHT, WIDTH
+from irasutoya_short.qa import caption_hits_edge, caption_overlaps_face
 from irasutoya_short.sprites import load_rgba, mouth_levels, scale_rgba
-from irasutoya_short.style_draw import build_still, load_font, telop_placement
+from irasutoya_short.style_draw import build_still, face_rects, load_font, telop_placement
 from irasutoya_short.templates import telop_bar_fill, telop_color, telop_style
 
 def bundled_font() -> str:
@@ -133,6 +134,65 @@ def _stroke_ink(fill: tuple[int, int, int, int]) -> tuple[int, int, int, int]:
     return (255, 255, 255, 255)
 
 
+def _wrap_chars(text: str, font: ImageFont.ImageFont, max_w: int) -> str:
+    lines: list[str] = []
+    for paragraph in text.split("\n"):
+        line = ""
+        for char in paragraph:
+            trial = f"{line}{char}"
+            if line and _text_size(font, trial)[0] > max_w:
+                lines.append(line)
+                line = char
+            else:
+                line = trial
+        lines.append(line)
+    return "\n".join(lines)
+
+
+def _boxes_overlap(a: tuple[int, int, int, int], b: tuple[int, int, int, int]) -> bool:
+    return not (a[2] <= b[0] or b[2] <= a[0] or a[3] <= b[1] or b[3] <= a[1])
+
+
+def _clear_of_faces(box: tuple[int, int, int, int], faces: list[tuple[int, int, int, int]]) -> bool:
+    return all(not _boxes_overlap(box, face) for face in faces)
+
+
+def _place_caption(
+    width: int,
+    height: int,
+    bar_w: int,
+    bar_h: int,
+    faces: list[tuple[int, int, int, int]],
+    mode: str,
+    y_ratio: float,
+) -> tuple[int, int]:
+    margin = 32
+    if bar_w > width - margin * 2:
+        bar_w = width - margin * 2
+    if bar_h > height - margin * 2:
+        bar_h = height - margin * 2
+    candidates: list[tuple[int, int]] = []
+    if mode == "note":
+        candidates.append((width - bar_w - margin, height - bar_h - margin))
+    elif mode == "center":
+        candidates.append(((width - bar_w) // 2, (height - bar_h) // 2))
+    elif y_ratio >= 0.5:
+        candidates.append((margin, height - bar_h - margin))
+    else:
+        candidates.append((margin, margin))
+    candidates.append(((width - bar_w) // 2, margin))
+    candidates.append(((width - bar_w) // 2, height - bar_h - margin))
+    for top in range(margin, max(margin + 1, height - margin - bar_h), 20):
+        candidates.append(((width - bar_w) // 2, top))
+    for left, top in candidates:
+        left = max(margin, min(left, width - margin - bar_w))
+        top = max(margin, min(top, height - margin - bar_h))
+        box = (left, top, left + bar_w, top + bar_h)
+        if _clear_of_faces(box, faces):
+            return left, top
+    return margin, margin
+
+
 def _render_placed_telop(text: str, role: str, placement: dict, scale: float) -> np.ndarray:
     width = int(placement.get("width") or WIDTH)
     height = int(placement.get("height") or HEIGHT)
@@ -142,43 +202,68 @@ def _render_placed_telop(text: str, role: str, placement: dict, scale: float) ->
     mode = str(placement["mode"])
     size = max(28, int(int(placement["size"]) * scale))
     if role == "credit":
-        size = min(size, 54)
-    font = load_font(str(placement["font"]), size)
-    bold_path = str(placement.get("font_bold") or "")
+        size = min(size, 48)
+    faces = [tuple(item) for item in placement.get("faces") or []]
     fill = tuple(placement["fill"])
     stroke_color = _stroke_ink(fill)
     stroke = 3 if role == "credit" else int(placement["stroke"])
-    draw = ImageDraw.Draw(image)
+    margin = 32
+    max_w = width - margin * 2 - 48
+    max_h = int(height * (0.55 if role == "credit" else 0.34))
+    font_path = str(placement["font"])
+    bold_path = str(placement.get("font_bold") or "")
     if mode == "vertical":
-        font, size = _fit_vertical(text, str(placement["font"]), size, width, height)
-        _draw_vertical(draw, text, font, fill, stroke_color, stroke, size, width, height)
+        font, size, columns = _fit_vertical(text, font_path, size, max_w, height - margin * 2)
+        block_w = max(size, len(columns) * (size + 16))
+        block_h = max((size + 4) * max(len(column) for column in columns), size)
+        left, top = _place_vertical(width, height, block_w, block_h, faces)
+        draw = ImageDraw.Draw(image)
+        _draw_vertical(draw, columns, font, fill, stroke_color, stroke, size, left, top)
         return np.array(image)
-    while size > 26:
-        font = load_font(str(placement["font"]), size)
-        tw, th = _text_size(font, text)
-        limit_w = int(width * (0.96 if placement.get("full_width") else 0.84))
-        limit_h = int(height * (0.42 if mode == "center" else 0.30))
-        if tw <= limit_w and th <= limit_h:
+    font = load_font(font_path, size)
+    wrapped = text
+    while size > 22:
+        font = load_font(font_path, size)
+        wrapped = _wrap_chars(text, font, max_w)
+        tw, th = _text_size(font, wrapped)
+        if tw <= max_w and th <= max_h:
             break
         size -= 2
-    tw, th = _text_size(font, text)
-    pad_x, pad_y = 28, 16
-    bar_w = width - 36 if placement.get("full_width") else min(width - 48, tw + pad_x * 2)
-    bar_h = th + pad_y * 2
-    top = int(height * float(placement["y_ratio"]) - bar_h / 2)
-    top = max(12, min(height - bar_h - 12, top))
-    left = 18 if placement.get("full_width") else (width - bar_w) // 2
+    tw, th = _text_size(font, wrapped)
+    pad_x, pad_y = 24, 14
+    bar_w = min(width - margin * 2, max(tw + pad_x * 2, 80))
+    bar_h = min(height - margin * 2, th + pad_y * 2)
+    left, top = _place_caption(width, height, bar_w, bar_h, faces, mode, float(placement["y_ratio"]))
+    draw = ImageDraw.Draw(image)
     if mode == "note":
-        _draw_note(image, text, font, fill, stroke_color, stroke, bar_w, bar_h, placement)
+        _draw_note(image, wrapped, font, fill, stroke_color, stroke, bar_w, bar_h, left, top)
         return np.array(image)
     bar_fill = tuple(placement["bar_fill"])
-    radius = 8 if placement.get("bar") == "square" else 22
-    draw.rounded_rectangle((left, top, left + bar_w, top + bar_h), radius=radius, fill=bar_fill)
-    if mode == "bubble":
-        tail = (left + 70, top + bar_h - 2, left + 120, top + bar_h - 2, left + 46, top + bar_h + 36)
-        draw.polygon(tail, fill=bar_fill)
-    _draw_emphasis(draw, text, font, bold_path, size, fill, stroke_color, stroke, left, top, bar_w, pad_y, bool(placement.get("emphasis")))
+    radius = 8 if placement.get("bar") == "square" else 18
+    draw.rounded_rectangle((left, top, left + bar_w, top + bar_h), radius=min(radius, bar_h // 2), fill=bar_fill)
+    _draw_emphasis(
+        draw, wrapped, font, bold_path, size, fill, stroke_color, stroke,
+        left, top, bar_w, pad_y, bool(placement.get("emphasis")),
+    )
     return np.array(image)
+
+
+def _place_vertical(
+    width: int,
+    height: int,
+    block_w: int,
+    block_h: int,
+    faces: list[tuple[int, int, int, int]],
+) -> tuple[int, int]:
+    margin = 32
+    top = max(margin, min((height - block_h) // 2, height - margin - block_h))
+    xs = [margin, max(margin, width - margin - block_w)]
+    xs.extend(range(margin, max(margin + 1, width - margin - block_w), 24))
+    for left in xs:
+        box = (left, top, left + block_w, top + block_h)
+        if _clear_of_faces(box, faces):
+            return left, top
+    return margin, top
 
 
 def _draw_emphasis(draw, text, font, bold_path, size, fill, stroke_color, stroke, left, top, bar_w, pad_y, emphasis: bool) -> None:
@@ -210,40 +295,45 @@ def _stroke_text(draw, xy, text, font, fill, stroke_color, stroke, align: str) -
     draw.multiline_text((x, y), text, font=font, fill=fill, spacing=6, align=align)
 
 
-def _fit_vertical(text: str, path: str, size: int, width: int, height: int) -> tuple[ImageFont.ImageFont, int]:
-    columns = [column for column in text.split("\n") if column] or [text]
-    longest = max(len(column) for column in columns)
+def _fit_vertical(text: str, path: str, size: int, max_w: int, max_h: int) -> tuple[ImageFont.ImageFont, int, list[str]]:
+    source = [column for column in text.split("\n") if column] or [text]
+    columns = source
     while size > 22:
-        tall = longest * (size + 4)
+        limit = max(1, max_h // (size + 4))
+        columns = []
+        for column in source:
+            for start in range(0, len(column), limit):
+                columns.append(column[start : start + limit])
+        columns = columns or source
+        tall = max(len(column) for column in columns) * (size + 4)
         wide = len(columns) * (size + 16)
-        if tall <= int(height * 0.84) and wide <= int(width * 0.62):
+        if tall <= max_h and wide <= max_w:
             break
         size -= 2
-    return load_font(path, size), size
+    return load_font(path, size), size, columns
 
 
-def _draw_vertical(draw, text, font, fill, stroke_color, stroke, size, width, height) -> None:
-    columns = [column for column in text.split("\n") if column] or [text]
-    x = int(width * 0.05)
+def _draw_vertical(draw, columns, font, fill, stroke_color, stroke, size, left: int, top: int) -> None:
+    x = left
     for column in columns:
-        y = int(height * 0.08)
+        y = top
         for char in column:
             _stroke_text(draw, (x, y), char, font, fill, stroke_color, max(1, stroke), align="left")
             y += size + 4
         x += size + 16
 
 
-def _draw_note(image, text, font, fill, stroke_color, stroke, bar_w, bar_h, placement) -> None:
+def _draw_note(image, text, font, fill, stroke_color, stroke, bar_w, bar_h, left: int, top: int) -> None:
     note = Image.new("RGBA", (bar_w, bar_h), (0, 0, 0, 0))
     draw = ImageDraw.Draw(note)
-    paper = tuple(placement["bar_fill"])
+    paper = (255, 248, 220, 235)
     draw.rounded_rectangle((0, 0, bar_w - 1, bar_h - 1), radius=6, fill=paper)
     tw, _th = _text_size(font, text)
-    _stroke_text(draw, ((bar_w - tw) // 2, 12), text, font, fill, stroke_color, stroke, align="center")
+    _stroke_text(draw, (max(8, (bar_w - tw) // 2), 10), text, font, fill, stroke_color, stroke, align="center")
     turned = note.rotate(7, expand=True, resample=Image.Resampling.BICUBIC)
-    x = int(placement["width"]) - turned.width - 28
-    y = int(placement["height"]) - turned.height - 48
-    image.alpha_composite(turned, (max(0, x), max(0, y)))
+    x = min(left, image.size[0] - turned.width - 8)
+    y = min(top, image.size[1] - turned.height - 8)
+    image.alpha_composite(turned, (max(8, x), max(8, y)))
 
 
 def _zoom(frame: np.ndarray, zoom: float) -> np.ndarray:
@@ -284,25 +374,32 @@ def _is_reaction(scene: dict) -> bool:
 def _light_motion(frame: np.ndarray, scene: dict, local_t: float, axes: dict | None = None) -> np.ndarray:
     """ゆっくりズームとパン。反応のシーンだけ、小さく揺らす。字幕はここより後に載せる。"""
     tempo = "" if not axes else str(axes.get("M") or "")
-    if tempo == "M6":
-        return frame.copy()
     duration = max(float(scene.get("duration") or 0.01), 0.01)
     p = min(1.0, local_t / duration)
-    if not axes or tempo == "M2":
+    # 署名なしの旧作は、以前のパンとズームのまま。
+    if not axes:
         dx = int(round((p - 0.5) * 28))
         dy = int(round((0.5 - p) * 12))
         moved = shift_frame(frame, dx, dy)
         if _is_reaction(scene):
             moved = _shake(moved, 5, local_t)
         return _zoom(moved, 1.02 + 0.045 * p)
-    if tempo == "M1":
+    # 1.5秒以上同じ絵が続かないよう、どのテンポでも少しずつずらす。
+    drift_x = int(round(local_t * 8))
+    drift_y = int(round(local_t * 10))
+    if tempo == "M6":
+        moved = shift_frame(frame, drift_x, drift_y)
+        return moved if moved is not frame else frame.copy()
+    if tempo == "M2":
+        pan, rise, base = 28, 0.045, 1.02
+    elif tempo == "M1":
         pan, rise, base = 48, 0.08, 1.03
     elif tempo == "M3":
         pan, rise, base = 16, 0.02, 1.01
     else:
         pan, rise, base = 28, 0.045, 1.02
-    dx = int(round((p - 0.5) * pan))
-    dy = int(round((0.5 - p) * 12))
+    dx = int(round((p - 0.5) * pan)) + drift_x
+    dy = int(round((0.5 - p) * 12)) + drift_y
     moved = shift_frame(frame, dx, dy)
     if _is_reaction(scene):
         moved = _shake(moved, 5, local_t)
@@ -424,19 +521,37 @@ def _styled_layers(project: dict, scenes: list[dict], book: SpriteBook, settings
             leads.append(build_still(scene, book, axes, cast, index, len(scenes), used, hide_people=True))
         else:
             leads.append(None)
-        telops.append(
-            render_telop(
-                scene["telop"],
-                scene["role"],
-                WIDTH,
-                HEIGHT,
-                settings["telop_scale"],
-                0.5,
-                str(scene.get("tone") or scene["role"]),
-                None,
-                telop_placement(axes, scene),
-            )
+        placement = telop_placement(axes, scene)
+        if scene.get("role") == "credit":
+            faces: list[tuple[int, int, int, int]] = []
+        else:
+            slop = 48 + int(float(scene.get("duration") or 1) * 12)
+            faces = [
+                (
+                    max(0, x0 - slop),
+                    max(0, y0 - slop),
+                    min(WIDTH, x1 + slop),
+                    min(HEIGHT, y1 + slop),
+                )
+                for x0, y0, x1, y1 in face_rects(book, axes, cast, index)
+            ]
+        placement["faces"] = faces
+        telop = render_telop(
+            scene["telop"],
+            scene["role"],
+            WIDTH,
+            HEIGHT,
+            settings["telop_scale"],
+            0.5,
+            str(scene.get("tone") or scene["role"]),
+            None,
+            placement,
         )
+        if caption_overlaps_face(telop, faces):
+            raise RuntimeError(f"テロップが顔にかかっています: scene {scene.get('id')}")
+        if caption_hits_edge(telop):
+            raise RuntimeError(f"テロップが画面の端で切れています: scene {scene.get('id')}")
+        telops.append(telop)
     project["style_used_assets"] = sorted(used)
     return stills, leads, telops
 

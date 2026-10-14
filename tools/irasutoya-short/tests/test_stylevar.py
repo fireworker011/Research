@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import subprocess
 import unittest
 from pathlib import Path
 
@@ -9,19 +10,20 @@ import numpy as np
 
 from irasutoya_short import sprites
 from irasutoya_short.sfx import bgm_loop
-from irasutoya_short.style_draw import PALETTES, build_still, font_path
+from irasutoya_short.qa import caption_hits_edge, caption_overlaps_face, dead_air
+from irasutoya_short.render import render_telop
+from irasutoya_short.style_draw import PALETTES, build_still, font_path, telop_placement
 from irasutoya_short.stylevar import (
     MATRIX,
     assign_unpublished,
     check_signature,
     credit_lines,
     fit_scene_durations,
+    gaps_ok,
     kane_published_history,
-    length_ok,
     load_jobs,
     parse_signature,
     published_signatures,
-    rhythm_ok,
     shared_axes,
 )
 
@@ -90,27 +92,32 @@ class SignatureRuleTests(unittest.TestCase):
 
 
 class DurationFitTests(unittest.TestCase):
-    def test_fast_cuts_land_in_l2(self) -> None:
+    def test_tight_cuts_do_not_pad_a_long_bucket(self) -> None:
         scenes = []
         for index in range(13):
             scenes.append({"role": "hook" if index == 0 else "body", "voice_seconds": 1.15, "text": "あ", "lead": 0.0})
         scenes.append({"role": "credit", "voice_seconds": 0.15, "text": "", "lead": 0.0})
-        project = {"style_axes": {"M": "M1", "L": "L2"}, "scenes": scenes}
-        self.assertEqual(fit_scene_durations(project), "ok")
-        total = sum(float(scene["duration"]) for scene in scenes)
-        self.assertTrue(length_ok(total, "L2"))
-        self.assertTrue(rhythm_ok(scenes, "M1"))
+        project = {"style_axes": {"M": "M5", "L": "L5"}, "scenes": scenes}
+        status = fit_scene_durations(project)
+        self.assertIn(status, ("ok", "retarget", "short"))
+        self.assertTrue(gaps_ok(scenes))
+        content = [scene for scene in scenes if scene["role"] != "credit"]
+        slack = max(float(scene["duration"]) - float(scene["voice_seconds"]) for scene in content)
+        self.assertLess(slack, 1.35)
+        self.assertLess(float(scenes[-1]["duration"]), 1.35)
+        self.assertLess(sum(float(scene["duration"]) for scene in scenes), 25)
 
-    def test_paper_theater_lands_in_l3(self) -> None:
+    def test_paper_theater_is_not_a_five_second_hold(self) -> None:
         scenes = []
         for index in range(5):
             scenes.append({"role": "hook" if index == 0 else "body", "voice_seconds": 1.0, "text": "あ", "lead": 0.0})
         scenes.append({"role": "credit", "voice_seconds": 0.15, "text": "", "lead": 0.0})
         project = {"style_axes": {"M": "M6", "L": "L3"}, "scenes": scenes}
-        self.assertEqual(fit_scene_durations(project), "ok")
-        total = sum(float(scene["duration"]) for scene in scenes)
-        self.assertTrue(length_ok(total, "L3"))
-        self.assertTrue(rhythm_ok(scenes, "M6"))
+        fit_scene_durations(project)
+        self.assertTrue(gaps_ok(scenes))
+        slack = max(float(scene["duration"]) - float(scene["voice_seconds"]) for scene in scenes if scene["role"] != "credit")
+        self.assertLess(slack, 1.35)
+        self.assertLess(sum(float(scene["duration"]) for scene in scenes), 15)
 
 
 class PictureVariationTests(unittest.TestCase):
@@ -185,6 +192,60 @@ class PictureVariationTests(unittest.TestCase):
         self.assertEqual(lines[0], "VOICEVOX:四国めたん")
         self.assertEqual(lines[1], "VOICEVOX:白上虎太郎")
         self.assertEqual(lines[-1], "イラスト：いらすとや")
+
+
+class CaptionAndAirTests(unittest.TestCase):
+    def test_caption_stays_off_a_face_and_inside_the_frame(self) -> None:
+        axes = {"C": "C1", "P": "P1", "T": "T5", "F": "F1", "H": "H2", "M": "M2", "B": "B2", "L": "L1", "A": "A1"}
+        placement = telop_placement(axes, {"role": "body"})
+        face = (400, 700, 700, 1100)
+        placement["faces"] = [face]
+        telop = render_telop("手取りはその残りだった", "body", 1080, 1920, 1.0, 0.5, "body", None, placement)
+        self.assertFalse(caption_overlaps_face(telop, [face]))
+        self.assertFalse(caption_hits_edge(telop))
+        wide = telop_placement(
+            {"C": "C5", "P": "P2", "T": "T1", "F": "F5", "H": "H5", "M": "M3", "B": "B2", "L": "L2", "A": "A2"},
+            {"role": "body"},
+        )
+        long = render_telop("源泉徴収票で先に見る欄は天引きの欄だけ見ろ", "body", 1080, 1920, 1.0, 0.5, "body", None, wide)
+        self.assertFalse(caption_hits_edge(long))
+
+    def test_dead_air_flags_silence_and_a_held_frame(self) -> None:
+        frozen = _clip("/tmp/qa-frozen.mp4", moving=False, tone=False, frames=72)
+        moving = _clip("/tmp/qa-moving.mp4", moving=True, tone=True, frames=48)
+        self.assertTrue(any(item.startswith("silence") for item in dead_air(frozen)))
+        self.assertTrue(any(item.startswith("freeze") for item in dead_air(frozen)))
+        self.assertEqual(dead_air(moving), [])
+
+
+def _clip(path: str, *, moving: bool, tone: bool, frames: int) -> str:
+    width, height = 160, 160
+    base = np.zeros((height, width, 3), dtype=np.uint8)
+    base[:, :] = (230, 220, 200)
+    base[40:120, 50:110] = (30, 40, 90)
+    cmd = [
+        "ffmpeg", "-y", "-loglevel", "error",
+        "-f", "rawvideo", "-pix_fmt", "rgb24", "-s", f"{width}x{height}", "-r", "24",
+        "-i", "pipe:0",
+    ]
+    if tone:
+        cmd.extend(["-f", "lavfi", "-i", "sine=frequency=440:sample_rate=24000:duration=4"])
+    else:
+        cmd.extend(["-f", "lavfi", "-i", "anullsrc=r=24000:cl=mono"])
+    cmd.extend(["-t", f"{frames / 24:.3f}", "-c:v", "libx264", "-pix_fmt", "yuv420p", "-c:a", "aac", "-shortest", path])
+    proc = subprocess.Popen(cmd, stdin=subprocess.PIPE)
+    assert proc.stdin is not None
+    for index in range(frames):
+        frame = base
+        if moving:
+            shift = index // 2
+            frame = np.zeros_like(base)
+            frame[:, shift:] = base[:, : width - shift]
+            frame[:, :shift] = base[:, :1]
+        proc.stdin.write(frame.tobytes())
+    proc.stdin.close()
+    proc.wait(timeout=30)
+    return path
 
 
 class _GreenBook:

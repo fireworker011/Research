@@ -11,7 +11,7 @@ import csv
 import json
 import math
 import random
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from pathlib import Path
 
 from irasutoya_short.constants import FPS
@@ -29,6 +29,9 @@ LENGTHS = {
     "L4": (41.0, 50.0),
     "L5": (51.0, 60.0),
 }
+# 無音・静止は 1.5 秒を超えたら不合格。検出の境界より手前で切る。
+MAX_SILENCE = 1.35
+CREDIT_HOLD = 1.05
 
 BGM_TRACK = {
     "B1": "none",
@@ -651,6 +654,155 @@ def choose_cast(asset_ids: list[str], asset_mix: str) -> list[str]:
     return people[:count]
 
 
+def replace_signature(signature: Signature, **changes: str) -> Signature:
+    return replace(signature, **changes)
+
+
+def length_code_for(seconds: float) -> str | None:
+    for code, (lo, hi) in LENGTHS.items():
+        if lo - 1e-6 <= seconds <= hi + 1e-6:
+            return code
+    return None
+
+
+def content_tail(tempo: str, index: int, scenes: list[dict]) -> float:
+    """声の後に残す間。クレジットと足しても 1.5 秒の無音にしない。"""
+    if scenes[index].get("role") == "credit":
+        return 0.0
+    content = _content_indexes(scenes)
+    if tempo == "M4":
+        half = max(1, len(content) // 2)
+        return 0.04 if index in set(content[:half]) else 0.12
+    if tempo == "M5":
+        return 0.12 if index == content[-1] else 0.05
+    return {"M1": 0.03, "M2": 0.07, "M3": 0.12, "M6": 0.12}.get(tempo, 0.08)
+
+
+def tight_seconds(scene: dict, tempo: str, index: int, scenes: list[dict]) -> float:
+    if scene.get("role") == "credit":
+        return CREDIT_HOLD
+    lead = float(scene.get("lead") or 0)
+    voice = float(scene.get("voice_seconds") or 0)
+    return lead + voice + content_tail(tempo, index, scenes)
+
+
+def gaps_ok(scenes: list[dict]) -> bool:
+    for index, scene in enumerate(scenes):
+        duration = float(scene["duration"])
+        if scene.get("role") == "credit":
+            if duration > MAX_SILENCE:
+                return False
+            continue
+        spoken = float(scene.get("voice_seconds") or 0) + float(scene.get("lead") or 0)
+        if duration - spoken > MAX_SILENCE + 1e-6:
+            return False
+        if index + 1 < len(scenes) and scenes[index + 1].get("role") == "credit":
+            tail = duration - spoken + float(scenes[index + 1]["duration"])
+            if tail > MAX_SILENCE + 1e-6:
+                return False
+    return True
+
+
+def fit_scene_durations(project: dict) -> str:
+    """声の直後で切る。隙間は足さない。目標の尺を超える分だけ、声を残して削る。"""
+    axes = project["style_axes"]
+    tempo = str(axes["M"])
+    target = str(axes["L"])
+    scenes = project["scenes"]
+    _lo, hi = LENGTHS[target]
+    frames = [
+        max(1, int(round(tight_seconds(scene, tempo, index, scenes) * FPS)))
+        for index, scene in enumerate(scenes)
+    ]
+    floor: list[int] = []
+    for scene in scenes:
+        if scene.get("role") == "credit":
+            floor.append(max(1, int(round(0.7 * FPS))))
+        else:
+            spoken = float(scene.get("voice_seconds") or 0) + float(scene.get("lead") or 0)
+            floor.append(max(1, int(math.ceil(spoken * FPS - 1e-9))))
+    frames = [max(frame, base) for frame, base in zip(frames, floor)]
+
+    def total() -> float:
+        return sum(frames) / FPS
+
+    def trim_to(limit: int) -> bool:
+        guard = 0
+        while sum(frames) > limit and guard < 20000:
+            guard += 1
+            donors = [i for i, base in enumerate(floor) if frames[i] > base]
+            if not donors:
+                return False
+            donor = max(donors, key=lambda i: frames[i] - floor[i])
+            frames[donor] -= 1
+        return sum(frames) <= limit
+
+    trim_to(int(round(hi * FPS)))
+    for edge in (20.0, 30.0, 40.0, 50.0):
+        sec = total()
+        if edge + 1e-6 < sec < edge + 1.0:
+            trim_to(int(round(edge * FPS)))
+            break
+    for scene, count in zip(scenes, frames):
+        scene["duration"] = count / FPS
+    if not gaps_ok(scenes):
+        return "gap"
+    sec = total()
+    if sec > hi + 1e-6:
+        return "speedup"
+    if sec + 1e-6 < LENGTHS[target][0]:
+        if sec < LENGTHS["L1"][0] - 1e-6:
+            return "short"
+        return "retarget"
+    return "ok"
+
+
+def _ahead_ok(candidate: Signature, ahead: list[tuple[Signature, bool]] | None) -> bool:
+    """直す動画のあとに、署名を変えない動画が残る。その検査も崩さない。"""
+    if not ahead:
+        return True
+    for offset, (other, fixed) in enumerate(ahead, start=1):
+        if not fixed:
+            continue
+        limit = MAX_SHARED_PREV if offset == 1 else MAX_SHARED_LAST5
+        if shared_axes(candidate, other) > limit or same_axes(candidate, other):
+            return False
+        if offset == 1 and thumb_changes(candidate, other) < 2:
+            return False
+    return True
+
+
+def repair_signature(
+    signature: Signature,
+    history: list[Signature],
+    published: list[Signature],
+    length_code: str,
+    ahead: list[tuple[Signature, bool]] | None = None,
+) -> Signature:
+    """尺の符号だけ先に合わせ、共有軸が上限を超えるとき見た目を1つか2つ変える。"""
+    base = replace_signature(signature, L=length_code)
+
+    def acceptable(trial: Signature) -> bool:
+        return check_signature(trial, history, published)["ok"] and _ahead_ok(trial, ahead)
+
+    if acceptable(base):
+        return base
+    options = ("A", "C", "P", "T", "F", "B")
+    for axis in options:
+        for value in MATRIX[signature.line][axis]:
+            trial = replace_signature(base, **{axis: value})
+            if acceptable(trial):
+                return trial
+    for index, axis in enumerate(options):
+        for axis2 in options[index + 1 :]:
+            for value in MATRIX[signature.line][axis]:
+                for value2 in MATRIX[signature.line][axis2]:
+                    trial = replace_signature(base, **{axis: value, axis2: value2})
+                    if acceptable(trial):
+                        return trial
+    raise RuntimeError(f"署名を直せません: {signature.text()} -> {length_code}")
+
+
 def _base_frames(scene: dict) -> int:
     seconds = float(scene["voice_seconds"]) + float(scene.get("lead") or 0)
     if scene.get("role") == "credit":
@@ -765,8 +917,8 @@ def rhythm_ok(scenes: list[dict], tempo: str) -> bool:
     raise ValueError(f"未知のテンポ: {tempo}")
 
 
-def fit_scene_durations(project: dict) -> str:
-    """署名の M と L にシーン尺を合わせる。声より短くはしない。"""
+def fit_padded_durations(project: dict) -> str:
+    """割り当て用。実際の書き出しは fit_scene_durations で隙間を切る。"""
     axes = project["style_axes"]
     lo, hi = LENGTHS[axes["L"]]
     lo_f = int(round(lo * FPS))
@@ -866,7 +1018,7 @@ def _probe(scenes: list[dict], tempo: str, length: str, hook: str) -> bool:
                 if scene["role"] == "hook":
                     scene["lead"] = 0.9
                     break
-        status = fit_scene_durations(project)
+        status = fit_padded_durations(project)
         if status == "ok":
             return True
     return False

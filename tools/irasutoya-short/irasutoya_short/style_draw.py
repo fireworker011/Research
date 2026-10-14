@@ -8,6 +8,7 @@ import numpy as np
 from PIL import Image, ImageDraw, ImageFont
 
 from irasutoya_short.constants import FONT_CANDIDATES, HEIGHT, WIDTH
+from irasutoya_short.sprites import head_box
 
 FONT_DIR = Path(__file__).resolve().parents[1] / "fonts"
 FONT_FILES = {
@@ -137,101 +138,130 @@ def build_still(
     return np.asarray(image, dtype=np.uint8)
 
 
+def _wash(draw: ImageDraw.ImageDraw, palette: dict, width: int, height: int) -> None:
+    """壁にわずかなグラデーションを置き、カメラが動いたとき静止扱いにしない。"""
+    wall = palette["wall"]
+    shade = _lerp(wall, palette["floor"], 0.16)
+    for y in range(0, height, 6):
+        color = _lerp(wall, shade, y / max(1, height))
+        draw.rectangle((0, y, width, y + 6), fill=color)
+
+
+def _paper(draw: ImageDraw.ImageDraw, box: tuple[int, int, int, int], palette: dict) -> None:
+    draw.rounded_rectangle(box, radius=8, fill=palette["paper"], outline=palette["ink"], width=2)
+    for line in range(6):
+        y = box[1] + 28 + line * max(16, (box[3] - box[1] - 48) // 6)
+        if y < box[3] - 16:
+            draw.line((box[0] + 16, y, box[2] - 16, y), fill=palette["trim"], width=1)
+
+
 def _paint_room(draw: ImageDraw.ImageDraw, axes: dict, palette: dict, index: int, width: int, height: int) -> None:
     layout = axes["C"]
-    mix = axes["A"]
-    if mix == "A5":
+    if axes["A"] == "A5":
         for y in range(0, height, 6):
-            color = _lerp(palette["sky"], palette["floor"], y / height)
+            color = _lerp(palette["sky"], palette["floor"], y / max(1, height))
             draw.rectangle((0, y, width, y + 6), fill=color)
-        draw.ellipse((int(width * 0.55), int(height * 0.08), int(width * 0.92), int(height * 0.28)), fill=palette["trim"])
         return
+    _wash(draw, palette, width, height)
     if layout == "C6":
-        draw.rectangle((0, 0, width, height), fill=palette["accent"])
+        mid_x = width // 2
+        y1 = int(height * 0.40)
+        y2 = int(height * 0.74)
+        ink = palette["ink"]
+        draw.line((mid_x, 24, mid_x, y2), fill=ink, width=3)
+        draw.line((24, y1, width - 24, y1), fill=ink, width=3)
         panels = (
-            (0, 0, width // 2, int(height * 0.42)),
-            (width // 2, 0, width, int(height * 0.42)),
-            (0, int(height * 0.42), width // 2, int(height * 0.78)),
-            (width // 2, int(height * 0.42), width, int(height * 0.78)),
+            (24, 24, mid_x - 8, y1 - 8),
+            (mid_x + 8, 24, width - 24, y1 - 8),
+            (24, y1 + 8, mid_x - 8, y2 - 8),
+            (mid_x + 8, y1 + 8, width - 24, y2 - 8),
         )
-        active = index % 4
-        for panel_index, box in enumerate(panels):
-            fill = palette["paper"] if panel_index == active else palette["wall"]
-            draw.rectangle(box, fill=fill)
-            draw.rectangle(box, outline=palette["ink"], width=10)
+        active = panels[index % 4]
+        draw.rectangle(active, fill=palette["paper"])
         return
     if layout == "C5":
-        split = int(height * 0.40)
-        draw.rectangle((0, 0, width, split), fill=palette["accent"])
-        draw.rectangle((0, split, width, height), fill=palette["wall"])
-        draw.rectangle((48, 48, width - 48, split - 36), outline=palette["paper"], width=8)
+        split = int(height * 0.42)
+        draw.rectangle((0, 0, width, split), fill=palette["paper"])
+        draw.line((36, split, width - 36, split), fill=palette["ink"], width=3)
         return
     floor_y = int(height * 0.74)
     draw.rectangle((0, floor_y, width, height), fill=palette["floor"])
-    draw.rectangle((0, floor_y, width, floor_y + 14), fill=palette["trim"])
-    if layout != "C4":
-        win = (48, 48, int(width * 0.46), int(height * 0.36))
-        draw.rounded_rectangle(win, radius=12, fill=palette["sky"], outline=palette["ink"], width=8)
-    draw.rectangle((70, int(height * 0.78), width - 70, int(height * 0.78) + 28), fill=palette["trim"])
-    if layout == "C4":
-        for row in range(6):
-            top = int(height * 0.08) + row * int(height * 0.09)
-            fill = palette["accent"] if row == index % 6 else palette["paper"]
-            draw.rounded_rectangle((36, top, int(width * 0.42), top + int(height * 0.06)), radius=8, fill=fill)
     if layout == "C2":
-        draw.rectangle((width // 2 - 6, int(height * 0.08), width // 2 + 6, int(height * 0.72)), fill=palette["accent"])
+        draw.line((width // 2, int(height * 0.08), width // 2, floor_y), fill=palette["ink"], width=3)
+    if layout == "C4":
+        font = load_font(font_path(axes["F"]), max(22, width // 16))
+        left = int(width * 0.08)
+        for row in range(5):
+            y = int(height * 0.10) + row * int(height * 0.09)
+            fill = palette["ink"] if row == index % 5 else palette["trim"]
+            draw.text((left, y), str(row + 1), font=font, fill=fill)
+            draw.line(
+                (left + int(width * 0.08), y + int(height * 0.03), int(width * 0.42), y + int(height * 0.03)),
+                fill=palette["trim"],
+                width=1,
+            )
 
 
 def _paint_props(draw: ImageDraw.ImageDraw, axes: dict, palette: dict, width: int, height: int) -> None:
     layout = axes["C"]
     mix = axes["A"]
-    if mix == "A6" or layout == "C4":
-        left, top = int(width * 0.08), int(height * 0.16)
-        right, bottom = int(width * 0.48), int(height * 0.70)
-        if layout == "C4":
-            left, right = int(width * 0.50), int(width * 0.96)
-        draw.rounded_rectangle((left, top, right, bottom), radius=8, fill=palette["paper"], outline=palette["ink"], width=6)
-        for row in range(5):
-            y = top + 36 + row * ((bottom - top - 60) // 5)
-            draw.line((left + 24, y, right - 24, y), fill=palette["trim"], width=4)
+    if mix == "A6":
+        left, top = int(width * 0.56), int(height * 0.16)
+        right, bottom = int(width * 0.92), int(height * 0.48)
+        for row in range(4):
+            y = top + row * ((bottom - top) // 4)
+            draw.line((left, y, right, y), fill=palette["trim"], width=1)
+        for col in range(3):
+            x = left + col * ((right - left) // 2)
+            draw.line((x, top, x, bottom), fill=palette["trim"], width=1)
         return
-    if layout == "C3" or mix in {"A2", "A3"}:
-        sheets = 4 if mix == "A2" else 2
+    if layout == "C3" or mix in {"A1", "A2", "A3"}:
+        sheets = 3 if mix == "A2" else 2 if mix == "A1" else 1
         for sheet in range(sheets):
-            ox, oy = sheet * 18, sheet * 14
+            ox, oy = sheet * 14, sheet * 10
             box = (
-                int(width * 0.12) + ox,
+                int(width * 0.10) + ox,
                 int(height * 0.08) + oy,
-                int(width * 0.78) + ox,
-                int(height * (0.58 if mix != "A3" else 0.66)) + oy,
+                int(width * (0.62 if layout != "C4" else 0.46)) + ox,
+                int(height * 0.46) + oy,
             )
-            draw.rounded_rectangle(box, radius=10, fill=palette["paper"], outline=palette["ink"], width=6)
-            for line in range(7):
-                y = box[1] + 40 + line * 36
-                if y < box[3] - 24:
-                    draw.line((box[0] + 28, y, box[2] - 28, y), fill=palette["trim"], width=4)
-        return
-    if mix == "A1":
-        origin = (int(width * 0.08), int(height * 0.58))
-        draw.rounded_rectangle((origin[0], origin[1], origin[0] + 180, origin[1] + 220), radius=8, fill=palette["paper"], outline=palette["ink"], width=5)
-        draw.ellipse((origin[0] + 200, origin[1] + 40, origin[0] + 340, origin[1] + 180), fill=palette["accent"])
-        draw.rectangle((origin[0] + 210, origin[1] + 190, origin[0] + 250, origin[1] + 280), fill=palette["trim"])
+            _paper(draw, box, palette)
 
 
-def _paint_people(image: Image.Image, book, axes: dict, cast: list[str], index: int, used: set[str], width: int, height: int) -> None:
-    if not cast or book is None:
-        return
-    show = list(cast)
-    if axes["A"] == "A6" and index % 2 == 1:
+def _visible_cast(axes: dict, cast: list[str], index: int) -> list[str]:
+    if axes.get("A") == "A6" and index % 2 == 1:
+        return []
+    return list(cast)
+
+
+def _placed_people(book, axes: dict, cast: list[str], index: int, width: int, height: int):
+    show = _visible_cast(axes, cast, index)
+    if not show or book is None:
         return
     for slot, asset_id in enumerate(show):
         cx, foot, sprite_h = _slot(axes, slot, len(show), index, width, height)
         sprite = book.still(asset_id, sprite_h)
+        x = int(cx - sprite.shape[1] / 2)
+        y = int(foot - sprite.shape[0])
+        yield asset_id, x, y, sprite
+
+
+def _paint_people(image: Image.Image, book, axes: dict, cast: list[str], index: int, used: set[str], width: int, height: int) -> None:
+    for asset_id, x, y, sprite in _placed_people(book, axes, cast, index, width, height):
         sprite_im = Image.fromarray(sprite, "RGBA")
-        x = int(cx - sprite_im.width / 2)
-        y = int(foot - sprite_im.height)
         image.paste(sprite_im, (x, y), sprite_im)
         used.add(asset_id)
+
+
+def face_rects(book, axes: dict, cast: list[str], index: int, width: int = WIDTH, height: int = HEIGHT) -> list[tuple[int, int, int, int]]:
+    rects: list[tuple[int, int, int, int]] = []
+    for _asset_id, x, y, sprite in _placed_people(book, axes, cast, index, width, height):
+        box = head_box(sprite)
+        if box is None:
+            continue
+        left, top, right, bot = box
+        rects.append((x + left, y + top, x + right, y + bot))
+    return rects
 
 
 def _slot(axes: dict, slot: int, count: int, index: int, width: int, height: int) -> tuple[int, int, int]:
@@ -267,27 +297,10 @@ def _slot(axes: dict, slot: int, count: int, index: int, width: int, height: int
 
 
 def _paint_hook(draw: ImageDraw.ImageDraw, axes: dict, palette: dict, width: int, height: int) -> None:
-    hook = axes["H"]
-    if hook == "H1":
-        box = (width - 160, 28, width - 28, 160)
-        draw.ellipse(box, fill=palette["accent"])
-        font = load_font(font_path(axes["F"]), 72)
-        draw.text((width - 124, 48), "？", font=font, fill=palette["paper"])
+    if axes["H"] != "H1" or axes["T"] == "T1":
         return
-    if hook == "H3":
-        draw.rectangle((20, 20, width - 20, height - 20), outline=palette["accent"], width=14)
-        draw.rectangle((40, 40, width - 40, height - 40), outline=palette["ink"], width=4)
-        return
-    if hook == "H5":
-        label = "あるある"
-        font = load_font(font_path(axes["F"]), 42)
-        pad = 18
-        dummy = ImageDraw.Draw(Image.new("RGB", (8, 8)))
-        box = dummy.textbbox((0, 0), label, font=font)
-        tw, th = box[2] - box[0], box[3] - box[1]
-        x, y = 36, 36 if axes["T"] != "T1" else int(height * 0.42)
-        draw.rounded_rectangle((x, y, x + tw + pad * 2, y + th + pad), radius=12, fill=palette["accent"])
-        draw.text((x + pad, y + 4), label, font=font, fill=palette["paper"])
+    font = load_font(font_path(axes["F"]), max(36, width // 18))
+    draw.text((width - int(width * 0.16), 36), "？", font=font, fill=palette["ink"])
 
 
 def telop_placement(axes: dict, scene: dict, width: int = WIDTH, height: int = HEIGHT) -> dict:
