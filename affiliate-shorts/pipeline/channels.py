@@ -7,6 +7,7 @@ from pathlib import Path
 import yaml
 
 from irasutoya_short.constants import BLOCKED_STYLE_IDS
+from qa_gate import COLLAB_RE
 
 PIPELINE_DIR = Path(__file__).resolve().parent
 CHANNELS_DIR = PIPELINE_DIR / "channels"
@@ -45,6 +46,8 @@ def load_channel(channel_id: str) -> dict:
     _require_text_field(data, "genre", allow_empty=True)
     _reject_removed_name(str(data.get("name") or ""), "name")
     _reject_removed_name(str(data.get("genre") or ""), "genre")
+    _reject_collab(str(data.get("name") or ""), "name")
+    _reject_collab(str(data.get("genre") or ""), "genre")
     data["voices"] = _voices(data.get("voices"))
     data["caption"] = _caption(data.get("caption"))
     data["credits"] = _credits(data.get("credits"))
@@ -57,7 +60,15 @@ def load_channel(channel_id: str) -> dict:
         raise ValueError("tags は文字列の配列です。")
     for tag in tags:
         _reject_removed_name(tag, "tags")
+        _reject_collab(tag, "tags")
     data["tags"] = [tag.strip() for tag in tags if tag.strip()]
+    status = data.get("name_status", "")
+    if status not in ("", "working", "final"):
+        raise ValueError("name_status は working か final か、省略です。")
+    data["name_status"] = status
+    if not isinstance(data.get("require_sources", False), bool):
+        raise ValueError("require_sources は true か false です。")
+    data["require_sources"] = bool(data.get("require_sources", False))
     return data
 
 
@@ -85,6 +96,8 @@ def render_upload(channel: dict, script: dict) -> str:
         "voices": voices,
         "tags": " ".join(channel.get("tags") or []),
         "credits_note": str(channel["credits"]["note"]),
+        "sources": _sources_block(script),
+        "name_note": "チャンネル名は仮称です。確定ではありません。\n" if channel.get("name_status") == "working" else "",
     }
     try:
         text = str(channel["upload_template"]).format_map(_Safe(fields))
@@ -161,9 +174,26 @@ def _require_text_field(data: dict, key: str, allow_empty: bool) -> None:
         raise ValueError(f"{key} が空です。")
 
 
+def _sources_block(script: dict) -> str:
+    rows = script.get("sources") or []
+    if not rows:
+        return "（出典の指定なし）"
+    lines = []
+    for row in rows:
+        lines.append(f"- {row['name']}")
+        lines.append(f"  {row['url']}")
+        lines.append(f"  使った記述: {row['claim']}")
+    return "\n".join(lines)
+
+
 def _reject_removed_name(text: str, where: str) -> None:
     if REMOVED_CHANNEL_NAME in text:
         raise ValueError(f"{where} に、使わないチャンネル名が入っています。")
+
+
+def _reject_collab(text: str, where: str) -> None:
+    if COLLAB_RE.search(text):
+        raise ValueError(f"{where} が、いらすとやとの協力を示す名前になっています。")
 
 
 class _Safe(dict):

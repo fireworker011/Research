@@ -15,8 +15,13 @@ from irasutoya_short.sprites import _face_box, draw_mouth, mouth_anchor, skin_co
 MIN_DURATION = 20.0
 MAX_DURATION = 30.0
 MEAN_VOLUME_FLOOR_DB = -45.0
+IRASUTOYA_POINT_LIMIT = 20
+MAX_SUBJECT_HEIGHT = 0.80
+MAX_SUBJECT_WIDTH = 0.90
+MAX_SUBJECT_AREA = 0.65
 
 _MEAN_VOLUME = re.compile(r"mean_volume:\s*(-?\d+(?:\.\d+)?)\s*dB")
+COLLAB_RE = re.compile(r"いらすとや|irasutoya", re.IGNORECASE)
 
 
 def caption_overlay_has_box(overlay: np.ndarray) -> bool:
@@ -118,6 +123,135 @@ def pure_self_test() -> None:
         raise RuntimeError("文字の縁を帯と見なしています。")
 
 
+def tally_images(uses: list[dict], thumbnail: dict | None) -> dict:
+    """同じ出典URLは1点。色違いは同じ点。表情が違う別URLは別点。サムネイルもこの中。"""
+    seen: dict[str, str] = {}
+    log: list[dict] = []
+    for use in uses:
+        url = str(use.get("source_url") or "").strip()
+        asset_id = str(use.get("id") or "")
+        emotion = str(use.get("emotion") or "")
+        recolor = bool(use.get("recolor"))
+        row = {"id": asset_id, "emotion": emotion, "source_url": url, "thumbnail": False}
+        if not url:
+            row["points"] = 0
+            row["reason"] = "出典URLが無い"
+            row["error"] = True
+            log.append(row)
+            continue
+        if url in seen:
+            row["points"] = 0
+            row["reason"] = "同じ絵の色違い。点数に足さない" if recolor else "同じ絵の再利用。点数に足さない"
+            log.append(row)
+            continue
+        seen[url] = asset_id
+        row["points"] = 1
+        row["reason"] = "別の絵。表情が違えば別点"
+        log.append(row)
+    if not uses and thumbnail is None:
+        note = "いらすとやの絵は無い。サムネイルの追加も無い。"
+    elif thumbnail is None:
+        note = "サムネイル専用の絵は無い。動画に出した絵をサムネイルにするので、点数は増えない。"
+    else:
+        url = str(thumbnail.get("source_url") or "").strip()
+        asset_id = str(thumbnail.get("id") or thumbnail.get("character") or "thumbnail")
+        emotion = str(thumbnail.get("emotion") or "")
+        row = {"id": asset_id, "emotion": emotion, "source_url": url, "thumbnail": True}
+        if not url:
+            row["points"] = 0
+            row["reason"] = "サムネイルの出典URLが無い"
+            row["error"] = True
+            note = "サムネイルの出典URLが無い。"
+        elif url in seen:
+            row["points"] = 0
+            row["reason"] = "サムネイルは動画と同じ絵。点数に足さない"
+            note = "サムネイルは動画と同じ絵。点数は増えない。"
+        else:
+            seen[url] = asset_id
+            row["points"] = 1
+            row["reason"] = "サムネイルだけの絵"
+            note = "サムネイルだけの絵を1点に数えた。"
+        log.append(row)
+    errors = [row for row in log if row.get("error")]
+    count = len(seen)
+    return {
+        "count": count,
+        "limit": IRASUTOYA_POINT_LIMIT,
+        "ok": count <= IRASUTOYA_POINT_LIMIT and not errors,
+        "log": log,
+        "thumbnail_note": note,
+    }
+
+
+def collaboration_hits(branding: dict) -> list[str]:
+    """チャンネル名やタイトルが、いらすとやとの協力を示す書き方になっていないか。"""
+    hits: list[str] = []
+    for key in ("name", "genre", "title", "theme"):
+        if COLLAB_RE.search(str(branding.get(key) or "")):
+            hits.append(key)
+    for tag in branding.get("tags") or []:
+        if COLLAB_RE.search(str(tag)):
+            hits.append(f"tag:{tag}")
+    for text in branding.get("texts") or []:
+        if COLLAB_RE.search(str(text)):
+            hits.append("本文")
+            break
+    return hits
+
+
+def subject_errors(subject: dict) -> list[str]:
+    """イラストは部屋と字幕の一部。画面そのものにはしない。"""
+    errors: list[str] = []
+    if subject.get("background") != "generated":
+        errors.append("背景がイラストそのものになっている")
+    if float(subject.get("max_height_ratio") or 0) > MAX_SUBJECT_HEIGHT:
+        errors.append("イラストが縦いっぱいに近い")
+    if float(subject.get("max_width_ratio") or 0) > MAX_SUBJECT_WIDTH:
+        errors.append("イラストが横いっぱいに近い")
+    if float(subject.get("max_area_ratio") or 0) > MAX_SUBJECT_AREA:
+        errors.append("イラストが画面の大部分を占めている")
+    if int(subject.get("caption_count") or 0) < 1:
+        errors.append("字幕が無く、イラストが内容そのものになっている")
+    return errors
+
+
+def image_gate_self_test() -> None:
+    over = tally_images(
+        [{"id": f"n{i}", "emotion": "x", "source_url": f"https://example.invalid/{i}.png"} for i in range(21)],
+        None,
+    )
+    if over["count"] != 21 or over["ok"]:
+        raise RuntimeError(f"21点を止めていません: {over['count']}")
+    mixed = tally_images(
+        [
+            {"id": "a", "emotion": "trouble", "source_url": "https://example.invalid/a.png"},
+            {"id": "a", "emotion": "trouble", "source_url": "https://example.invalid/a.png", "recolor": True},
+            {"id": "b", "emotion": "angry", "source_url": "https://example.invalid/b.png"},
+        ],
+        {"id": "a", "emotion": "trouble", "source_url": "https://example.invalid/a.png"},
+    )
+    if mixed["count"] != 2 or sum(row["points"] for row in mixed["log"]) != 2:
+        raise RuntimeError(f"再利用と色違いの数え方が違います: {mixed}")
+    thumb = tally_images(
+        [{"id": "a", "emotion": "trouble", "source_url": "https://example.invalid/a.png"}],
+        {"id": "c", "emotion": "smile", "source_url": "https://example.invalid/c.png"},
+    )
+    if thumb["count"] != 2:
+        raise RuntimeError(f"サムネイルだけの絵を数えていません: {thumb}")
+    if collaboration_hits({"name": "30秒そなえ帳", "genre": "防災グッズ・備え", "title": "一日の水", "theme": "備蓄", "tags": ["防災"], "texts": ["三日分"]}):
+        raise RuntimeError("普通の名前を、協力を示すと見なしています。")
+    if not collaboration_hits({"name": "いらすとや公式", "title": "", "texts": []}):
+        raise RuntimeError("協力を示す名前を通しています。")
+    if not collaboration_hits({"name": "", "title": "いらすとやコラボ", "texts": []}):
+        raise RuntimeError("協力を示すタイトルを通しています。")
+    if subject_errors({"background": "generated", "max_height_ratio": 0.60, "max_width_ratio": 0.45, "max_area_ratio": 0.27, "caption_count": 4}):
+        raise RuntimeError("部屋の中の人物を、主体すぎると見なしています。")
+    if not subject_errors({"background": "illustration", "max_height_ratio": 0.60, "max_width_ratio": 0.45, "max_area_ratio": 0.27, "caption_count": 4}):
+        raise RuntimeError("イラストだけの背景を通しています。")
+    if not subject_errors({"background": "generated", "max_height_ratio": 0.95, "max_width_ratio": 0.45, "max_area_ratio": 0.27, "caption_count": 4}):
+        raise RuntimeError("画面いっぱいのイラストを通しています。")
+
+
 def probe_media(path: Path) -> dict:
     if not path.is_file():
         return {"exists": False, "duration": None, "width": None, "height": None, "has_audio": False, "mean_volume_db": None}
@@ -207,6 +341,34 @@ def evaluate(plan: dict, media_path: Path | None) -> dict:
         absent_ok = not present and not position_errors
         _check(checks, "mouth_overlay_absent", absent_ok, "口の重ね絵は無い" if absent_ok else "口の重ね絵が残っている")
 
+    if "images" not in plan:
+        tally = {"count": None, "limit": IRASUTOYA_POINT_LIMIT, "ok": False, "log": [], "thumbnail_note": "点数の記録が無い。"}
+        _check(checks, "irasutoya_count", False, "点数の記録が無い")
+    else:
+        tally = tally_images(list(plan.get("images") or []), plan.get("thumbnail"))
+        if tally["ok"]:
+            detail = f"{tally['count']}点（上限{tally['limit']}）。{tally['thumbnail_note']}"
+        else:
+            detail = f"{tally['count']}点（上限{tally['limit']}）。上限を超えたので止めた。{tally['thumbnail_note']}"
+        _check(checks, "irasutoya_count", bool(tally["ok"]), detail)
+
+    if "subject" not in plan:
+        _check(checks, "irasutoya_subject", False, "主体の記録が無い")
+    else:
+        subject_problems = subject_errors(plan["subject"])
+        _check(
+            checks,
+            "irasutoya_subject",
+            not subject_problems,
+            "イラストは画面の一部" if not subject_problems else "、".join(subject_problems),
+        )
+
+    if "branding" not in plan:
+        _check(checks, "irasutoya_name", False, "名前の記録が無い")
+    else:
+        hits = collaboration_hits(plan["branding"])
+        _check(checks, "irasutoya_name", not hits, "協力を示す名前は無い" if not hits else "協力を示す書き方: " + "、".join(hits))
+
     passed = all(item["pass"] for item in checks) and bool(media["exists"] or plan.get("blocked_before_encode"))
     if plan.get("blocked_before_encode"):
         passed = False
@@ -218,6 +380,7 @@ def evaluate(plan: dict, media_path: Path | None) -> dict:
         "height": height,
         "mouth_overlay": mouth_overlay,
         "media": media,
+        "image_tally": tally,
     }
 
 
@@ -230,7 +393,7 @@ def write_report(path: Path, script: dict, report: dict) -> None:
         f"タイトル: {script.get('title', '')}",
         "",
         f"チャンネル設定: {script.get('channel', '')}",
-        f"チャンネル名: {script.get('channel_name') or '未定'}",
+        f"チャンネル名: {_channel_label(script)}",
         f"ジャンル: {script.get('genre') or '未定'}",
         "",
         "投稿はしない。",
@@ -241,5 +404,30 @@ def write_report(path: Path, script: dict, report: dict) -> None:
     for item in report["checks"]:
         mark = "pass" if item["pass"] else "fail"
         lines.append(f"| {item['name']} | {mark} | {item['detail']} |")
+    tally = report.get("image_tally") or {}
+    log = list(tally.get("log") or [])
+    lines.extend(["", "## いらすとやの点数", ""])
+    if tally.get("count") is None:
+        lines.append("記録が無い。")
+    else:
+        lines.append(f"{tally['count']}点（上限{tally.get('limit', IRASUTOYA_POINT_LIMIT)}）")
+        lines.append("")
+        lines.append(str(tally.get("thumbnail_note") or ""))
+        lines.append("")
+        lines.append("| 素材 | 表情 | 点数 | 理由 | 出典 |")
+        lines.append("| --- | --- | --- | --- | --- |")
+        for row in log:
+            lines.append(
+                f"| {row.get('id', '')} | {row.get('emotion', '')} | {row.get('points', '')} | {row.get('reason', '')} | {row.get('source_url', '')} |"
+            )
     lines.append("")
     path.write_text("\n".join(lines), encoding="utf-8")
+
+
+def _channel_label(script: dict) -> str:
+    name = str(script.get("channel_name") or "").strip()
+    if not name:
+        return "未定"
+    if script.get("name_status") == "working":
+        return f"{name}（仮称）"
+    return name

@@ -2,7 +2,7 @@
 
 脳は台本、体は Python と ffmpeg。Premiere は使わない。CapCut は人が手で直すときだけ。このコマンドは mp4 をレビューフォルダに置くところまでで、YouTube にも X にも投稿しない。CTA も URL も動画の中に入れない。
 
-チャンネルの名前とジャンルは未定。出す先は、今までのチャンネルとは別の新しいチャンネル。名前が決まるまでは `channels/draft.yaml` の `name` と `genre` を空のままにする。決まったらそのファイルを埋めるか、`channels/<id>.yaml` を足す。動画、UPLOAD、QA には、空のままの名前は書かない。
+出す先は、今までのチャンネルとは別の新しいチャンネル。有力な案は防災の備えで、仮の名前は「30秒そなえ帳」。確定ではない。設定は `channels/sonae.yaml`。名前を空にした `channels/draft.yaml` も残してある。動画、UPLOAD、QA に、使わない古いチャンネル名は書かない。仮称は QA に仮称と出す。
 
 画面は既存の静止画と同じ。1080x1920、20秒以上30秒以下、いらすとやの会社員、ゆっくりしたズームとパン、反応の行だけ小さく揺らす、字幕は大きく、声は VOICEVOX。口の重ね絵は無し。頭の上の名札は無し。字幕の後ろの帯は無し。背景の窓は一枚のガラスで、中の桟は描かない。
 
@@ -55,6 +55,9 @@
 | theme | 何の話か。金額は書かない |
 | hook | 冒頭の一文。最初の行の text と揃える |
 | mouth_overlay | 省略すると false。口の重ね絵を使わない |
+| thumbnail | 省略すると、動画に出した絵をサムネイルにする。別の絵を指定したときだけ点数が増える |
+| sources | `require_sources` のチャンネルでは必須。name、url、claim。url は首相官邸か内閣府 |
+| facts_used | 出典の claim に、そのまま含まれる語句 |
 | lines | 話す行。クレジット行はコマンドが後ろに足す |
 | speaker | `narrator` / `hero` / `rival` / `boss` |
 | character | 索引の id。省略したときは emotion と話者で一つに決まるときだけ進む |
@@ -74,16 +77,20 @@
 | 欄 | 意味 |
 | --- | --- |
 | name | チャンネル名。未定なら空。空のあいだは UPLOAD にチャンネル名の行を出さない |
+| name_status | `working` なら仮称。`final` か空なら仮称とは書かない |
 | genre | ジャンル。未定なら空 |
+| require_sources | true のとき、台本に首相官邸か内閣府の出典が要る。動画で言う数量は、その記述にあるものだけ |
 | tags | UPLOAD のタグ。動画の中には出さない |
 | voices | 話者ごとの style_id とクレジット。hero は angry_style_id を別にできる |
 | caption | 字幕の色、大きさ、位置、縁の太さ。bar は none。帯は付けない |
 | credits | 画面に出すのは使った声の名前。note は credits.json に書く出典の説明 |
-| upload_template | UPLOAD.md の型。`{title}` `{theme}` `{voices}` `{tags}` `{name}` `{genre}` `{channel_line}` `{genre_line}` `{credits_note}` |
+| upload_template | UPLOAD.md の型。`{title}` `{theme}` `{voices}` `{tags}` `{name}` `{genre}` `{channel_line}` `{genre_line}` `{credits_note}` `{sources}` `{name_note}` |
 
-いまの声は draft に置いてある。ナレーションは四国めたん、主人公は白上虎太郎、相手は玄野武宏、上司は剣崎雌雄。青山龍星は使わない。
+いまの声は draft と sonae で同じ。ナレーションは四国めたん、主人公は白上虎太郎、相手は玄野武宏、上司は剣崎雌雄。青山龍星は使わない。
 
-試作の話は、会社員と硬貨のまま。チャンネル名とは別。
+試作は `scripts/51-water-stock.json`。テーマは備蓄の水の量。飲料水は3日分、1人1日3リットルが目安、大規模災害では1週間分の備蓄が望ましい、飲料水とは別に生活用水、という首相官邸の記述と、最低3日できれば一週間、一人1日3リットル、という内閣府の記述だけを使う。9リットルや21リットルのような、ページに無い合計は入れない。UPLOAD にページのURLと、使った記述を書く。
+
+硬貨の見本 `scripts/50-clearfile-coin.json` は、名前が空の draft 用として残してある。
 
 ## 素材の索引
 
@@ -131,6 +138,11 @@ review/<id>/script.json
 | text_boxes | 字幕レイヤに塗りつぶしの帯が無い |
 | name_tags | 名札も `#` も無い |
 | mouth_overlay_absent | `mouth_overlay` が false のとき、重ね絵が1枚も無い |
+| irasutoya_count | 動画とサムネイルを合わせた、別のいらすとやの絵が20点以下。同じ絵の再利用と、同じ絵の色違いは1点。表情が違う絵は別のURLなので別点。一覧は QA に残す。21点以上は mp4 をレビューに出さない |
+| irasutoya_subject | 背景はコードで描いた部屋。イラストは縦80%、横90%、面積65%を超えない。字幕が1行以上ある |
+| irasutoya_name | チャンネル名、ジャンル、タイトル、タグ、本文が、いらすとやとの協力を示す書き方になっていない。クレジットの注記に出典として名前を書くのは、ここには入れない |
+
+YouTube に出すときの点数は、サムネイルを含めて1本20点まで、といういらすとやの案内に合わせている。収益化しない公開動画は案内上21点以上もできるが、このラインは20点で止める。イラストは内容の主体にしない。チャンネル名やタイトルに、いらすとやとの協力をにおわせる語は入れない。
 
 `mouth_overlay` を true にしたときだけ、項目は mouth_position に替わる。目、鼻、口を人の顔の並びとして、重ね絵の中心がキャラの口（`mouth_anchor`。両目の下、鼻より下）に無いときは fail。目の位置、あごの外、口からずれた位置は止める。この判定が壊れていないことは、書き出す前に自己テストで見る。正しい口は通し、目の位置は落とす。
 
@@ -144,7 +156,7 @@ review/<id>/script.json
 
 ```bash
 python3 affiliate-shorts/pipeline/run.py \
-  --script affiliate-shorts/pipeline/scripts/50-clearfile-coin.json
+  --script affiliate-shorts/pipeline/scripts/51-water-stock.json
 ```
 
 テーマから型で埋めるとき:

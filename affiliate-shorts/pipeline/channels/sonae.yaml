@@ -1,0 +1,73 @@
+# 仮のチャンネル名。確定ではない。
+# 声と字幕は draft と同じ。事実の数量は台本の出典に書いたものだけを使う。
+id: sonae
+name: "30秒そなえ帳"
+name_status: working
+genre: "防災グッズ・備え"
+require_sources: true
+tags:
+  - 防災
+  - 備え
+  - 備蓄
+  - shorts
+voices:
+  narrator:
+    style_id: 2
+    credit: "VOICEVOX:四国めたん"
+  hero:
+    style_id: 12
+    angry_style_id: 34
+    credit: "VOICEVOX:白上虎太郎"
+  rival:
+    style_id: 11
+    credit: "VOICEVOX:玄野武宏"
+  boss:
+    style_id: 21
+    credit: "VOICEVOX:剣崎雌雄"
+caption:
+  bar: none
+  stroke: 8
+  credit_stroke: 5
+  size: 104
+  credit_size: 64
+  min_size: 72
+  credit_min_size: 40
+  y_ratio: 0.86
+  credit_y_ratio: 0.5
+  colors:
+    hook: [255, 226, 40, 255]
+    develop: [255, 255, 255, 255]
+    punch: [255, 226, 40, 255]
+    credit: [255, 255, 255, 255]
+credits:
+  on_screen: voices
+  note: "いらすとやはクレジット表記不要。出典URLはレビュー用。動画の中にURLは出していない。効果音とBGMは合成したオリジナル。イラストは背景と字幕の一部で、内容の主体にはしていない。"
+upload_template: |
+  # 投稿用
+
+  ## タイトル
+
+  {title}
+
+  ## 説明
+
+  {title}
+
+  テーマ: {theme}
+  {channel_line}{genre_line}{name_note}{voices}
+
+  {credits_note}
+
+  ## タグ
+
+  {tags}
+
+  ## 事実の根拠
+
+  {sources}
+
+  動画で言っている数量は、上のページに書いてあるものだけです。
+
+  ## 投稿
+
+  しない。

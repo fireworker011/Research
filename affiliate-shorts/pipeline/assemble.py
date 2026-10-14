@@ -312,6 +312,29 @@ def build(script: dict, work: Path, speaker: Speaker) -> dict:
             tags.append(str(line.get("character") or line["role"]))
         if "#" in str(line.get("caption") or ""):
             tags.append("caption")
+    images = [
+        {
+            "id": line["character"],
+            "emotion": line.get("emotion") or "",
+            "source_url": line["source_url"],
+            "recolor": bool(line.get("recolor")),
+        }
+        for line in script["lines"]
+        if line.get("source_url")
+    ]
+    max_height = 0.0
+    max_width = 0.0
+    max_area = 0.0
+    caption_count = 0
+    frame_area = float(HEIGHT * WIDTH)
+    for line, sprite in zip(script["lines"], sprites):
+        if line["role"] != "credit" and str(line.get("caption") or "").strip():
+            caption_count += 1
+        if sprite is None:
+            continue
+        max_height = max(max_height, sprite.shape[0] / float(HEIGHT))
+        max_width = max(max_width, sprite.shape[1] / float(WIDTH))
+        max_area = max(max_area, (sprite.shape[0] * sprite.shape[1]) / frame_area)
     blocked = any(item["errors"] for item in mouths) or any(item["overflow"] or item["has_box"] for item in caption_info) or bool(tags)
     plan = {
         "mouth_overlay": mouth_overlay,
@@ -320,6 +343,27 @@ def build(script: dict, work: Path, speaker: Speaker) -> dict:
         "tags": tags,
         "duration_sec": None,
         "blocked_before_encode": blocked,
+        "images": images,
+        "thumbnail": script.get("thumbnail"),
+        "subject": {
+            "background": "generated",
+            "max_height_ratio": round(max_height, 4),
+            "max_width_ratio": round(max_width, 4),
+            "max_area_ratio": round(max_area, 4),
+            "caption_count": caption_count,
+        },
+        "branding": {
+            "name": str(script.get("channel_name") or ""),
+            "genre": str(script.get("genre") or ""),
+            "title": str(script.get("title") or ""),
+            "theme": str(script.get("theme") or ""),
+            "tags": list(script.get("tags") or []),
+            "texts": [
+                str(script.get("hook") or ""),
+                *[str(line.get("text") or "") for line in script["lines"]],
+                *[str(line.get("caption") or "") for line in script["lines"]],
+            ],
+        },
         "credits": [
             {"id": line["character"], "source_url": line["source_url"]}
             for line in script["lines"]

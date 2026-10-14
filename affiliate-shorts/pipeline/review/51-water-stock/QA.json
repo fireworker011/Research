@@ -1,0 +1,123 @@
+{
+  "pass": true,
+  "checks": [
+    {
+      "name": "duration",
+      "pass": true,
+      "detail": "20.58秒（20秒以上30秒以下）"
+    },
+    {
+      "name": "resolution",
+      "pass": true,
+      "detail": "1080x1920"
+    },
+    {
+      "name": "audio",
+      "pass": true,
+      "detail": "音声 あり、平均 -28.2 dB"
+    },
+    {
+      "name": "caption_overflow",
+      "pass": true,
+      "detail": "はみ出し無し"
+    },
+    {
+      "name": "text_boxes",
+      "pass": true,
+      "detail": "字幕の帯は無し"
+    },
+    {
+      "name": "name_tags",
+      "pass": true,
+      "detail": "名札とタグは無し"
+    },
+    {
+      "name": "mouth_overlay_absent",
+      "pass": true,
+      "detail": "口の重ね絵は無い"
+    },
+    {
+      "name": "irasutoya_count",
+      "pass": true,
+      "detail": "4点（上限20）。サムネイルは動画と同じ絵。点数は増えない。"
+    },
+    {
+      "name": "irasutoya_subject",
+      "pass": true,
+      "detail": "イラストは画面の一部"
+    },
+    {
+      "name": "irasutoya_name",
+      "pass": true,
+      "detail": "協力を示す名前は無い"
+    }
+  ],
+  "duration_sec": 20.58,
+  "width": 1080,
+  "height": 1920,
+  "mouth_overlay": false,
+  "media": {
+    "exists": true,
+    "duration": 20.583333,
+    "width": 1080,
+    "height": 1920,
+    "has_audio": true,
+    "mean_volume_db": -28.2
+  },
+  "image_tally": {
+    "count": 4,
+    "limit": 20,
+    "ok": true,
+    "log": [
+      {
+        "id": "rival_smug",
+        "emotion": "smug",
+        "source_url": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgmfOy1dvPW5nkAXq91r1d2JpatnBWDQHwMOsQRfjoJK3UhP4qRvRGgzacoQu3ogBLYq4zj0tYolJd4_6rjS4tUa8DR5lSj_PQaqXzd6Cs_DivuxoRAkIygU6GV36iS3QhIj3oa6vnevpY/s800/pose_doyagao_man.png",
+        "thumbnail": false,
+        "points": 1,
+        "reason": "別の絵。表情が違えば別点"
+      },
+      {
+        "id": "hero_trouble",
+        "emotion": "trouble",
+        "source_url": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhxJL1uWPRrar9S-FPxNv7FCtcDsBUM5B8ItxCoPVFnqtsBKjv7TyPF54QNeSpcg2QCm3Fn8maHs9AscQD5Bmegje_6Zdt2xtzqXkriOKe76Aq37zUYxI0kfBoONd8SbYE_loSyJw3rkVY8/s800/businessman1_nayami.png",
+        "thumbnail": false,
+        "points": 1,
+        "reason": "別の絵。表情が違えば別点"
+      },
+      {
+        "id": "hero_smile",
+        "emotion": "smile",
+        "source_url": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhy3dDvRMBHJ-tn1A2AUBt4iUbmcOXxRuHUegd9lKUBveMfLADwYFD0QsmGhDqoctcd1lk7bY5wO3M04TuC_EVB8TcyirHiMlsvyn-HPGcHJHl6wMEEcrZb5vc-YuKF8ddVD16Wadzfqurn/s800/businessman5_ureshii.png",
+        "thumbnail": false,
+        "points": 1,
+        "reason": "別の絵。表情が違えば別点"
+      },
+      {
+        "id": "hero_tired",
+        "emotion": "tired",
+        "source_url": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEi5O7ebIPQwPb7j8zWG0W4g3EN_nlmRZvPEfGKxwGsCnV44eGJARhg0Zz2mBNr7m9BK61Ebp00-9v4cX_V-YkzlJB5YAj7Dpb9slFkX2GG7xGyXKCYl1wMwzi6eWXoCHVuQIFSjsaL-5CM/s800/tsukareta_business_man.png",
+        "thumbnail": false,
+        "points": 1,
+        "reason": "別の絵。表情が違えば別点"
+      },
+      {
+        "id": "hero_trouble",
+        "emotion": "trouble",
+        "source_url": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhxJL1uWPRrar9S-FPxNv7FCtcDsBUM5B8ItxCoPVFnqtsBKjv7TyPF54QNeSpcg2QCm3Fn8maHs9AscQD5Bmegje_6Zdt2xtzqXkriOKe76Aq37zUYxI0kfBoONd8SbYE_loSyJw3rkVY8/s800/businessman1_nayami.png",
+        "thumbnail": false,
+        "points": 0,
+        "reason": "同じ絵の再利用。点数に足さない"
+      },
+      {
+        "id": "hero_trouble",
+        "emotion": "trouble",
+        "source_url": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhxJL1uWPRrar9S-FPxNv7FCtcDsBUM5B8ItxCoPVFnqtsBKjv7TyPF54QNeSpcg2QCm3Fn8maHs9AscQD5Bmegje_6Zdt2xtzqXkriOKe76Aq37zUYxI0kfBoONd8SbYE_loSyJw3rkVY8/s800/businessman1_nayami.png",
+        "thumbnail": true,
+        "points": 0,
+        "reason": "サムネイルは動画と同じ絵。点数に足さない"
+      }
+    ],
+    "thumbnail_note": "サムネイルは動画と同じ絵。点数は増えない。"
+  }
+}

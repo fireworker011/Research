@@ -5,8 +5,10 @@ from __future__ import annotations
 import json
 import re
 from pathlib import Path
+from urllib.parse import urlparse
 
 from channels import voice_for
+from qa_gate import collaboration_hits
 
 SPEAKERS = ("narrator", "hero", "rival", "boss")
 ROLES = ("hook", "develop", "punch", "credit")
@@ -19,6 +21,9 @@ INDEX_PATH = PIPELINE_DIR / "assets" / "index.json"
 
 CTA_TOKENS = ("http://", "https://", "プロフィール", "概要欄", "チャンネル登録", "リンクは", "今すぐ")
 YEN_RE = re.compile(r"[0-9０-９]+\s*円")
+SOURCE_HOSTS = ("www.kantei.go.jp", "www.bousai.go.jp")
+_AMOUNT = re.compile(r"([0-9０-９]+|[一二三四五六七八九十]+)\s*(リットル|日分|週間)")
+_KANJI_DIGIT = {"一": "1", "二": "2", "三": "3", "四": "4", "五": "5", "六": "6", "七": "7", "八": "8", "九": "9", "十": "10"}
 
 
 def load_index(path: Path | None = None) -> dict[str, dict]:
@@ -146,6 +151,22 @@ def validate_script(data: dict, index: dict[str, dict], titles: set[str], channe
         raise ValueError("金額は入れません。")
     if "#" in blob:
         raise ValueError("タグは入れません。")
+    branding = {
+        "name": str(channel.get("name") or ""),
+        "genre": str(channel.get("genre") or ""),
+        "title": title,
+        "theme": str(data.get("theme") or ""),
+        "tags": list(channel.get("tags") or []),
+        "texts": [hook, blob],
+    }
+    hits = collaboration_hits(branding)
+    if hits:
+        raise ValueError("いらすとやとの協力を示す書き方があります: " + "、".join(hits))
+    thumb = data.get("thumbnail")
+    if thumb is not None:
+        if not isinstance(thumb, dict) or thumb.get("character") not in index:
+            raise ValueError("thumbnail.character は索引にある id です。")
+    _validate_sources(data, channel, blob)
 
 
 def _check_line(line: dict, index_no: int, index: dict[str, dict]) -> None:
@@ -170,6 +191,8 @@ def _check_line(line: dict, index_no: int, index: dict[str, dict]) -> None:
     if role is not None and role not in ROLES:
         raise ValueError(f"{index_no} 行目の role が未知です: {role}")
     asset = _asset_for(line, index, index_no)
+    if "recolor" in line and not isinstance(line.get("recolor"), bool):
+        raise ValueError(f"{index_no} 行目の recolor は true か false です。")
     if line.get("emotion") != asset["emotion"]:
         raise ValueError(
             f"{index_no} 行目の emotion は {asset['id']} の {asset['emotion']} です。"
@@ -221,6 +244,7 @@ def resolve(data: dict, index: dict[str, dict], channel: dict) -> dict:
         line["character"] = asset["id"]
         line["who"] = asset["who"]
         line["source_url"] = asset["source_url"]
+        line["recolor"] = bool(line.get("recolor", False))
         line["effect"] = line.get("effect") or "none"
         line["sfx"] = line.get("sfx") or "none"
         line["label"] = ""
@@ -259,4 +283,87 @@ def resolve(data: dict, index: dict[str, dict], channel: dict) -> dict:
     resolved["caption"] = channel["caption"]
     resolved["lines"] = lines
     resolved["credits"] = credits
+    resolved["tags"] = list(channel.get("tags") or [])
+    resolved["name_status"] = str(channel.get("name_status") or "")
+    resolved["thumbnail"] = _thumbnail(data.get("thumbnail"), index)
     return resolved
+
+
+def _thumbnail(raw: object, index: dict[str, dict]) -> dict | None:
+    if raw is None:
+        return None
+    if not isinstance(raw, dict):
+        raise ValueError("thumbnail はオブジェクトです。")
+    asset = index[str(raw.get("character") or "")]
+    return {"id": asset["id"], "emotion": asset["emotion"], "source_url": asset["source_url"]}
+
+
+def _amount_token(raw: str) -> str:
+    if raw.isdigit() or all(ch in "０１２３４５６７８９" for ch in raw):
+        return str(int(raw.translate(str.maketrans("０１２３４５６７８９", "0123456789"))))
+    if raw in _KANJI_DIGIT:
+        return _KANJI_DIGIT[raw]
+    return raw
+
+
+def amounts_in(text: str) -> set[str]:
+    found = set()
+    for number, unit in _AMOUNT.findall(text):
+        found.add(_amount_token(number) + unit)
+    return found
+
+
+def unexpected_amounts(speech: str, claims: str) -> list[str]:
+    return sorted(amounts_in(speech) - amounts_in(claims))
+
+
+def amount_self_test() -> None:
+    claims = "飲料水 3日分（1人1日3リットルが目安）。大規模災害発生時には「1週間分」の備蓄が望ましい。生活用水も必要。"
+    speech = "一人一日三リットル。三日分が目安や。備蓄は一週間分が望ましい"
+    extra = unexpected_amounts(speech, claims)
+    if extra:
+        raise RuntimeError(f"出典にある数量を誤って弾きました: {extra}")
+    invented = unexpected_amounts("九リットルを二十一日分", claims)
+    if not invented:
+        raise RuntimeError("出典に無い数量を通しました。")
+
+
+def _validate_sources(data: dict, channel: dict, speech: str) -> None:
+    rows = data.get("sources")
+    required = bool(channel.get("require_sources"))
+    if rows is None:
+        if required:
+            raise ValueError("このチャンネルの台本には、公開ページの出典が要ります。")
+        return
+    if not isinstance(rows, list) or not rows:
+        raise ValueError("sources は1件以上の配列です。")
+    claims: list[str] = []
+    for index_no, row in enumerate(rows, start=1):
+        if not isinstance(row, dict):
+            raise ValueError(f"出典 {index_no} がオブジェクトではありません。")
+        name = row.get("name")
+        url = row.get("url")
+        claim = row.get("claim")
+        if not isinstance(name, str) or not name.strip():
+            raise ValueError(f"出典 {index_no} の name が空です。")
+        if not isinstance(url, str) or not _public_source_url(url):
+            raise ValueError(f"出典 {index_no} は首相官邸か内閣府の https のページです。")
+        if not isinstance(claim, str) or not claim.strip():
+            raise ValueError(f"出典 {index_no} の claim が空です。")
+        claims.append(claim.strip())
+    facts = data.get("facts_used")
+    if required and (not isinstance(facts, list) or not facts):
+        raise ValueError("facts_used に、出典の文から使った語句を書きます。")
+    blob = "\n".join(claims)
+    if isinstance(facts, list):
+        for fact in facts:
+            if not isinstance(fact, str) or fact not in blob:
+                raise ValueError(f"出典の記述に無い語句です: {fact}")
+    extra = unexpected_amounts(speech, blob)
+    if extra:
+        raise ValueError("出典に無い数量です: " + "、".join(extra))
+
+
+def _public_source_url(url: str) -> bool:
+    parsed = urlparse(url.strip())
+    return parsed.scheme == "https" and parsed.netloc in SOURCE_HOSTS and not parsed.username
