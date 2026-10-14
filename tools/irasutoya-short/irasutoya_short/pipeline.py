@@ -19,6 +19,7 @@ from irasutoya_short.revise import apply_note
 from irasutoya_short.scriptgen import generate_script
 from irasutoya_short.sfx import bgm_loop, make_sfx
 from irasutoya_short.sprites import load_rgba, mark_mouth, mouth_anchor
+from irasutoya_short.stylevar import fit_scene_durations
 from irasutoya_short.templates import scale_speeds, scene_speed, scene_tail, settings_for, telop_style
 from irasutoya_short.tts import Speaker
 
@@ -116,6 +117,15 @@ def _synthesize(project: dict, speaker: Speaker, audio_dir: Path, depth: int = 0
         scene["voice_seconds"] = round(len(samples) / SAMPLE_RATE, 3)
         floor = 2.0 if scene["role"] == "credit" else float(scene.get("hold") or 0.8)
         scene["duration"] = max(scene["voice_seconds"] + scene_tail(settings, scene), floor)
+    if project.get("style_axes"):
+        status = fit_scene_durations(project)
+        if status == "speedup" and depth < 4:
+            scale_speeds(settings, 1.16, 1.12)
+            _synthesize(project, speaker, audio_dir, depth + 1)
+            return
+        if status != "ok":
+            raise RuntimeError(f"尺が署名に合いません: {status} {project.get('style_signature')}")
+        return
     total = sum(float(s["duration"]) for s in project["scenes"])
     if total > MAX_DURATION and depth < 2:
         boost = total / (MAX_DURATION - 1.0)
@@ -129,10 +139,10 @@ def _synthesize(project: dict, speaker: Speaker, audio_dir: Path, depth: int = 0
         scene["duration"] = frames / FPS
 
 
-def _render_from_project(project: dict, work_dir: Path, out_path: Path) -> None:
+def _render_from_project(project: dict, work_dir: Path, out_path: Path, *, preview: bool = True) -> None:
     _attach_performance(project)
     project["audio"] = _mix(project)
-    render_movie(project, out_path, work_dir / "preview")
+    render_movie(project, out_path, work_dir / "preview" if preview else None)
     project.pop("audio", None)
     for scene in project["scenes"]:
         scene.pop("envelope", None)
@@ -145,21 +155,39 @@ def _attach_performance(project: dict) -> None:
         nframes = int(round(float(scene["duration"]) * FPS))
         voice_frames = min(nframes, max(1, int(round(len(voice) / SAMPLE_RATE * FPS))))
         env = mouth_envelope(voice, voice_frames)
+        lead_frames = int(round(float(scene.get("lead") or 0) * FPS))
+        if lead_frames > 0:
+            env = np.concatenate([np.zeros(lead_frames, dtype=np.float32), env])
         if len(env) < nframes:
             env = np.concatenate([env, np.zeros(nframes - len(env), dtype=np.float32)])
         scene["envelope"] = env[:nframes]
         scene["_voice"] = voice
 
 
+def _delay_voice(voice: np.ndarray, n: int, lead: float) -> np.ndarray:
+    lead_n = int(round(lead * SAMPLE_RATE))
+    if lead_n <= 0:
+        return fit_length(voice, n)
+    out = np.zeros(n, dtype=np.float32)
+    start = min(max(lead_n, 0), n)
+    take = min(int(voice.shape[0]), n - start)
+    if take > 0:
+        out[start : start + take] = voice[:take]
+    return out
+
+
 def _mix(project: dict) -> np.ndarray:
     settings = project["settings"]
     pieces: list[np.ndarray] = []
-    bed = bgm_loop(80.0) if settings.get("bgm", True) else None
+    kind = str(settings.get("bgm_kind") or "B4")
+    use_bgm = bool(settings.get("bgm", True)) and kind != "B1"
+    total_sec = sum(float(scene["duration"]) for scene in project["scenes"])
+    bed = bgm_loop(max(80.0, total_sec + 2.0), kind) if use_bgm else None
     offset = 0
     for scene in project["scenes"]:
         nframes = max(1, int(round(float(scene["duration"]) * FPS)))
         n = samples_for_frames(nframes)
-        voice = fit_length(scene["_voice"], n)
+        voice = _delay_voice(scene["_voice"], n, float(scene.get("lead") or 0))
         sfx = make_sfx(scene["sfx"])
         bgm_slice = None if bed is None else bed[offset : offset + n]
         pieces.append(mix_tracks(voice, sfx, float(settings["sfx_gain"]), bgm_slice, float(settings["bgm_gain"])))
@@ -208,6 +236,10 @@ def _public(project: dict) -> dict:
         "telop_style": project.get("telop_style"),
         "terms": project.get("terms"),
         "notes": project.get("notes", []),
+        "style_signature": project.get("style_signature"),
+        "style_axes": project.get("style_axes"),
+        "style_cast": project.get("style_cast"),
+        "style_used_assets": project.get("style_used_assets"),
     }
 
 
@@ -229,6 +261,8 @@ def _summary(project: dict, out_path: Path) -> dict:
         "credits": project["credits"],
         "terms": TERMS,
         "within_20_30": MIN_DURATION <= duration <= MAX_DURATION,
+        "style_signature": project.get("style_signature") or "",
+        "irasutoya_count": len(project.get("style_used_assets") or []),
     }
 
 
