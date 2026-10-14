@@ -16,9 +16,9 @@
 Duration: 4 seconds. Vertical 9:16.
 Photoreal 3D close-up, fixed camera. White light at a washstand. A frosted unlabeled bottle.
 Reference image REF-BEAU-3D, attach the same still on every shot of this pack: one 3D adult, mouth out of frame, short bare nails, no polish, no rings, no watch. Do not redesign this person.
-Close-up of the hands only. The mouth stays out of frame. No labels and no logos on either bottle. No third bottle.
+Macro close-up. The back of the hand fills the frame. The mouth stays out of frame. Exactly two hands: one holds the bottle and the other receives. No third hand, no face, no hair. No labels and no logos on either bottle. No third bottle.
 The hands already hold the frosted bottle.
-One action: the hands dab the back of the other hand once.
+One action: the frosted bottle touches the back of the hand once. The contact is visible.
 One camera move: the camera stays locked and does not pan, tilt, zoom, or follow.
 Sound: one soft dab, then room tone.
 No text, subtitles, captions, letters, numbers, logos, brand names, watermarks, buttons, or end cards. No call to action.
@@ -34,7 +34,7 @@ No music and no spoken words inside this clip.
 Duration: 2 seconds. Vertical 9:16.
 Photoreal 3D close-up, same framing. Same white light. The second bottle is matte and unlabeled.
 Reference image REF-BEAU-3D, attach the same still on every shot of this pack: one 3D adult, mouth out of frame, short bare nails, no polish, no rings, no watch. Do not redesign this person.
-Close-up of the hands only. The mouth stays out of frame. No labels and no logos on either bottle. No third bottle.
+Macro close-up. The back of the hand fills the frame. The mouth stays out of frame. Exactly two hands: one holds the bottle and the other receives. No third hand, no face, no hair. No labels and no logos on either bottle. No third bottle.
 One action: the hands switch once from the frosted bottle to the matte bottle.
 One camera move: the camera stays locked and does not follow.
 Sound: one soft switch, then room tone.
@@ -51,9 +51,9 @@ No music and no spoken words inside this clip.
 Duration: 4 seconds. Vertical 9:16.
 Photoreal 3D close-up, same framing. Soft light on the back of the hand. Matte 3D skin.
 Reference image REF-BEAU-3D, attach the same still on every shot of this pack: one 3D adult, mouth out of frame, short bare nails, no polish, no rings, no watch. Do not redesign this person.
-Close-up of the hands only. The mouth stays out of frame. No labels and no logos on either bottle. No third bottle.
+Macro close-up. The back of the hand fills the frame. The mouth stays out of frame. Exactly two hands: one holds the bottle and the other receives. No third hand, no face, no hair. No labels and no logos on either bottle. No third bottle.
 The hands hold the matte unlabeled bottle.
-One action: the hands dab the back of the hand once with that bottle.
+One action: the matte bottle touches the back of the hand once. The contact is visible.
 One camera move: the camera stays locked and does not follow.
 Sound: one soft dab, then room tone.
 No text, subtitles, captions, letters, numbers, logos, brand names, watermarks, buttons, or end cards. No call to action.

@@ -43,16 +43,16 @@ No music and no spoken words inside this clip.
 
 ## ショット3　7–12秒（5秒）
 
-動作: 手がフレームの外へ出て、無地の瓶が一つ残る
+動作: 無地の瓶が一つ、中央に残る
 カメラ: 固定
 
 ```text
 Duration: 5 seconds. Vertical 9:16.
 Photoreal 3D close-up, same framing. Soft light beside one frosted unlabeled bottle.
 Reference image REF-BEAU-3D, attach the same still on every shot of this pack: one 3D adult, mouth out of frame, short bare nails, no polish, no rings, no watch. Do not redesign this person.
-Close-up of the hands. The mouth stays out of frame. No logos.
+Macro close-up of one frosted unlabeled bottle. No hands in frame. The mouth stays out of frame. No logos.
 No cotton remains. No second bottle.
-One action: the hands leave the frame once. One frosted unlabeled bottle stays on the desk.
+One action: one frosted unlabeled bottle stays large and clearly in the center of the frame for the whole shot. The frame is not empty.
 One camera move: the camera stays locked and does not follow.
 Sound: quiet room tone only.
 No text, subtitles, captions, letters, numbers, logos, brand names, watermarks, buttons, or end cards. No call to action.

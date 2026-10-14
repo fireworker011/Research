@@ -16,7 +16,7 @@
 Duration: 2 seconds. Vertical 9:16.
 Photoreal 3D close-up, fixed camera. Soft daylight. Matte 3D skin.
 Reference image REF-BEAU-3D, attach the same still on every shot of this pack: one 3D adult, mouth out of frame, short bare nails, no polish, no rings, no watch. Do not redesign this person.
-Close fixed camera on a 3D cheek. The mouth stays out of frame. Same framing in every shot. No before-and-after and no claim of a change. No logo.
+Macro close-up. The cheek skin fills the frame. The mouth, the eyes, and the rest of the face stay out of frame. Exactly one hand. No second person. Same framing in every shot. No before-and-after and no claim of a change. No logo.
 One action: the fingers stop once in front of the cheek.
 One camera move: the camera stays locked and does not pan, tilt, zoom, or follow.
 Sound: quiet room tone only.
@@ -33,8 +33,8 @@ No music and no spoken words inside this clip.
 Duration: 5 seconds. Vertical 9:16.
 Photoreal 3D close-up, the same fixed framing. Same daylight. A frosted unlabeled bottle.
 Reference image REF-BEAU-3D, attach the same still on every shot of this pack: one 3D adult, mouth out of frame, short bare nails, no polish, no rings, no watch. Do not redesign this person.
-Close fixed camera on a 3D cheek. The mouth stays out of frame. Same framing in every shot. No before-and-after and no claim of a change. No logo.
-One action: the bottle dabs the cheek once.
+Macro close-up. The cheek skin fills the frame. The mouth, the eyes, and the rest of the face stay out of frame. Exactly one hand. No second person. Same framing in every shot. No before-and-after and no claim of a change. No logo.
+One action: the unlabeled bottle touches the cheek once. The contact is visible. The skin is not shown as changed.
 One camera move: the camera stays locked and does not move closer.
 Sound: one soft dab, then room tone.
 No text, subtitles, captions, letters, numbers, logos, brand names, watermarks, buttons, or end cards. No call to action.
@@ -50,7 +50,7 @@ No music and no spoken words inside this clip.
 Duration: 5 seconds. Vertical 9:16.
 Photoreal 3D close-up, the same framing as before the dab. Same daylight. Matte 3D skin.
 Reference image REF-BEAU-3D, attach the same still on every shot of this pack: one 3D adult, mouth out of frame, short bare nails, no polish, no rings, no watch. Do not redesign this person.
-Close fixed camera on a 3D cheek. The mouth stays out of frame. Same framing in every shot. No before-and-after and no claim of a change. No logo.
+Macro close-up. The cheek skin fills the frame. The mouth, the eyes, and the rest of the face stay out of frame. Exactly one hand. No second person. Same framing in every shot. No before-and-after and no claim of a change. No logo.
 One action: the hand lowers once from the cheek and stops.
 One camera move: the camera stays locked and does not follow.
 Sound: quiet room tone only.

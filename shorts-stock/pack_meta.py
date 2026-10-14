@@ -15,7 +15,9 @@ LINES = (
 )
 FULL_DATES = ("2026-10-12", "2026-10-13", "2026-10-14")
 HELD_DATES = ("2026-10-14b",)
-DATES = FULL_DATES + HELD_DATES
+# 日付ごとにラインの本数が違う。0 のラインはフォルダが無くてよい。
+PARTIAL_COUNTS = {"2026-10-15": {"konkatsu": 5, "beauty": 5}}
+DATES = FULL_DATES + HELD_DATES + tuple(PARTIAL_COUNTS)
 _HELD_COUNTS = {"2026-10-14b": 3}
 
 _NUM = r"\d+(?:\.\d+)?"
@@ -131,19 +133,31 @@ def parse_voice(text: str, source: str) -> dict:
     }
 
 
+def expected_slugs(date: str, line_id: str) -> int:
+    if date in FULL_DATES:
+        return 10
+    if date in _HELD_COUNTS:
+        return _HELD_COUNTS[date]
+    return PARTIAL_COUNTS[date].get(line_id, 0)
+
+
 def iter_packs() -> list[dict]:
     packs: list[dict] = []
     order = 0
     for line_id, line_label in LINES:
         for date in DATES:
             root = STOCK / date / line_id
+            wanted = expected_slugs(date, line_id)
+            if wanted == 0:
+                if root.is_dir() and any((path / "IMAGINE.md").is_file() for path in root.iterdir()):
+                    raise SystemExit(f"{date}/{line_id}: この日付には置かない")
+                continue
             if not root.is_dir():
                 raise SystemExit(f"無い: {root}")
             slugs = sorted(path.name for path in root.iterdir() if (path / "IMAGINE.md").is_file())
-            expected_slugs = 10 if date in FULL_DATES else _HELD_COUNTS[date]
-            if len(slugs) != expected_slugs:
+            if len(slugs) != wanted:
                 raise SystemExit(
-                    f"{date}/{line_id}: パックが {len(slugs)} 本（{expected_slugs}本であるべき）"
+                    f"{date}/{line_id}: パックが {len(slugs)} 本（{wanted}本であるべき）"
                 )
             for slug in slugs:
                 order += 1
@@ -166,7 +180,12 @@ def iter_packs() -> list[dict]:
                         "picture_sec": sum(shot["length_sec"] for shot in shots),
                     }
                 )
-    expected = len(FULL_DATES) * len(LINES) * 10 + sum(_HELD_COUNTS.values()) * len(LINES)
+    partial_total = sum(sum(counts.values()) for counts in PARTIAL_COUNTS.values())
+    expected = (
+        len(FULL_DATES) * len(LINES) * 10
+        + sum(_HELD_COUNTS.values()) * len(LINES)
+        + partial_total
+    )
     if len(packs) != expected:
         raise SystemExit(f"パック数が {len(packs)}（{expected}であるべき）")
     return packs

@@ -292,6 +292,7 @@ def write_summary(packs: list[dict]) -> None:
     rows.append("`2026-10-13/pet/06-white-tail` の文は「しっぽの先、1回。」。")
     rows.append("2026-10-14 はペット、婚活、美容を 10 本ずつ足した。説明には `VOICEVOX:冥鳴ひまり` を書いてある。")
     rows.append("2026-10-14b は台本のショットごとに1文。Imagine は保留（未開始）。")
+    rows.append("2026-10-15 は婚活と美容を 5 本ずつ。ペットは無い。Imagine は始めない。")
     rows.append("")
     rows.append("| 順 | パック | 文 | 測った秒 | 置く区間 | 絵の秒 | 収まり |")
     rows.append("| --- | --- | --- | --- | --- | --- | --- |")

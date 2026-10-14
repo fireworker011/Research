@@ -17,7 +17,7 @@
 Duration: 2 seconds. Vertical 9:16.
 Photoreal top-down fixed camera. A white desk lamp. Matte phone body.
 Reference image REF-KON-HAND, attach the same still on every shot: one adult right hand, short bare nails, no polish, no rings, plain gray cuff at the wrist. The face stays out of frame. Do not redesign the hand.
-Top-down fixed camera. No face in frame. A plain black phone with no logo. The screen is a soft color blur with no letters, numbers, ages, or a face.
+Top-down close-up. Exactly one adult right hand. No left hand, no second person, no face, no hair, no shoulder, no reflection of a face or a person. A plain black phone with no logo. The entire phone screen is one soft unreadable color blur from edge to edge. No letters, numbers, words, icons, UI, photos, portraits, profile cards, message bubbles, notification rows, circles, or faces on the screen, in reflections, or anywhere in the frame.
 The hand holds the phone.
 One action: a finger stops once above the blurred screen and lowers.
 One camera move: the camera stays locked and does not pan, tilt, zoom, or follow.
@@ -35,7 +35,7 @@ No music and no spoken words inside this clip.
 Duration: 5 seconds. Vertical 9:16.
 Photoreal top-down fixed camera, same framing. Same desk lamp. Matte skin.
 Reference image REF-KON-HAND, attach the same still on every shot: one adult right hand, short bare nails, no polish, no rings, plain gray cuff at the wrist. The face stays out of frame. Do not redesign the hand.
-Top-down fixed camera. No face in frame. A plain black phone with no logo. The screen is a soft color blur with no letters, numbers, ages, or a face.
+Top-down close-up. Exactly one adult right hand. No left hand, no second person, no face, no hair, no shoulder, no reflection of a face or a person. A plain black phone with no logo. The entire phone screen is one soft unreadable color blur from edge to edge. No letters, numbers, words, icons, UI, photos, portraits, profile cards, message bubbles, notification rows, circles, or faces on the screen, in reflections, or anywhere in the frame.
 One action: the fingertip stops on one spot of the blur and holds there. It does not tap.
 One camera move: the camera stays locked and does not follow.
 Sound: quiet room tone only.
@@ -52,7 +52,7 @@ No music and no spoken words inside this clip.
 Duration: 5 seconds. Vertical 9:16.
 Photoreal top-down fixed camera. After the close, the hand is in shadow. A metal hinge is visible, with no letters.
 Reference image REF-KON-HAND, attach the same still on every shot: one adult right hand, short bare nails, no polish, no rings, plain gray cuff at the wrist. The face stays out of frame. Do not redesign the hand.
-Top-down fixed camera. No face in frame. A plain black phone with no logo. The screen is a soft color blur with no letters, numbers, ages, or a face.
+Top-down close-up. Exactly one adult right hand. No left hand, no second person, no face, no hair, no shoulder, no reflection of a face or a person. A plain black phone with no logo. The entire phone screen is one soft unreadable color blur from edge to edge. No letters, numbers, words, icons, UI, photos, portraits, profile cards, message bubbles, notification rows, circles, or faces on the screen, in reflections, or anywhere in the frame.
 One action: the finger closes the phone once.
 One camera move: the camera stays locked and does not follow.
 Sound: one soft close, then room tone.

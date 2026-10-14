@@ -16,7 +16,7 @@
 ```text
 Duration: 2 seconds. Vertical 9:16.
 Photoreal fixed camera from behind an adult. Daylight from a window. Matte paper.
-Seen from behind. The back of the head, shoulders, and one hand. The face never turns and is not visible. No face in frame. The hand matches REF-KON-HAND: short bare nails, no polish, no rings. A sheet of paper on the desk has empty boxes and no letters, no numbers, no headings.
+Close-up of the desk and exactly one adult right hand. The head, hair, shoulders, and face stay out of frame. No left hand. No reflection of a face or a person. The hand matches REF-KON-HAND: short bare nails, no polish, no rings. One blank sheet of paper. No boxes, no grid, no lines, no letters, no numbers.
 One action: the paper settles once on the desk.
 One camera move: the camera stays locked and does not pan, tilt, zoom, or follow.
 Sound: one soft paper shift, then room tone.
@@ -26,14 +26,14 @@ No music and no spoken words inside this clip.
 
 ## ショット2　2–6秒（4秒）
 
-動作: 手が空のマスを一回指す
+動作: 手が無地の紙の一箇所を一回指す
 カメラ: 固定
 
 ```text
 Duration: 4 seconds. Vertical 9:16.
 Photoreal fixed camera from behind, same framing. Same window light. Matte skin.
-Seen from behind. The back of the head, shoulders, and one hand. The face never turns and is not visible. No face in frame. The hand matches REF-KON-HAND: short bare nails, no polish, no rings. A sheet of paper on the desk has empty boxes and no letters, no numbers, no headings.
-One action: the hand points once at one empty box. Nothing is written.
+Close-up of the desk and exactly one adult right hand. The head, hair, shoulders, and face stay out of frame. No left hand. No reflection of a face or a person. The hand matches REF-KON-HAND: short bare nails, no polish, no rings. One blank sheet of paper. No boxes, no grid, no lines, no letters, no numbers.
+One action: the hand points once at one unmarked spot on the blank paper. Nothing is written. No box is drawn.
 One camera move: the camera stays locked and does not follow.
 Sound: quiet room tone only.
 No text, subtitles, captions, letters, numbers, logos, brand names, watermarks, buttons, or end cards. No call to action.
@@ -48,7 +48,7 @@ No music and no spoken words inside this clip.
 ```text
 Duration: 4 seconds. Vertical 9:16.
 Photoreal fixed camera from behind. A thin shadow from a black matte pen. The pen has no logo and no letters.
-Seen from behind. The back of the head, shoulders, and one hand. The face never turns and is not visible. No face in frame. The hand matches REF-KON-HAND: short bare nails, no polish, no rings. A sheet of paper on the desk has empty boxes and no letters, no numbers, no headings.
+Close-up of the desk and exactly one adult right hand. The head, hair, shoulders, and face stay out of frame. No left hand. No reflection of a face or a person. The hand matches REF-KON-HAND: short bare nails, no polish, no rings. One blank sheet of paper. No boxes, no grid, no lines, no letters, no numbers.
 One action: the hand sets the pen on the desk once.
 One camera move: the camera stays locked and does not follow.
 Sound: one soft set-down, then room tone.

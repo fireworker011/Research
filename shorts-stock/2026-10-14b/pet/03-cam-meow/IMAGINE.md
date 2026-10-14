@@ -16,7 +16,7 @@
 ```text
 Duration: 2 seconds. Vertical 9:16.
 Photoreal fixed camera. Evening orange light. Short dry fur. No clock overlay.
-Reference image REF-GRAY, attach the same still on every shot: one adult gray munchkin, solid blue-gray short fur, no stripes, no white patches, short legs, round head, upright open ears, amber eyes, no collar. Do not redesign this cat. No second cat, no dog, no human.
+Reference image REF-GRAY, attach the same still on every shot: one adult gray munchkin, solid blue-gray short fur, no stripes, no white patches, short legs, round head, upright open ears, amber eyes, no collar. Do not redesign this cat. No second cat, no dog, no human face, no human hand, no phone, and no readable text anywhere in the frame.
 Mouth stays closed.
 The gray munchkin is on the floor.
 One action: the cat turns its head once toward the lens.
@@ -34,7 +34,7 @@ No music and no spoken words inside this clip.
 ```text
 Duration: 4 seconds. Vertical 9:16.
 Photoreal fixed camera, same framing. A thin light under a shelf. The floor is wood.
-Reference image REF-GRAY, attach the same still on every shot: one adult gray munchkin, solid blue-gray short fur, no stripes, no white patches, short legs, round head, upright open ears, amber eyes, no collar. Do not redesign this cat. No second cat, no dog, no human.
+Reference image REF-GRAY, attach the same still on every shot: one adult gray munchkin, solid blue-gray short fur, no stripes, no white patches, short legs, round head, upright open ears, amber eyes, no collar. Do not redesign this cat. No second cat, no dog, no human face, no human hand, no phone, and no readable text anywhere in the frame.
 Mouth stays closed.
 The gray munchkin is already looking toward the lens.
 One action: the cat takes one step closer to the lens.
@@ -52,7 +52,7 @@ No music and no spoken words inside this clip.
 ```text
 Duration: 2.8 seconds. Vertical 9:16.
 Photoreal fixed camera. Soft light from the front. Short fur around the mouth.
-Reference image REF-GRAY, attach the same still on every shot: one adult gray munchkin, solid blue-gray short fur, no stripes, no white patches, short legs, round head, upright open ears, amber eyes, no collar. Do not redesign this cat. No second cat, no dog, no human.
+Reference image REF-GRAY, attach the same still on every shot: one adult gray munchkin, solid blue-gray short fur, no stripes, no white patches, short legs, round head, upright open ears, amber eyes, no collar. Do not redesign this cat. No second cat, no dog, no human face, no human hand, no phone, and no readable text anywhere in the frame.
 The gray munchkin faces the lens. The mouth starts closed.
 One action: the mouth opens once and closes. Do not add a second meow.
 One camera move: the camera stays locked and does not follow.

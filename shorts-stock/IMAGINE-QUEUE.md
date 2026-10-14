@@ -5,9 +5,11 @@
 使い順は婚活、美容、ペット。各ラインは日付の古い順、パックは 01 から。
 2026-10-12 のペット 01–10 は Imagine 済みで結合済みなので、この待ち行列には入れない。
 2026-10-14b は下の「保留（未開始）」だけに置く。上の一覧には入れない。
+2026-10-15 の婚活5本と美容5本は、上の未生成一覧に入っている。ナオミチが手で貼る。Imagine は始めない。
+`RESHOOT.md` にある保存名は、この待ち行列の同じ保存名より `RESHOOT.md` の文を使う。元の `IMAGINE.md` はまだ書き換えていない。
 プロンプトは各 `IMAGINE.md` のショット用 text ブロックをそのまま写した。声のブロックはショットではないので入れていない。
 
-未生成のパック 80 本、ショット 122 本。保留のまま。今は作らない。
+未生成のパック 90 本、ショット 132 本。保留のまま。今は作らない。
 
 「ファイル」は `finish.sh` が読むパス。`imagine/shot-01.mp4` から順に置く。
 「保存名」は、保留が解けたときにダウンロードする名前。`<line>-<pack>-<shot>.mp4`。pack はフォルダ名、shot は `shot-01` のようにファイルの幹。
@@ -68,78 +70,88 @@
 | 28-1 | `konkatsu-08-left-shot-01.mp4` | `shorts-stock/2026-10-14/konkatsu/08-left/imagine/shot-01.mp4` | 5秒 | 左手を机に1回置く |
 | 29-1 | `konkatsu-09-shade-shot-01.mp4` | `shorts-stock/2026-10-14/konkatsu/09-shade/imagine/shot-01.mp4` | 5秒 | ランプの傘を1回回す |
 | 30-1 | `konkatsu-10-stand-shot-01.mp4` | `shorts-stock/2026-10-14/konkatsu/10-stand/imagine/shot-01.mp4` | 5秒 | 机のスマホを縁で1回立てる |
-| 31-1 | `beauty-01-frost-slim-shot-01.mp4` | `shorts-stock/2026-10-12/beauty/01-frost-slim/imagine/shot-01.mp4` | 2秒 | すりガラスのポンプを持って止まる |
-| 31-2 | `beauty-01-frost-slim-shot-02.mp4` | `shorts-stock/2026-10-12/beauty/01-frost-slim/imagine/shot-02.mp4` | 4秒 | 手の甲に1回つける |
-| 31-3 | `beauty-01-frost-slim-shot-03.mp4` | `shorts-stock/2026-10-12/beauty/01-frost-slim/imagine/shot-03.mp4` | 2秒 | 細い瓶に持ち替える |
-| 31-4 | `beauty-01-frost-slim-shot-04.mp4` | `shorts-stock/2026-10-12/beauty/01-frost-slim/imagine/shot-04.mp4` | 4秒 | 手の甲に1回つける |
-| 32-1 | `beauty-02-dropper-pump-shot-01.mp4` | `shorts-stock/2026-10-12/beauty/02-dropper-pump/imagine/shot-01.mp4` | 2秒 | スポイト瓶を持って止まる |
-| 32-2 | `beauty-02-dropper-pump-shot-02.mp4` | `shorts-stock/2026-10-12/beauty/02-dropper-pump/imagine/shot-02.mp4` | 4秒 | 手の甲に1回つける |
-| 32-3 | `beauty-02-dropper-pump-shot-03.mp4` | `shorts-stock/2026-10-12/beauty/02-dropper-pump/imagine/shot-03.mp4` | 2秒 | 短いポンプに持ち替える |
-| 32-4 | `beauty-02-dropper-pump-shot-04.mp4` | `shorts-stock/2026-10-12/beauty/02-dropper-pump/imagine/shot-04.mp4` | 4秒 | 手の甲に1回つける |
-| 33-1 | `beauty-03-hand-shot-01.mp4` | `shorts-stock/2026-10-12/beauty/03-hand/imagine/shot-01.mp4` | 2秒 | 右手の甲の近い画で止まる |
-| 33-2 | `beauty-03-hand-shot-02.mp4` | `shorts-stock/2026-10-12/beauty/03-hand/imagine/shot-02.mp4` | 5秒 | 右手の甲に1回だけ塗る |
-| 33-3 | `beauty-03-hand-shot-03.mp4` | `shorts-stock/2026-10-12/beauty/03-hand/imagine/shot-03.mp4` | 5秒 | 塗る前と同じ画角で止まる |
-| 34-1 | `beauty-04-forearm-shot-01.mp4` | `shorts-stock/2026-10-12/beauty/04-forearm/imagine/shot-01.mp4` | 2秒 | 前腕の近い画で止まる |
-| 34-2 | `beauty-04-forearm-shot-02.mp4` | `shorts-stock/2026-10-12/beauty/04-forearm/imagine/shot-02.mp4` | 5秒 | 前腕に1回だけ塗る |
-| 34-3 | `beauty-04-forearm-shot-03.mp4` | `shorts-stock/2026-10-12/beauty/04-forearm/imagine/shot-03.mp4` | 5秒 | 塗る前と同じ画角で止まる |
-| 35-1 | `beauty-05-wrist-shot-01.mp4` | `shorts-stock/2026-10-12/beauty/05-wrist/imagine/shot-01.mp4` | 2秒 | 手首の近い画で止まる |
-| 35-2 | `beauty-05-wrist-shot-02.mp4` | `shorts-stock/2026-10-12/beauty/05-wrist/imagine/shot-02.mp4` | 5秒 | 手首に1回だけ塗る |
-| 35-3 | `beauty-05-wrist-shot-03.mp4` | `shorts-stock/2026-10-12/beauty/05-wrist/imagine/shot-03.mp4` | 5秒 | 塗る前と同じ画角で止まる |
-| 36-1 | `beauty-06-other-hand-shot-01.mp4` | `shorts-stock/2026-10-12/beauty/06-other-hand/imagine/shot-01.mp4` | 2秒 | 左手の甲の近い画で止まる |
-| 36-2 | `beauty-06-other-hand-shot-02.mp4` | `shorts-stock/2026-10-12/beauty/06-other-hand/imagine/shot-02.mp4` | 5秒 | 左手の甲に1回だけ塗る |
-| 36-3 | `beauty-06-other-hand-shot-03.mp4` | `shorts-stock/2026-10-12/beauty/06-other-hand/imagine/shot-03.mp4` | 5秒 | 塗る前と同じ画角で止まる |
-| 37-1 | `beauty-07-extra-bottle-shot-01.mp4` | `shorts-stock/2026-10-12/beauty/07-extra-bottle/imagine/shot-01.mp4` | 2秒 | もう1本のポンプを持って止まる |
-| 37-2 | `beauty-07-extra-bottle-shot-02.mp4` | `shorts-stock/2026-10-12/beauty/07-extra-bottle/imagine/shot-02.mp4` | 5秒 | もう1本のポンプを机の外へ1回動かす |
-| 37-3 | `beauty-07-extra-bottle-shot-03.mp4` | `shorts-stock/2026-10-12/beauty/07-extra-bottle/imagine/shot-03.mp4` | 5秒 | 残った1本だけが棚にある |
-| 38-1 | `beauty-08-cotton-shot-01.mp4` | `shorts-stock/2026-10-12/beauty/08-cotton/imagine/shot-01.mp4` | 2秒 | コットンを持って止まる |
-| 38-2 | `beauty-08-cotton-shot-02.mp4` | `shorts-stock/2026-10-12/beauty/08-cotton/imagine/shot-02.mp4` | 5秒 | コットンを机の外へ1回動かす |
-| 38-3 | `beauty-08-cotton-shot-03.mp4` | `shorts-stock/2026-10-12/beauty/08-cotton/imagine/shot-03.mp4` | 5秒 | 残った1本だけが棚にある |
-| 39-1 | `beauty-09-pouch-shot-01.mp4` | `shorts-stock/2026-10-12/beauty/09-pouch/imagine/shot-01.mp4` | 2秒 | パックの袋を持って止まる |
-| 39-2 | `beauty-09-pouch-shot-02.mp4` | `shorts-stock/2026-10-12/beauty/09-pouch/imagine/shot-02.mp4` | 5秒 | パックの袋を机の外へ1回動かす |
-| 39-3 | `beauty-09-pouch-shot-03.mp4` | `shorts-stock/2026-10-12/beauty/09-pouch/imagine/shot-03.mp4` | 5秒 | 残った1本だけが棚にある |
-| 40-1 | `beauty-10-dish-shot-01.mp4` | `shorts-stock/2026-10-12/beauty/10-dish/imagine/shot-01.mp4` | 2秒 | 小皿を持って止まる |
-| 40-2 | `beauty-10-dish-shot-02.mp4` | `shorts-stock/2026-10-12/beauty/10-dish/imagine/shot-02.mp4` | 5秒 | 小皿を机の外へ1回動かす |
-| 40-3 | `beauty-10-dish-shot-03.mp4` | `shorts-stock/2026-10-12/beauty/10-dish/imagine/shot-03.mp4` | 5秒 | 残った1本だけが棚にある |
-| 41-1 | `beauty-01-cap-shot-01.mp4` | `shorts-stock/2026-10-13/beauty/01-cap/imagine/shot-01.mp4` | 5秒 | 細い瓶の白いキャップを1回閉める |
-| 42-1 | `beauty-02-pump-shot-01.mp4` | `shorts-stock/2026-10-13/beauty/02-pump/imagine/shot-01.mp4` | 5秒 | すりガラスのポンプの頭を1回押して戻す |
-| 43-1 | `beauty-03-align-shot-01.mp4` | `shorts-stock/2026-10-13/beauty/03-align/imagine/shot-01.mp4` | 5秒 | 棚の2本を奥へ1回揃える |
-| 44-1 | `beauty-04-lamp-shot-01.mp4` | `shorts-stock/2026-10-13/beauty/04-lamp/imagine/shot-01.mp4` | 5秒 | 小さなランプを瓶の横へ1回寄せる |
-| 45-1 | `beauty-05-wipe-shot-01.mp4` | `shorts-stock/2026-10-13/beauty/05-wipe/imagine/shot-01.mp4` | 5秒 | 無地の布で棚の木を1回拭く |
-| 46-1 | `beauty-06-turn-shot-01.mp4` | `shorts-stock/2026-10-13/beauty/06-turn/imagine/shot-01.mp4` | 5秒 | すりガラスの瓶を1回回す |
-| 47-1 | `beauty-07-cap-down-shot-01.mp4` | `shorts-stock/2026-10-13/beauty/07-cap-down/imagine/shot-01.mp4` | 5秒 | 外してある白いキャップを棚に1回置く |
-| 48-1 | `beauty-08-pinch-shot-01.mp4` | `shorts-stock/2026-10-13/beauty/08-pinch/imagine/shot-01.mp4` | 5秒 | 細い瓶の腹を2本の指で1回挟む |
-| 49-1 | `beauty-09-shadow-shot-01.mp4` | `shorts-stock/2026-10-13/beauty/09-shadow/imagine/shot-01.mp4` | 5秒 | 手をランプと瓶の間で1回止めて影を落とす |
-| 50-1 | `beauty-10-tilt-shot-01.mp4` | `shorts-stock/2026-10-13/beauty/10-tilt/imagine/shot-01.mp4` | 5秒 | すりガラスの瓶をランプの方へ1回傾けて止める |
-| 51-1 | `beauty-01-return-shot-01.mp4` | `shorts-stock/2026-10-14/beauty/01-return/imagine/shot-01.mp4` | 5秒 | ずらしてあるすりガラスのポンプを元の位置へ1回戻す |
-| 52-1 | `beauty-02-lift-cap-shot-01.mp4` | `shorts-stock/2026-10-14/beauty/02-lift-cap/imagine/shot-01.mp4` | 5秒 | 細い瓶の白いキャップを1回持ち上げて止める |
-| 53-1 | `beauty-03-gap-shot-01.mp4` | `shorts-stock/2026-10-14/beauty/03-gap/imagine/shot-01.mp4` | 5秒 | 並んだ2本の間隔を1回あける |
-| 54-1 | `beauty-04-lamp-back-shot-01.mp4` | `shorts-stock/2026-10-14/beauty/04-lamp-back/imagine/shot-01.mp4` | 5秒 | 瓶の横にあるランプを奥へ1回戻す |
-| 55-1 | `beauty-05-cap-wipe-shot-01.mp4` | `shorts-stock/2026-10-14/beauty/05-cap-wipe/imagine/shot-01.mp4` | 5秒 | 無地の布で白いキャップの上面を1回拭く |
-| 56-1 | `beauty-06-upright-shot-01.mp4` | `shorts-stock/2026-10-14/beauty/06-upright/imagine/shot-01.mp4` | 5秒 | 傾いている細い瓶を1回立てる |
-| 57-1 | `beauty-07-palm-shot-01.mp4` | `shorts-stock/2026-10-14/beauty/07-palm/imagine/shot-01.mp4` | 5秒 | 手のひらを棚の木に1回置く |
-| 58-1 | `beauty-08-swap-shot-01.mp4` | `shorts-stock/2026-10-14/beauty/08-swap/imagine/shot-01.mp4` | 5秒 | 棚の2本の位置を1回入れ替える |
-| 59-1 | `beauty-09-nozzle-shot-01.mp4` | `shorts-stock/2026-10-14/beauty/09-nozzle/imagine/shot-01.mp4` | 5秒 | ポンプの口を横へ1回向ける |
-| 60-1 | `beauty-10-fold-shot-01.mp4` | `shorts-stock/2026-10-14/beauty/10-fold/imagine/shot-01.mp4` | 5秒 | 瓶の横の無地の布を1回畳む |
-| 61-1 | `pet-01-gray-blink-shot-01.mp4` | `shorts-stock/2026-10-13/pet/01-gray-blink/imagine/shot-01.mp4` | 5秒 | グレーのマンチカンがソファでまばたきを1回する |
-| 62-1 | `pet-02-white-yawn-shot-01.mp4` | `shorts-stock/2026-10-13/pet/02-white-yawn/imagine/shot-01.mp4` | 5秒 | 白いスコティッシュフォールドがラグで欠伸を1回する |
-| 63-1 | `pet-03-gray-lick-shot-01.mp4` | `shorts-stock/2026-10-13/pet/03-gray-lick/imagine/shot-01.mp4` | 5秒 | グレーのマンチカンがソファで前足を1回なめる |
-| 64-1 | `pet-04-white-ear-shot-01.mp4` | `shorts-stock/2026-10-13/pet/04-white-ear/imagine/shot-01.mp4` | 5秒 | 白いスコティッシュフォールドがソファで耳を1回動かす |
-| 65-1 | `pet-05-gray-paw-shot-01.mp4` | `shorts-stock/2026-10-13/pet/05-gray-paw/imagine/shot-01.mp4` | 5秒 | グレーのマンチカンがラグの上で前足を前へ1回伸ばす |
-| 66-1 | `pet-06-white-tail-shot-01.mp4` | `shorts-stock/2026-10-13/pet/06-white-tail/imagine/shot-01.mp4` | 5秒 | 白いスコティッシュフォールドがラグでしっぽの先を1回振る |
-| 67-1 | `pet-07-gray-loaf-shot-01.mp4` | `shorts-stock/2026-10-13/pet/07-gray-loaf/imagine/shot-01.mp4` | 5秒 | グレーのマンチカンがソファで両前足を腹の下にしまう |
-| 68-1 | `pet-08-white-window-shot-01.mp4` | `shorts-stock/2026-10-13/pet/08-white-window/imagine/shot-01.mp4` | 5秒 | 白いスコティッシュフォールドがソファで窓の方へ顔を1回向ける |
-| 69-1 | `pet-09-gray-sniff-shot-01.mp4` | `shorts-stock/2026-10-13/pet/09-gray-sniff/imagine/shot-01.mp4` | 5秒 | グレーのマンチカンがラグに鼻を1回近づける |
-| 70-1 | `pet-10-white-chin-shot-01.mp4` | `shorts-stock/2026-10-13/pet/10-white-chin/imagine/shot-01.mp4` | 5秒 | 白いスコティッシュフォールドがラグであごを前足の上に乗せる |
-| 71-1 | `pet-01-gray-paws-shot-01.mp4` | `shorts-stock/2026-10-14/pet/01-gray-paws/imagine/shot-01.mp4` | 5秒 | グレーのマンチカンがソファで自分の前足を1回見る |
-| 72-1 | `pet-02-white-side-shot-01.mp4` | `shorts-stock/2026-10-14/pet/02-white-side/imagine/shot-01.mp4` | 5秒 | 白いスコティッシュフォールドがラグで顔を横へ1回向ける |
-| 73-1 | `pet-03-gray-wrap-shot-01.mp4` | `shorts-stock/2026-10-14/pet/03-gray-wrap/imagine/shot-01.mp4` | 5秒 | グレーのマンチカンがラグでしっぽを体に1回巻く |
-| 74-1 | `pet-04-white-stack-shot-01.mp4` | `shorts-stock/2026-10-14/pet/04-white-stack/imagine/shot-01.mp4` | 5秒 | 白いスコティッシュフォールドがソファで前足を1回重ねる |
-| 75-1 | `pet-05-gray-lift-shot-01.mp4` | `shorts-stock/2026-10-14/pet/05-gray-lift/imagine/shot-01.mp4` | 5秒 | グレーのマンチカンがソファで顔を1回上げる |
-| 76-1 | `pet-06-white-chest-shot-01.mp4` | `shorts-stock/2026-10-14/pet/06-white-chest/imagine/shot-01.mp4` | 5秒 | 白いスコティッシュフォールドがラグで胸を1回なめる |
-| 77-1 | `pet-07-gray-tap-shot-01.mp4` | `shorts-stock/2026-10-14/pet/07-gray-tap/imagine/shot-01.mp4` | 5秒 | グレーのマンチカンがソファのクッションを前足で1回触る |
-| 78-1 | `pet-08-white-paw-up-shot-01.mp4` | `shorts-stock/2026-10-14/pet/08-white-paw-up/imagine/shot-01.mp4` | 5秒 | 白いスコティッシュフォールドがソファで前足を1回上げて止める |
-| 79-1 | `pet-09-gray-chin-shot-01.mp4` | `shorts-stock/2026-10-14/pet/09-gray-chin/imagine/shot-01.mp4` | 5秒 | グレーのマンチカンがラグであごをラグに1回つける |
-| 80-1 | `pet-10-white-hide-shot-01.mp4` | `shorts-stock/2026-10-14/pet/10-white-hide/imagine/shot-01.mp4` | 5秒 | 白いスコティッシュフォールドがラグで前足を顔の前へ1回置く |
+| 31-1 | `konkatsu-01-side-press-shot-01.mp4` | `shorts-stock/2026-10-15/konkatsu/01-side-press/imagine/shot-01.mp4` | 5秒 | スマホの側面を親指で1回押す |
+| 32-1 | `konkatsu-02-palm-up-shot-01.mp4` | `shorts-stock/2026-10-15/konkatsu/02-palm-up/imagine/shot-01.mp4` | 5秒 | 伏せた手のひらを上へ1回向ける |
+| 33-1 | `konkatsu-03-bookmark-shot-01.mp4` | `shorts-stock/2026-10-15/konkatsu/03-bookmark/imagine/shot-01.mp4` | 5秒 | 無地のしおりをノートに1回挟む |
+| 34-1 | `konkatsu-04-knock-shot-01.mp4` | `shorts-stock/2026-10-15/konkatsu/04-knock/imagine/shot-01.mp4` | 5秒 | 伏せたスマホの横で机を1回叩く |
+| 35-1 | `konkatsu-05-strap-off-shot-01.mp4` | `shorts-stock/2026-10-15/konkatsu/05-strap-off/imagine/shot-01.mp4` | 5秒 | 無地のストラップをスマホから1回外す |
+| 36-1 | `beauty-01-frost-slim-shot-01.mp4` | `shorts-stock/2026-10-12/beauty/01-frost-slim/imagine/shot-01.mp4` | 2秒 | すりガラスのポンプを持って止まる |
+| 36-2 | `beauty-01-frost-slim-shot-02.mp4` | `shorts-stock/2026-10-12/beauty/01-frost-slim/imagine/shot-02.mp4` | 4秒 | 手の甲に1回つける |
+| 36-3 | `beauty-01-frost-slim-shot-03.mp4` | `shorts-stock/2026-10-12/beauty/01-frost-slim/imagine/shot-03.mp4` | 2秒 | 細い瓶に持ち替える |
+| 36-4 | `beauty-01-frost-slim-shot-04.mp4` | `shorts-stock/2026-10-12/beauty/01-frost-slim/imagine/shot-04.mp4` | 4秒 | 手の甲に1回つける |
+| 37-1 | `beauty-02-dropper-pump-shot-01.mp4` | `shorts-stock/2026-10-12/beauty/02-dropper-pump/imagine/shot-01.mp4` | 2秒 | スポイト瓶を持って止まる |
+| 37-2 | `beauty-02-dropper-pump-shot-02.mp4` | `shorts-stock/2026-10-12/beauty/02-dropper-pump/imagine/shot-02.mp4` | 4秒 | 手の甲に1回つける |
+| 37-3 | `beauty-02-dropper-pump-shot-03.mp4` | `shorts-stock/2026-10-12/beauty/02-dropper-pump/imagine/shot-03.mp4` | 2秒 | 短いポンプに持ち替える |
+| 37-4 | `beauty-02-dropper-pump-shot-04.mp4` | `shorts-stock/2026-10-12/beauty/02-dropper-pump/imagine/shot-04.mp4` | 4秒 | 手の甲に1回つける |
+| 38-1 | `beauty-03-hand-shot-01.mp4` | `shorts-stock/2026-10-12/beauty/03-hand/imagine/shot-01.mp4` | 2秒 | 右手の甲の近い画で止まる |
+| 38-2 | `beauty-03-hand-shot-02.mp4` | `shorts-stock/2026-10-12/beauty/03-hand/imagine/shot-02.mp4` | 5秒 | 右手の甲に1回だけ塗る |
+| 38-3 | `beauty-03-hand-shot-03.mp4` | `shorts-stock/2026-10-12/beauty/03-hand/imagine/shot-03.mp4` | 5秒 | 塗る前と同じ画角で止まる |
+| 39-1 | `beauty-04-forearm-shot-01.mp4` | `shorts-stock/2026-10-12/beauty/04-forearm/imagine/shot-01.mp4` | 2秒 | 前腕の近い画で止まる |
+| 39-2 | `beauty-04-forearm-shot-02.mp4` | `shorts-stock/2026-10-12/beauty/04-forearm/imagine/shot-02.mp4` | 5秒 | 前腕に1回だけ塗る |
+| 39-3 | `beauty-04-forearm-shot-03.mp4` | `shorts-stock/2026-10-12/beauty/04-forearm/imagine/shot-03.mp4` | 5秒 | 塗る前と同じ画角で止まる |
+| 40-1 | `beauty-05-wrist-shot-01.mp4` | `shorts-stock/2026-10-12/beauty/05-wrist/imagine/shot-01.mp4` | 2秒 | 手首の近い画で止まる |
+| 40-2 | `beauty-05-wrist-shot-02.mp4` | `shorts-stock/2026-10-12/beauty/05-wrist/imagine/shot-02.mp4` | 5秒 | 手首に1回だけ塗る |
+| 40-3 | `beauty-05-wrist-shot-03.mp4` | `shorts-stock/2026-10-12/beauty/05-wrist/imagine/shot-03.mp4` | 5秒 | 塗る前と同じ画角で止まる |
+| 41-1 | `beauty-06-other-hand-shot-01.mp4` | `shorts-stock/2026-10-12/beauty/06-other-hand/imagine/shot-01.mp4` | 2秒 | 左手の甲の近い画で止まる |
+| 41-2 | `beauty-06-other-hand-shot-02.mp4` | `shorts-stock/2026-10-12/beauty/06-other-hand/imagine/shot-02.mp4` | 5秒 | 左手の甲に1回だけ塗る |
+| 41-3 | `beauty-06-other-hand-shot-03.mp4` | `shorts-stock/2026-10-12/beauty/06-other-hand/imagine/shot-03.mp4` | 5秒 | 塗る前と同じ画角で止まる |
+| 42-1 | `beauty-07-extra-bottle-shot-01.mp4` | `shorts-stock/2026-10-12/beauty/07-extra-bottle/imagine/shot-01.mp4` | 2秒 | もう1本のポンプを持って止まる |
+| 42-2 | `beauty-07-extra-bottle-shot-02.mp4` | `shorts-stock/2026-10-12/beauty/07-extra-bottle/imagine/shot-02.mp4` | 5秒 | もう1本のポンプを机の外へ1回動かす |
+| 42-3 | `beauty-07-extra-bottle-shot-03.mp4` | `shorts-stock/2026-10-12/beauty/07-extra-bottle/imagine/shot-03.mp4` | 5秒 | 残った1本だけが棚にある |
+| 43-1 | `beauty-08-cotton-shot-01.mp4` | `shorts-stock/2026-10-12/beauty/08-cotton/imagine/shot-01.mp4` | 2秒 | コットンを持って止まる |
+| 43-2 | `beauty-08-cotton-shot-02.mp4` | `shorts-stock/2026-10-12/beauty/08-cotton/imagine/shot-02.mp4` | 5秒 | コットンを机の外へ1回動かす |
+| 43-3 | `beauty-08-cotton-shot-03.mp4` | `shorts-stock/2026-10-12/beauty/08-cotton/imagine/shot-03.mp4` | 5秒 | 残った1本だけが棚にある |
+| 44-1 | `beauty-09-pouch-shot-01.mp4` | `shorts-stock/2026-10-12/beauty/09-pouch/imagine/shot-01.mp4` | 2秒 | パックの袋を持って止まる |
+| 44-2 | `beauty-09-pouch-shot-02.mp4` | `shorts-stock/2026-10-12/beauty/09-pouch/imagine/shot-02.mp4` | 5秒 | パックの袋を机の外へ1回動かす |
+| 44-3 | `beauty-09-pouch-shot-03.mp4` | `shorts-stock/2026-10-12/beauty/09-pouch/imagine/shot-03.mp4` | 5秒 | 残った1本だけが棚にある |
+| 45-1 | `beauty-10-dish-shot-01.mp4` | `shorts-stock/2026-10-12/beauty/10-dish/imagine/shot-01.mp4` | 2秒 | 小皿を持って止まる |
+| 45-2 | `beauty-10-dish-shot-02.mp4` | `shorts-stock/2026-10-12/beauty/10-dish/imagine/shot-02.mp4` | 5秒 | 小皿を机の外へ1回動かす |
+| 45-3 | `beauty-10-dish-shot-03.mp4` | `shorts-stock/2026-10-12/beauty/10-dish/imagine/shot-03.mp4` | 5秒 | 残った1本だけが棚にある |
+| 46-1 | `beauty-01-cap-shot-01.mp4` | `shorts-stock/2026-10-13/beauty/01-cap/imagine/shot-01.mp4` | 5秒 | 細い瓶の白いキャップを1回閉める |
+| 47-1 | `beauty-02-pump-shot-01.mp4` | `shorts-stock/2026-10-13/beauty/02-pump/imagine/shot-01.mp4` | 5秒 | すりガラスのポンプの頭を1回押して戻す |
+| 48-1 | `beauty-03-align-shot-01.mp4` | `shorts-stock/2026-10-13/beauty/03-align/imagine/shot-01.mp4` | 5秒 | 棚の2本を奥へ1回揃える |
+| 49-1 | `beauty-04-lamp-shot-01.mp4` | `shorts-stock/2026-10-13/beauty/04-lamp/imagine/shot-01.mp4` | 5秒 | 小さなランプを瓶の横へ1回寄せる |
+| 50-1 | `beauty-05-wipe-shot-01.mp4` | `shorts-stock/2026-10-13/beauty/05-wipe/imagine/shot-01.mp4` | 5秒 | 無地の布で棚の木を1回拭く |
+| 51-1 | `beauty-06-turn-shot-01.mp4` | `shorts-stock/2026-10-13/beauty/06-turn/imagine/shot-01.mp4` | 5秒 | すりガラスの瓶を1回回す |
+| 52-1 | `beauty-07-cap-down-shot-01.mp4` | `shorts-stock/2026-10-13/beauty/07-cap-down/imagine/shot-01.mp4` | 5秒 | 外してある白いキャップを棚に1回置く |
+| 53-1 | `beauty-08-pinch-shot-01.mp4` | `shorts-stock/2026-10-13/beauty/08-pinch/imagine/shot-01.mp4` | 5秒 | 細い瓶の腹を2本の指で1回挟む |
+| 54-1 | `beauty-09-shadow-shot-01.mp4` | `shorts-stock/2026-10-13/beauty/09-shadow/imagine/shot-01.mp4` | 5秒 | 手をランプと瓶の間で1回止めて影を落とす |
+| 55-1 | `beauty-10-tilt-shot-01.mp4` | `shorts-stock/2026-10-13/beauty/10-tilt/imagine/shot-01.mp4` | 5秒 | すりガラスの瓶をランプの方へ1回傾けて止める |
+| 56-1 | `beauty-01-return-shot-01.mp4` | `shorts-stock/2026-10-14/beauty/01-return/imagine/shot-01.mp4` | 5秒 | ずらしてあるすりガラスのポンプを元の位置へ1回戻す |
+| 57-1 | `beauty-02-lift-cap-shot-01.mp4` | `shorts-stock/2026-10-14/beauty/02-lift-cap/imagine/shot-01.mp4` | 5秒 | 細い瓶の白いキャップを1回持ち上げて止める |
+| 58-1 | `beauty-03-gap-shot-01.mp4` | `shorts-stock/2026-10-14/beauty/03-gap/imagine/shot-01.mp4` | 5秒 | 並んだ2本の間隔を1回あける |
+| 59-1 | `beauty-04-lamp-back-shot-01.mp4` | `shorts-stock/2026-10-14/beauty/04-lamp-back/imagine/shot-01.mp4` | 5秒 | 瓶の横にあるランプを奥へ1回戻す |
+| 60-1 | `beauty-05-cap-wipe-shot-01.mp4` | `shorts-stock/2026-10-14/beauty/05-cap-wipe/imagine/shot-01.mp4` | 5秒 | 無地の布で白いキャップの上面を1回拭く |
+| 61-1 | `beauty-06-upright-shot-01.mp4` | `shorts-stock/2026-10-14/beauty/06-upright/imagine/shot-01.mp4` | 5秒 | 傾いている細い瓶を1回立てる |
+| 62-1 | `beauty-07-palm-shot-01.mp4` | `shorts-stock/2026-10-14/beauty/07-palm/imagine/shot-01.mp4` | 5秒 | 手のひらを棚の木に1回置く |
+| 63-1 | `beauty-08-swap-shot-01.mp4` | `shorts-stock/2026-10-14/beauty/08-swap/imagine/shot-01.mp4` | 5秒 | 棚の2本の位置を1回入れ替える |
+| 64-1 | `beauty-09-nozzle-shot-01.mp4` | `shorts-stock/2026-10-14/beauty/09-nozzle/imagine/shot-01.mp4` | 5秒 | ポンプの口を横へ1回向ける |
+| 65-1 | `beauty-10-fold-shot-01.mp4` | `shorts-stock/2026-10-14/beauty/10-fold/imagine/shot-01.mp4` | 5秒 | 瓶の横の無地の布を1回畳む |
+| 66-1 | `beauty-01-neck-wipe-shot-01.mp4` | `shorts-stock/2026-10-15/beauty/01-neck-wipe/imagine/shot-01.mp4` | 5秒 | 無地の布で瓶の首を1回拭く |
+| 67-1 | `beauty-02-dropper-in-shot-01.mp4` | `shorts-stock/2026-10-15/beauty/02-dropper-in/imagine/shot-01.mp4` | 5秒 | スポイトを細い瓶の口へ1回戻す |
+| 68-1 | `beauty-03-cloth-cover-shot-01.mp4` | `shorts-stock/2026-10-15/beauty/03-cloth-cover/imagine/shot-01.mp4` | 5秒 | 無地の布を瓶に1回かける |
+| 69-1 | `beauty-04-cotton-back-shot-01.mp4` | `shorts-stock/2026-10-15/beauty/04-cotton-back/imagine/shot-01.mp4` | 5秒 | コットンを棚の端へ1回戻す |
+| 70-1 | `beauty-05-tap-shelf-shot-01.mp4` | `shorts-stock/2026-10-15/beauty/05-tap-shelf/imagine/shot-01.mp4` | 5秒 | 棚の木を指で1回叩く |
+| 71-1 | `pet-01-gray-blink-shot-01.mp4` | `shorts-stock/2026-10-13/pet/01-gray-blink/imagine/shot-01.mp4` | 5秒 | グレーのマンチカンがソファでまばたきを1回する |
+| 72-1 | `pet-02-white-yawn-shot-01.mp4` | `shorts-stock/2026-10-13/pet/02-white-yawn/imagine/shot-01.mp4` | 5秒 | 白いスコティッシュフォールドがラグで欠伸を1回する |
+| 73-1 | `pet-03-gray-lick-shot-01.mp4` | `shorts-stock/2026-10-13/pet/03-gray-lick/imagine/shot-01.mp4` | 5秒 | グレーのマンチカンがソファで前足を1回なめる |
+| 74-1 | `pet-04-white-ear-shot-01.mp4` | `shorts-stock/2026-10-13/pet/04-white-ear/imagine/shot-01.mp4` | 5秒 | 白いスコティッシュフォールドがソファで耳を1回動かす |
+| 75-1 | `pet-05-gray-paw-shot-01.mp4` | `shorts-stock/2026-10-13/pet/05-gray-paw/imagine/shot-01.mp4` | 5秒 | グレーのマンチカンがラグの上で前足を前へ1回伸ばす |
+| 76-1 | `pet-06-white-tail-shot-01.mp4` | `shorts-stock/2026-10-13/pet/06-white-tail/imagine/shot-01.mp4` | 5秒 | 白いスコティッシュフォールドがラグでしっぽの先を1回振る |
+| 77-1 | `pet-07-gray-loaf-shot-01.mp4` | `shorts-stock/2026-10-13/pet/07-gray-loaf/imagine/shot-01.mp4` | 5秒 | グレーのマンチカンがソファで両前足を腹の下にしまう |
+| 78-1 | `pet-08-white-window-shot-01.mp4` | `shorts-stock/2026-10-13/pet/08-white-window/imagine/shot-01.mp4` | 5秒 | 白いスコティッシュフォールドがソファで窓の方へ顔を1回向ける |
+| 79-1 | `pet-09-gray-sniff-shot-01.mp4` | `shorts-stock/2026-10-13/pet/09-gray-sniff/imagine/shot-01.mp4` | 5秒 | グレーのマンチカンがラグに鼻を1回近づける |
+| 80-1 | `pet-10-white-chin-shot-01.mp4` | `shorts-stock/2026-10-13/pet/10-white-chin/imagine/shot-01.mp4` | 5秒 | 白いスコティッシュフォールドがラグであごを前足の上に乗せる |
+| 81-1 | `pet-01-gray-paws-shot-01.mp4` | `shorts-stock/2026-10-14/pet/01-gray-paws/imagine/shot-01.mp4` | 5秒 | グレーのマンチカンがソファで自分の前足を1回見る |
+| 82-1 | `pet-02-white-side-shot-01.mp4` | `shorts-stock/2026-10-14/pet/02-white-side/imagine/shot-01.mp4` | 5秒 | 白いスコティッシュフォールドがラグで顔を横へ1回向ける |
+| 83-1 | `pet-03-gray-wrap-shot-01.mp4` | `shorts-stock/2026-10-14/pet/03-gray-wrap/imagine/shot-01.mp4` | 5秒 | グレーのマンチカンがラグでしっぽを体に1回巻く |
+| 84-1 | `pet-04-white-stack-shot-01.mp4` | `shorts-stock/2026-10-14/pet/04-white-stack/imagine/shot-01.mp4` | 5秒 | 白いスコティッシュフォールドがソファで前足を1回重ねる |
+| 85-1 | `pet-05-gray-lift-shot-01.mp4` | `shorts-stock/2026-10-14/pet/05-gray-lift/imagine/shot-01.mp4` | 5秒 | グレーのマンチカンがソファで顔を1回上げる |
+| 86-1 | `pet-06-white-chest-shot-01.mp4` | `shorts-stock/2026-10-14/pet/06-white-chest/imagine/shot-01.mp4` | 5秒 | 白いスコティッシュフォールドがラグで胸を1回なめる |
+| 87-1 | `pet-07-gray-tap-shot-01.mp4` | `shorts-stock/2026-10-14/pet/07-gray-tap/imagine/shot-01.mp4` | 5秒 | グレーのマンチカンがソファのクッションを前足で1回触る |
+| 88-1 | `pet-08-white-paw-up-shot-01.mp4` | `shorts-stock/2026-10-14/pet/08-white-paw-up/imagine/shot-01.mp4` | 5秒 | 白いスコティッシュフォールドがソファで前足を1回上げて止める |
+| 89-1 | `pet-09-gray-chin-shot-01.mp4` | `shorts-stock/2026-10-14/pet/09-gray-chin/imagine/shot-01.mp4` | 5秒 | グレーのマンチカンがラグであごをラグに1回つける |
+| 90-1 | `pet-10-white-hide-shot-01.mp4` | `shorts-stock/2026-10-14/pet/10-white-hide/imagine/shot-01.mp4` | 5秒 | 白いスコティッシュフォールドがラグで前足を顔の前へ1回置く |
 
 ## プロンプト
 
@@ -1285,9 +1297,89 @@ No text, subtitles, captions, letters, numbers, logos, brand names, watermarks, 
 No music and no spoken words inside this clip.
 ```
 
+### 31. `2026-10-15/konkatsu/01-side-press`
+
+絵の合計: 5秒。ショット 1 本。
+
+#### imagine/shot-01.mp4（5秒、0–5秒）
+
+動作: スマホの側面を親指で1回押す
+
+保存名: `konkatsu-01-side-press-shot-01.mp4`
+
+ファイル: `shorts-stock/2026-10-15/konkatsu/01-side-press/imagine/shot-01.mp4`
+
+```text
+Duration: 5 seconds. Vertical 9:16. Photoreal close-up, night desk, warm lamp. Reference image REF-KON-HAND, attach the same still: one adult right hand, short bare nails, no polish, no rings, plain gray cuff at the wrist. Do not redesign the hand. Exactly one adult right hand. No left hand, no second person, no face, no hair, no reflection of a face or a person. A plain black phone with no logo. The entire phone screen is one soft unreadable color blur from edge to edge. No letters, numbers, words, icons, UI, photos, portraits, profile cards, message bubbles, notification rows, circles, or faces on the screen, in reflections, or anywhere in the frame. One action: the thumb presses the plain side edge of the phone once. The screen stays the same unreadable color blur and does not show a control. Sound: one soft click, then room tone. One camera move: the camera stays locked and does not pan, tilt, zoom, or follow. No text, subtitles, captions, letters, numbers, logos, brand names, watermarks, buttons, or end cards. No call to action. No music and no spoken words inside this clip.
+```
+
+### 32. `2026-10-15/konkatsu/02-palm-up`
+
+絵の合計: 5秒。ショット 1 本。
+
+#### imagine/shot-01.mp4（5秒、0–5秒）
+
+動作: 伏せた手のひらを上へ1回向ける
+
+保存名: `konkatsu-02-palm-up-shot-01.mp4`
+
+ファイル: `shorts-stock/2026-10-15/konkatsu/02-palm-up/imagine/shot-01.mp4`
+
+```text
+Duration: 5 seconds. Vertical 9:16. Photoreal close-up, night desk, warm lamp. Reference image REF-KON-HAND, attach the same still: one adult right hand, short bare nails, no polish, no rings, plain gray cuff at the wrist. Do not redesign the hand. Exactly one adult right hand. No left hand, no second person, no face, no hair, no reflection of a face or a person. No phone screen is visible. No letters, numbers, photos, or faces anywhere in the frame. One action: the right hand turns palm-up once above the desk and stops. The phone stays face down beside the hand, so no screen content is visible. Sound: one soft cloth shift, then room tone. One camera move: the camera stays locked and does not pan, tilt, zoom, or follow. No text, subtitles, captions, letters, numbers, logos, brand names, watermarks, buttons, or end cards. No call to action. No music and no spoken words inside this clip.
+```
+
+### 33. `2026-10-15/konkatsu/03-bookmark`
+
+絵の合計: 5秒。ショット 1 本。
+
+#### imagine/shot-01.mp4（5秒、0–5秒）
+
+動作: 無地のしおりをノートに1回挟む
+
+保存名: `konkatsu-03-bookmark-shot-01.mp4`
+
+ファイル: `shorts-stock/2026-10-15/konkatsu/03-bookmark/imagine/shot-01.mp4`
+
+```text
+Duration: 5 seconds. Vertical 9:16. Photoreal close-up, night desk, warm lamp. Reference image REF-KON-HAND, attach the same still: one adult right hand, short bare nails, no polish, no rings, plain gray cuff at the wrist. Do not redesign the hand. Exactly one adult right hand. No left hand, no second person, no face, no hair, no reflection of a face or a person. No phone screen is visible. No letters, numbers, photos, or faces anywhere in the frame. One action: the right hand slides one plain paper bookmark into a closed blank notebook once. The notebook has no letters, no lines, and no logo. No phone is open. Sound: one soft paper slide, then room tone. One camera move: the camera stays locked and does not pan, tilt, zoom, or follow. No text, subtitles, captions, letters, numbers, logos, brand names, watermarks, buttons, or end cards. No call to action. No music and no spoken words inside this clip.
+```
+
+### 34. `2026-10-15/konkatsu/04-knock`
+
+絵の合計: 5秒。ショット 1 本。
+
+#### imagine/shot-01.mp4（5秒、0–5秒）
+
+動作: 伏せたスマホの横で机を1回叩く
+
+保存名: `konkatsu-04-knock-shot-01.mp4`
+
+ファイル: `shorts-stock/2026-10-15/konkatsu/04-knock/imagine/shot-01.mp4`
+
+```text
+Duration: 5 seconds. Vertical 9:16. Photoreal close-up, night desk, warm lamp. Reference image REF-KON-HAND, attach the same still: one adult right hand, short bare nails, no polish, no rings, plain gray cuff at the wrist. Do not redesign the hand. Exactly one adult right hand. No left hand, no second person, no face, no hair, no reflection of a face or a person. No phone screen is visible. No letters, numbers, photos, or faces anywhere in the frame. One action: the right index finger knocks the wooden desk once beside a face-down plain black phone. The finger does not touch the phone. Sound: one soft knock, then room tone. One camera move: the camera stays locked and does not pan, tilt, zoom, or follow. No text, subtitles, captions, letters, numbers, logos, brand names, watermarks, buttons, or end cards. No call to action. No music and no spoken words inside this clip.
+```
+
+### 35. `2026-10-15/konkatsu/05-strap-off`
+
+絵の合計: 5秒。ショット 1 本。
+
+#### imagine/shot-01.mp4（5秒、0–5秒）
+
+動作: 無地のストラップをスマホから1回外す
+
+保存名: `konkatsu-05-strap-off-shot-01.mp4`
+
+ファイル: `shorts-stock/2026-10-15/konkatsu/05-strap-off/imagine/shot-01.mp4`
+
+```text
+Duration: 5 seconds. Vertical 9:16. Photoreal close-up, night desk, warm lamp. Reference image REF-KON-HAND, attach the same still: one adult right hand, short bare nails, no polish, no rings, plain gray cuff at the wrist. Do not redesign the hand. Exactly one adult right hand. No left hand, no second person, no face, no hair, no reflection of a face or a person. A plain black phone with no logo. The entire phone screen is one soft unreadable color blur from edge to edge. No letters, numbers, words, icons, UI, photos, portraits, profile cards, message bubbles, notification rows, circles, or faces on the screen, in reflections, or anywhere in the frame. One action: the right hand unclips one plain dark strap from the phone once and sets the strap on the desk. The strap has no letters and no logo. The screen stays the same unreadable color blur. Sound: one soft unclip, then room tone. One camera move: the camera stays locked and does not pan, tilt, zoom, or follow. No text, subtitles, captions, letters, numbers, logos, brand names, watermarks, buttons, or end cards. No call to action. No music and no spoken words inside this clip.
+```
+
 ## 美容
 
-### 31. `2026-10-12/beauty/01-frost-slim`
+### 36. `2026-10-12/beauty/01-frost-slim`
 
 絵の合計: 12秒。ショット 4 本。
 
@@ -1372,7 +1464,7 @@ No text, subtitles, captions, letters, numbers, logos, brand names, watermarks, 
 No music and no spoken words inside this clip.
 ```
 
-### 32. `2026-10-12/beauty/02-dropper-pump`
+### 37. `2026-10-12/beauty/02-dropper-pump`
 
 絵の合計: 12秒。ショット 4 本。
 
@@ -1457,7 +1549,7 @@ No text, subtitles, captions, letters, numbers, logos, brand names, watermarks, 
 No music and no spoken words inside this clip.
 ```
 
-### 33. `2026-10-12/beauty/03-hand`
+### 38. `2026-10-12/beauty/03-hand`
 
 絵の合計: 12秒。ショット 3 本。
 
@@ -1523,7 +1615,7 @@ No text, subtitles, captions, letters, numbers, logos, brand names, watermarks, 
 No music and no spoken words inside this clip.
 ```
 
-### 34. `2026-10-12/beauty/04-forearm`
+### 39. `2026-10-12/beauty/04-forearm`
 
 絵の合計: 12秒。ショット 3 本。
 
@@ -1589,7 +1681,7 @@ No text, subtitles, captions, letters, numbers, logos, brand names, watermarks, 
 No music and no spoken words inside this clip.
 ```
 
-### 35. `2026-10-12/beauty/05-wrist`
+### 40. `2026-10-12/beauty/05-wrist`
 
 絵の合計: 12秒。ショット 3 本。
 
@@ -1655,7 +1747,7 @@ No text, subtitles, captions, letters, numbers, logos, brand names, watermarks, 
 No music and no spoken words inside this clip.
 ```
 
-### 36. `2026-10-12/beauty/06-other-hand`
+### 41. `2026-10-12/beauty/06-other-hand`
 
 絵の合計: 12秒。ショット 3 本。
 
@@ -1721,7 +1813,7 @@ No text, subtitles, captions, letters, numbers, logos, brand names, watermarks, 
 No music and no spoken words inside this clip.
 ```
 
-### 37. `2026-10-12/beauty/07-extra-bottle`
+### 42. `2026-10-12/beauty/07-extra-bottle`
 
 絵の合計: 12秒。ショット 3 本。
 
@@ -1786,7 +1878,7 @@ No text, subtitles, captions, letters, numbers, logos, brand names, watermarks, 
 No music and no spoken words inside this clip.
 ```
 
-### 38. `2026-10-12/beauty/08-cotton`
+### 43. `2026-10-12/beauty/08-cotton`
 
 絵の合計: 12秒。ショット 3 本。
 
@@ -1851,7 +1943,7 @@ No text, subtitles, captions, letters, numbers, logos, brand names, watermarks, 
 No music and no spoken words inside this clip.
 ```
 
-### 39. `2026-10-12/beauty/09-pouch`
+### 44. `2026-10-12/beauty/09-pouch`
 
 絵の合計: 12秒。ショット 3 本。
 
@@ -1916,7 +2008,7 @@ No text, subtitles, captions, letters, numbers, logos, brand names, watermarks, 
 No music and no spoken words inside this clip.
 ```
 
-### 40. `2026-10-12/beauty/10-dish`
+### 45. `2026-10-12/beauty/10-dish`
 
 絵の合計: 12秒。ショット 3 本。
 
@@ -1981,7 +2073,7 @@ No text, subtitles, captions, letters, numbers, logos, brand names, watermarks, 
 No music and no spoken words inside this clip.
 ```
 
-### 41. `2026-10-13/beauty/01-cap`
+### 46. `2026-10-13/beauty/01-cap`
 
 絵の合計: 5秒。ショット 1 本。
 
@@ -2006,7 +2098,7 @@ No text, subtitles, captions, letters, numbers, logos, brand names, watermarks, 
 No music and no spoken words inside this clip.
 ```
 
-### 42. `2026-10-13/beauty/02-pump`
+### 47. `2026-10-13/beauty/02-pump`
 
 絵の合計: 5秒。ショット 1 本。
 
@@ -2031,7 +2123,7 @@ No text, subtitles, captions, letters, numbers, logos, brand names, watermarks, 
 No music and no spoken words inside this clip.
 ```
 
-### 43. `2026-10-13/beauty/03-align`
+### 48. `2026-10-13/beauty/03-align`
 
 絵の合計: 5秒。ショット 1 本。
 
@@ -2056,7 +2148,7 @@ No text, subtitles, captions, letters, numbers, logos, brand names, watermarks, 
 No music and no spoken words inside this clip.
 ```
 
-### 44. `2026-10-13/beauty/04-lamp`
+### 49. `2026-10-13/beauty/04-lamp`
 
 絵の合計: 5秒。ショット 1 本。
 
@@ -2081,7 +2173,7 @@ No text, subtitles, captions, letters, numbers, logos, brand names, watermarks, 
 No music and no spoken words inside this clip.
 ```
 
-### 45. `2026-10-13/beauty/05-wipe`
+### 50. `2026-10-13/beauty/05-wipe`
 
 絵の合計: 5秒。ショット 1 本。
 
@@ -2106,7 +2198,7 @@ No text, subtitles, captions, letters, numbers, logos, brand names, watermarks, 
 No music and no spoken words inside this clip.
 ```
 
-### 46. `2026-10-13/beauty/06-turn`
+### 51. `2026-10-13/beauty/06-turn`
 
 絵の合計: 5秒。ショット 1 本。
 
@@ -2131,7 +2223,7 @@ No text, subtitles, captions, letters, numbers, logos, brand names, watermarks, 
 No music and no spoken words inside this clip.
 ```
 
-### 47. `2026-10-13/beauty/07-cap-down`
+### 52. `2026-10-13/beauty/07-cap-down`
 
 絵の合計: 5秒。ショット 1 本。
 
@@ -2156,7 +2248,7 @@ No text, subtitles, captions, letters, numbers, logos, brand names, watermarks, 
 No music and no spoken words inside this clip.
 ```
 
-### 48. `2026-10-13/beauty/08-pinch`
+### 53. `2026-10-13/beauty/08-pinch`
 
 絵の合計: 5秒。ショット 1 本。
 
@@ -2181,7 +2273,7 @@ No text, subtitles, captions, letters, numbers, logos, brand names, watermarks, 
 No music and no spoken words inside this clip.
 ```
 
-### 49. `2026-10-13/beauty/09-shadow`
+### 54. `2026-10-13/beauty/09-shadow`
 
 絵の合計: 5秒。ショット 1 本。
 
@@ -2206,7 +2298,7 @@ No text, subtitles, captions, letters, numbers, logos, brand names, watermarks, 
 No music and no spoken words inside this clip.
 ```
 
-### 50. `2026-10-13/beauty/10-tilt`
+### 55. `2026-10-13/beauty/10-tilt`
 
 絵の合計: 5秒。ショット 1 本。
 
@@ -2231,7 +2323,7 @@ No text, subtitles, captions, letters, numbers, logos, brand names, watermarks, 
 No music and no spoken words inside this clip.
 ```
 
-### 51. `2026-10-14/beauty/01-return`
+### 56. `2026-10-14/beauty/01-return`
 
 絵の合計: 5秒。ショット 1 本。
 
@@ -2256,7 +2348,7 @@ No text, subtitles, captions, letters, numbers, logos, brand names, watermarks, 
 No music and no spoken words inside this clip.
 ```
 
-### 52. `2026-10-14/beauty/02-lift-cap`
+### 57. `2026-10-14/beauty/02-lift-cap`
 
 絵の合計: 5秒。ショット 1 本。
 
@@ -2281,7 +2373,7 @@ No text, subtitles, captions, letters, numbers, logos, brand names, watermarks, 
 No music and no spoken words inside this clip.
 ```
 
-### 53. `2026-10-14/beauty/03-gap`
+### 58. `2026-10-14/beauty/03-gap`
 
 絵の合計: 5秒。ショット 1 本。
 
@@ -2306,7 +2398,7 @@ No text, subtitles, captions, letters, numbers, logos, brand names, watermarks, 
 No music and no spoken words inside this clip.
 ```
 
-### 54. `2026-10-14/beauty/04-lamp-back`
+### 59. `2026-10-14/beauty/04-lamp-back`
 
 絵の合計: 5秒。ショット 1 本。
 
@@ -2331,7 +2423,7 @@ No text, subtitles, captions, letters, numbers, logos, brand names, watermarks, 
 No music and no spoken words inside this clip.
 ```
 
-### 55. `2026-10-14/beauty/05-cap-wipe`
+### 60. `2026-10-14/beauty/05-cap-wipe`
 
 絵の合計: 5秒。ショット 1 本。
 
@@ -2356,7 +2448,7 @@ No text, subtitles, captions, letters, numbers, logos, brand names, watermarks, 
 No music and no spoken words inside this clip.
 ```
 
-### 56. `2026-10-14/beauty/06-upright`
+### 61. `2026-10-14/beauty/06-upright`
 
 絵の合計: 5秒。ショット 1 本。
 
@@ -2381,7 +2473,7 @@ No text, subtitles, captions, letters, numbers, logos, brand names, watermarks, 
 No music and no spoken words inside this clip.
 ```
 
-### 57. `2026-10-14/beauty/07-palm`
+### 62. `2026-10-14/beauty/07-palm`
 
 絵の合計: 5秒。ショット 1 本。
 
@@ -2406,7 +2498,7 @@ No text, subtitles, captions, letters, numbers, logos, brand names, watermarks, 
 No music and no spoken words inside this clip.
 ```
 
-### 58. `2026-10-14/beauty/08-swap`
+### 63. `2026-10-14/beauty/08-swap`
 
 絵の合計: 5秒。ショット 1 本。
 
@@ -2431,7 +2523,7 @@ No text, subtitles, captions, letters, numbers, logos, brand names, watermarks, 
 No music and no spoken words inside this clip.
 ```
 
-### 59. `2026-10-14/beauty/09-nozzle`
+### 64. `2026-10-14/beauty/09-nozzle`
 
 絵の合計: 5秒。ショット 1 本。
 
@@ -2456,7 +2548,7 @@ No text, subtitles, captions, letters, numbers, logos, brand names, watermarks, 
 No music and no spoken words inside this clip.
 ```
 
-### 60. `2026-10-14/beauty/10-fold`
+### 65. `2026-10-14/beauty/10-fold`
 
 絵の合計: 5秒。ショット 1 本。
 
@@ -2481,9 +2573,89 @@ No text, subtitles, captions, letters, numbers, logos, brand names, watermarks, 
 No music and no spoken words inside this clip.
 ```
 
+### 66. `2026-10-15/beauty/01-neck-wipe`
+
+絵の合計: 5秒。ショット 1 本。
+
+#### imagine/shot-01.mp4（5秒、0–5秒）
+
+動作: 無地の布で瓶の首を1回拭く
+
+保存名: `beauty-01-neck-wipe-shot-01.mp4`
+
+ファイル: `shorts-stock/2026-10-15/beauty/01-neck-wipe/imagine/shot-01.mp4`
+
+```text
+Duration: 5 seconds. Vertical 9:16. Photoreal macro close-up at a night shelf. The subject fills the frame. This is not a wide room shot. A dark wood shelf at night, one small warm lamp, no labels, no letters, no logos. Reference image REF-NIGHT-HANDS, attach the same still: adult hands only, short bare nails, no polish, no rings, no watch, no bracelets. The face, hair, and body above the wrists stay out of frame. Do not redesign the hands. No face, no hair, no reflection of a face. Exactly one adult right hand. No left hand. No face. A matte frosted pump bottle with no label fills the frame. No second bottle. One action: a plain cloth in the right hand wipes the neck of the bottle once. The cloth touches the glass and the contact is visible. Sound: one soft wipe, then room tone. One camera move: the camera stays locked and does not pan, tilt, zoom, or follow. No text, subtitles, captions, letters, numbers, logos, brand names, watermarks, buttons, or end cards. No call to action. No music and no spoken words inside this clip.
+```
+
+### 67. `2026-10-15/beauty/02-dropper-in`
+
+絵の合計: 5秒。ショット 1 本。
+
+#### imagine/shot-01.mp4（5秒、0–5秒）
+
+動作: スポイトを細い瓶の口へ1回戻す
+
+保存名: `beauty-02-dropper-in-shot-01.mp4`
+
+ファイル: `shorts-stock/2026-10-15/beauty/02-dropper-in/imagine/shot-01.mp4`
+
+```text
+Duration: 5 seconds. Vertical 9:16. Photoreal macro close-up at a night shelf. The subject fills the frame. This is not a wide room shot. A dark wood shelf at night, one small warm lamp, no labels, no letters, no logos. Reference image REF-NIGHT-HANDS, attach the same still: adult hands only, short bare nails, no polish, no rings, no watch, no bracelets. The face, hair, and body above the wrists stay out of frame. Do not redesign the hands. No face, no hair, no reflection of a face. Exactly one adult right hand. No left hand. No face. A slim clear bottle with a plain white collar and no label fills the frame. The dropper is unlabeled. No second bottle. One action: the right hand lowers the dropper into the bottle once. The dropper touches the neck and the contact is visible. Sound: one soft glass tap, then room tone. One camera move: the camera stays locked and does not pan, tilt, zoom, or follow. No text, subtitles, captions, letters, numbers, logos, brand names, watermarks, buttons, or end cards. No call to action. No music and no spoken words inside this clip.
+```
+
+### 68. `2026-10-15/beauty/03-cloth-cover`
+
+絵の合計: 5秒。ショット 1 本。
+
+#### imagine/shot-01.mp4（5秒、0–5秒）
+
+動作: 無地の布を瓶に1回かける
+
+保存名: `beauty-03-cloth-cover-shot-01.mp4`
+
+ファイル: `shorts-stock/2026-10-15/beauty/03-cloth-cover/imagine/shot-01.mp4`
+
+```text
+Duration: 5 seconds. Vertical 9:16. Photoreal macro close-up at a night shelf. The subject fills the frame. This is not a wide room shot. A dark wood shelf at night, one small warm lamp, no labels, no letters, no logos. Reference image REF-NIGHT-HANDS, attach the same still: adult hands only, short bare nails, no polish, no rings, no watch, no bracelets. The face, hair, and body above the wrists stay out of frame. Do not redesign the hands. No face, no hair, no reflection of a face. Exactly one adult right hand. No left hand. No face. One matte frosted pump bottle with no label stays large in the center. No second bottle. One action: the right hand lays a plain cloth over the bottle once and stops. The bottle stays clearly visible under the cloth. The frame is not empty. Sound: one soft cloth drop, then room tone. One camera move: the camera stays locked and does not pan, tilt, zoom, or follow. No text, subtitles, captions, letters, numbers, logos, brand names, watermarks, buttons, or end cards. No call to action. No music and no spoken words inside this clip.
+```
+
+### 69. `2026-10-15/beauty/04-cotton-back`
+
+絵の合計: 5秒。ショット 1 本。
+
+#### imagine/shot-01.mp4（5秒、0–5秒）
+
+動作: コットンを棚の端へ1回戻す
+
+保存名: `beauty-04-cotton-back-shot-01.mp4`
+
+ファイル: `shorts-stock/2026-10-15/beauty/04-cotton-back/imagine/shot-01.mp4`
+
+```text
+Duration: 5 seconds. Vertical 9:16. Photoreal macro close-up at a night shelf. The subject fills the frame. This is not a wide room shot. A dark wood shelf at night, one small warm lamp, no labels, no letters, no logos. Reference image REF-NIGHT-HANDS, attach the same still: adult hands only, short bare nails, no polish, no rings, no watch, no bracelets. The face, hair, and body above the wrists stay out of frame. Do not redesign the hands. No face, no hair, no reflection of a face. Exactly one adult right hand. No left hand. No face. One plain white cotton pad with no print, and one unlabeled pump bottle, both stay in frame. One action: the right hand slides the cotton pad once onto the front edge of the shelf and lets go. The pad and the bottle stay clearly in frame. Sound: one soft slide, then room tone. One camera move: the camera stays locked and does not pan, tilt, zoom, or follow. No text, subtitles, captions, letters, numbers, logos, brand names, watermarks, buttons, or end cards. No call to action. No music and no spoken words inside this clip.
+```
+
+### 70. `2026-10-15/beauty/05-tap-shelf`
+
+絵の合計: 5秒。ショット 1 本。
+
+#### imagine/shot-01.mp4（5秒、0–5秒）
+
+動作: 棚の木を指で1回叩く
+
+保存名: `beauty-05-tap-shelf-shot-01.mp4`
+
+ファイル: `shorts-stock/2026-10-15/beauty/05-tap-shelf/imagine/shot-01.mp4`
+
+```text
+Duration: 5 seconds. Vertical 9:16. Photoreal macro close-up at a night shelf. The subject fills the frame. This is not a wide room shot. A dark wood shelf at night, one small warm lamp, no labels, no letters, no logos. Reference image REF-NIGHT-HANDS, attach the same still: adult hands only, short bare nails, no polish, no rings, no watch, no bracelets. The face, hair, and body above the wrists stay out of frame. Do not redesign the hands. No face, no hair, no reflection of a face. Exactly one adult right hand. No left hand. No face. The dark wood and one unlabeled pump bottle fill the frame. The bottle is not touched. One action: the right index finger taps the wood once beside the bottle and stops. No product touches the skin. Sound: one soft tap, then room tone. One camera move: the camera stays locked and does not pan, tilt, zoom, or follow. No text, subtitles, captions, letters, numbers, logos, brand names, watermarks, buttons, or end cards. No call to action. No music and no spoken words inside this clip.
+```
+
 ## ペット
 
-### 61. `2026-10-13/pet/01-gray-blink`
+### 71. `2026-10-13/pet/01-gray-blink`
 
 絵の合計: 5秒。ショット 1 本。
 
@@ -2507,7 +2679,7 @@ No text, subtitles, captions, letters, numbers, logos, brand names, watermarks, 
 No music and no spoken words inside this clip.
 ```
 
-### 62. `2026-10-13/pet/02-white-yawn`
+### 72. `2026-10-13/pet/02-white-yawn`
 
 絵の合計: 5秒。ショット 1 本。
 
@@ -2531,7 +2703,7 @@ No text, subtitles, captions, letters, numbers, logos, brand names, watermarks, 
 No music and no spoken words inside this clip.
 ```
 
-### 63. `2026-10-13/pet/03-gray-lick`
+### 73. `2026-10-13/pet/03-gray-lick`
 
 絵の合計: 5秒。ショット 1 本。
 
@@ -2555,7 +2727,7 @@ No text, subtitles, captions, letters, numbers, logos, brand names, watermarks, 
 No music and no spoken words inside this clip.
 ```
 
-### 64. `2026-10-13/pet/04-white-ear`
+### 74. `2026-10-13/pet/04-white-ear`
 
 絵の合計: 5秒。ショット 1 本。
 
@@ -2579,7 +2751,7 @@ No text, subtitles, captions, letters, numbers, logos, brand names, watermarks, 
 No music and no spoken words inside this clip.
 ```
 
-### 65. `2026-10-13/pet/05-gray-paw`
+### 75. `2026-10-13/pet/05-gray-paw`
 
 絵の合計: 5秒。ショット 1 本。
 
@@ -2603,7 +2775,7 @@ No text, subtitles, captions, letters, numbers, logos, brand names, watermarks, 
 No music and no spoken words inside this clip.
 ```
 
-### 66. `2026-10-13/pet/06-white-tail`
+### 76. `2026-10-13/pet/06-white-tail`
 
 絵の合計: 5秒。ショット 1 本。
 
@@ -2627,7 +2799,7 @@ No text, subtitles, captions, letters, numbers, logos, brand names, watermarks, 
 No music and no spoken words inside this clip.
 ```
 
-### 67. `2026-10-13/pet/07-gray-loaf`
+### 77. `2026-10-13/pet/07-gray-loaf`
 
 絵の合計: 5秒。ショット 1 本。
 
@@ -2651,7 +2823,7 @@ No text, subtitles, captions, letters, numbers, logos, brand names, watermarks, 
 No music and no spoken words inside this clip.
 ```
 
-### 68. `2026-10-13/pet/08-white-window`
+### 78. `2026-10-13/pet/08-white-window`
 
 絵の合計: 5秒。ショット 1 本。
 
@@ -2675,7 +2847,7 @@ No text, subtitles, captions, letters, numbers, logos, brand names, watermarks, 
 No music and no spoken words inside this clip.
 ```
 
-### 69. `2026-10-13/pet/09-gray-sniff`
+### 79. `2026-10-13/pet/09-gray-sniff`
 
 絵の合計: 5秒。ショット 1 本。
 
@@ -2699,7 +2871,7 @@ No text, subtitles, captions, letters, numbers, logos, brand names, watermarks, 
 No music and no spoken words inside this clip.
 ```
 
-### 70. `2026-10-13/pet/10-white-chin`
+### 80. `2026-10-13/pet/10-white-chin`
 
 絵の合計: 5秒。ショット 1 本。
 
@@ -2723,7 +2895,7 @@ No text, subtitles, captions, letters, numbers, logos, brand names, watermarks, 
 No music and no spoken words inside this clip.
 ```
 
-### 71. `2026-10-14/pet/01-gray-paws`
+### 81. `2026-10-14/pet/01-gray-paws`
 
 絵の合計: 5秒。ショット 1 本。
 
@@ -2747,7 +2919,7 @@ No text, subtitles, captions, letters, numbers, logos, brand names, watermarks, 
 No music and no spoken words inside this clip.
 ```
 
-### 72. `2026-10-14/pet/02-white-side`
+### 82. `2026-10-14/pet/02-white-side`
 
 絵の合計: 5秒。ショット 1 本。
 
@@ -2771,7 +2943,7 @@ No text, subtitles, captions, letters, numbers, logos, brand names, watermarks, 
 No music and no spoken words inside this clip.
 ```
 
-### 73. `2026-10-14/pet/03-gray-wrap`
+### 83. `2026-10-14/pet/03-gray-wrap`
 
 絵の合計: 5秒。ショット 1 本。
 
@@ -2795,7 +2967,7 @@ No text, subtitles, captions, letters, numbers, logos, brand names, watermarks, 
 No music and no spoken words inside this clip.
 ```
 
-### 74. `2026-10-14/pet/04-white-stack`
+### 84. `2026-10-14/pet/04-white-stack`
 
 絵の合計: 5秒。ショット 1 本。
 
@@ -2819,7 +2991,7 @@ No text, subtitles, captions, letters, numbers, logos, brand names, watermarks, 
 No music and no spoken words inside this clip.
 ```
 
-### 75. `2026-10-14/pet/05-gray-lift`
+### 85. `2026-10-14/pet/05-gray-lift`
 
 絵の合計: 5秒。ショット 1 本。
 
@@ -2843,7 +3015,7 @@ No text, subtitles, captions, letters, numbers, logos, brand names, watermarks, 
 No music and no spoken words inside this clip.
 ```
 
-### 76. `2026-10-14/pet/06-white-chest`
+### 86. `2026-10-14/pet/06-white-chest`
 
 絵の合計: 5秒。ショット 1 本。
 
@@ -2867,7 +3039,7 @@ No text, subtitles, captions, letters, numbers, logos, brand names, watermarks, 
 No music and no spoken words inside this clip.
 ```
 
-### 77. `2026-10-14/pet/07-gray-tap`
+### 87. `2026-10-14/pet/07-gray-tap`
 
 絵の合計: 5秒。ショット 1 本。
 
@@ -2891,7 +3063,7 @@ No text, subtitles, captions, letters, numbers, logos, brand names, watermarks, 
 No music and no spoken words inside this clip.
 ```
 
-### 78. `2026-10-14/pet/08-white-paw-up`
+### 88. `2026-10-14/pet/08-white-paw-up`
 
 絵の合計: 5秒。ショット 1 本。
 
@@ -2915,7 +3087,7 @@ No text, subtitles, captions, letters, numbers, logos, brand names, watermarks, 
 No music and no spoken words inside this clip.
 ```
 
-### 79. `2026-10-14/pet/09-gray-chin`
+### 89. `2026-10-14/pet/09-gray-chin`
 
 絵の合計: 5秒。ショット 1 本。
 
@@ -2939,7 +3111,7 @@ No text, subtitles, captions, letters, numbers, logos, brand names, watermarks, 
 No music and no spoken words inside this clip.
 ```
 
-### 80. `2026-10-14/pet/10-white-hide`
+### 90. `2026-10-14/pet/10-white-hide`
 
 絵の合計: 5秒。ショット 1 本。
 
@@ -2970,21 +3142,21 @@ No music and no spoken words inside this clip.
 
 | 順 | 保存名 | ファイル | 長さ | 動作 |
 | --- | --- | --- | --- | --- |
-| 保留-1-1 | `konkatsu-01-notice-down-shot-01.mp4` | `shorts-stock/2026-10-14b/konkatsu/01-notice-down/imagine/shot-01.mp4` | 2秒 | 肩越しに、ぼかしたスマホ画面だけが見える |
+| 保留-1-1 | `konkatsu-01-notice-down-shot-01.mp4` | `shorts-stock/2026-10-14b/konkatsu/01-notice-down/imagine/shot-01.mp4` | 2秒 | 手元と、全面がぼやけたスマホ画面だけが見える |
 | 保留-1-2 | `konkatsu-01-notice-down-shot-02.mp4` | `shorts-stock/2026-10-14b/konkatsu/01-notice-down/imagine/shot-02.mp4` | 4秒 | 指がぼかした画面を一回横へなぞる |
 | 保留-1-3 | `konkatsu-01-notice-down-shot-03.mp4` | `shorts-stock/2026-10-14b/konkatsu/01-notice-down/imagine/shot-03.mp4` | 4秒 | 指がスマホを一回伏せる |
 | 保留-2-1 | `konkatsu-02-read-stop-shot-01.mp4` | `shorts-stock/2026-10-14b/konkatsu/02-read-stop/imagine/shot-01.mp4` | 2秒 | スマホを持った手が止まる |
 | 保留-2-2 | `konkatsu-02-read-stop-shot-02.mp4` | `shorts-stock/2026-10-14b/konkatsu/02-read-stop/imagine/shot-02.mp4` | 5秒 | 指がぼかした画面の一箇所で止まる |
 | 保留-2-3 | `konkatsu-02-read-stop-shot-03.mp4` | `shorts-stock/2026-10-14b/konkatsu/02-read-stop/imagine/shot-03.mp4` | 5秒 | 指が画面を一回閉じる |
 | 保留-3-1 | `konkatsu-03-blank-day-shot-01.mp4` | `shorts-stock/2026-10-14b/konkatsu/03-blank-day/imagine/shot-01.mp4` | 2秒 | 机の上の空の紙だけが落ち着く |
-| 保留-3-2 | `konkatsu-03-blank-day-shot-02.mp4` | `shorts-stock/2026-10-14b/konkatsu/03-blank-day/imagine/shot-02.mp4` | 4秒 | 手が空のマスを一回指す |
+| 保留-3-2 | `konkatsu-03-blank-day-shot-02.mp4` | `shorts-stock/2026-10-14b/konkatsu/03-blank-day/imagine/shot-02.mp4` | 4秒 | 手が無地の紙の一箇所を一回指す |
 | 保留-3-3 | `konkatsu-03-blank-day-shot-03.mp4` | `shorts-stock/2026-10-14b/konkatsu/03-blank-day/imagine/shot-03.mp4` | 4秒 | 手がペンを机に一回置く |
 | 保留-4-1 | `beauty-01-two-dab-shot-01.mp4` | `shorts-stock/2026-10-14b/beauty/01-two-dab/imagine/shot-01.mp4` | 4秒 | 無地のすりガラス瓶のまま、手の甲に一回つける |
 | 保留-4-2 | `beauty-01-two-dab-shot-02.mp4` | `shorts-stock/2026-10-14b/beauty/01-two-dab/imagine/shot-02.mp4` | 2秒 | 無地の瓶を、もう一本の無地の瓶へ一回持ち替える |
 | 保留-4-3 | `beauty-01-two-dab-shot-03.mp4` | `shorts-stock/2026-10-14b/beauty/01-two-dab/imagine/shot-03.mp4` | 4秒 | 持ち替えた無地の瓶で、手の甲に一回つける |
 | 保留-5-1 | `beauty-02-pad-aside-shot-01.mp4` | `shorts-stock/2026-10-14b/beauty/02-pad-aside/imagine/shot-01.mp4` | 2秒 | 白いコットンを一回持ち上げる |
 | 保留-5-2 | `beauty-02-pad-aside-shot-02.mp4` | `shorts-stock/2026-10-14b/beauty/02-pad-aside/imagine/shot-02.mp4` | 5秒 | コットンを机の外へ一回滑らせる |
-| 保留-5-3 | `beauty-02-pad-aside-shot-03.mp4` | `shorts-stock/2026-10-14b/beauty/02-pad-aside/imagine/shot-03.mp4` | 5秒 | 手がフレームの外へ出て、無地の瓶が一つ残る |
+| 保留-5-3 | `beauty-02-pad-aside-shot-03.mp4` | `shorts-stock/2026-10-14b/beauty/02-pad-aside/imagine/shot-03.mp4` | 5秒 | 無地の瓶が一つ、中央に残る |
 | 保留-6-1 | `beauty-03-cheek-once-shot-01.mp4` | `shorts-stock/2026-10-14b/beauty/03-cheek-once/imagine/shot-01.mp4` | 2秒 | 同じ画角で、手が頬の前で一回止まる |
 | 保留-6-2 | `beauty-03-cheek-once-shot-02.mp4` | `shorts-stock/2026-10-14b/beauty/03-cheek-once/imagine/shot-02.mp4` | 5秒 | 無地のすりガラス瓶で頬に一回つける |
 | 保留-6-3 | `beauty-03-cheek-once-shot-03.mp4` | `shorts-stock/2026-10-14b/beauty/03-cheek-once/imagine/shot-03.mp4` | 5秒 | 塗る前と同じ画角で、手が下がって止まる |
@@ -3006,7 +3178,7 @@ No music and no spoken words inside this clip.
 
 ##### imagine/shot-01.mp4（2秒、0–2秒）
 
-動作: 肩越しに、ぼかしたスマホ画面だけが見える
+動作: 手元と、全面がぼやけたスマホ画面だけが見える
 
 保存名: `konkatsu-01-notice-down-shot-01.mp4`
 
@@ -3014,9 +3186,9 @@ No music and no spoken words inside this clip.
 
 ```text
 Duration: 2 seconds. Vertical 9:16.
-Photoreal over-the-shoulder fixed camera. Warm room bulb. Matte phone body.
+Photoreal close-up of one hand and a phone. The head, shoulders, and body stay out of frame. Warm room bulb. Matte phone body.
 Reference image REF-KON-HAND, attach the same still on every shot: one adult right hand, short bare nails, no polish, no rings, plain gray cuff at the wrist. The face stays out of frame. Do not redesign the hand.
-Over-the-shoulder framing. No face, no hair in frame. A plain black phone with no logo. The screen is a soft color blur with no letters, numbers, or a face.
+Exactly one adult right hand. No left hand, no second person, no face, no hair, no shoulder, no reflection of a face or a person. A plain black phone with no logo. The entire phone screen is one soft unreadable color blur from edge to edge. No letters, numbers, words, icons, UI, photos, portraits, profile cards, message bubbles, notification rows, circles, or faces on the screen, in reflections, or anywhere in the frame.
 Only the hand and the blurred screen are in frame.
 One action: the thumb touches the edge of the blurred screen once.
 One camera move: the camera stays locked and does not pan, tilt, zoom, or follow.
@@ -3035,9 +3207,9 @@ No music and no spoken words inside this clip.
 
 ```text
 Duration: 4 seconds. Vertical 9:16.
-Photoreal over-the-shoulder fixed camera, same framing. Same warm bulb. Matte skin.
+Photoreal close-up of one hand and a phone, same framing. The head, shoulders, and body stay out of frame. Same warm bulb. Matte skin.
 Reference image REF-KON-HAND, attach the same still on every shot: one adult right hand, short bare nails, no polish, no rings, plain gray cuff at the wrist. The face stays out of frame. Do not redesign the hand.
-Over-the-shoulder framing. No face, no hair in frame. A plain black phone with no logo. The screen is a soft color blur with no letters, numbers, or a face.
+Exactly one adult right hand. No left hand, no second person, no face, no hair, no shoulder, no reflection of a face or a person. A plain black phone with no logo. The entire phone screen is one soft unreadable color blur from edge to edge. No letters, numbers, words, icons, UI, photos, portraits, profile cards, message bubbles, notification rows, circles, or faces on the screen, in reflections, or anywhere in the frame.
 One action: one finger swipes sideways once across the blurred screen.
 One camera move: the camera stays locked and does not follow.
 Sound: one soft swipe, then room tone.
@@ -3055,9 +3227,9 @@ No music and no spoken words inside this clip.
 
 ```text
 Duration: 4 seconds. Vertical 9:16.
-Photoreal over-the-shoulder fixed camera. A small spot of light on a wood desk.
+Photoreal close-up of one hand and a phone. The head, shoulders, and body stay out of frame. A small spot of light on a wood desk.
 Reference image REF-KON-HAND, attach the same still on every shot: one adult right hand, short bare nails, no polish, no rings, plain gray cuff at the wrist. The face stays out of frame. Do not redesign the hand.
-Over-the-shoulder framing. No face, no hair in frame. A plain black phone with no logo. The screen is a soft color blur with no letters, numbers, or a face.
+Exactly one adult right hand. No left hand, no second person, no face, no hair, no shoulder, no reflection of a face or a person. A plain black phone with no logo. The entire phone screen is one soft unreadable color blur from edge to edge. No letters, numbers, words, icons, UI, photos, portraits, profile cards, message bubbles, notification rows, circles, or faces on the screen, in reflections, or anywhere in the frame.
 One action: the finger turns the phone face-down once. The screen ends facing the desk.
 One camera move: the camera stays locked and does not follow.
 Sound: one soft set-down, then room tone.
@@ -3081,7 +3253,7 @@ No music and no spoken words inside this clip.
 Duration: 2 seconds. Vertical 9:16.
 Photoreal top-down fixed camera. A white desk lamp. Matte phone body.
 Reference image REF-KON-HAND, attach the same still on every shot: one adult right hand, short bare nails, no polish, no rings, plain gray cuff at the wrist. The face stays out of frame. Do not redesign the hand.
-Top-down fixed camera. No face in frame. A plain black phone with no logo. The screen is a soft color blur with no letters, numbers, ages, or a face.
+Top-down close-up. Exactly one adult right hand. No left hand, no second person, no face, no hair, no shoulder, no reflection of a face or a person. A plain black phone with no logo. The entire phone screen is one soft unreadable color blur from edge to edge. No letters, numbers, words, icons, UI, photos, portraits, profile cards, message bubbles, notification rows, circles, or faces on the screen, in reflections, or anywhere in the frame.
 The hand holds the phone.
 One action: a finger stops once above the blurred screen and lowers.
 One camera move: the camera stays locked and does not pan, tilt, zoom, or follow.
@@ -3102,7 +3274,7 @@ No music and no spoken words inside this clip.
 Duration: 5 seconds. Vertical 9:16.
 Photoreal top-down fixed camera, same framing. Same desk lamp. Matte skin.
 Reference image REF-KON-HAND, attach the same still on every shot: one adult right hand, short bare nails, no polish, no rings, plain gray cuff at the wrist. The face stays out of frame. Do not redesign the hand.
-Top-down fixed camera. No face in frame. A plain black phone with no logo. The screen is a soft color blur with no letters, numbers, ages, or a face.
+Top-down close-up. Exactly one adult right hand. No left hand, no second person, no face, no hair, no shoulder, no reflection of a face or a person. A plain black phone with no logo. The entire phone screen is one soft unreadable color blur from edge to edge. No letters, numbers, words, icons, UI, photos, portraits, profile cards, message bubbles, notification rows, circles, or faces on the screen, in reflections, or anywhere in the frame.
 One action: the fingertip stops on one spot of the blur and holds there. It does not tap.
 One camera move: the camera stays locked and does not follow.
 Sound: quiet room tone only.
@@ -3122,7 +3294,7 @@ No music and no spoken words inside this clip.
 Duration: 5 seconds. Vertical 9:16.
 Photoreal top-down fixed camera. After the close, the hand is in shadow. A metal hinge is visible, with no letters.
 Reference image REF-KON-HAND, attach the same still on every shot: one adult right hand, short bare nails, no polish, no rings, plain gray cuff at the wrist. The face stays out of frame. Do not redesign the hand.
-Top-down fixed camera. No face in frame. A plain black phone with no logo. The screen is a soft color blur with no letters, numbers, ages, or a face.
+Top-down close-up. Exactly one adult right hand. No left hand, no second person, no face, no hair, no shoulder, no reflection of a face or a person. A plain black phone with no logo. The entire phone screen is one soft unreadable color blur from edge to edge. No letters, numbers, words, icons, UI, photos, portraits, profile cards, message bubbles, notification rows, circles, or faces on the screen, in reflections, or anywhere in the frame.
 One action: the finger closes the phone once.
 One camera move: the camera stays locked and does not follow.
 Sound: one soft close, then room tone.
@@ -3145,7 +3317,7 @@ No music and no spoken words inside this clip.
 ```text
 Duration: 2 seconds. Vertical 9:16.
 Photoreal fixed camera from behind an adult. Daylight from a window. Matte paper.
-Seen from behind. The back of the head, shoulders, and one hand. The face never turns and is not visible. No face in frame. The hand matches REF-KON-HAND: short bare nails, no polish, no rings. A sheet of paper on the desk has empty boxes and no letters, no numbers, no headings.
+Close-up of the desk and exactly one adult right hand. The head, hair, shoulders, and face stay out of frame. No left hand. No reflection of a face or a person. The hand matches REF-KON-HAND: short bare nails, no polish, no rings. One blank sheet of paper. No boxes, no grid, no lines, no letters, no numbers.
 One action: the paper settles once on the desk.
 One camera move: the camera stays locked and does not pan, tilt, zoom, or follow.
 Sound: one soft paper shift, then room tone.
@@ -3155,7 +3327,7 @@ No music and no spoken words inside this clip.
 
 ##### imagine/shot-02.mp4（4秒、2–6秒）
 
-動作: 手が空のマスを一回指す
+動作: 手が無地の紙の一箇所を一回指す
 
 保存名: `konkatsu-03-blank-day-shot-02.mp4`
 
@@ -3164,8 +3336,8 @@ No music and no spoken words inside this clip.
 ```text
 Duration: 4 seconds. Vertical 9:16.
 Photoreal fixed camera from behind, same framing. Same window light. Matte skin.
-Seen from behind. The back of the head, shoulders, and one hand. The face never turns and is not visible. No face in frame. The hand matches REF-KON-HAND: short bare nails, no polish, no rings. A sheet of paper on the desk has empty boxes and no letters, no numbers, no headings.
-One action: the hand points once at one empty box. Nothing is written.
+Close-up of the desk and exactly one adult right hand. The head, hair, shoulders, and face stay out of frame. No left hand. No reflection of a face or a person. The hand matches REF-KON-HAND: short bare nails, no polish, no rings. One blank sheet of paper. No boxes, no grid, no lines, no letters, no numbers.
+One action: the hand points once at one unmarked spot on the blank paper. Nothing is written. No box is drawn.
 One camera move: the camera stays locked and does not follow.
 Sound: quiet room tone only.
 No text, subtitles, captions, letters, numbers, logos, brand names, watermarks, buttons, or end cards. No call to action.
@@ -3183,7 +3355,7 @@ No music and no spoken words inside this clip.
 ```text
 Duration: 4 seconds. Vertical 9:16.
 Photoreal fixed camera from behind. A thin shadow from a black matte pen. The pen has no logo and no letters.
-Seen from behind. The back of the head, shoulders, and one hand. The face never turns and is not visible. No face in frame. The hand matches REF-KON-HAND: short bare nails, no polish, no rings. A sheet of paper on the desk has empty boxes and no letters, no numbers, no headings.
+Close-up of the desk and exactly one adult right hand. The head, hair, shoulders, and face stay out of frame. No left hand. No reflection of a face or a person. The hand matches REF-KON-HAND: short bare nails, no polish, no rings. One blank sheet of paper. No boxes, no grid, no lines, no letters, no numbers.
 One action: the hand sets the pen on the desk once.
 One camera move: the camera stays locked and does not follow.
 Sound: one soft set-down, then room tone.
@@ -3209,9 +3381,9 @@ No music and no spoken words inside this clip.
 Duration: 4 seconds. Vertical 9:16.
 Photoreal 3D close-up, fixed camera. White light at a washstand. A frosted unlabeled bottle.
 Reference image REF-BEAU-3D, attach the same still on every shot of this pack: one 3D adult, mouth out of frame, short bare nails, no polish, no rings, no watch. Do not redesign this person.
-Close-up of the hands only. The mouth stays out of frame. No labels and no logos on either bottle. No third bottle.
+Macro close-up. The back of the hand fills the frame. The mouth stays out of frame. Exactly two hands: one holds the bottle and the other receives. No third hand, no face, no hair. No labels and no logos on either bottle. No third bottle.
 The hands already hold the frosted bottle.
-One action: the hands dab the back of the other hand once.
+One action: the frosted bottle touches the back of the hand once. The contact is visible.
 One camera move: the camera stays locked and does not pan, tilt, zoom, or follow.
 Sound: one soft dab, then room tone.
 No text, subtitles, captions, letters, numbers, logos, brand names, watermarks, buttons, or end cards. No call to action.
@@ -3230,7 +3402,7 @@ No music and no spoken words inside this clip.
 Duration: 2 seconds. Vertical 9:16.
 Photoreal 3D close-up, same framing. Same white light. The second bottle is matte and unlabeled.
 Reference image REF-BEAU-3D, attach the same still on every shot of this pack: one 3D adult, mouth out of frame, short bare nails, no polish, no rings, no watch. Do not redesign this person.
-Close-up of the hands only. The mouth stays out of frame. No labels and no logos on either bottle. No third bottle.
+Macro close-up. The back of the hand fills the frame. The mouth stays out of frame. Exactly two hands: one holds the bottle and the other receives. No third hand, no face, no hair. No labels and no logos on either bottle. No third bottle.
 One action: the hands switch once from the frosted bottle to the matte bottle.
 One camera move: the camera stays locked and does not follow.
 Sound: one soft switch, then room tone.
@@ -3250,9 +3422,9 @@ No music and no spoken words inside this clip.
 Duration: 4 seconds. Vertical 9:16.
 Photoreal 3D close-up, same framing. Soft light on the back of the hand. Matte 3D skin.
 Reference image REF-BEAU-3D, attach the same still on every shot of this pack: one 3D adult, mouth out of frame, short bare nails, no polish, no rings, no watch. Do not redesign this person.
-Close-up of the hands only. The mouth stays out of frame. No labels and no logos on either bottle. No third bottle.
+Macro close-up. The back of the hand fills the frame. The mouth stays out of frame. Exactly two hands: one holds the bottle and the other receives. No third hand, no face, no hair. No labels and no logos on either bottle. No third bottle.
 The hands hold the matte unlabeled bottle.
-One action: the hands dab the back of the hand once with that bottle.
+One action: the matte bottle touches the back of the hand once. The contact is visible.
 One camera move: the camera stays locked and does not follow.
 Sound: one soft dab, then room tone.
 No text, subtitles, captions, letters, numbers, logos, brand names, watermarks, buttons, or end cards. No call to action.
@@ -3305,7 +3477,7 @@ No music and no spoken words inside this clip.
 
 ##### imagine/shot-03.mp4（5秒、7–12秒）
 
-動作: 手がフレームの外へ出て、無地の瓶が一つ残る
+動作: 無地の瓶が一つ、中央に残る
 
 保存名: `beauty-02-pad-aside-shot-03.mp4`
 
@@ -3315,9 +3487,9 @@ No music and no spoken words inside this clip.
 Duration: 5 seconds. Vertical 9:16.
 Photoreal 3D close-up, same framing. Soft light beside one frosted unlabeled bottle.
 Reference image REF-BEAU-3D, attach the same still on every shot of this pack: one 3D adult, mouth out of frame, short bare nails, no polish, no rings, no watch. Do not redesign this person.
-Close-up of the hands. The mouth stays out of frame. No logos.
+Macro close-up of one frosted unlabeled bottle. No hands in frame. The mouth stays out of frame. No logos.
 No cotton remains. No second bottle.
-One action: the hands leave the frame once. One frosted unlabeled bottle stays on the desk.
+One action: one frosted unlabeled bottle stays large and clearly in the center of the frame for the whole shot. The frame is not empty.
 One camera move: the camera stays locked and does not follow.
 Sound: quiet room tone only.
 No text, subtitles, captions, letters, numbers, logos, brand names, watermarks, buttons, or end cards. No call to action.
@@ -3340,7 +3512,7 @@ No music and no spoken words inside this clip.
 Duration: 2 seconds. Vertical 9:16.
 Photoreal 3D close-up, fixed camera. Soft daylight. Matte 3D skin.
 Reference image REF-BEAU-3D, attach the same still on every shot of this pack: one 3D adult, mouth out of frame, short bare nails, no polish, no rings, no watch. Do not redesign this person.
-Close fixed camera on a 3D cheek. The mouth stays out of frame. Same framing in every shot. No before-and-after and no claim of a change. No logo.
+Macro close-up. The cheek skin fills the frame. The mouth, the eyes, and the rest of the face stay out of frame. Exactly one hand. No second person. Same framing in every shot. No before-and-after and no claim of a change. No logo.
 One action: the fingers stop once in front of the cheek.
 One camera move: the camera stays locked and does not pan, tilt, zoom, or follow.
 Sound: quiet room tone only.
@@ -3360,8 +3532,8 @@ No music and no spoken words inside this clip.
 Duration: 5 seconds. Vertical 9:16.
 Photoreal 3D close-up, the same fixed framing. Same daylight. A frosted unlabeled bottle.
 Reference image REF-BEAU-3D, attach the same still on every shot of this pack: one 3D adult, mouth out of frame, short bare nails, no polish, no rings, no watch. Do not redesign this person.
-Close fixed camera on a 3D cheek. The mouth stays out of frame. Same framing in every shot. No before-and-after and no claim of a change. No logo.
-One action: the bottle dabs the cheek once.
+Macro close-up. The cheek skin fills the frame. The mouth, the eyes, and the rest of the face stay out of frame. Exactly one hand. No second person. Same framing in every shot. No before-and-after and no claim of a change. No logo.
+One action: the unlabeled bottle touches the cheek once. The contact is visible. The skin is not shown as changed.
 One camera move: the camera stays locked and does not move closer.
 Sound: one soft dab, then room tone.
 No text, subtitles, captions, letters, numbers, logos, brand names, watermarks, buttons, or end cards. No call to action.
@@ -3380,7 +3552,7 @@ No music and no spoken words inside this clip.
 Duration: 5 seconds. Vertical 9:16.
 Photoreal 3D close-up, the same framing as before the dab. Same daylight. Matte 3D skin.
 Reference image REF-BEAU-3D, attach the same still on every shot of this pack: one 3D adult, mouth out of frame, short bare nails, no polish, no rings, no watch. Do not redesign this person.
-Close fixed camera on a 3D cheek. The mouth stays out of frame. Same framing in every shot. No before-and-after and no claim of a change. No logo.
+Macro close-up. The cheek skin fills the frame. The mouth, the eyes, and the rest of the face stay out of frame. Exactly one hand. No second person. Same framing in every shot. No before-and-after and no claim of a change. No logo.
 One action: the hand lowers once from the cheek and stops.
 One camera move: the camera stays locked and does not follow.
 Sound: quiet room tone only.
@@ -3405,7 +3577,7 @@ No music and no spoken words inside this clip.
 ```text
 Duration: 2 seconds. Vertical 9:16.
 Photoreal fixed camera in a room. Thin daylight from a window. No clock overlay.
-Reference image REF-GRAY, attach the same still on every shot: one adult gray munchkin, solid blue-gray short fur, no stripes, no white patches, short legs, round head, upright open ears, amber eyes, no collar. Do not redesign this cat. No second cat, no dog, no human.
+Reference image REF-GRAY, attach the same still on every shot: one adult gray munchkin, solid blue-gray short fur, no stripes, no white patches, short legs, round head, upright open ears, amber eyes, no collar. Do not redesign this cat. No second cat, no dog, no human face, no human hand, no phone, and no readable text anywhere in the frame.
 Mouth stays closed.
 The gray munchkin is at the back of the room.
 One action: the cat turns its head once toward the lens.
@@ -3426,7 +3598,7 @@ No music and no spoken words inside this clip.
 ```text
 Duration: 4 seconds. Vertical 9:16.
 Photoreal fixed camera, same room and same framing. Low indirect light on the floor. The floor is carpet.
-Reference image REF-GRAY, attach the same still on every shot: one adult gray munchkin, solid blue-gray short fur, no stripes, no white patches, short legs, round head, upright open ears, amber eyes, no collar. Do not redesign this cat. No second cat, no dog, no human.
+Reference image REF-GRAY, attach the same still on every shot: one adult gray munchkin, solid blue-gray short fur, no stripes, no white patches, short legs, round head, upright open ears, amber eyes, no collar. Do not redesign this cat. No second cat, no dog, no human face, no human hand, no phone, and no readable text anywhere in the frame.
 Mouth stays closed.
 The gray munchkin is already looking toward the lens.
 One action: the cat puts one front paw forward, one step only.
@@ -3447,7 +3619,7 @@ No music and no spoken words inside this clip.
 ```text
 Duration: 4 seconds. Vertical 9:16.
 Photoreal fixed camera, close to the lens. White light from the lens side. Short fur on the nose.
-Reference image REF-GRAY, attach the same still on every shot: one adult gray munchkin, solid blue-gray short fur, no stripes, no white patches, short legs, round head, upright open ears, amber eyes, no collar. Do not redesign this cat. No second cat, no dog, no human.
+Reference image REF-GRAY, attach the same still on every shot: one adult gray munchkin, solid blue-gray short fur, no stripes, no white patches, short legs, round head, upright open ears, amber eyes, no collar. Do not redesign this cat. No second cat, no dog, no human face, no human hand, no phone, and no readable text anywhere in the frame.
 Mouth stays closed.
 The gray munchkin is close to the lens.
 One action: the cat touches the lens once with its nose and stops.
@@ -3472,7 +3644,7 @@ No music and no spoken words inside this clip.
 ```text
 Duration: 2 seconds. Vertical 9:16.
 Photoreal fixed camera. A dark room, one dim bulb. A chair with matte fabric. No clock overlay.
-Reference image REF-GRAY, attach the same still on every shot: one adult gray munchkin, solid blue-gray short fur, no stripes, no white patches, short legs, round head, upright open ears, amber eyes, no collar. Do not redesign this cat. No second cat, no dog, no human.
+Reference image REF-GRAY, attach the same still on every shot: one adult gray munchkin, solid blue-gray short fur, no stripes, no white patches, short legs, round head, upright open ears, amber eyes, no collar. Do not redesign this cat. No second cat, no dog, no human face, no human hand, no phone, and no readable text anywhere in the frame.
 Mouth stays closed.
 The gray munchkin sits alone on the chair.
 One action: one ear moves once. The cat stays on the chair.
@@ -3493,7 +3665,7 @@ No music and no spoken words inside this clip.
 ```text
 Duration: 5 seconds. Vertical 9:16.
 Photoreal fixed camera, same framing. A hallway foot light. The floor is wood.
-Reference image REF-GRAY, attach the same still on every shot: one adult gray munchkin, solid blue-gray short fur, no stripes, no white patches, short legs, round head, upright open ears, amber eyes, no collar. Do not redesign this cat. No second cat, no dog, no human.
+Reference image REF-GRAY, attach the same still on every shot: one adult gray munchkin, solid blue-gray short fur, no stripes, no white patches, short legs, round head, upright open ears, amber eyes, no collar. Do not redesign this cat. No second cat, no dog, no human face, no human hand, no phone, and no readable text anywhere in the frame.
 Mouth stays closed.
 The gray munchkin is at the edge of the frame.
 One action: the cat takes one step and leaves through the left edge of the frame.
@@ -3514,7 +3686,7 @@ No music and no spoken words inside this clip.
 ```text
 Duration: 5 seconds. Vertical 9:16.
 Photoreal fixed camera in a different place: the corner of an entrance. One white bulb. The floor is tile.
-Reference image REF-GRAY, attach the same still on every shot: one adult gray munchkin, solid blue-gray short fur, no stripes, no white patches, short legs, round head, upright open ears, amber eyes, no collar. Do not redesign this cat. No second cat, no dog, no human.
+Reference image REF-GRAY, attach the same still on every shot: one adult gray munchkin, solid blue-gray short fur, no stripes, no white patches, short legs, round head, upright open ears, amber eyes, no collar. Do not redesign this cat. No second cat, no dog, no human face, no human hand, no phone, and no readable text anywhere in the frame.
 Mouth stays closed.
 The gray munchkin is in the corner, not yet curled.
 One action: the cat curls its body once and stops.
@@ -3539,7 +3711,7 @@ No music and no spoken words inside this clip.
 ```text
 Duration: 2 seconds. Vertical 9:16.
 Photoreal fixed camera. Evening orange light. Short dry fur. No clock overlay.
-Reference image REF-GRAY, attach the same still on every shot: one adult gray munchkin, solid blue-gray short fur, no stripes, no white patches, short legs, round head, upright open ears, amber eyes, no collar. Do not redesign this cat. No second cat, no dog, no human.
+Reference image REF-GRAY, attach the same still on every shot: one adult gray munchkin, solid blue-gray short fur, no stripes, no white patches, short legs, round head, upright open ears, amber eyes, no collar. Do not redesign this cat. No second cat, no dog, no human face, no human hand, no phone, and no readable text anywhere in the frame.
 Mouth stays closed.
 The gray munchkin is on the floor.
 One action: the cat turns its head once toward the lens.
@@ -3560,7 +3732,7 @@ No music and no spoken words inside this clip.
 ```text
 Duration: 4 seconds. Vertical 9:16.
 Photoreal fixed camera, same framing. A thin light under a shelf. The floor is wood.
-Reference image REF-GRAY, attach the same still on every shot: one adult gray munchkin, solid blue-gray short fur, no stripes, no white patches, short legs, round head, upright open ears, amber eyes, no collar. Do not redesign this cat. No second cat, no dog, no human.
+Reference image REF-GRAY, attach the same still on every shot: one adult gray munchkin, solid blue-gray short fur, no stripes, no white patches, short legs, round head, upright open ears, amber eyes, no collar. Do not redesign this cat. No second cat, no dog, no human face, no human hand, no phone, and no readable text anywhere in the frame.
 Mouth stays closed.
 The gray munchkin is already looking toward the lens.
 One action: the cat takes one step closer to the lens.
@@ -3581,7 +3753,7 @@ No music and no spoken words inside this clip.
 ```text
 Duration: 2.8 seconds. Vertical 9:16.
 Photoreal fixed camera. Soft light from the front. Short fur around the mouth.
-Reference image REF-GRAY, attach the same still on every shot: one adult gray munchkin, solid blue-gray short fur, no stripes, no white patches, short legs, round head, upright open ears, amber eyes, no collar. Do not redesign this cat. No second cat, no dog, no human.
+Reference image REF-GRAY, attach the same still on every shot: one adult gray munchkin, solid blue-gray short fur, no stripes, no white patches, short legs, round head, upright open ears, amber eyes, no collar. Do not redesign this cat. No second cat, no dog, no human face, no human hand, no phone, and no readable text anywhere in the frame.
 The gray munchkin faces the lens. The mouth starts closed.
 One action: the mouth opens once and closes. Do not add a second meow.
 One camera move: the camera stays locked and does not follow.
