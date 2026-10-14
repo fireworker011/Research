@@ -1,0 +1,161 @@
+{
+  "template": "sukatto",
+  "title": "締めの日と振込の日",
+  "series_character": "",
+  "punchline": "締めた月と、振込の日は別だった",
+  "closing": "",
+  "mouth": "ignored",
+  "scenes": [
+    {
+      "id": 1,
+      "role": "hook",
+      "speaker": "rival",
+      "style_id": 11,
+      "credit": "VOICEVOX:玄野武宏",
+      "text": "今日が締めだろ",
+      "telop": "今日が締めだろ",
+      "bg": "office",
+      "characters": [
+        {
+          "id": "rival_smug",
+          "who": "rival",
+          "label": ""
+        }
+      ],
+      "props": [],
+      "code_props": [],
+      "effect": "zoom",
+      "sfx": "none",
+      "duration_hint": 2.0
+    },
+    {
+      "id": 2,
+      "role": "develop",
+      "speaker": "narrator",
+      "style_id": 2,
+      "credit": "VOICEVOX:四国めたん",
+      "text": "締めの紙を、給料日だと思った",
+      "telop": "締めの紙を、\n給料日だと思った",
+      "bg": "office",
+      "characters": [
+        {
+          "id": "hero_trouble",
+          "who": "hero",
+          "label": ""
+        }
+      ],
+      "props": [],
+      "code_props": [
+        "papers"
+      ],
+      "effect": "none",
+      "sfx": "paper",
+      "duration_hint": 2.2
+    },
+    {
+      "id": 3,
+      "role": "develop",
+      "speaker": "hero",
+      "style_id": 34,
+      "credit": "VOICEVOX:白上虎太郎",
+      "text": "まだ先だ",
+      "telop": "まだ先だ",
+      "bg": "office",
+      "characters": [
+        {
+          "id": "hero_angry",
+          "who": "hero",
+          "label": ""
+        }
+      ],
+      "props": [],
+      "code_props": [],
+      "effect": "shake",
+      "sfx": "none",
+      "duration_hint": 2.2
+    },
+    {
+      "id": 4,
+      "role": "develop",
+      "speaker": "hero",
+      "style_id": 12,
+      "credit": "VOICEVOX:白上虎太郎",
+      "text": "支払の日を、規則で見た",
+      "telop": "支払の日を、\n規則で見た",
+      "bg": "office",
+      "characters": [
+        {
+          "id": "hero_tired",
+          "who": "hero",
+          "label": ""
+        }
+      ],
+      "props": [],
+      "code_props": [
+        "papers"
+      ],
+      "effect": "none",
+      "sfx": "paper",
+      "duration_hint": 2.2
+    },
+    {
+      "id": 5,
+      "role": "punch",
+      "speaker": "narrator",
+      "style_id": 2,
+      "credit": "VOICEVOX:四国めたん",
+      "text": "締めた月と、振込の日は別だった",
+      "telop": "締めた月と、\n振込の日は別だった",
+      "bg": "office",
+      "characters": [
+        {
+          "id": "hero_trouble",
+          "who": "hero",
+          "label": ""
+        }
+      ],
+      "props": [],
+      "code_props": [],
+      "effect": "zoom",
+      "sfx": "none",
+      "duration_hint": 2.2
+    },
+    {
+      "id": 6,
+      "role": "credit",
+      "speaker": "narrator",
+      "style_id": 2,
+      "credit": "VOICEVOX:四国めたん",
+      "text": "",
+      "telop": "VOICEVOX:四国めたん\nVOICEVOX:白上虎太郎\nVOICEVOX:玄野武宏",
+      "bg": "credit",
+      "characters": [],
+      "props": [],
+      "code_props": [],
+      "effect": "none",
+      "sfx": "none",
+      "duration_hint": 2.2
+    }
+  ],
+  "credits": [
+    "VOICEVOX:四国めたん",
+    "VOICEVOX:白上虎太郎",
+    "VOICEVOX:玄野武宏"
+  ],
+  "asset_ids": [
+    "rival_smug",
+    "hero_trouble",
+    "hero_angry",
+    "hero_tired"
+  ],
+  "score": {
+    "最初2秒": 20,
+    "オチ": 18,
+    "見やすさ": 18,
+    "事実": 19,
+    "テンポ": 15,
+    "合計": 90,
+    "メモ": "締めの日を給料日だと思った、が外れる。",
+    "hook_voice_sec": 0.64
+  }
+}

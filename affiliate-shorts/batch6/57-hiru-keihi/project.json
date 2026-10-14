@@ -1,0 +1,309 @@
+{
+  "template": "sukatto",
+  "title": "自分の昼は戻らない",
+  "punchline": "自分の昼は、戻ってこなかった",
+  "brief": {
+    "title": "自分の昼は戻らない",
+    "asset_urls": {
+      "rival_smug": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgmfOy1dvPW5nkAXq91r1d2JpatnBWDQHwMOsQRfjoJK3UhP4qRvRGgzacoQu3ogBLYq4zj0tYolJd4_6rjS4tUa8DR5lSj_PQaqXzd6Cs_DivuxoRAkIygU6GV36iS3QhIj3oa6vnevpY/s800/pose_doyagao_man.png",
+      "hero_trouble": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhxJL1uWPRrar9S-FPxNv7FCtcDsBUM5B8ItxCoPVFnqtsBKjv7TyPF54QNeSpcg2QCm3Fn8maHs9AscQD5Bmegje_6Zdt2xtzqXkriOKe76Aq37zUYxI0kfBoONd8SbYE_loSyJw3rkVY8/s800/businessman1_nayami.png",
+      "hero_angry": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjNZa7ijupIB1glzdfPBDcjiYSmA5vivkbKmqryJ9C11F00i6aifmrQbVGFJcJBgN9SnkUMuQsor8OqrhFv6cc7Qc6_gBEHZjOgV457XveJw0jakqDI2_boGirQKY4h1DpFj4S-tddLG4k/s800/business02_angry.png",
+      "hero_tired": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEi5O7ebIPQwPb7j8zWG0W4g3EN_nlmRZvPEfGKxwGsCnV44eGJARhg0Zz2mBNr7m9BK61Ebp00-9v4cX_V-YkzlJB5YAj7Dpb9slFkX2GG7xGyXKCYl1wMwzi6eWXoCHVuQIFSjsaL-5CM/s800/tsukareta_business_man.png"
+    }
+  },
+  "scenes": [
+    {
+      "id": 1,
+      "role": "hook",
+      "speaker": "rival",
+      "style_id": 11,
+      "credit": "VOICEVOX:玄野武宏",
+      "text": "昼は経費だろ",
+      "telop": "昼は経費だろ",
+      "bg": "office",
+      "characters": [
+        {
+          "id": "rival_smug",
+          "who": "rival",
+          "label": ""
+        }
+      ],
+      "props": [],
+      "code_props": [],
+      "effect": "zoom",
+      "sfx": "none",
+      "duration_hint": 2.0,
+      "voice_path": "/tmp/irasu-b6/57-hiru-keihi/audio/scene_01.wav",
+      "voice_seconds": 0.757,
+      "duration": 2.5416666666666665
+    },
+    {
+      "id": 2,
+      "role": "develop",
+      "speaker": "narrator",
+      "style_id": 2,
+      "credit": "VOICEVOX:四国めたん",
+      "text": "自分のレシートを、立替の袋へ入れた",
+      "telop": "自分のレシートを、\n立替の袋へ入れた",
+      "bg": "office",
+      "characters": [
+        {
+          "id": "hero_trouble",
+          "who": "hero",
+          "label": ""
+        }
+      ],
+      "props": [],
+      "code_props": [
+        "papers"
+      ],
+      "effect": "none",
+      "sfx": "paper",
+      "duration_hint": 2.2,
+      "voice_path": "/tmp/irasu-b6/57-hiru-keihi/audio/scene_02.wav",
+      "voice_seconds": 2.4,
+      "duration": 4.208333333333333
+    },
+    {
+      "id": 3,
+      "role": "develop",
+      "speaker": "hero",
+      "style_id": 34,
+      "credit": "VOICEVOX:白上虎太郎",
+      "text": "会議じゃない",
+      "telop": "会議じゃない",
+      "bg": "office",
+      "characters": [
+        {
+          "id": "hero_angry",
+          "who": "hero",
+          "label": ""
+        }
+      ],
+      "props": [],
+      "code_props": [],
+      "effect": "shake",
+      "sfx": "none",
+      "duration_hint": 2.2,
+      "voice_path": "/tmp/irasu-b6/57-hiru-keihi/audio/scene_03.wav",
+      "voice_seconds": 0.779,
+      "duration": 2.5833333333333335
+    },
+    {
+      "id": 4,
+      "role": "develop",
+      "speaker": "hero",
+      "style_id": 12,
+      "credit": "VOICEVOX:白上虎太郎",
+      "text": "会議の分と、自分の分を分けた",
+      "telop": "会議の分と、\n自分の分を分けた",
+      "bg": "office",
+      "characters": [
+        {
+          "id": "hero_tired",
+          "who": "hero",
+          "label": ""
+        }
+      ],
+      "props": [],
+      "code_props": [
+        "papers"
+      ],
+      "effect": "none",
+      "sfx": "paper",
+      "duration_hint": 2.2,
+      "voice_path": "/tmp/irasu-b6/57-hiru-keihi/audio/scene_04.wav",
+      "voice_seconds": 2.133,
+      "duration": 3.9166666666666665
+    },
+    {
+      "id": 5,
+      "role": "punch",
+      "speaker": "narrator",
+      "style_id": 2,
+      "credit": "VOICEVOX:四国めたん",
+      "text": "自分の昼は、戻ってこなかった",
+      "telop": "自分の昼は、\n戻ってこなかった",
+      "bg": "office",
+      "characters": [
+        {
+          "id": "hero_trouble",
+          "who": "hero",
+          "label": ""
+        }
+      ],
+      "props": [],
+      "code_props": [],
+      "effect": "zoom",
+      "sfx": "none",
+      "duration_hint": 2.2,
+      "voice_path": "/tmp/irasu-b6/57-hiru-keihi/audio/scene_05.wav",
+      "voice_seconds": 1.888,
+      "duration": 3.7083333333333335
+    },
+    {
+      "id": 6,
+      "role": "credit",
+      "speaker": "narrator",
+      "style_id": 2,
+      "credit": "VOICEVOX:四国めたん",
+      "text": "",
+      "telop": "VOICEVOX:四国めたん\nVOICEVOX:白上虎太郎\nVOICEVOX:玄野武宏",
+      "bg": "credit",
+      "characters": [],
+      "props": [],
+      "code_props": [],
+      "effect": "none",
+      "sfx": "none",
+      "duration_hint": 2.2,
+      "voice_path": "/tmp/irasu-b6/57-hiru-keihi/audio/scene_06.wav",
+      "voice_seconds": 0.15,
+      "duration": 3.625
+    }
+  ],
+  "credits": [
+    "VOICEVOX:四国めたん",
+    "VOICEVOX:白上虎太郎",
+    "VOICEVOX:玄野武宏"
+  ],
+  "asset_ids": [
+    "rival_smug",
+    "hero_trouble",
+    "hero_angry",
+    "hero_tired"
+  ],
+  "asset_report": {
+    "count": 4,
+    "limit": 20,
+    "within_limit": true,
+    "accepted": [
+      {
+        "id": "rival_smug",
+        "kind": "person",
+        "path": "/tmp/irasu-b6/57-hiru-keihi/assets/rival_smug.png",
+        "url": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgmfOy1dvPW5nkAXq91r1d2JpatnBWDQHwMOsQRfjoJK3UhP4qRvRGgzacoQu3ogBLYq4zj0tYolJd4_6rjS4tUa8DR5lSj_PQaqXzd6Cs_DivuxoRAkIygU6GV36iS3QhIj3oa6vnevpY/s800/pose_doyagao_man.png",
+        "title": "pinned",
+        "alt": "rival_smug",
+        "link": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgmfOy1dvPW5nkAXq91r1d2JpatnBWDQHwMOsQRfjoJK3UhP4qRvRGgzacoQu3ogBLYq4zj0tYolJd4_6rjS4tUa8DR5lSj_PQaqXzd6Cs_DivuxoRAkIygU6GV36iS3QhIj3oa6vnevpY/s800/pose_doyagao_man.png",
+        "page": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgmfOy1dvPW5nkAXq91r1d2JpatnBWDQHwMOsQRfjoJK3UhP4qRvRGgzacoQu3ogBLYq4zj0tYolJd4_6rjS4tUa8DR5lSj_PQaqXzd6Cs_DivuxoRAkIygU6GV36iS3QhIj3oa6vnevpY/s800/pose_doyagao_man.png"
+      },
+      {
+        "id": "hero_trouble",
+        "kind": "person",
+        "path": "/tmp/irasu-b6/57-hiru-keihi/assets/hero_trouble.png",
+        "url": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhxJL1uWPRrar9S-FPxNv7FCtcDsBUM5B8ItxCoPVFnqtsBKjv7TyPF54QNeSpcg2QCm3Fn8maHs9AscQD5Bmegje_6Zdt2xtzqXkriOKe76Aq37zUYxI0kfBoONd8SbYE_loSyJw3rkVY8/s800/businessman1_nayami.png",
+        "title": "pinned",
+        "alt": "hero_trouble",
+        "link": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhxJL1uWPRrar9S-FPxNv7FCtcDsBUM5B8ItxCoPVFnqtsBKjv7TyPF54QNeSpcg2QCm3Fn8maHs9AscQD5Bmegje_6Zdt2xtzqXkriOKe76Aq37zUYxI0kfBoONd8SbYE_loSyJw3rkVY8/s800/businessman1_nayami.png",
+        "page": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhxJL1uWPRrar9S-FPxNv7FCtcDsBUM5B8ItxCoPVFnqtsBKjv7TyPF54QNeSpcg2QCm3Fn8maHs9AscQD5Bmegje_6Zdt2xtzqXkriOKe76Aq37zUYxI0kfBoONd8SbYE_loSyJw3rkVY8/s800/businessman1_nayami.png"
+      },
+      {
+        "id": "hero_angry",
+        "kind": "person",
+        "path": "/tmp/irasu-b6/57-hiru-keihi/assets/hero_angry.png",
+        "url": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjNZa7ijupIB1glzdfPBDcjiYSmA5vivkbKmqryJ9C11F00i6aifmrQbVGFJcJBgN9SnkUMuQsor8OqrhFv6cc7Qc6_gBEHZjOgV457XveJw0jakqDI2_boGirQKY4h1DpFj4S-tddLG4k/s800/business02_angry.png",
+        "title": "pinned",
+        "alt": "hero_angry",
+        "link": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjNZa7ijupIB1glzdfPBDcjiYSmA5vivkbKmqryJ9C11F00i6aifmrQbVGFJcJBgN9SnkUMuQsor8OqrhFv6cc7Qc6_gBEHZjOgV457XveJw0jakqDI2_boGirQKY4h1DpFj4S-tddLG4k/s800/business02_angry.png",
+        "page": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjNZa7ijupIB1glzdfPBDcjiYSmA5vivkbKmqryJ9C11F00i6aifmrQbVGFJcJBgN9SnkUMuQsor8OqrhFv6cc7Qc6_gBEHZjOgV457XveJw0jakqDI2_boGirQKY4h1DpFj4S-tddLG4k/s800/business02_angry.png"
+      },
+      {
+        "id": "hero_tired",
+        "kind": "person",
+        "path": "/tmp/irasu-b6/57-hiru-keihi/assets/hero_tired.png",
+        "url": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEi5O7ebIPQwPb7j8zWG0W4g3EN_nlmRZvPEfGKxwGsCnV44eGJARhg0Zz2mBNr7m9BK61Ebp00-9v4cX_V-YkzlJB5YAj7Dpb9slFkX2GG7xGyXKCYl1wMwzi6eWXoCHVuQIFSjsaL-5CM/s800/tsukareta_business_man.png",
+        "title": "pinned",
+        "alt": "hero_tired",
+        "link": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEi5O7ebIPQwPb7j8zWG0W4g3EN_nlmRZvPEfGKxwGsCnV44eGJARhg0Zz2mBNr7m9BK61Ebp00-9v4cX_V-YkzlJB5YAj7Dpb9slFkX2GG7xGyXKCYl1wMwzi6eWXoCHVuQIFSjsaL-5CM/s800/tsukareta_business_man.png",
+        "page": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEi5O7ebIPQwPb7j8zWG0W4g3EN_nlmRZvPEfGKxwGsCnV44eGJARhg0Zz2mBNr7m9BK61Ebp00-9v4cX_V-YkzlJB5YAj7Dpb9slFkX2GG7xGyXKCYl1wMwzi6eWXoCHVuQIFSjsaL-5CM/s800/tsukareta_business_man.png"
+      }
+    ],
+    "rejected": []
+  },
+  "asset_paths": {
+    "rival_smug": "/tmp/irasu-b6/57-hiru-keihi/assets/rival_smug.png",
+    "hero_trouble": "/tmp/irasu-b6/57-hiru-keihi/assets/hero_trouble.png",
+    "hero_angry": "/tmp/irasu-b6/57-hiru-keihi/assets/hero_angry.png",
+    "hero_tired": "/tmp/irasu-b6/57-hiru-keihi/assets/hero_tired.png"
+  },
+  "layout": {
+    "telop_y_ratio": 0.84,
+    "character_x_ratio": 0.5,
+    "screenshot_count": 0
+  },
+  "settings": {
+    "speed": 1.28,
+    "hook_speed": 1.48,
+    "telop_scale": 1.0,
+    "sfx_gain": 0.22,
+    "bgm_gain": 0.045,
+    "mouth_gain": 1.0,
+    "bgm": true,
+    "tail": 0.16,
+    "role_speed": {
+      "hook": 1.48,
+      "develop": 1.28,
+      "punch": 1.28,
+      "close": 1.28,
+      "credit": 1.28
+    },
+    "role_tail": {
+      "hook": 0.16,
+      "develop": 0.16,
+      "punch": 0.16,
+      "close": 0.16,
+      "credit": 0.0
+    }
+  },
+  "telop_style": {
+    "bar": "round",
+    "stroke": 5,
+    "size": 78,
+    "slide": 0.16,
+    "y_ratio": 0.84,
+    "bar_fill": [
+      0,
+      0,
+      0,
+      170
+    ],
+    "bar_fills": {},
+    "colors": {
+      "hook": [
+        255,
+        226,
+        40,
+        255
+      ],
+      "develop": [
+        255,
+        255,
+        255,
+        255
+      ],
+      "punch": [
+        255,
+        226,
+        40,
+        255
+      ],
+      "close": [
+        255,
+        226,
+        40,
+        255
+      ],
+      "credit": [
+        255,
+        255,
+        255,
+        255
+      ]
+    }
+  },
+  "terms": {
+    "irasutoya": "いらすとやは1つの制作物につき20点まで商用無料（同じ絵の重複は1点）。21点以上の商用利用は有償。クレジット表記は不要。素材そのものの再配布や、イラストを主体にした商品化は不可。背景はコード描画にして点数をキャラと小物に使っている。",
+    "voicevox": "使った声はクレジットが要る。四国めたん、白上虎太郎、玄野武宏、剣崎雌雄はクレジットを書けば商用可。青山龍星は個人事業・法人だと事前許可が要るので使っていない。効果音とBGMはこの場で合成したオリジナルなのでクレジット不要。"
+  },
+  "notes": []
+}

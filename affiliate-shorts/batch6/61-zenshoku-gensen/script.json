@@ -1,0 +1,159 @@
+{
+  "template": "sukatto",
+  "title": "前の会社の源泉が無い",
+  "series_character": "",
+  "punchline": "前の会社の源泉が、まだ無かった",
+  "closing": "",
+  "mouth": "ignored",
+  "scenes": [
+    {
+      "id": 1,
+      "role": "hook",
+      "speaker": "rival",
+      "style_id": 11,
+      "credit": "VOICEVOX:玄野武宏",
+      "text": "調整、終わりだろ",
+      "telop": "調整、終わりだろ",
+      "bg": "office",
+      "characters": [
+        {
+          "id": "rival_smug",
+          "who": "rival",
+          "label": ""
+        }
+      ],
+      "props": [],
+      "code_props": [],
+      "effect": "zoom",
+      "sfx": "none",
+      "duration_hint": 2.0
+    },
+    {
+      "id": 2,
+      "role": "develop",
+      "speaker": "narrator",
+      "style_id": 2,
+      "credit": "VOICEVOX:四国めたん",
+      "text": "今の会社の紙だけ、年末に出した",
+      "telop": "今の会社の紙だけ、\n年末に出した",
+      "bg": "office",
+      "characters": [
+        {
+          "id": "hero_trouble",
+          "who": "hero",
+          "label": ""
+        }
+      ],
+      "props": [],
+      "code_props": [
+        "papers"
+      ],
+      "effect": "none",
+      "sfx": "paper",
+      "duration_hint": 2.2
+    },
+    {
+      "id": 3,
+      "role": "develop",
+      "speaker": "hero",
+      "style_id": 34,
+      "credit": "VOICEVOX:白上虎太郎",
+      "text": "足りない",
+      "telop": "足りない",
+      "bg": "office",
+      "characters": [
+        {
+          "id": "hero_angry",
+          "who": "hero",
+          "label": ""
+        }
+      ],
+      "props": [],
+      "code_props": [],
+      "effect": "shake",
+      "sfx": "none",
+      "duration_hint": 2.2
+    },
+    {
+      "id": 4,
+      "role": "develop",
+      "speaker": "hero",
+      "style_id": 12,
+      "credit": "VOICEVOX:白上虎太郎",
+      "text": "入社が、年の途中だった",
+      "telop": "入社が、\n年の途中だった",
+      "bg": "office",
+      "characters": [
+        {
+          "id": "hero_tired",
+          "who": "hero",
+          "label": ""
+        }
+      ],
+      "props": [],
+      "code_props": [],
+      "effect": "none",
+      "sfx": "none",
+      "duration_hint": 2.2
+    },
+    {
+      "id": 5,
+      "role": "punch",
+      "speaker": "narrator",
+      "style_id": 2,
+      "credit": "VOICEVOX:四国めたん",
+      "text": "前の会社の源泉が、まだ無かった",
+      "telop": "前の会社の源泉が、\nまだ無かった",
+      "bg": "office",
+      "characters": [
+        {
+          "id": "hero_trouble",
+          "who": "hero",
+          "label": ""
+        }
+      ],
+      "props": [],
+      "code_props": [],
+      "effect": "zoom",
+      "sfx": "paper",
+      "duration_hint": 2.2
+    },
+    {
+      "id": 6,
+      "role": "credit",
+      "speaker": "narrator",
+      "style_id": 2,
+      "credit": "VOICEVOX:四国めたん",
+      "text": "",
+      "telop": "VOICEVOX:四国めたん\nVOICEVOX:白上虎太郎\nVOICEVOX:玄野武宏",
+      "bg": "credit",
+      "characters": [],
+      "props": [],
+      "code_props": [],
+      "effect": "none",
+      "sfx": "none",
+      "duration_hint": 2.2
+    }
+  ],
+  "credits": [
+    "VOICEVOX:四国めたん",
+    "VOICEVOX:白上虎太郎",
+    "VOICEVOX:玄野武宏"
+  ],
+  "asset_ids": [
+    "rival_smug",
+    "hero_trouble",
+    "hero_angry",
+    "hero_tired"
+  ],
+  "score": {
+    "最初2秒": 20,
+    "オチ": 18,
+    "見やすさ": 18,
+    "事実": 19,
+    "テンポ": 15,
+    "合計": 90,
+    "メモ": "終わりだろ、が前の会社の紙が無くて止まる。",
+    "hook_voice_sec": 1.163
+  }
+}

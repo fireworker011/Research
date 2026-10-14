@@ -1,0 +1,161 @@
+{
+  "template": "sukatto",
+  "title": "有給は日数のままだった",
+  "series_character": "",
+  "punchline": "買い取りは無かった。日数だけ残った",
+  "closing": "",
+  "mouth": "ignored",
+  "scenes": [
+    {
+      "id": 1,
+      "role": "hook",
+      "speaker": "rival",
+      "style_id": 11,
+      "credit": "VOICEVOX:玄野武宏",
+      "text": "有給を金にしろ",
+      "telop": "有給を金にしろ",
+      "bg": "office",
+      "characters": [
+        {
+          "id": "rival_smug",
+          "who": "rival",
+          "label": ""
+        }
+      ],
+      "props": [],
+      "code_props": [],
+      "effect": "zoom",
+      "sfx": "none",
+      "duration_hint": 2.0
+    },
+    {
+      "id": 2,
+      "role": "develop",
+      "speaker": "narrator",
+      "style_id": 2,
+      "credit": "VOICEVOX:四国めたん",
+      "text": "買い取りの紙を、総務に出した",
+      "telop": "買い取りの紙を、\n総務に出した",
+      "bg": "office",
+      "characters": [
+        {
+          "id": "hero_trouble",
+          "who": "hero",
+          "label": ""
+        }
+      ],
+      "props": [],
+      "code_props": [
+        "papers"
+      ],
+      "effect": "none",
+      "sfx": "paper",
+      "duration_hint": 2.2
+    },
+    {
+      "id": 3,
+      "role": "develop",
+      "speaker": "hero",
+      "style_id": 34,
+      "credit": "VOICEVOX:白上虎太郎",
+      "text": "無い",
+      "telop": "無い",
+      "bg": "office",
+      "characters": [
+        {
+          "id": "hero_angry",
+          "who": "hero",
+          "label": ""
+        }
+      ],
+      "props": [],
+      "code_props": [],
+      "effect": "shake",
+      "sfx": "none",
+      "duration_hint": 2.2
+    },
+    {
+      "id": 4,
+      "role": "develop",
+      "speaker": "hero",
+      "style_id": 12,
+      "credit": "VOICEVOX:白上虎太郎",
+      "text": "戻ったのは残日数の紙",
+      "telop": "戻ったのは残日数の紙",
+      "bg": "office",
+      "characters": [
+        {
+          "id": "hero_tired",
+          "who": "hero",
+          "label": ""
+        }
+      ],
+      "props": [],
+      "code_props": [
+        "papers"
+      ],
+      "effect": "none",
+      "sfx": "paper",
+      "duration_hint": 2.2
+    },
+    {
+      "id": 5,
+      "role": "punch",
+      "speaker": "narrator",
+      "style_id": 2,
+      "credit": "VOICEVOX:四国めたん",
+      "text": "買い取りは無かった。日数だけ残った",
+      "telop": "買い取りは無かった。\n日数だけ残った",
+      "bg": "office",
+      "characters": [
+        {
+          "id": "hero_trouble",
+          "who": "hero",
+          "label": ""
+        }
+      ],
+      "props": [],
+      "code_props": [],
+      "effect": "zoom",
+      "sfx": "none",
+      "duration_hint": 2.2
+    },
+    {
+      "id": 6,
+      "role": "credit",
+      "speaker": "narrator",
+      "style_id": 2,
+      "credit": "VOICEVOX:四国めたん",
+      "text": "",
+      "telop": "VOICEVOX:四国めたん\nVOICEVOX:白上虎太郎\nVOICEVOX:玄野武宏",
+      "bg": "credit",
+      "characters": [],
+      "props": [],
+      "code_props": [],
+      "effect": "none",
+      "sfx": "none",
+      "duration_hint": 2.2
+    }
+  ],
+  "credits": [
+    "VOICEVOX:四国めたん",
+    "VOICEVOX:白上虎太郎",
+    "VOICEVOX:玄野武宏"
+  ],
+  "asset_ids": [
+    "rival_smug",
+    "hero_trouble",
+    "hero_angry",
+    "hero_tired"
+  ],
+  "score": {
+    "最初2秒": 20,
+    "オチ": 19,
+    "見やすさ": 18,
+    "事実": 19,
+    "テンポ": 15,
+    "合計": 91,
+    "メモ": "金にしろ、の紙が無く、残るのは日数だけ。",
+    "hook_voice_sec": 0.832
+  }
+}

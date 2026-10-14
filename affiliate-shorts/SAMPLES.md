@@ -1,4 +1,4 @@
-# いらすとや動画 37本
+# いらすとや動画 49本
 
 口パクは無し。静止画に、ゆっくりしたズームとパン。反応の場面だけ小さく揺らす。字幕は大きく、声は VOICEVOX。画面は 1080x1920。投稿はしない。CTA も URL も入れてない。
 
@@ -47,5 +47,17 @@ batch1 の `01-card-ranking`（22.00秒）は同じ作りの見本。batch1 の 
 | `batch5/47-kinmemo-paper` | kinmemo | 返すと言ったメモの裏に、硬貨が貼りついたままの話 | 20.58 |
 | `batch5/48-kinmemo-slot` | kinmemo | つり銭口の硬貨が、朝に自分で入れたものだった話 | 20.54 |
 | `batch5/49-kinmemo-loop` | kinmemo | 自分側へ寄せた端の硬貨が、手帳のペン差しに入っていた話 | 20.58 |
+| `batch6/50-furikomi-kouza` | kinmemo | 給料は前の口座だった | 20.58 |
+| `batch6/51-shimebi-pay` | kinmemo | 締めの日と振込の日 | 20.54 |
+| `batch6/52-kumiaihi` | kinmemo | 増えた行は組合費 | 20.62 |
+| `batch6/53-jidou-teate` | kinmemo | 増えたのは児童手当 | 20.58 |
+| `batch6/54-yukyu-kaitori` | kinmemo | 有給は日数のままだった | 20.58 |
+| `batch6/55-shataku-hojo` | kinmemo | 家賃補助は給与の欄 | 20.62 |
+| `batch6/56-ic-charge` | kinmemo | 定期の横のオートチャージ | 20.58 |
+| `batch6/57-hiru-keihi` | kinmemo | 自分の昼は戻らない | 20.58 |
+| `batch6/58-zaikei` | kinmemo | 天引きは財形だった | 20.62 |
+| `batch6/59-koyou-hoken` | kinmemo | 雇用保険は下ろせない | 20.58 |
+| `batch6/60-karibarai` | kinmemo | 仮払いの余りは返す側 | 20.62 |
+| `batch6/61-zenshoku-gensen` | kinmemo | 前の会社の源泉が無い | 20.58 |
 
-動画ファイルは各フォルダの `out.mp4`。batch4 と batch5 の各フォルダに `UPLOAD.md` がある。金額は書いていない。投稿はしない。batch5 は PR #210 の台本を、口パク無しの静止画で書き出している。
+動画ファイルは各フォルダの `out.mp4`。batch4 以降の各フォルダに `UPLOAD.md` がある。金額は書いていない。投稿はしない。batch6 の点数は各 `script.json` の `score`。次に直すことは `NEXT.md`。
