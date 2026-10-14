@@ -12,6 +12,8 @@ import numpy as np
 from irasutoya_short.constants import HEIGHT, WIDTH
 from irasutoya_short.sprites import _face_box, draw_mouth, mouth_anchor, skin_color
 
+from styles import judge, load_style_log
+
 MIN_DURATION = 20.0
 MAX_DURATION = 30.0
 MEAN_VOLUME_FLOOR_DB = -45.0
@@ -299,6 +301,69 @@ def _check(checks: list[dict], name: str, ok: bool, detail: str) -> None:
     checks.append({"name": name, "pass": bool(ok), "detail": detail})
 
 
+def _style_verdict(plan: dict, duration: float | None) -> dict:
+    style = plan.get("style")
+    empty = {
+        "ok": False,
+        "thumb_ok": False,
+        "fit_failed": True,
+        "detail": "見た目の記録が無い",
+        "thumb_detail": "サムネの記録が無い",
+        "signature": "",
+        "thumb_signature": "",
+        "shared_with_prev": None,
+        "shared_max_last5": None,
+        "bgm": "",
+    }
+    if not isinstance(style, dict) or "axes" not in style:
+        return empty
+    verdict = judge(
+        dict(style["axes"]),
+        load_style_log(),
+        str(plan.get("video_id") or ""),
+        line=str(style.get("line") or ""),
+        length_options=list(style.get("length_options") or []),
+        measured_seconds=None if duration is None else float(duration),
+    )
+    reasons = list(verdict["reasons"])
+    if style.get("fit_failed"):
+        reasons.append("選んだ長さに尺を合わせられなかった")
+    thumb_reasons = [item for item in reasons if item.startswith("サムネ")]
+    other = [item for item in reasons if item not in thumb_reasons]
+    prev = verdict["shared_with_prev"]
+    last = verdict["shared_max_last5"]
+    detail = f"{verdict['signature']}。直前との共有 {('-' if prev is None else prev)}。直近5本の最大 {('-' if last is None else last)}"
+    if other:
+        detail += "。" + "。".join(other)
+    thumb_detail = verdict["thumb_signature"]
+    if thumb_reasons:
+        thumb_detail += "。" + "。".join(thumb_reasons)
+    else:
+        thumb_detail += "。構図・配色・文字位置は直前と2つ以上違う"
+    return {
+        "ok": not other,
+        "thumb_ok": not thumb_reasons,
+        "fit_failed": bool(style.get("fit_failed")),
+        "detail": detail,
+        "thumb_detail": thumb_detail,
+        "signature": verdict["signature"],
+        "thumb_signature": verdict["thumb_signature"],
+        "shared_with_prev": prev,
+        "shared_max_last5": last,
+        "bgm": str(style.get("bgm") or ""),
+    }
+
+
+def _credit_ok(plan: dict) -> tuple[bool, str]:
+    caption = str(plan.get("credit_caption") or "")
+    missing = [voice for voice in plan.get("voice_credits") or [] if str(voice) not in caption]
+    if "イラスト：いらすとや" not in caption:
+        missing.append("イラスト：いらすとや")
+    if missing:
+        return False, "クレジットに無い: " + "、".join(str(item) for item in missing)
+    return True, "使った声と、イラスト：いらすとや"
+
+
 def evaluate(plan: dict, media_path: Path | None) -> dict:
     checks: list[dict] = []
     media = probe_media(media_path) if media_path is not None else {
@@ -369,6 +434,17 @@ def evaluate(plan: dict, media_path: Path | None) -> dict:
         hits = collaboration_hits(plan["branding"])
         _check(checks, "irasutoya_name", not hits, "協力を示す名前は無い" if not hits else "協力を示す書き方: " + "、".join(hits))
 
+    style_verdict = _style_verdict(plan, duration)
+    _check(
+        checks,
+        "style_signature",
+        bool(style_verdict["ok"]) and not style_verdict.get("fit_failed"),
+        style_verdict["detail"],
+    )
+    _check(checks, "style_thumb", bool(style_verdict["thumb_ok"]), style_verdict["thumb_detail"])
+    credit_ok, credit_detail = _credit_ok(plan)
+    _check(checks, "credit_line", credit_ok, credit_detail)
+
     passed = all(item["pass"] for item in checks) and bool(media["exists"] or plan.get("blocked_before_encode"))
     if plan.get("blocked_before_encode"):
         passed = False
@@ -381,6 +457,7 @@ def evaluate(plan: dict, media_path: Path | None) -> dict:
         "mouth_overlay": mouth_overlay,
         "media": media,
         "image_tally": tally,
+        "style": style_verdict,
     }
 
 
@@ -395,6 +472,8 @@ def write_report(path: Path, script: dict, report: dict) -> None:
         f"チャンネル設定: {script.get('channel', '')}",
         f"チャンネル名: {_channel_label(script)}",
         f"ジャンル: {script.get('genre') or '未定'}",
+        f"見た目: {(report.get('style') or {}).get('signature') or '無し'}",
+        f"サムネ: {(report.get('style') or {}).get('thumb_signature') or '無し'}",
         "",
         "投稿はしない。",
         "",

@@ -4,7 +4,7 @@
     {
       "name": "duration",
       "pass": true,
-      "detail": "20.58秒（20秒以上30秒以下）"
+      "detail": "24.00秒（20秒以上30秒以下）"
     },
     {
       "name": "resolution",
@@ -14,7 +14,7 @@
     {
       "name": "audio",
       "pass": true,
-      "detail": "音声 あり、平均 -28.2 dB"
+      "detail": "音声 あり、平均 -28.4 dB"
     },
     {
       "name": "caption_overflow",
@@ -50,19 +50,34 @@
       "name": "irasutoya_name",
       "pass": true,
       "detail": "協力を示す名前は無い"
+    },
+    {
+      "name": "style_signature",
+      "pass": true,
+      "detail": "bousai:C5-P3-T4-F5-H2-M6-B6-L2-A6。直前との共有 1。直近5本の最大 1"
+    },
+    {
+      "name": "style_thumb",
+      "pass": true,
+      "detail": "thumb:C5-P3-T4-F5。構図・配色・文字位置は直前と2つ以上違う"
+    },
+    {
+      "name": "credit_line",
+      "pass": true,
+      "detail": "使った声と、イラスト：いらすとや"
     }
   ],
-  "duration_sec": 20.58,
+  "duration_sec": 24.0,
   "width": 1080,
   "height": 1920,
   "mouth_overlay": false,
   "media": {
     "exists": true,
-    "duration": 20.583333,
+    "duration": 24.0,
     "width": 1080,
     "height": 1920,
     "has_audio": true,
-    "mean_volume_db": -28.2
+    "mean_volume_db": -28.4
   },
   "image_tally": {
     "count": 4,
@@ -119,5 +134,17 @@
       }
     ],
     "thumbnail_note": "サムネイルは動画と同じ絵。点数は増えない。"
+  },
+  "style": {
+    "ok": true,
+    "thumb_ok": true,
+    "fit_failed": false,
+    "detail": "bousai:C5-P3-T4-F5-H2-M6-B6-L2-A6。直前との共有 1。直近5本の最大 1",
+    "thumb_detail": "thumb:C5-P3-T4-F5。構図・配色・文字位置は直前と2つ以上違う",
+    "signature": "bousai:C5-P3-T4-F5-H2-M6-B6-L2-A6",
+    "thumb_signature": "thumb:C5-P3-T4-F5",
+    "shared_with_prev": 1,
+    "shared_max_last5": 1,
+    "bgm": "B6"
   }
 }

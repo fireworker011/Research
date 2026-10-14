@@ -11,6 +11,7 @@ import argparse
 import json
 import shutil
 import sys
+from datetime import date
 from pathlib import Path
 
 PIPELINE_DIR = Path(__file__).resolve().parent
@@ -26,6 +27,7 @@ from channels import assert_outputs_clear, load_channel, render_upload  # noqa: 
 from irasutoya_short.sprites import load_rgba  # noqa: E402
 from irasutoya_short.tts import Speaker  # noqa: E402
 from qa_gate import evaluate, image_gate_self_test, mouth_self_test, pure_self_test, write_report  # noqa: E402
+from styles import append_style_log, load_style_log, pick_style, style_self_test  # noqa: E402
 from scripting import (  # noqa: E402
     amount_self_test,
     existing_titles,
@@ -85,6 +87,7 @@ def write_credits(path: Path, script: dict, channel: dict, tally: dict) -> None:
 
 
 def _run_self_test() -> None:
+    style_self_test()
     image_gate_self_test()
     amount_self_test()
     pure_self_test()
@@ -128,8 +131,9 @@ def main(argv: list[str] | None = None) -> int:
     work.mkdir(parents=True)
     review.mkdir(parents=True, exist_ok=True)
     _run_self_test()
+    look = pick_style(channel["style"], load_style_log(), slug)
     speaker = Speaker()
-    built = build(script, work, speaker)
+    built = build(script, work, speaker, look)
     mp4 = built["mp4"]
     report = evaluate(built["plan"], mp4 if mp4 is not None and Path(mp4).is_file() else None)
     write_report(review / "QA.md", script, report)
@@ -139,7 +143,26 @@ def main(argv: list[str] | None = None) -> int:
     public = json.loads(json.dumps(script))
     for line in public["lines"]:
         line.pop("voice_path", None)
+    style_report = report.get("style") or {}
+    public["style_signature"] = style_report.get("signature") or look["signature"]
+    public["thumb_signature"] = style_report.get("thumb_signature") or look["thumb_signature"]
     (review / "script.json").write_text(json.dumps(public, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    credit_pass = any(item["name"] == "credit_line" and item["pass"] for item in report["checks"])
+    append_style_log({
+        "date": date.today().isoformat(),
+        "line": look["line"],
+        "video_id": slug,
+        "status": "review" if report["pass"] else "blocked",
+        "signature": public["style_signature"],
+        "thumb_signature": public["thumb_signature"],
+        "shared_axes_with_prev": "-" if style_report.get("shared_with_prev") is None else style_report["shared_with_prev"],
+        "shared_axes_max_last5": "-" if style_report.get("shared_max_last5") is None else style_report["shared_max_last5"],
+        "bgm_track": look["bgm"],
+        "length_sec": "" if report.get("duration_sec") is None else report["duration_sec"],
+        "irasutoya_count": (report.get("image_tally") or {}).get("count", ""),
+        "credit_ok": "yes" if credit_pass else "no",
+        "notes": style_report.get("detail") or "",
+    })
     assert_outputs_clear([
         review / "QA.md",
         review / "QA.json",
@@ -149,15 +172,17 @@ def main(argv: list[str] | None = None) -> int:
     ])
     out_mp4 = review / "out.mp4"
     sheet = review / "contact-sheet.jpg"
-    if out_mp4.exists():
-        out_mp4.unlink()
-    if sheet.exists():
-        sheet.unlink()
+    thumb_out = review / "thumb.jpg"
+    for path in (out_mp4, sheet, thumb_out):
+        if path.exists():
+            path.unlink()
     if not report["pass"] or mp4 is None:
-        print(json.dumps({"pass": False, "qa": str(review / "QA.md")}, ensure_ascii=False))
+        print(json.dumps({"pass": False, "qa": str(review / "QA.md"), "style": public["style_signature"]}, ensure_ascii=False))
         return 1
     shutil.copy2(mp4, out_mp4)
     shutil.copy2(built["sheet"], sheet)
+    if built.get("thumb"):
+        shutil.copy2(built["thumb"], thumb_out)
     print(json.dumps({
         "pass": True,
         "out": str(out_mp4),

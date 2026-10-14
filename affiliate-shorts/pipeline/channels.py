@@ -8,6 +8,7 @@ import yaml
 
 from irasutoya_short.constants import BLOCKED_STYLE_IDS
 from qa_gate import COLLAB_RE
+from styles import validate_style
 
 PIPELINE_DIR = Path(__file__).resolve().parent
 CHANNELS_DIR = PIPELINE_DIR / "channels"
@@ -69,6 +70,7 @@ def load_channel(channel_id: str) -> dict:
     if not isinstance(data.get("require_sources", False), bool):
         raise ValueError("require_sources は true か false です。")
     data["require_sources"] = bool(data.get("require_sources", False))
+    data["style"] = validate_style(data.get("style"))
     return data
 
 
@@ -163,7 +165,10 @@ def _credits(raw: object) -> dict:
     if not isinstance(note, str) or not note.strip():
         raise ValueError("credits.note が空です。")
     _reject_removed_name(note, "credits.note")
-    return {"on_screen": "voices", "note": note.strip()}
+    illustration = raw.get("illustration") or ""
+    if not isinstance(illustration, str):
+        raise ValueError("credits.illustration は文字列です。")
+    return {"on_screen": "voices", "note": note.strip(), "illustration": illustration.strip()}
 
 
 def _require_text_field(data: dict, key: str, allow_empty: bool) -> None:

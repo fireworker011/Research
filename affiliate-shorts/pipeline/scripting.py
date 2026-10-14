@@ -257,6 +257,9 @@ def resolve(data: dict, index: dict[str, dict], channel: dict) -> dict:
         lines.append(line)
     assign_roles(lines)
     credit_text = "\n".join(credits)
+    illustration = str(channel["credits"].get("illustration") or "").strip()
+    if illustration:
+        credit_text = credit_text + "\n" + illustration
     lines.append(
         {
             "speaker": "narrator",

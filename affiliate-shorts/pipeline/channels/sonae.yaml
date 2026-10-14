@@ -41,6 +41,7 @@ caption:
     credit: [255, 255, 255, 255]
 credits:
   on_screen: voices
+  illustration: "イラスト：いらすとや"
   note: "いらすとやはクレジット表記不要。出典URLはレビュー用。動画の中にURLは出していない。効果音とBGMは合成したオリジナル。イラストは背景と字幕の一部で、内容の主体にはしていない。"
 upload_template: |
   # 投稿用
@@ -71,3 +72,68 @@ upload_template: |
   ## 投稿
 
   しない。
+style:
+  line: bousai
+  axes:
+    C:
+      - {code: C1, label: 地図・図解}
+      - {code: C2, label: チェックリスト}
+      - {code: C3, label: 部屋の中の再現}
+      - {code: C4, label: Q&A}
+      - {code: C5, label: 時系列タイムライン}
+      - {code: C6, label: 持ち物の並べ}
+    P:
+      - {code: P1, label: 白×オレンジ}
+      - {code: P2, label: 紺×黄}
+      - {code: P3, label: グレー×赤}
+      - {code: P4, label: 緑×白}
+      - {code: P5, label: 黒×黄}
+      - {code: P6, label: 水色×紺}
+    T:
+      - {code: T1, label: 上帯}
+      - {code: T2, label: 下帯}
+      - {code: T3, label: 左リスト}
+      - {code: T4, label: 中央大}
+      - {code: T5, label: 吹き出し}
+      - {code: T6, label: ラベル}
+    F:
+      - {code: F1, label: 太ゴ}
+      - {code: F2, label: 丸ゴ}
+      - {code: F3, label: UD ゴシック}
+      - {code: F4, label: 明朝}
+      - {code: F5, label: 角ゴ細+太}
+      - {code: F6, label: 手書き}
+    H:
+      - {code: H1, label: 質問}
+      - {code: H2, label: 数字}
+      - {code: H3, label: その時の状況}
+      - {code: H4, label: 警報音風の効果音}
+      - {code: H5, label: よくある誤解}
+      - {code: H6, label: 持ち物の1つから}
+    M:
+      - {code: M1, label: 1.5秒}
+      - {code: M2, label: 2.5秒}
+      - {code: M3, label: 4秒}
+      - {code: M4, label: 速から遅}
+      - {code: M5, label: リスト送り}
+      - {code: M6, label: 紙芝居}
+    B:
+      - {code: B1, label: なし}
+      - {code: B2, label: 落ち着いたピアノ}
+      - {code: B3, label: アンビエント}
+      - {code: B4, label: 環境音}
+      - {code: B5, label: 軽いシンセ}
+      - {code: B6, label: アコギ}
+    L:
+      - {code: L1, label: 15-20秒, min: 15, max: 20}
+      - {code: L2, label: 21-30秒, min: 21, max: 30}
+      - {code: L3, label: 31-40秒, min: 31, max: 40}
+      - {code: L4, label: 41-50秒, min: 41, max: 50}
+      - {code: L5, label: 51-60秒, min: 51, max: 60}
+    A:
+      - {code: A1, label: 図解中心}
+      - {code: A2, label: 人物+図解}
+      - {code: A3, label: 物の写真風}
+      - {code: A4, label: 地図}
+      - {code: A5, label: 文字カード}
+      - {code: A6, label: イラスト（いらすとや20枚以下）}

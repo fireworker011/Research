@@ -7,14 +7,16 @@
 チャンネル設定: sonae
 チャンネル名: 30秒そなえ帳（仮称）
 ジャンル: 防災グッズ・備え
+見た目: bousai:C5-P3-T4-F5-H2-M6-B6-L2-A6
+サムネ: thumb:C5-P3-T4-F5
 
 投稿はしない。
 
 | 項目 | 結果 | 内容 |
 | --- | --- | --- |
-| duration | pass | 20.58秒（20秒以上30秒以下） |
+| duration | pass | 24.00秒（20秒以上30秒以下） |
 | resolution | pass | 1080x1920 |
-| audio | pass | 音声 あり、平均 -28.2 dB |
+| audio | pass | 音声 あり、平均 -28.4 dB |
 | caption_overflow | pass | はみ出し無し |
 | text_boxes | pass | 字幕の帯は無し |
 | name_tags | pass | 名札とタグは無し |
@@ -22,6 +24,9 @@
 | irasutoya_count | pass | 4点（上限20）。サムネイルは動画と同じ絵。点数は増えない。 |
 | irasutoya_subject | pass | イラストは画面の一部 |
 | irasutoya_name | pass | 協力を示す名前は無い |
+| style_signature | pass | bousai:C5-P3-T4-F5-H2-M6-B6-L2-A6。直前との共有 1。直近5本の最大 1 |
+| style_thumb | pass | thumb:C5-P3-T4-F5。構図・配色・文字位置は直前と2つ以上違う |
+| credit_line | pass | 使った声と、イラスト：いらすとや |
 
 ## いらすとやの点数
 

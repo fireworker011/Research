@@ -45,8 +45,8 @@
       "tag": "",
       "style_id": 11,
       "credit": "VOICEVOX:玄野武宏",
-      "voice_seconds": 1.899,
-      "duration": 2.4583333333333335
+      "voice_seconds": 2.016,
+      "duration": 3.125
     },
     {
       "speaker": "narrator",
@@ -64,8 +64,8 @@
       "tag": "",
       "style_id": 2,
       "credit": "VOICEVOX:四国めたん",
-      "voice_seconds": 2.357,
-      "duration": 2.9166666666666665
+      "voice_seconds": 2.496,
+      "duration": 3.7083333333333335
     },
     {
       "speaker": "hero",
@@ -83,8 +83,8 @@
       "tag": "",
       "style_id": 12,
       "credit": "VOICEVOX:白上虎太郎",
-      "voice_seconds": 2.752,
-      "duration": 3.2916666666666665
+      "voice_seconds": 2.923,
+      "duration": 4.208333333333333
     },
     {
       "speaker": "narrator",
@@ -102,8 +102,8 @@
       "tag": "",
       "style_id": 2,
       "credit": "VOICEVOX:四国めたん",
-      "voice_seconds": 2.443,
-      "duration": 3.0
+      "voice_seconds": 2.592,
+      "duration": 3.7916666666666665
     },
     {
       "speaker": "narrator",
@@ -121,8 +121,8 @@
       "tag": "",
       "style_id": 2,
       "credit": "VOICEVOX:四国めたん",
-      "voice_seconds": 2.976,
-      "duration": 6.708333333333333
+      "voice_seconds": 3.125,
+      "duration": 5.916666666666667
     },
     {
       "speaker": "narrator",
@@ -130,7 +130,7 @@
       "who": "",
       "emotion": "",
       "text": "",
-      "caption": "VOICEVOX:玄野武宏\nVOICEVOX:四国めたん\nVOICEVOX:白上虎太郎",
+      "caption": "VOICEVOX:玄野武宏\nVOICEVOX:四国めたん\nVOICEVOX:白上虎太郎\nイラスト：いらすとや",
       "role": "credit",
       "effect": "none",
       "sfx": "none",
@@ -140,7 +140,7 @@
       "credit": "VOICEVOX:玄野武宏",
       "source_url": "",
       "voice_seconds": 0.2,
-      "duration": 2.2083333333333335
+      "duration": 3.25
     }
   ],
   "generator": "json",
@@ -194,5 +194,7 @@
     "備蓄",
     "shorts"
   ],
-  "name_status": "working"
+  "name_status": "working",
+  "style_signature": "bousai:C5-P3-T4-F5-H2-M6-B6-L2-A6",
+  "thumb_signature": "thumb:C5-P3-T4-F5"
 }
