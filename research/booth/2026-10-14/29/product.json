@@ -1,0 +1,72 @@
+{
+  "work_no": 29,
+  "date": "2026-10-14",
+  "title_short": "わたしは触りません、数えます…38歳の写真家が、キャップをしたまま言葉だけで最後まで導いてくれる",
+  "title_dlsite_fanza": "【言葉責め×カウント／本番なし】わたしは触りません、数えます～写真家(38歳)が、夜間のスタジオでキャップをしたまま言葉だけで導いてくれる～【合成音声】",
+  "price_jpy": 1320,
+  "price_tax_excluded_jpy_calc": 1200,
+  "price_note": "税込1,320円は、2026-10-12 05:24 UTC に見えた RJ01717564 の定価。同じ作品の表示価格は990円。総再生時間57分21秒。7日間・販売数順4位。期間販売数1,458。表示1,650円の RJ01708243（30日間・販売数順6位、期間販売数5,467）には寄せていない。1,320円で売れた本数は、この取得には無い。BOOTHの案は880円、990円、1,056円で、1,320円はそのどれでもない。この作品の販売本数は測っていない。税抜1,200円は1320を1.1で割った計算。割引は作っていない。",
+  "price_sources": [
+    {
+      "rj": "RJ01717564",
+      "seen": "定価1,320円。表示価格は990円",
+      "where": "7日間・販売数順4位。期間販売数1,458。総再生時間57分21秒。置いたのは定価の1,320円。",
+      "url": "https://www.dlsite.com/maniax/work/=/product_id/RJ01717564.html"
+    },
+    {
+      "rj": "RJ01708243",
+      "seen": "表示1,650円",
+      "where": "30日間・販売数順6位。期間販売数5,467。この1,650円は置いていない。",
+      "url": "https://www.dlsite.com/maniax/work/=/product_id/RJ01708243.html"
+    }
+  ],
+  "publish": false,
+  "booth_listing": true,
+  "dlsite_exclusive": false,
+  "stores_planned": ["DLsite", "BOOTH"],
+  "original": true,
+  "all_characters_adult": true,
+  "real_people": false,
+  "penetration": false,
+  "heroine": {
+    "name": "七瀬葵",
+    "reading": "ななせ あおい",
+    "age": 38,
+    "job": "写真家。自分のスタジオを12年続けている成人。この回は撮影をしない"
+  },
+  "listener": "肖像の仕事で通っている成人。台本では年齢を下に置かない。社会人",
+  "voice": {
+    "engine": "COEIROINK",
+    "speaker": "アンジーさん",
+    "style_normal": "のーまる。トラック1のささやき指示より前",
+    "style_whisper": "ささやき。カウントのときだけはっきり。指示以降と後日談",
+    "style_unused": "セクシーは使わない",
+    "not_used": ["VOICEVOX"]
+  },
+  "booth": {
+    "category": "ボイス",
+    "adult": true,
+    "tags": ["ASMR", "ASMR男性向け", "ASMR音声", "音声作品", "言葉責め", "ささやき", "お姉さん", "本番なし", "カウントダウン"]
+  },
+  "dlsite": {
+    "age": "R-18",
+    "ai_option": "AI一部利用",
+    "ai_option_note": "表紙を画像生成AIにする場合。声は市販のCOEIROINK。フラグを付けた方が売れる、とは2026-10-12の取得には書いていない。",
+    "genres": ["言葉責め", "女性優位", "本番なし", "オナニー", "男性受け", "ささやき", "淫語", "ラブラブ/あまあま"]
+  },
+  "planned_tracks": [
+    {"file": "part01", "title": "キャップをしたまま", "planned_minutes": 6},
+    {"file": "part02", "title": "ルールと、自分の手", "planned_minutes": 8},
+    {"file": "part03", "title": "10まで、言葉だけ", "planned_minutes": 14},
+    {"file": "part04", "title": "一度止めて、水", "planned_minutes": 8},
+    {"file": "part05", "title": "短いカウントで、最後まで", "planned_minutes": 12},
+    {"file": "part06", "title": "コートと、帰りの一言", "planned_minutes": 6}
+  ],
+  "bonus": {"file": "bonus", "title": "翌日の肖像の予約", "planned_minutes": 4, "sexual": false},
+  "planned_minutes_note": "配分は企画の長さ。ファイルを測った時間ではない。本編の合計は企画で54分。",
+  "export_plan": {
+    "wav": ["part01.wav", "part02.wav", "part03.wav", "part04.wav", "part05.wav", "part06.wav"],
+    "mp3": ["part01.mp3", "part02.mp3", "part03.mp3", "part04.mp3", "part05.mp3", "part06.mp3", "full.mp3"]
+  },
+  "audio_generated": false
+}

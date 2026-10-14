@@ -1,0 +1,66 @@
+{
+  "work_no": 28,
+  "date": "2026-10-14",
+  "title_short": "金曜は、手でいいですか…婚姻5年の妻(35歳)が、仕入れを終えてから聞いて添い寝のまま導いてくれる",
+  "title_dlsite_fanza": "【手コキ×添い寝／本番なし】金曜は、手でいいですか～婚姻5年の妻(35歳)が、仕入れのあとに「いいですか」と聞いてから添い寝のまま導いてくれる～【合成音声】",
+  "price_jpy": 880,
+  "price_tax_excluded_jpy_calc": 800,
+  "price_note": "税込880円は、2026-10-12 05:24 UTC に見えた RJ01702393 の表示価格。ページ表記の総時間は01時間40分59秒。30日間・販売数順1位。期間販売数11,227。源の作品はローションで、人数も違う。この企画は成人の配偶者2人だけで、寝取りにしない。この作品の販売本数は測っていない。税抜800円は880を1.1で割った計算。割引は作っていない。",
+  "price_sources": [
+    {
+      "rj": "RJ01702393",
+      "seen": "表示880円",
+      "where": "30日間・販売数順1位。期間販売数11,227。ページ表記の総時間01時間40分59秒。",
+      "url": "https://www.dlsite.com/maniax/work/=/product_id/RJ01702393.html"
+    }
+  ],
+  "publish": false,
+  "booth_listing": true,
+  "dlsite_exclusive": false,
+  "stores_planned": ["DLsite", "BOOTH"],
+  "original": true,
+  "all_characters_adult": true,
+  "real_people": false,
+  "penetration": false,
+  "heroine": {
+    "name": "久遠紗英",
+    "reading": "くおん さえ",
+    "age": 35,
+    "job": "和菓子店の仕入れ担当。社会人。婚姻5年目の成人"
+  },
+  "listener": "婚姻5年目の成人の配偶者。台本では年齢を下に置かない。社会人",
+  "voice": {
+    "engine": "COEIROINK",
+    "speaker": "アンジーさん",
+    "style_normal": "のーまる。トラック1のささやき指示より前",
+    "style_whisper": "ささやき。指示以降と後日談",
+    "style_unused": "セクシーは使わない",
+    "not_used": ["VOICEVOX"]
+  },
+  "booth": {
+    "category": "ささやき・癒し系",
+    "adult": true,
+    "tags": ["ASMR", "ASMR男性向け", "ASMR音声", "音声作品", "手コキ", "ささやき", "恋人同士", "人妻", "本番なし"]
+  },
+  "dlsite": {
+    "age": "R-18",
+    "ai_option": "AI一部利用",
+    "ai_option_note": "表紙を画像生成AIにする場合。声は市販のCOEIROINK。フラグを付けた方が売れる、とは2026-10-12の取得には書いていない。",
+    "genres": ["人妻", "手コキ", "恋人同士", "ささやき", "ラブラブ/あまあま", "お姉さん", "本番なし", "ASMR"]
+  },
+  "planned_tracks": [
+    {"file": "part01", "title": "仕入れ箱を閉じたあと", "planned_minutes": 6},
+    {"file": "part02", "title": "キスと、服の上", "planned_minutes": 8},
+    {"file": "part03", "title": "布団の上で、まだ動かさない", "planned_minutes": 8},
+    {"file": "part04", "title": "聞いてから、手", "planned_minutes": 12},
+    {"file": "part05", "title": "添い寝のまま、最後まで", "planned_minutes": 12},
+    {"file": "part06", "title": "拭いて、白湯", "planned_minutes": 6}
+  ],
+  "bonus": {"file": "bonus", "title": "土曜の朝、白あん", "planned_minutes": 4, "sexual": false},
+  "planned_minutes_note": "配分は企画の長さ。ファイルを測った時間ではない。本編の合計は企画で52分。",
+  "export_plan": {
+    "wav": ["part01.wav", "part02.wav", "part03.wav", "part04.wav", "part05.wav", "part06.wav"],
+    "mp3": ["part01.mp3", "part02.mp3", "part03.mp3", "part04.mp3", "part05.mp3", "part06.mp3", "full.mp3"]
+  },
+  "audio_generated": false
+}

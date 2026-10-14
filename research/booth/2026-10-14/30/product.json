@@ -1,0 +1,66 @@
+{
+  "work_no": 30,
+  "date": "2026-10-14",
+  "title_short": "終電のあとに、数えていいですか…雨の原稿夜、37歳の技術ライターが聞いてから手だけで導いてくれる",
+  "title_dlsite_fanza": "【言葉責め×ささやき／本番なし】終電のあとに、数えていいですか～技術ライター(37歳)が、雨の部屋で「いいですか」と聞いてから手だけで導いてくれる～【合成音声】",
+  "price_jpy": 990,
+  "price_tax_excluded_jpy_calc": 900,
+  "price_note": "税込990円は、2026-10-12 05:24 UTC に見えた RJ01732183 の表示価格。定価は1,650円。タイトルに3時間54分。7日間・販売数順14位。期間販売数873。年齢区分は全年齢。尺も年齢区分も、この企画とは違う。26作目の990円は別の作品（RJ01717564 の表示価格）を見ている。この作品の販売本数は測っていない。税抜900円は990を1.1で割った計算。割引は作っていない。",
+  "price_sources": [
+    {
+      "rj": "RJ01732183",
+      "seen": "表示990円/定価1,650円",
+      "where": "7日間・販売数順14位。期間販売数873。タイトルに3時間54分。年齢区分は全年齢。",
+      "url": "https://www.dlsite.com/maniax/work/=/product_id/RJ01732183.html"
+    }
+  ],
+  "publish": false,
+  "booth_listing": true,
+  "dlsite_exclusive": false,
+  "stores_planned": ["DLsite", "BOOTH"],
+  "original": true,
+  "all_characters_adult": true,
+  "real_people": false,
+  "penetration": false,
+  "heroine": {
+    "name": "水瀬透子",
+    "reading": "みなせ とうこ",
+    "age": 37,
+    "job": "在宅の技術ライター。マニュアルを書いて12年の成人"
+  },
+  "listener": "同じ案件を2年一緒にしている成人の共同作業者。台本では年齢を下に置かない。終電を逃しても、帰りの車代に条件は付かない",
+  "voice": {
+    "engine": "COEIROINK",
+    "speaker": "アンジーさん",
+    "style_normal": "のーまる。トラック1のささやき指示より前",
+    "style_whisper": "ささやき。指示以降と後日談",
+    "style_unused": "セクシーは使わない",
+    "not_used": ["VOICEVOX"]
+  },
+  "booth": {
+    "category": "ささやき・癒し系",
+    "adult": true,
+    "tags": ["ASMR", "ASMR男性向け", "ASMR音声", "音声作品", "手コキ", "ささやき", "お姉さん", "癒し", "本番なし"]
+  },
+  "dlsite": {
+    "age": "R-18",
+    "ai_option": "AI一部利用",
+    "ai_option_note": "表紙を画像生成AIにする場合。声は市販のCOEIROINK。フラグを付けた方が売れる、とは2026-10-12の取得には書いていない。",
+    "genres": ["言葉責め", "手コキ", "ささやき", "お姉さん", "本番なし", "癒し", "ラブラブ/あまあま", "ASMR"]
+  },
+  "planned_tracks": [
+    {"file": "part01", "title": "雨と、終電と、範囲", "planned_minutes": 6},
+    {"file": "part02", "title": "原稿を閉じて、近く", "planned_minutes": 8},
+    {"file": "part03", "title": "聞いてから、手を添える", "planned_minutes": 8},
+    {"file": "part04", "title": "いちから、雨の音の上で", "planned_minutes": 12},
+    {"file": "part05", "title": "数えて、最後まで", "planned_minutes": 12},
+    {"file": "part06", "title": "拭いて、白湯と毛布", "planned_minutes": 6}
+  ],
+  "bonus": {"file": "bonus", "title": "翌朝、原稿の行", "planned_minutes": 4, "sexual": false},
+  "planned_minutes_note": "配分は企画の長さ。ファイルを測った時間ではない。本編の合計は企画で52分。",
+  "export_plan": {
+    "wav": ["part01.wav", "part02.wav", "part03.wav", "part04.wav", "part05.wav", "part06.wav"],
+    "mp3": ["part01.mp3", "part02.mp3", "part03.mp3", "part04.mp3", "part05.mp3", "part06.mp3", "full.mp3"]
+  },
+  "audio_generated": false
+}
