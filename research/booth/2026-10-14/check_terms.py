@@ -104,7 +104,7 @@ def iter_texts():
             if path.suffix.lower() not in {".txt", ".json", ".md"}:
                 continue
             yield folder, path.name, path.read_text(encoding="utf-8")
-    for name in ("README.md", "title-tag-proposals.md"):
+    for name in ("README.md", "title-tag-proposals.md", "audio-measure.md"):
         path = ROOT / name
         if path.is_file():
             yield ROOT, name, path.read_text(encoding="utf-8")

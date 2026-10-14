@@ -49,18 +49,28 @@
     "genres": ["手コキ", "言葉責め", "ささやき", "お姉さん", "本番なし", "ラブラブ/あまあま", "淫語", "ASMR"]
   },
   "planned_tracks": [
-    {"file": "part01", "title": "閉店と、今日の範囲", "planned_minutes": 6},
-    {"file": "part02", "title": "水と、服の上", "planned_minutes": 8},
-    {"file": "part03", "title": "聞いてから、手を添える", "planned_minutes": 8},
-    {"file": "part04", "title": "いちから、ゆっくり", "planned_minutes": 12},
-    {"file": "part05", "title": "リズムを変えて、最後まで", "planned_minutes": 12},
-    {"file": "part06", "title": "拭いて、締めの水", "planned_minutes": 6}
+    {"file": "part01", "title": "閉店と、今日の範囲", "planned_minutes": 6, "measured_seconds": 213.634785},
+    {"file": "part02", "title": "水と、服の上", "planned_minutes": 8, "measured_seconds": 324.163016},
+    {"file": "part03", "title": "聞いてから、手を添える", "planned_minutes": 8, "measured_seconds": 341.632834},
+    {"file": "part04", "title": "いちから、ゆっくり", "planned_minutes": 12, "measured_seconds": 606.278095},
+    {"file": "part05", "title": "リズムを変えて、最後まで", "planned_minutes": 12, "measured_seconds": 540.439977},
+    {"file": "part06", "title": "拭いて、締めの水", "planned_minutes": 6, "measured_seconds": 170.321451}
   ],
-  "bonus": {"file": "bonus", "title": "翌日の仕込み前", "planned_minutes": 4, "sexual": false},
-  "planned_minutes_note": "配分は企画の長さ。ファイルを測った時間ではない。本編の合計は企画で52分。",
+  "bonus": {"file": "bonus", "title": "翌日の仕込み前", "planned_minutes": 4, "measured_seconds": 85.516553, "sexual": false},
+  "planned_minutes_note": "planned_minutes は企画の長さです。本編の実測は 2196.470158 秒、時計は 36:36 です。ファイルごとの秒は audio-measure.md です。",
   "export_plan": {
-    "wav": ["part01.wav", "part02.wav", "part03.wav", "part04.wav", "part05.wav", "part06.wav"],
-    "mp3": ["part01.mp3", "part02.mp3", "part03.mp3", "part04.mp3", "part05.mp3", "part06.mp3", "full.mp3"]
+    "wav": ["part01.wav", "part02.wav", "part03.wav", "part04.wav", "part05.wav", "part06.wav", "bonus.wav", "sample.wav"],
+    "mp3": ["part01.mp3", "part02.mp3", "part03.mp3", "part04.mp3", "part05.mp3", "part06.mp3", "bonus.mp3", "sample.mp3"]
   },
-  "audio_generated": false
+  "audio_measure": {
+    "target_lufs": -16.0,
+    "main_seconds": 2196.470158,
+    "main_clock": "36:36",
+    "sample_seconds": 118.566848,
+    "sample_clock": "1:59",
+    "bonus_seconds": 85.516553,
+    "bonus_clock": "1:26",
+    "source": "2026-10-14 の ffprobe と ebur128。I と TP は audio-measure.md。"
+  },
+  "audio_generated": true
 }
