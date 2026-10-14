@@ -266,6 +266,58 @@ def caption_hits_edge(telop: np.ndarray, margin: int = 8) -> bool:
     )
 
 
+SAFE_MARGIN = 48
+
+
+def ink_bbox(image: np.ndarray, alpha_min: int = 40) -> tuple[int, int, int, int] | None:
+    if image.ndim != 3 or image.shape[2] < 4:
+        return None
+    ys, xs = np.where(image[:, :, 3] > alpha_min)
+    if len(xs) == 0:
+        return None
+    return int(xs.min()), int(ys.min()), int(xs.max()) + 1, int(ys.max()) + 1
+
+
+def box_inside(inner: tuple[int, int, int, int], outer: tuple[int, int, int, int]) -> bool:
+    return inner[0] >= outer[0] and inner[1] >= outer[1] and inner[2] <= outer[2] and inner[3] <= outer[3]
+
+
+def safe_box(width: int, height: int, margin: int = SAFE_MARGIN) -> tuple[int, int, int, int]:
+    return (margin, margin, width - margin, height - margin)
+
+
+def caption_fit_problems(
+    text_box: tuple[int, int, int, int] | None,
+    container: tuple[int, int, int, int] | None,
+    width: int,
+    height: int,
+) -> list[str]:
+    """テロップの字が枠の中にあり、枠が画面の安全域に収まるかを返す。"""
+    problems: list[str] = []
+    if text_box is None or container is None:
+        return ["caption missing"]
+    if not box_inside(text_box, container):
+        problems.append("caption outside its box")
+    safe = safe_box(width, height)
+    if not box_inside(container, safe) or not box_inside(text_box, safe):
+        problems.append("caption outside the safe area")
+    return problems
+
+
+def distinct_stills(frames: list[np.ndarray], needed: int) -> bool:
+    """見た目が needed 種類以上あるか。同じ絵の字幕違いでは足りない。"""
+    if needed <= 1:
+        return True
+    kept: list[np.ndarray] = []
+    for frame in frames:
+        step_y = max(1, frame.shape[0] // 80)
+        step_x = max(1, frame.shape[1] // 48)
+        small = frame[::step_y, ::step_x].astype(np.int16)
+        if all(float(np.mean(np.abs(small - prev))) >= 10.0 for prev in kept):
+            kept.append(small)
+    return len(kept) >= needed
+
+
 def dead_air(path: str, limit: float = AIR_LIMIT) -> list[str]:
     """1.5秒を超える無音と、1.5秒を超える静止を返す。"""
     problems: list[str] = []

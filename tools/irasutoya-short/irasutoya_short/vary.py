@@ -36,7 +36,7 @@ from irasutoya_short.templates import settings_for
 from irasutoya_short.tts import Speaker
 
 ROOT = Path(__file__).resolve().parents[3]
-RENDERER = "stills-vary-2"
+RENDERER = "stills-vary-3"
 POOLS = (
     Path("/tmp/irasu-rest/15-furusato-onestop/assets"),
     Path("/tmp/irasu-b4/35-juminzei-qa/assets"),

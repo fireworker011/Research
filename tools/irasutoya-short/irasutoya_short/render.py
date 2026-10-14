@@ -12,9 +12,17 @@ from PIL import Image, ImageDraw, ImageFont
 from irasutoya_short.audio import fit_length, samples_for_frames, write_wav
 from irasutoya_short.backgrounds import concentration, render_bg
 from irasutoya_short.constants import FONT_CANDIDATES, FPS, HEIGHT, WIDTH
-from irasutoya_short.qa import caption_hits_edge, caption_overlaps_face
+from irasutoya_short.qa import (
+    caption_fit_problems,
+    caption_hits_edge,
+    caption_overlaps_face,
+    distinct_stills,
+    ink_bbox,
+    safe_box,
+)
 from irasutoya_short.sprites import load_rgba, mouth_levels, scale_rgba
-from irasutoya_short.style_draw import build_still, face_rects, load_font, telop_placement
+from irasutoya_short.style_draw import body_rects, build_still, face_rects, load_font, telop_placement
+from irasutoya_short.textutil import orphan_punctuation_lines, vertical_columns, wrap_caption_lines
 from irasutoya_short.templates import telop_bar_fill, telop_color, telop_style
 
 def bundled_font() -> str:
@@ -134,186 +142,225 @@ def _stroke_ink(fill: tuple[int, int, int, int]) -> tuple[int, int, int, int]:
     return (255, 255, 255, 255)
 
 
-def _wrap_chars(text: str, font: ImageFont.ImageFont, max_w: int) -> str:
-    lines: list[str] = []
-    for paragraph in text.split("\n"):
-        line = ""
-        for char in paragraph:
-            trial = f"{line}{char}"
-            if line and _text_size(font, trial)[0] > max_w:
-                lines.append(line)
-                line = char
-            else:
-                line = trial
-        lines.append(line)
-    return "\n".join(lines)
-
-
 def _boxes_overlap(a: tuple[int, int, int, int], b: tuple[int, int, int, int]) -> bool:
     return not (a[2] <= b[0] or b[2] <= a[0] or a[3] <= b[1] or b[3] <= a[1])
 
 
-def _clear_of_faces(box: tuple[int, int, int, int], faces: list[tuple[int, int, int, int]]) -> bool:
-    return all(not _boxes_overlap(box, face) for face in faces)
+def _clear_of(box: tuple[int, int, int, int], obstacles: list[tuple[int, int, int, int]]) -> bool:
+    return all(not _boxes_overlap(box, obstacle) for obstacle in obstacles)
 
 
-def _place_caption(
-    width: int,
-    height: int,
-    bar_w: int,
-    bar_h: int,
-    faces: list[tuple[int, int, int, int]],
-    mode: str,
-    y_ratio: float,
-) -> tuple[int, int] | None:
-    margin = 32
-    if bar_w > width - margin * 2:
-        bar_w = width - margin * 2
-    if bar_h > height - margin * 2:
-        bar_h = height - margin * 2
-    candidates: list[tuple[int, int]] = []
-    if mode == "note":
-        candidates.append((width - bar_w - margin, height - bar_h - margin))
-    elif mode == "center":
-        candidates.append(((width - bar_w) // 2, (height - bar_h) // 2))
-    elif y_ratio >= 0.5:
-        candidates.append((margin, height - bar_h - margin))
-    else:
-        candidates.append((margin, margin))
-    candidates.append(((width - bar_w) // 2, margin))
-    candidates.append(((width - bar_w) // 2, height - bar_h - margin))
-    for top in range(margin, max(margin + 1, height - margin - bar_h), 20):
-        candidates.append(((width - bar_w) // 2, top))
-    for left, top in candidates:
-        left = max(margin, min(left, width - margin - bar_w))
-        top = max(margin, min(top, height - margin - bar_h))
-        box = (left, top, left + bar_w, top + bar_h)
-        if box[2] > width - margin or box[3] > height - margin:
-            continue
-        if _clear_of_faces(box, faces):
-            return left, top
-    return None
+def _line_width(font: ImageFont.ImageFont, text: str) -> int:
+    box = font.getbbox(text)
+    return box[2] - box[0]
 
 
 def _render_placed_telop(text: str, role: str, placement: dict, scale: float) -> np.ndarray:
     width = int(placement.get("width") or WIDTH)
     height = int(placement.get("height") or HEIGHT)
-    image = Image.new("RGBA", (width, height), (0, 0, 0, 0))
+    blank = Image.new("RGBA", (width, height), (0, 0, 0, 0))
+    placement["container"] = None
+    placement["text_box"] = None
+    placement["wrapped"] = ""
     if not text.strip():
-        return np.array(image)
+        return np.array(blank)
     mode = str(placement["mode"])
     size = max(28, int(int(placement["size"]) * scale))
     if role == "credit":
         size = min(size, 48)
-    faces = [tuple(item) for item in placement.get("faces") or []]
+    obstacles = [tuple(item) for item in placement.get("bodies") or placement.get("faces") or []]
     fill = tuple(placement["fill"])
     stroke_color = _stroke_ink(fill)
     stroke = 3 if role == "credit" else int(placement["stroke"])
-    margin = 32
-    max_w = width - margin * 2 - 48
-    max_h = int(height * (0.55 if role == "credit" else 0.34))
     font_path = str(placement["font"])
     bold_path = str(placement.get("font_bold") or "")
     y_ratio = float(placement["y_ratio"])
-    modes = ["vertical", "band"] if mode == "vertical" else [mode, "band"]
+    modes = [mode]
+    if mode == "vertical":
+        modes = ["vertical", "band"]
+    safe = safe_box(width, height)
+    max_w = safe[2] - safe[0] - 56
+    max_h = safe[3] - safe[1] - 40
     for mode_try in modes:
         attempt = size
         while attempt >= 28:
-            drawn = _draw_caption_attempt(
+            drawn = _compose_caption(
                 text, role, font_path, bold_path, attempt, mode_try, y_ratio,
-                fill, stroke_color, stroke, faces, width, height, max_w, max_h,
+                fill, stroke_color, stroke, obstacles, width, height, max_w, max_h,
                 bool(placement.get("emphasis")), str(placement.get("bar") or ""),
                 tuple(placement["bar_fill"]),
             )
             if drawn is not None:
-                arr = np.array(drawn)
-                if not caption_hits_edge(arr, 12) and not caption_overlaps_face(arr, faces):
+                image, container, text_box, wrapped = drawn
+                problems = caption_fit_problems(text_box, container, width, height)
+                arr = np.array(image)
+                ink = ink_bbox(arr)
+                if (
+                    not problems
+                    and ink is not None
+                    and not caption_hits_edge(arr, 48)
+                    and not caption_overlaps_face(arr, obstacles)
+                    and not orphan_punctuation_lines(wrapped)
+                ):
+                    placement["container"] = container
+                    placement["text_box"] = text_box
+                    placement["wrapped"] = wrapped
                     return arr
-            attempt -= 6
-    return np.array(image)
+            attempt -= 4
+    raise RuntimeError("テロップが枠か画面の安全域に収まりません")
 
 
-def _draw_caption_attempt(
+def _compose_caption(
     text, role, font_path, bold_path, size, mode, y_ratio,
-    fill, stroke_color, stroke, faces, width, height, max_w, max_h,
+    fill, stroke_color, stroke, obstacles, width, height, max_w, max_h,
     emphasis, bar_kind, bar_fill,
 ):
-    margin = 36
-    image = Image.new("RGBA", (width, height), (0, 0, 0, 0))
-    if mode == "vertical":
-        font, size, columns = _fit_vertical(text, font_path, size, max_w, height - margin * 2)
-        block_w = max(size + stroke * 2, len(columns) * (size + 16) + stroke)
-        block_h = max((size + 4) * max(len(column) for column in columns) + stroke * 2, size)
-        placed = _place_vertical(width, height, block_w, block_h, faces)
-        if placed is None:
+    if mode == "vertical" and role != "credit":
+        columns = vertical_columns(text, max(1, max_h // (size + 6)))
+        if not columns or orphan_punctuation_lines("\n".join(columns)):
             return None
-        left, top = placed
-        _draw_vertical(ImageDraw.Draw(image), columns, font, fill, stroke_color, stroke, size, left, top)
-        return image
-    font = load_font(font_path, size)
-    wrapped = _wrap_chars(text, font, max_w)
-    tw, th = _text_size(font, wrapped)
-    if tw > max_w or th > max_h:
+        wide = len(columns) * (size + 18)
+        tall = max(len(column) for column in columns) * (size + 6)
+        if wide > max_w or tall > max_h:
+            return None
+        glyphs = _draw_vertical_glyphs(columns, load_font(font_path, size), fill, stroke_color, stroke, size)
+        wrapped = "\n".join(columns)
+    else:
+        font = load_font(font_path, size)
+        if role == "credit":
+            lines = [line.strip() for line in text.split("\n") if line.strip()]
+        else:
+            head_font = load_font(bold_path, size + 6) if emphasis and bold_path else font
+            lines = wrap_caption_lines(text, max_w, lambda sample: _line_width(head_font if emphasis else font, sample))
+        if not lines or orphan_punctuation_lines("\n".join(lines)):
+            return None
+        if any(_line_width(font, line) > max_w for line in lines):
+            return None
+        glyphs = _draw_line_glyphs(lines, font, bold_path, size, fill, stroke_color, stroke, emphasis)
+        wrapped = "\n".join(lines)
+    if glyphs.width > max_w or glyphs.height > max_h:
         return None
-    pad_x, pad_y = 24, 14 + stroke
-    bar_w = min(width - margin * 2, max(tw + pad_x * 2, 80))
-    bar_h = th + pad_y * 2
-    if bar_h > height - margin * 2 or bar_w > width - margin * 2:
-        return None
-    placed = _place_caption(width, height, bar_w, bar_h, faces, mode, y_ratio)
+    pad_x, pad_y = 22, 16
+    bar_w = glyphs.width + pad_x * 2
+    bar_h = glyphs.height + pad_y * 2
+    placed = _place_box(width, height, bar_w, bar_h, obstacles, mode, y_ratio)
     if placed is None:
         return None
     left, top = placed
-    draw = ImageDraw.Draw(image)
+    card = Image.new("RGBA", (bar_w, bar_h), (0, 0, 0, 0))
+    draw = ImageDraw.Draw(card)
     if mode == "note":
-        _draw_note(image, wrapped, font, fill, stroke_color, stroke, bar_w, bar_h, left, top)
-        return image
-    radius = 8 if bar_kind == "square" else 18
-    draw.rounded_rectangle((left, top, left + bar_w, top + bar_h), radius=min(radius, bar_h // 2), fill=bar_fill)
-    _draw_emphasis(draw, wrapped, font, bold_path, size, fill, stroke_color, stroke, left, top, bar_w, pad_y, emphasis)
-    return image
+        paint = (255, 248, 220, 235)
+        radius = 6
+    else:
+        paint = bar_fill
+        radius = 8 if bar_kind == "square" else 18
+    draw.rounded_rectangle((0, 0, bar_w - 1, bar_h - 1), radius=min(radius, bar_h // 2), fill=paint)
+    card.alpha_composite(glyphs, (pad_x, pad_y))
+    image = Image.new("RGBA", (width, height), (0, 0, 0, 0))
+    image.alpha_composite(card, (left, top))
+    container = (left, top, left + bar_w, top + bar_h)
+    text_box = (left + pad_x, top + pad_y, left + pad_x + glyphs.width, top + pad_y + glyphs.height)
+    return image, container, text_box, wrapped
 
 
-def _place_vertical(
-    width: int,
-    height: int,
-    block_w: int,
-    block_h: int,
-    faces: list[tuple[int, int, int, int]],
-) -> tuple[int, int] | None:
-    margin = 36
-    if block_w > width - margin * 2 or block_h > height - margin * 2:
+def _place_box(width, height, bar_w, bar_h, obstacles, mode, y_ratio) -> tuple[int, int] | None:
+    safe = safe_box(width, height)
+    if bar_w > safe[2] - safe[0] or bar_h > safe[3] - safe[1]:
         return None
-    xs = [margin, max(margin, width - margin - block_w)]
-    xs.extend(range(margin, max(margin + 1, width - margin - block_w), 28))
-    ys = [margin, max(margin, height - margin - block_h)]
-    ys.extend(range(margin, max(margin + 1, height - margin - block_h), 28))
-    for top in ys:
-        for left in xs:
-            box = (left, top, left + block_w, top + block_h)
-            if box[2] > width - margin or box[3] > height - margin:
-                continue
-            if _clear_of_faces(box, faces):
-                return left, top
+    candidates: list[tuple[int, int]] = []
+    if mode == "vertical":
+        candidates.append((safe[0], safe[1]))
+        candidates.append((safe[2] - bar_w, safe[1]))
+    elif mode == "note":
+        candidates.append((safe[2] - bar_w, safe[3] - bar_h))
+    elif mode == "center":
+        candidates.append(((width - bar_w) // 2, (height - bar_h) // 2))
+    elif y_ratio < 0.5:
+        candidates.append((safe[0], safe[1]))
+    else:
+        candidates.append((safe[0], safe[3] - bar_h))
+    candidates.append(((width - bar_w) // 2, safe[1]))
+    candidates.append(((width - bar_w) // 2, safe[3] - bar_h))
+    span = max(safe[1], safe[3] - bar_h)
+    for top in range(safe[1], span + 1, 24):
+        candidates.append(((width - bar_w) // 2, top))
+        candidates.append((safe[0], top))
+        candidates.append((safe[2] - bar_w, top))
+    for left, top in candidates:
+        left = max(safe[0], min(left, safe[2] - bar_w))
+        top = max(safe[1], min(top, safe[3] - bar_h))
+        box = (left, top, left + bar_w, top + bar_h)
+        if not _clear_of(box, obstacles):
+            continue
+        if caption_fit_problems(
+            (box[0] + 22, box[1] + 16, box[2] - 22, box[3] - 16),
+            box,
+            width,
+            height,
+        ):
+            continue
+        return left, top
     return None
 
 
-def _draw_emphasis(draw, text, font, bold_path, size, fill, stroke_color, stroke, left, top, bar_w, pad_y, emphasis: bool) -> None:
-    if not emphasis or "\n" not in text or not bold_path:
-        tw, _th = _text_size(font, text)
-        tx = left + (bar_w - tw) // 2
-        ty = top + pad_y - 2
-        _stroke_text(draw, (tx, ty), text, font, fill, stroke_color, stroke, align="center")
-        return
-    head, _, rest = text.partition("\n")
-    head_font = load_font(bold_path, size + 8)
-    body_font = font
-    hw, hh = _text_size(head_font, head)
-    rw, _rh = _text_size(body_font, rest) if rest else (0, 0)
-    y = top + 8
-    _stroke_text(draw, (left + (bar_w - hw) // 2, y), head, head_font, fill, stroke_color, stroke + 2, align="center")
-    if rest:
-        _stroke_text(draw, (left + (bar_w - rw) // 2, y + hh + 6), rest, body_font, fill, stroke_color, max(2, stroke - 1), align="center")
+def _draw_line_glyphs(lines, font, bold_path, size, fill, stroke_color, stroke, emphasis: bool) -> Image.Image:
+    fonts = []
+    for index, line in enumerate(lines):
+        if emphasis and index == 0 and bold_path:
+            fonts.append(load_font(bold_path, size + 6))
+        else:
+            fonts.append(font)
+    widths = [_line_width(item, line) for item, line in zip(fonts, lines)]
+    heights = [item.getbbox(line)[3] - item.getbbox(line)[1] for item, line in zip(fonts, lines)]
+    spacing = 8
+    text_w = max(widths) if widths else 1
+    text_h = sum(heights) + spacing * max(0, len(lines) - 1)
+    pad = stroke + 6
+    image = Image.new("RGBA", (text_w + pad * 2, max(1, text_h) + pad * 2), (0, 0, 0, 0))
+    draw = ImageDraw.Draw(image)
+    y = pad
+    for line, item, width, line_h in zip(lines, fonts, widths, heights):
+        x = pad + (text_w - width) // 2
+        _stroke_line(draw, x, y, line, item, fill, stroke_color, stroke)
+        y += line_h + spacing
+    return _crop_alpha(image)
+
+
+def _draw_vertical_glyphs(columns, font, fill, stroke_color, stroke, size) -> Image.Image:
+    gap = 8
+    step = size + 4
+    pad = stroke + 6
+    width = pad * 2 + len(columns) * size + gap * max(0, len(columns) - 1)
+    height = pad * 2 + step * max(len(column) for column in columns)
+    image = Image.new("RGBA", (max(1, width), max(1, height)), (0, 0, 0, 0))
+    draw = ImageDraw.Draw(image)
+    x = pad
+    for column in columns:
+        y = pad
+        for char in column:
+            _stroke_line(draw, x, y, char, font, fill, stroke_color, max(1, stroke))
+            y += step
+        x += size + gap
+    return _crop_alpha(image)
+
+
+def _stroke_line(draw, x: int, y: int, text: str, font, fill, stroke_color, stroke: int) -> None:
+    if stroke > 0:
+        for dx in range(-stroke, stroke + 1, 2):
+            for dy in range(-stroke, stroke + 1, 2):
+                if dx * dx + dy * dy > stroke * stroke:
+                    continue
+                draw.text((x + dx, y + dy), text, font=font, fill=stroke_color)
+    draw.text((x, y), text, font=font, fill=fill)
+
+
+def _crop_alpha(image: Image.Image) -> Image.Image:
+    arr = np.array(image)
+    ys, xs = np.where(arr[:, :, 3] > 10)
+    if len(xs) == 0:
+        return image
+    return image.crop((int(xs.min()), int(ys.min()), int(xs.max()) + 1, int(ys.max()) + 1))
 
 
 def _stroke_text(draw, xy, text, font, fill, stroke_color, stroke, align: str) -> None:
@@ -325,47 +372,6 @@ def _stroke_text(draw, xy, text, font, fill, stroke_color, stroke, align: str) -
                     continue
                 draw.multiline_text((x + dx, y + dy), text, font=font, fill=stroke_color, spacing=6, align=align)
     draw.multiline_text((x, y), text, font=font, fill=fill, spacing=6, align=align)
-
-
-def _fit_vertical(text: str, path: str, size: int, max_w: int, max_h: int) -> tuple[ImageFont.ImageFont, int, list[str]]:
-    source = [column for column in text.split("\n") if column] or [text]
-    columns = source
-    while size > 22:
-        limit = max(1, max_h // (size + 4))
-        columns = []
-        for column in source:
-            for start in range(0, len(column), limit):
-                columns.append(column[start : start + limit])
-        columns = columns or source
-        tall = max(len(column) for column in columns) * (size + 4)
-        wide = len(columns) * (size + 16)
-        if tall <= max_h and wide <= max_w:
-            break
-        size -= 2
-    return load_font(path, size), size, columns
-
-
-def _draw_vertical(draw, columns, font, fill, stroke_color, stroke, size, left: int, top: int) -> None:
-    x = left
-    for column in columns:
-        y = top
-        for char in column:
-            _stroke_text(draw, (x, y), char, font, fill, stroke_color, max(1, stroke), align="left")
-            y += size + 4
-        x += size + 16
-
-
-def _draw_note(image, text, font, fill, stroke_color, stroke, bar_w, bar_h, left: int, top: int) -> None:
-    note = Image.new("RGBA", (bar_w, bar_h), (0, 0, 0, 0))
-    draw = ImageDraw.Draw(note)
-    paper = (255, 248, 220, 235)
-    draw.rounded_rectangle((0, 0, bar_w - 1, bar_h - 1), radius=6, fill=paper)
-    tw, _th = _text_size(font, text)
-    _stroke_text(draw, (max(8, (bar_w - tw) // 2), 10), text, font, fill, stroke_color, stroke, align="center")
-    turned = note.rotate(7, expand=True, resample=Image.Resampling.BICUBIC)
-    x = min(left, image.size[0] - turned.width - 8)
-    y = min(top, image.size[1] - turned.height - 8)
-    image.alpha_composite(turned, (max(8, x), max(8, y)))
 
 
 def _zoom(frame: np.ndarray, zoom: float) -> np.ndarray:
@@ -417,10 +423,11 @@ def _light_motion(frame: np.ndarray, scene: dict, local_t: float, axes: dict | N
             moved = _shake(moved, 5, local_t)
         return _zoom(moved, 1.02 + 0.045 * p)
     # 1.5秒以上同じ絵が続かないよう、どのテンポでも少しずつずらす。
-    drift_x = int(round(local_t * 8))
-    drift_y = int(round(local_t * 10))
+    drift_x = int(round(local_t * 32))
+    drift_y = int(round(local_t * 24))
     if tempo == "M6":
-        moved = shift_frame(frame, drift_x, drift_y)
+        # 平坦な背景でも、1.5秒たつ前に絵が変わる速さ。
+        moved = shift_frame(frame, int(round(local_t * 36)), int(round(local_t * 28)))
         return moved if moved is not frame else frame.copy()
     if tempo == "M2":
         pan, rise, base = 28, 0.045, 1.02
@@ -556,8 +563,9 @@ def _styled_layers(project: dict, scenes: list[dict], book: SpriteBook, settings
         placement = telop_placement(axes, scene)
         if scene.get("role") == "credit":
             faces: list[tuple[int, int, int, int]] = []
+            bodies: list[tuple[int, int, int, int]] = []
         else:
-            slop = 48 + int(float(scene.get("duration") or 1) * 12)
+            slop = 16
             faces = [
                 (
                     max(0, x0 - slop),
@@ -565,9 +573,19 @@ def _styled_layers(project: dict, scenes: list[dict], book: SpriteBook, settings
                     min(WIDTH, x1 + slop),
                     min(HEIGHT, y1 + slop),
                 )
-                for x0, y0, x1, y1 in face_rects(book, axes, cast, index)
+                for x0, y0, x1, y1 in face_rects(book, axes, cast, scene, index, len(scenes))
+            ]
+            bodies = [
+                (
+                    max(0, x0 - slop),
+                    max(0, y0 - slop),
+                    min(WIDTH, x1 + slop),
+                    min(HEIGHT, y1 + slop),
+                )
+                for x0, y0, x1, y1 in body_rects(book, axes, cast, scene, index, len(scenes))
             ]
         placement["faces"] = faces
+        placement["bodies"] = bodies
         telop = render_telop(
             scene["telop"],
             scene["role"],
@@ -579,11 +597,20 @@ def _styled_layers(project: dict, scenes: list[dict], book: SpriteBook, settings
             None,
             placement,
         )
-        if caption_overlaps_face(telop, faces):
-            raise RuntimeError(f"テロップが顔にかかっています: scene {scene.get('id')}")
-        if caption_hits_edge(telop):
+        if caption_overlaps_face(telop, faces) or caption_overlaps_face(telop, bodies):
+            raise RuntimeError(f"テロップが人物にかかっています: scene {scene.get('id')}")
+        if caption_hits_edge(telop, 48):
             raise RuntimeError(f"テロップが画面の端で切れています: scene {scene.get('id')}")
+        problems = caption_fit_problems(placement.get("text_box"), placement.get("container"), WIDTH, HEIGHT)
+        if problems:
+            raise RuntimeError(f"テロップが枠の外です: scene {scene.get('id')} {', '.join(problems)}")
+        if orphan_punctuation_lines(str(placement.get("wrapped") or "")):
+            raise RuntimeError(f"テロップの句読点が一行だけです: scene {scene.get('id')}")
         telops.append(telop)
+    content = [still for still, scene in zip(stills, scenes) if scene.get("role") != "credit"]
+    needed = 1 if len(content) < 2 else 2 if len(content) == 2 else 3
+    if not distinct_stills(content, needed):
+        raise RuntimeError("絵が字幕以外で変わっていません")
     project["style_used_assets"] = sorted(used)
     return stills, leads, telops
 

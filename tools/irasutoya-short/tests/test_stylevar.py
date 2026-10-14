@@ -10,7 +10,8 @@ import numpy as np
 
 from irasutoya_short import sprites
 from irasutoya_short.sfx import bgm_loop
-from irasutoya_short.qa import caption_hits_edge, caption_overlaps_face, dead_air
+from irasutoya_short.qa import caption_fit_problems, caption_hits_edge, caption_overlaps_face, dead_air, distinct_stills
+from irasutoya_short.textutil import orphan_punctuation_lines, wrap_caption_lines
 from irasutoya_short.render import render_telop
 from irasutoya_short.style_draw import PALETTES, build_still, font_path, telop_placement
 from irasutoya_short.stylevar import (
@@ -208,7 +209,40 @@ class CaptionAndAirTests(unittest.TestCase):
             {"role": "body"},
         )
         long = render_telop("源泉徴収票で先に見る欄は天引きの欄だけ見ろ", "body", 1080, 1920, 1.0, 0.5, "body", None, wide)
-        self.assertFalse(caption_hits_edge(long))
+        self.assertFalse(caption_hits_edge(long, 48))
+        self.assertEqual(caption_fit_problems(wide["text_box"], wide["container"], 1080, 1920), [])
+        self.assertEqual(orphan_punctuation_lines(wide["wrapped"]), [])
+
+    def test_caption_box_contains_the_glyphs(self) -> None:
+        axes = {"C": "C1", "P": "P1", "T": "T1", "F": "F1", "H": "H3", "M": "M1", "B": "B1", "L": "L1", "A": "A2"}
+        placement = telop_placement(axes, {"role": "hook"})
+        render_telop("ウォーターサーバーあるあ\nる", "hook", 1080, 1920, 1.0, 0.5, "hook", None, placement)
+        self.assertEqual(caption_fit_problems(placement["text_box"], placement["container"], 1080, 1920), [])
+        self.assertNotIn("、", orphan_punctuation_lines(placement["wrapped"]))
+        self.assertFalse(any(len(line.strip()) == 1 for line in placement["wrapped"].split("\n")))
+        comma = wrap_caption_lines("第3位、途中でやめにくい", 6, len)
+        self.assertEqual(orphan_punctuation_lines("\n".join(comma)), [])
+        self.assertTrue(orphan_punctuation_lines("第3位\n、"))
+
+    def test_three_chapters_change_the_picture(self) -> None:
+        book = _GreenBook()
+        axes = {"C": "C1", "P": "P1", "T": "T1", "F": "F1", "H": "H3", "M": "M1", "B": "B1", "L": "L1", "A": "A2"}
+        stills = []
+        for index in range(6):
+            stills.append(
+                build_still(
+                    {"role": "body", "telop": "あ"},
+                    book,
+                    axes,
+                    ["hero"],
+                    index,
+                    6,
+                    set(),
+                    width=180,
+                    height=320,
+                )
+            )
+        self.assertTrue(distinct_stills(stills, 3))
 
     def test_dead_air_flags_silence_and_a_held_frame(self) -> None:
         frozen = _clip("/tmp/qa-frozen.mp4", moving=False, tone=False, frames=72)

@@ -59,3 +59,80 @@ def wrap_telop(text: str, width: int = 12, max_lines: int = 2) -> str:
 
 def spoken(text: str) -> str:
     return " ".join(text.replace("\n", "").split())
+
+
+# 行頭に来ると、一行だけの句読点や閉じ括弧になる。
+_NO_LINE_START = frozenset("、。！？!?・…，．）)」』】〉》」～ーｰ,.")
+_ORPHAN_CHARS = frozenset("、。！？!?・…，．）)」』】〉》」～ーｰ,.「『（(【〈《［[")
+
+
+def orphan_punctuation_lines(text: str) -> list[str]:
+    """句読点や括弧だけになった行を返す。"""
+    found: list[str] = []
+    for line in text.split("\n"):
+        stripped = line.strip()
+        if stripped and all(char in _ORPHAN_CHARS for char in stripped):
+            found.append(stripped)
+    return found
+
+
+def caption_source(text: str) -> str:
+    """表示用に、折り返しの改行だけを外す。"""
+    return "".join(part.strip() for part in text.replace("\r", "").split("\n") if part.strip())
+
+
+def wrap_caption_lines(text: str, max_width: int, measure) -> list[str]:
+    """幅で折り返す。句読点だけの行は作らない。"""
+    source = caption_source(text)
+    if not source:
+        return []
+    lines: list[str] = []
+    current = ""
+    for char in source:
+        trial = f"{current}{char}"
+        if current and measure(trial) > max_width:
+            if char in _NO_LINE_START and len(current) >= 2:
+                lines.append(current[:-1])
+                current = current[-1] + char
+            else:
+                lines.append(current)
+                current = char
+        else:
+            current = trial
+    if current:
+        lines.append(current)
+    folded: list[str] = []
+    for line in lines:
+        if folded and orphan_punctuation_lines(line):
+            folded[-1] = f"{folded[-1]}{line.strip()}"
+        else:
+            folded.append(line)
+    if folded and orphan_punctuation_lines(folded[0]) and len(folded) > 1:
+        folded[1] = f"{folded[0].strip()}{folded[1]}"
+        folded = folded[1:]
+    return [line for line in folded if line.strip()]
+
+
+def vertical_columns(text: str, max_rows: int) -> list[str]:
+    """縦書きの列。句読点だけで列を始めない。"""
+    source = caption_source(text)
+    if not source:
+        return []
+    limit = max(1, max_rows)
+    columns: list[str] = []
+    current = ""
+    for char in source:
+        if len(current) >= limit and char not in _NO_LINE_START:
+            columns.append(current)
+            current = char
+        else:
+            current += char
+    if current:
+        columns.append(current)
+    folded: list[str] = []
+    for column in columns:
+        if folded and orphan_punctuation_lines(column):
+            folded[-1] = f"{folded[-1]}{column.strip()}"
+        else:
+            folded.append(column)
+    return [column for column in folded if column.strip()]
