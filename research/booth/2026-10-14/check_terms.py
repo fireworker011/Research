@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Scan research/booth/2026-10-14 works 26-30 for terms that cannot ship.
+"""Scan research/booth/2026-10-14 works 27-31 for terms that cannot ship.
 
 Flags minors, school settings, family roles, and known borrowed IP.
 Allows the purchase disclaimer 「18歳未満」 and the negation 「実在の人物では…」.
@@ -87,7 +87,7 @@ ALLOW_LINE = (
 )
 
 PENETRATION = re.compile(r"挿入|中出し|なかに、だして|なかにだして")
-WORK_DIRS = [ROOT / str(n) for n in range(26, 31)]
+WORK_DIRS = [ROOT / str(n) for n in range(27, 32)]
 
 
 def to_int(age: str) -> int:
@@ -162,7 +162,7 @@ def main() -> int:
                 hits.append(f"{folder.name}/product.json heroine age")
             if not data.get("price_sources"):
                 hits.append(f"{folder.name}/product.json missing price_sources")
-    for n in range(26, 31):
+    for n in range(27, 32):
         if str(n) not in seen_works:
             hits.append(f"missing work {n}")
     if hits:
@@ -170,7 +170,7 @@ def main() -> int:
         for hit in hits:
             print(hit)
         return 1
-    print("OK works 26-30")
+    print("OK works 27-31")
     return 0
 
 
