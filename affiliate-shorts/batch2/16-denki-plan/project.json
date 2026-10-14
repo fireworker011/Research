@@ -118,7 +118,7 @@
       "tone": "before",
       "voice_path": "/tmp/irasu-vary/16-denki-plan/audio/scene_03.wav",
       "voice_seconds": 1.259,
-      "duration": 1.4583333333333333,
+      "duration": 1.2916666666666667,
       "lead": 0.0
     },
     {
@@ -227,7 +227,7 @@
       "hold": 1.6,
       "voice_path": "/tmp/irasu-vary/16-denki-plan/audio/scene_07.wav",
       "voice_seconds": 1.013,
-      "duration": 3.9166666666666665,
+      "duration": 1.125,
       "lead": 0.0
     },
     {
@@ -254,7 +254,7 @@
       "tone": "after",
       "voice_path": "/tmp/irasu-vary/16-denki-plan/audio/scene_08.wav",
       "voice_seconds": 1.237,
-      "duration": 3.9166666666666665,
+      "duration": 1.375,
       "lead": 0.0
     },
     {
@@ -281,7 +281,7 @@
       "tone": "after",
       "voice_path": "/tmp/irasu-vary/16-denki-plan/audio/scene_09.wav",
       "voice_seconds": 0.853,
-      "duration": 3.9166666666666665,
+      "duration": 0.9583333333333334,
       "lead": 0.0
     },
     {
@@ -308,7 +308,7 @@
       "tone": "after",
       "voice_path": "/tmp/irasu-vary/16-denki-plan/audio/scene_10.wav",
       "voice_seconds": 0.491,
-      "duration": 3.9166666666666665,
+      "duration": 0.625,
       "lead": 0.0
     },
     {
@@ -335,7 +335,7 @@
       "tone": "after",
       "voice_path": "/tmp/irasu-vary/16-denki-plan/audio/scene_11.wav",
       "voice_seconds": 1.611,
-      "duration": 3.9166666666666665,
+      "duration": 1.75,
       "lead": 0.0
     },
     {
@@ -362,7 +362,7 @@
       "tone": "close",
       "voice_path": "/tmp/irasu-vary/16-denki-plan/audio/scene_12.wav",
       "voice_seconds": 1.6,
-      "duration": 3.9166666666666665,
+      "duration": 1.7083333333333333,
       "lead": 0.0
     },
     {
@@ -394,7 +394,7 @@
       "tone": "after",
       "voice_path": "/tmp/irasu-vary/16-denki-plan/audio/scene_13.wav",
       "voice_seconds": 1.152,
-      "duration": 3.9166666666666665,
+      "duration": 1.2916666666666667,
       "lead": 0.0
     },
     {
@@ -415,7 +415,7 @@
       "series_note": "検針票係",
       "voice_path": "/tmp/irasu-vary/16-denki-plan/audio/scene_14.wav",
       "voice_seconds": 0.15,
-      "duration": 2.2083333333333335,
+      "duration": 1.0416666666666667,
       "lead": 0.0
     }
   ],
@@ -622,7 +622,7 @@
     "voicevox": "使った声はクレジットが要る。四国めたん、白上虎太郎、玄野武宏、剣崎雌雄はクレジットを書けば商用可。青山龍星は個人事業・法人だと事前許可が要るので使っていない。効果音とBGMはこの場で合成したオリジナルなのでクレジット不要。"
   },
   "notes": [],
-  "style_signature": "kane:C1-P6-T3-F2-H4-M4-B1-L3-A4",
+  "style_signature": "kane:C1-P6-T3-F2-H4-M4-B1-L1-A4",
   "style_axes": {
     "C": "C1",
     "P": "P6",
@@ -631,7 +631,7 @@
     "H": "H4",
     "M": "M4",
     "B": "B1",
-    "L": "L3",
+    "L": "L1",
     "A": "A4",
     "line": "kane"
   },

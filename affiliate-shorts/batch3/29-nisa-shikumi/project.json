@@ -64,7 +64,7 @@
       "tone": "hook",
       "voice_path": "/tmp/irasu-vary/29-nisa-shikumi/audio/scene_01.wav",
       "voice_seconds": 1.995,
-      "duration": 2.2916666666666665,
+      "duration": 2.0416666666666665,
       "lead": 0.0
     },
     {
@@ -91,7 +91,7 @@
       "tone": "item",
       "voice_path": "/tmp/irasu-vary/29-nisa-shikumi/audio/scene_02.wav",
       "voice_seconds": 1.376,
-      "duration": 2.2916666666666665,
+      "duration": 1.4166666666666667,
       "lead": 0.0
     },
     {
@@ -118,7 +118,7 @@
       "tone": "item",
       "voice_path": "/tmp/irasu-vary/29-nisa-shikumi/audio/scene_03.wav",
       "voice_seconds": 1.099,
-      "duration": 2.2916666666666665,
+      "duration": 1.1666666666666667,
       "lead": 0.0
     },
     {
@@ -145,7 +145,7 @@
       "tone": "item",
       "voice_path": "/tmp/irasu-vary/29-nisa-shikumi/audio/scene_04.wav",
       "voice_seconds": 1.376,
-      "duration": 2.2916666666666665,
+      "duration": 1.4166666666666667,
       "lead": 0.0
     },
     {
@@ -172,7 +172,7 @@
       "tone": "item",
       "voice_path": "/tmp/irasu-vary/29-nisa-shikumi/audio/scene_05.wav",
       "voice_seconds": 1.387,
-      "duration": 2.2916666666666665,
+      "duration": 1.4166666666666667,
       "lead": 0.0
     },
     {
@@ -199,7 +199,7 @@
       "tone": "item",
       "voice_path": "/tmp/irasu-vary/29-nisa-shikumi/audio/scene_06.wav",
       "voice_seconds": 1.216,
-      "duration": 2.2916666666666665,
+      "duration": 1.25,
       "lead": 0.0
     },
     {
@@ -226,7 +226,7 @@
       "tone": "item",
       "voice_path": "/tmp/irasu-vary/29-nisa-shikumi/audio/scene_07.wav",
       "voice_seconds": 1.088,
-      "duration": 2.2916666666666665,
+      "duration": 1.125,
       "lead": 0.0
     },
     {
@@ -253,7 +253,7 @@
       "tone": "item",
       "voice_path": "/tmp/irasu-vary/29-nisa-shikumi/audio/scene_08.wav",
       "voice_seconds": 0.928,
-      "duration": 2.2916666666666665,
+      "duration": 0.9583333333333334,
       "lead": 0.0
     },
     {
@@ -280,7 +280,7 @@
       "tone": "punch",
       "voice_path": "/tmp/irasu-vary/29-nisa-shikumi/audio/scene_09.wav",
       "voice_seconds": 1.696,
-      "duration": 2.2916666666666665,
+      "duration": 1.75,
       "lead": 0.0
     },
     {
@@ -307,7 +307,7 @@
       "tone": "punch",
       "voice_path": "/tmp/irasu-vary/29-nisa-shikumi/audio/scene_10.wav",
       "voice_seconds": 1.077,
-      "duration": 2.2916666666666665,
+      "duration": 1.125,
       "lead": 0.0
     },
     {
@@ -334,7 +334,7 @@
       "tone": "punch",
       "voice_path": "/tmp/irasu-vary/29-nisa-shikumi/audio/scene_11.wav",
       "voice_seconds": 1.387,
-      "duration": 2.2916666666666665,
+      "duration": 1.4166666666666667,
       "lead": 0.0
     },
     {
@@ -361,7 +361,7 @@
       "tone": "close",
       "voice_path": "/tmp/irasu-vary/29-nisa-shikumi/audio/scene_12.wav",
       "voice_seconds": 1.717,
-      "duration": 2.2916666666666665,
+      "duration": 1.75,
       "lead": 0.0
     },
     {
@@ -388,7 +388,7 @@
       "tone": "close",
       "voice_path": "/tmp/irasu-vary/29-nisa-shikumi/audio/scene_13.wav",
       "voice_seconds": 1.173,
-      "duration": 11.291666666666666,
+      "duration": 1.2916666666666667,
       "lead": 0.0
     },
     {
@@ -409,7 +409,7 @@
       "series_note": "口座係",
       "voice_path": "/tmp/irasu-vary/29-nisa-shikumi/audio/scene_14.wav",
       "voice_seconds": 0.15,
-      "duration": 2.2083333333333335,
+      "duration": 1.0416666666666667,
       "lead": 0.0
     }
   ],
@@ -589,7 +589,7 @@
     "voicevox": "使った声はクレジットが要る。四国めたん、白上虎太郎、玄野武宏、剣崎雌雄はクレジットを書けば商用可。青山龍星は個人事業・法人だと事前許可が要るので使っていない。効果音とBGMはこの場で合成したオリジナルなのでクレジット不要。"
   },
   "notes": [],
-  "style_signature": "kane:C4-P3-T4-F1-H3-M5-B6-L4-A1",
+  "style_signature": "kane:C4-P3-T4-F1-H3-M5-B6-L1-A1",
   "style_axes": {
     "C": "C4",
     "P": "P3",
@@ -598,7 +598,7 @@
     "H": "H3",
     "M": "M5",
     "B": "B6",
-    "L": "L4",
+    "L": "L1",
     "A": "A1",
     "line": "kane"
   },

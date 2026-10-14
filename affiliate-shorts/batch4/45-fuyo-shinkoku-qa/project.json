@@ -57,7 +57,7 @@
       "hold": 1.6,
       "voice_path": "/tmp/irasu-vary/45-fuyo-shinkoku-qa/audio/scene_01.wav",
       "voice_seconds": 2.112,
-      "duration": 2.125,
+      "duration": 2.1666666666666665,
       "lead": 0.0
     },
     {
@@ -86,7 +86,7 @@
       "tone": "guess",
       "voice_path": "/tmp/irasu-vary/45-fuyo-shinkoku-qa/audio/scene_02.wav",
       "voice_seconds": 2.325,
-      "duration": 2.3333333333333335,
+      "duration": 2.375,
       "lead": 0.0
     },
     {
@@ -194,7 +194,7 @@
       "tone": "guess",
       "voice_path": "/tmp/irasu-vary/45-fuyo-shinkoku-qa/audio/scene_06.wav",
       "voice_seconds": 1.152,
-      "duration": 1.1666666666666667,
+      "duration": 1.2083333333333333,
       "lead": 0.0
     },
     {
@@ -221,7 +221,7 @@
       "tone": "guess",
       "voice_path": "/tmp/irasu-vary/45-fuyo-shinkoku-qa/audio/scene_07.wav",
       "voice_seconds": 1.611,
-      "duration": 2.7916666666666665,
+      "duration": 1.75,
       "lead": 0.0
     },
     {
@@ -248,7 +248,7 @@
       "tone": "answer",
       "voice_path": "/tmp/irasu-vary/45-fuyo-shinkoku-qa/audio/scene_08.wav",
       "voice_seconds": 1.696,
-      "duration": 2.875,
+      "duration": 1.8333333333333333,
       "lead": 0.0
     },
     {
@@ -275,7 +275,7 @@
       "tone": "answer",
       "voice_path": "/tmp/irasu-vary/45-fuyo-shinkoku-qa/audio/scene_09.wav",
       "voice_seconds": 0.853,
-      "duration": 2.0416666666666665,
+      "duration": 0.9583333333333334,
       "lead": 0.0
     },
     {
@@ -302,7 +302,7 @@
       "tone": "answer",
       "voice_path": "/tmp/irasu-vary/45-fuyo-shinkoku-qa/audio/scene_10.wav",
       "voice_seconds": 1.099,
-      "duration": 2.3333333333333335,
+      "duration": 1.2083333333333333,
       "lead": 0.0
     },
     {
@@ -329,7 +329,7 @@
       "tone": "answer",
       "voice_path": "/tmp/irasu-vary/45-fuyo-shinkoku-qa/audio/scene_11.wav",
       "voice_seconds": 1.387,
-      "duration": 2.625,
+      "duration": 1.5,
       "lead": 0.0
     },
     {
@@ -356,7 +356,7 @@
       "tone": "question",
       "voice_path": "/tmp/irasu-vary/45-fuyo-shinkoku-qa/audio/scene_12.wav",
       "voice_seconds": 1.589,
-      "duration": 2.8333333333333335,
+      "duration": 1.7083333333333333,
       "lead": 0.0
     },
     {
@@ -383,7 +383,7 @@
       "tone": "answer",
       "voice_path": "/tmp/irasu-vary/45-fuyo-shinkoku-qa/audio/scene_13.wav",
       "voice_seconds": 1.589,
-      "duration": 2.8333333333333335,
+      "duration": 1.7083333333333333,
       "lead": 0.0
     },
     {
@@ -404,7 +404,7 @@
       "series_note": "申告係",
       "voice_path": "/tmp/irasu-vary/45-fuyo-shinkoku-qa/audio/scene_14.wav",
       "voice_seconds": 0.15,
-      "duration": 2.0,
+      "duration": 1.0416666666666667,
       "lead": 0.0
     }
   ],

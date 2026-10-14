@@ -34,8 +34,8 @@
       "sfx": "none",
       "duration_hint": 2.0,
       "voice_path": "/tmp/irasu-vary/55-shataku-hojo/audio/scene_01.wav",
-      "voice_seconds": 0.875,
-      "duration": 1.4583333333333333,
+      "voice_seconds": 1.707,
+      "duration": 1.75,
       "lead": 0.0
     },
     {
@@ -62,8 +62,8 @@
       "sfx": "paper",
       "duration_hint": 2.2,
       "voice_path": "/tmp/irasu-vary/55-shataku-hojo/audio/scene_02.wav",
-      "voice_seconds": 2.027,
-      "duration": 2.0416666666666665,
+      "voice_seconds": 4.011,
+      "duration": 4.041666666666667,
       "lead": 0.0
     },
     {
@@ -88,8 +88,8 @@
       "sfx": "none",
       "duration_hint": 2.2,
       "voice_path": "/tmp/irasu-vary/55-shataku-hojo/audio/scene_03.wav",
-      "voice_seconds": 0.693,
-      "duration": 3.9166666666666665,
+      "voice_seconds": 1.397,
+      "duration": 1.5,
       "lead": 0.0
     },
     {
@@ -114,8 +114,8 @@
       "sfx": "none",
       "duration_hint": 2.2,
       "voice_path": "/tmp/irasu-vary/55-shataku-hojo/audio/scene_04.wav",
-      "voice_seconds": 1.355,
-      "duration": 3.9166666666666665,
+      "voice_seconds": 2.699,
+      "duration": 2.8333333333333335,
       "lead": 0.0
     },
     {
@@ -140,8 +140,8 @@
       "sfx": "coin",
       "duration_hint": 2.2,
       "voice_path": "/tmp/irasu-vary/55-shataku-hojo/audio/scene_05.wav",
-      "voice_seconds": 2.315,
-      "duration": 3.9166666666666665,
+      "voice_seconds": 4.619,
+      "duration": 4.75,
       "lead": 0.0
     },
     {
@@ -161,7 +161,7 @@
       "duration_hint": 2.2,
       "voice_path": "/tmp/irasu-vary/55-shataku-hojo/audio/scene_06.wav",
       "voice_seconds": 0.15,
-      "duration": 2.2083333333333335,
+      "duration": 1.0416666666666667,
       "lead": 0.0
     }
   ],
@@ -239,8 +239,8 @@
     "screenshot_count": 0
   },
   "settings": {
-    "speed": 1.28,
-    "hook_speed": 1.48,
+    "speed": 0.641,
+    "hook_speed": 0.741,
     "telop_scale": 1.0,
     "sfx_gain": 0.22,
     "bgm_gain": 0.045,
@@ -248,11 +248,11 @@
     "bgm": true,
     "tail": 0.16,
     "role_speed": {
-      "hook": 1.48,
-      "develop": 1.28,
-      "punch": 1.28,
-      "close": 1.28,
-      "credit": 1.28
+      "hook": 0.741,
+      "develop": 0.641,
+      "punch": 0.641,
+      "close": 0.641,
+      "credit": 0.641
     },
     "role_tail": {
       "hook": 0.16,
@@ -314,12 +314,12 @@
     "voicevox": "使った声はクレジットが要る。四国めたん、白上虎太郎、玄野武宏、剣崎雌雄はクレジットを書けば商用可。青山龍星は個人事業・法人だと事前許可が要るので使っていない。効果音とBGMはこの場で合成したオリジナルなのでクレジット不要。"
   },
   "notes": [],
-  "style_signature": "kane:C4-P2-T5-F2-H4-M4-B2-L1-A5",
+  "style_signature": "kane:C4-P2-T5-F1-H4-M4-B2-L1-A5",
   "style_axes": {
     "C": "C4",
     "P": "P2",
     "T": "T5",
-    "F": "F2",
+    "F": "F1",
     "H": "H4",
     "M": "M4",
     "B": "B2",

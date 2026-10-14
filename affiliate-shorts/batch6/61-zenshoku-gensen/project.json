@@ -34,8 +34,8 @@
       "sfx": "none",
       "duration_hint": 2.0,
       "voice_path": "/tmp/irasu-vary/61-zenshoku-gensen/audio/scene_01.wav",
-      "voice_seconds": 1.163,
-      "duration": 2.2916666666666665,
+      "voice_seconds": 2.101,
+      "duration": 2.1666666666666665,
       "lead": 0.0
     },
     {
@@ -62,8 +62,8 @@
       "sfx": "paper",
       "duration_hint": 2.2,
       "voice_path": "/tmp/irasu-vary/61-zenshoku-gensen/audio/scene_02.wav",
-      "voice_seconds": 2.272,
-      "duration": 2.2916666666666665,
+      "voice_seconds": 4.203,
+      "duration": 4.25,
       "lead": 0.0
     },
     {
@@ -88,8 +88,8 @@
       "sfx": "none",
       "duration_hint": 2.2,
       "voice_path": "/tmp/irasu-vary/61-zenshoku-gensen/audio/scene_03.wav",
-      "voice_seconds": 0.608,
-      "duration": 2.2916666666666665,
+      "voice_seconds": 1.109,
+      "duration": 1.1666666666666667,
       "lead": 0.0
     },
     {
@@ -114,8 +114,8 @@
       "sfx": "none",
       "duration_hint": 2.2,
       "voice_path": "/tmp/irasu-vary/61-zenshoku-gensen/audio/scene_04.wav",
-      "voice_seconds": 1.824,
-      "duration": 2.2916666666666665,
+      "voice_seconds": 3.392,
+      "duration": 3.4583333333333335,
       "lead": 0.0
     },
     {
@@ -140,8 +140,8 @@
       "sfx": "paper",
       "duration_hint": 2.2,
       "voice_path": "/tmp/irasu-vary/61-zenshoku-gensen/audio/scene_05.wav",
-      "voice_seconds": 2.133,
-      "duration": 19.625,
+      "voice_seconds": 3.936,
+      "duration": 4.041666666666667,
       "lead": 0.0
     },
     {
@@ -161,7 +161,7 @@
       "duration_hint": 2.2,
       "voice_path": "/tmp/irasu-vary/61-zenshoku-gensen/audio/scene_06.wav",
       "voice_seconds": 0.15,
-      "duration": 2.2083333333333335,
+      "duration": 1.0416666666666667,
       "lead": 0.0
     }
   ],
@@ -239,8 +239,8 @@
     "screenshot_count": 0
   },
   "settings": {
-    "speed": 1.28,
-    "hook_speed": 1.48,
+    "speed": 0.7,
+    "hook_speed": 0.81,
     "telop_scale": 1.0,
     "sfx_gain": 0.22,
     "bgm_gain": 0.045,
@@ -248,11 +248,11 @@
     "bgm": false,
     "tail": 0.16,
     "role_speed": {
-      "hook": 1.48,
-      "develop": 1.28,
-      "punch": 1.28,
-      "close": 1.28,
-      "credit": 1.28
+      "hook": 0.81,
+      "develop": 0.7,
+      "punch": 0.7,
+      "close": 0.7,
+      "credit": 0.7
     },
     "role_tail": {
       "hook": 0.16,
@@ -314,7 +314,7 @@
     "voicevox": "使った声はクレジットが要る。四国めたん、白上虎太郎、玄野武宏、剣崎雌雄はクレジットを書けば商用可。青山龍星は個人事業・法人だと事前許可が要るので使っていない。効果音とBGMはこの場で合成したオリジナルなのでクレジット不要。"
   },
   "notes": [],
-  "style_signature": "kane:C3-P3-T1-F1-H3-M5-B1-L3-A3",
+  "style_signature": "kane:C3-P3-T1-F1-H3-M5-B1-L1-A1",
   "style_axes": {
     "C": "C3",
     "P": "P3",
@@ -323,14 +323,16 @@
     "H": "H3",
     "M": "M5",
     "B": "B1",
-    "L": "L3",
-    "A": "A3",
+    "L": "L1",
+    "A": "A1",
     "line": "kane"
   },
   "style_cast": [
-    "hero_trouble"
+    "hero_trouble",
+    "hero_tired"
   ],
   "style_used_assets": [
+    "hero_tired",
     "hero_trouble"
   ]
 }

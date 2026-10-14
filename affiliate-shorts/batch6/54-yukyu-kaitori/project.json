@@ -34,8 +34,8 @@
       "sfx": "none",
       "duration_hint": 2.0,
       "voice_path": "/tmp/irasu-vary/54-yukyu-kaitori/audio/scene_01.wav",
-      "voice_seconds": 0.832,
-      "duration": 5.0,
+      "voice_seconds": 1.675,
+      "duration": 1.7916666666666667,
       "lead": 0.0
     },
     {
@@ -62,8 +62,8 @@
       "sfx": "paper",
       "duration_hint": 2.2,
       "voice_path": "/tmp/irasu-vary/54-yukyu-kaitori/audio/scene_02.wav",
-      "voice_seconds": 1.76,
-      "duration": 5.0,
+      "voice_seconds": 3.531,
+      "duration": 3.6666666666666665,
       "lead": 0.0
     },
     {
@@ -88,8 +88,8 @@
       "sfx": "none",
       "duration_hint": 2.2,
       "voice_path": "/tmp/irasu-vary/54-yukyu-kaitori/audio/scene_03.wav",
-      "voice_seconds": 0.469,
-      "duration": 5.0,
+      "voice_seconds": 0.949,
+      "duration": 1.0833333333333333,
       "lead": 0.0
     },
     {
@@ -116,8 +116,8 @@
       "sfx": "paper",
       "duration_hint": 2.2,
       "voice_path": "/tmp/irasu-vary/54-yukyu-kaitori/audio/scene_04.wav",
-      "voice_seconds": 1.6,
-      "duration": 5.0,
+      "voice_seconds": 3.115,
+      "duration": 3.25,
       "lead": 0.0
     },
     {
@@ -142,8 +142,8 @@
       "sfx": "none",
       "duration_hint": 2.2,
       "voice_path": "/tmp/irasu-vary/54-yukyu-kaitori/audio/scene_05.wav",
-      "voice_seconds": 2.208,
-      "duration": 5.0,
+      "voice_seconds": 4.395,
+      "duration": 4.5,
       "lead": 0.0
     },
     {
@@ -163,7 +163,7 @@
       "duration_hint": 2.2,
       "voice_path": "/tmp/irasu-vary/54-yukyu-kaitori/audio/scene_06.wav",
       "voice_seconds": 0.15,
-      "duration": 2.2083333333333335,
+      "duration": 1.0416666666666667,
       "lead": 0.0
     }
   ],
@@ -241,8 +241,8 @@
     "screenshot_count": 0
   },
   "settings": {
-    "speed": 1.28,
-    "hook_speed": 1.48,
+    "speed": 0.64,
+    "hook_speed": 0.74,
     "telop_scale": 1.0,
     "sfx_gain": 0.22,
     "bgm_gain": 0.045,
@@ -250,11 +250,11 @@
     "bgm": false,
     "tail": 0.16,
     "role_speed": {
-      "hook": 1.48,
-      "develop": 1.28,
-      "punch": 1.28,
-      "close": 1.28,
-      "credit": 1.28
+      "hook": 0.74,
+      "develop": 0.64,
+      "punch": 0.64,
+      "close": 0.64,
+      "credit": 0.64
     },
     "role_tail": {
       "hook": 0.16,
@@ -316,7 +316,7 @@
     "voicevox": "使った声はクレジットが要る。四国めたん、白上虎太郎、玄野武宏、剣崎雌雄はクレジットを書けば商用可。青山龍星は個人事業・法人だと事前許可が要るので使っていない。効果音とBGMはこの場で合成したオリジナルなのでクレジット不要。"
   },
   "notes": [],
-  "style_signature": "kane:C2-P5-T1-F2-H4-M6-B1-L2-A1",
+  "style_signature": "kane:C2-P5-T1-F2-H4-M6-B1-L1-A1",
   "style_axes": {
     "C": "C2",
     "P": "P5",
@@ -325,7 +325,7 @@
     "H": "H4",
     "M": "M6",
     "B": "B1",
-    "L": "L2",
+    "L": "L1",
     "A": "A1",
     "line": "kane"
   },

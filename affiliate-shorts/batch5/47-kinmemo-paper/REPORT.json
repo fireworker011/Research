@@ -1,7 +1,7 @@
 {
   "out": "/workspace/affiliate-shorts/batch5/47-kinmemo-paper/out.mp4",
   "template": "sukatto",
-  "duration_sec": 41.0,
+  "duration_sec": 16.12,
   "scene_count": 6,
   "asset_count": 3,
   "asset_limit": 20,
@@ -37,7 +37,7 @@
     "voicevox": "使った声はクレジットが要る。四国めたん、白上虎太郎、玄野武宏、剣崎雌雄はクレジットを書けば商用可。青山龍星は個人事業・法人だと事前許可が要るので使っていない。効果音とBGMはこの場で合成したオリジナルなのでクレジット不要。"
   },
   "within_20_30": false,
-  "style_signature": "kane:C4-P3-T3-F3-H2-M3-B6-L4-A4",
+  "style_signature": "kane:C4-P3-T3-F3-H2-M3-B6-L1-A4",
   "irasutoya_count": 3,
   "within_style_length": true,
   "style_thumb": "thumb:C4-P3-T3-F3"

@@ -59,8 +59,8 @@
       "sfx": "none",
       "duration_hint": 2.2,
       "voice_path": "/tmp/irasu-vary/44-kekkin-kojo/audio/scene_01.wav",
-      "voice_seconds": 1.067,
-      "duration": 1.0833333333333333,
+      "voice_seconds": 1.184,
+      "duration": 1.25,
       "lead": 0.0
     },
     {
@@ -87,8 +87,8 @@
       "sfx": "paper",
       "duration_hint": 2.2,
       "voice_path": "/tmp/irasu-vary/44-kekkin-kojo/audio/scene_02.wav",
-      "voice_seconds": 1.557,
-      "duration": 1.5833333333333333,
+      "voice_seconds": 1.781,
+      "duration": 1.8333333333333333,
       "lead": 0.0
     },
     {
@@ -113,8 +113,8 @@
       "sfx": "none",
       "duration_hint": 2.2,
       "voice_path": "/tmp/irasu-vary/44-kekkin-kojo/audio/scene_03.wav",
-      "voice_seconds": 0.939,
-      "duration": 0.9583333333333334,
+      "voice_seconds": 1.067,
+      "duration": 1.125,
       "lead": 0.0
     },
     {
@@ -139,8 +139,8 @@
       "sfx": "whoosh",
       "duration_hint": 2.2,
       "voice_path": "/tmp/irasu-vary/44-kekkin-kojo/audio/scene_04.wav",
-      "voice_seconds": 1.077,
-      "duration": 1.0833333333333333,
+      "voice_seconds": 1.259,
+      "duration": 1.2916666666666667,
       "lead": 0.0
     },
     {
@@ -165,8 +165,8 @@
       "sfx": "none",
       "duration_hint": 2.2,
       "voice_path": "/tmp/irasu-vary/44-kekkin-kojo/audio/scene_05.wav",
-      "voice_seconds": 1.141,
-      "duration": 1.1666666666666667,
+      "voice_seconds": 1.312,
+      "duration": 1.375,
       "lead": 0.0
     },
     {
@@ -191,8 +191,8 @@
       "sfx": "none",
       "duration_hint": 2.2,
       "voice_path": "/tmp/irasu-vary/44-kekkin-kojo/audio/scene_06.wav",
-      "voice_seconds": 1.675,
-      "duration": 1.7083333333333333,
+      "voice_seconds": 1.941,
+      "duration": 2.0,
       "lead": 0.0
     },
     {
@@ -217,8 +217,8 @@
       "sfx": "none",
       "duration_hint": 2.2,
       "voice_path": "/tmp/irasu-vary/44-kekkin-kojo/audio/scene_07.wav",
-      "voice_seconds": 1.323,
-      "duration": 1.3333333333333333,
+      "voice_seconds": 1.579,
+      "duration": 1.625,
       "lead": 0.0
     },
     {
@@ -243,8 +243,8 @@
       "sfx": "none",
       "duration_hint": 2.2,
       "voice_path": "/tmp/irasu-vary/44-kekkin-kojo/audio/scene_08.wav",
-      "voice_seconds": 0.843,
-      "duration": 0.875,
+      "voice_seconds": 0.96,
+      "duration": 1.0,
       "lead": 0.0
     },
     {
@@ -269,8 +269,8 @@
       "sfx": "notify",
       "duration_hint": 2.2,
       "voice_path": "/tmp/irasu-vary/44-kekkin-kojo/audio/scene_09.wav",
-      "voice_seconds": 1.387,
-      "duration": 1.4166666666666667,
+      "voice_seconds": 1.643,
+      "duration": 1.7083333333333333,
       "lead": 0.0
     },
     {
@@ -295,8 +295,8 @@
       "sfx": "shock",
       "duration_hint": 2.2,
       "voice_path": "/tmp/irasu-vary/44-kekkin-kojo/audio/scene_10.wav",
-      "voice_seconds": 0.832,
-      "duration": 0.8333333333333334,
+      "voice_seconds": 0.939,
+      "duration": 1.0,
       "lead": 0.0
     },
     {
@@ -321,8 +321,8 @@
       "sfx": "none",
       "duration_hint": 2.2,
       "voice_path": "/tmp/irasu-vary/44-kekkin-kojo/audio/scene_11.wav",
-      "voice_seconds": 0.64,
-      "duration": 0.6666666666666666,
+      "voice_seconds": 0.736,
+      "duration": 0.7916666666666666,
       "lead": 0.0
     },
     {
@@ -347,8 +347,8 @@
       "sfx": "coin",
       "duration_hint": 2.2,
       "voice_path": "/tmp/irasu-vary/44-kekkin-kojo/audio/scene_12.wav",
-      "voice_seconds": 1.568,
-      "duration": 1.5833333333333333,
+      "voice_seconds": 1.803,
+      "duration": 1.8333333333333333,
       "lead": 0.0
     },
     {
@@ -373,8 +373,8 @@
       "sfx": "none",
       "duration_hint": 2.2,
       "voice_path": "/tmp/irasu-vary/44-kekkin-kojo/audio/scene_13.wav",
-      "voice_seconds": 1.547,
-      "duration": 3.7083333333333335,
+      "voice_seconds": 1.813,
+      "duration": 1.9166666666666667,
       "lead": 0.0
     },
     {
@@ -395,7 +395,7 @@
       "series_note": "勤怠係",
       "voice_path": "/tmp/irasu-vary/44-kekkin-kojo/audio/scene_14.wav",
       "voice_seconds": 0.15,
-      "duration": 2.0,
+      "duration": 1.0416666666666667,
       "lead": 0.0
     }
   ],
@@ -496,8 +496,8 @@
     "screenshot_count": 0
   },
   "settings": {
-    "speed": 1.51,
-    "hook_speed": 1.687,
+    "speed": 1.28,
+    "hook_speed": 1.48,
     "telop_scale": 1.0,
     "sfx_gain": 0.22,
     "bgm_gain": 0.045,
@@ -505,11 +505,11 @@
     "bgm": true,
     "tail": 0.16,
     "role_speed": {
-      "hook": 1.687,
-      "develop": 1.51,
-      "punch": 1.51,
-      "close": 1.51,
-      "credit": 1.51
+      "hook": 1.48,
+      "develop": 1.28,
+      "punch": 1.28,
+      "close": 1.28,
+      "credit": 1.28
     },
     "role_tail": {
       "hook": 0.16,

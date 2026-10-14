@@ -34,8 +34,8 @@
       "sfx": "none",
       "duration_hint": 2.0,
       "voice_path": "/tmp/irasu-vary/58-zaikei/audio/scene_01.wav",
-      "voice_seconds": 0.917,
-      "duration": 3.0833333333333335,
+      "voice_seconds": 1.771,
+      "duration": 1.875,
       "lead": 0.0
     },
     {
@@ -60,8 +60,8 @@
       "sfx": "coin",
       "duration_hint": 2.2,
       "voice_path": "/tmp/irasu-vary/58-zaikei/audio/scene_02.wav",
-      "voice_seconds": 1.952,
-      "duration": 4.0,
+      "voice_seconds": 3.659,
+      "duration": 3.7916666666666665,
       "lead": 0.0
     },
     {
@@ -86,8 +86,8 @@
       "sfx": "none",
       "duration_hint": 2.2,
       "voice_path": "/tmp/irasu-vary/58-zaikei/audio/scene_03.wav",
-      "voice_seconds": 0.779,
-      "duration": 2.9166666666666665,
+      "voice_seconds": 1.483,
+      "duration": 1.5833333333333333,
       "lead": 0.0
     },
     {
@@ -114,8 +114,8 @@
       "sfx": "paper",
       "duration_hint": 2.2,
       "voice_path": "/tmp/irasu-vary/58-zaikei/audio/scene_04.wav",
-      "voice_seconds": 1.632,
-      "duration": 3.7916666666666665,
+      "voice_seconds": 3.061,
+      "duration": 3.1666666666666665,
       "lead": 0.0
     },
     {
@@ -140,8 +140,8 @@
       "sfx": "coin",
       "duration_hint": 2.2,
       "voice_path": "/tmp/irasu-vary/58-zaikei/audio/scene_05.wav",
-      "voice_seconds": 2.283,
-      "duration": 4.0,
+      "voice_seconds": 4.299,
+      "duration": 4.416666666666667,
       "lead": 0.0
     },
     {
@@ -161,7 +161,7 @@
       "duration_hint": 2.2,
       "voice_path": "/tmp/irasu-vary/58-zaikei/audio/scene_06.wav",
       "voice_seconds": 0.15,
-      "duration": 2.2083333333333335,
+      "duration": 1.0416666666666667,
       "lead": 0.0
     }
   ],
@@ -239,8 +239,8 @@
     "screenshot_count": 0
   },
   "settings": {
-    "speed": 1.28,
-    "hook_speed": 1.48,
+    "speed": 0.676,
+    "hook_speed": 0.782,
     "telop_scale": 1.0,
     "sfx_gain": 0.22,
     "bgm_gain": 0.045,
@@ -248,11 +248,11 @@
     "bgm": true,
     "tail": 0.16,
     "role_speed": {
-      "hook": 1.48,
-      "develop": 1.28,
-      "punch": 1.28,
-      "close": 1.28,
-      "credit": 1.28
+      "hook": 0.782,
+      "develop": 0.676,
+      "punch": 0.676,
+      "close": 0.676,
+      "credit": 0.676
     },
     "role_tail": {
       "hook": 0.16,

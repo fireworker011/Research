@@ -323,6 +323,10 @@ def render_all(root: Path, workers: int = 3, only: set[str] | None = None) -> No
     rows = seed_log_rows()
     durations: dict[str, float] = {}
     plan_rows = []
+    existing_plan = {
+        row["video_id"]: row
+        for row in json.loads((root / "affiliate-shorts" / "style-plan.json").read_text(encoding="utf-8"))
+    }
     for job in jobs:
         if job["video_id"] in done:
             payload = done[job["video_id"]]
@@ -347,14 +351,17 @@ def render_all(root: Path, workers: int = 3, only: set[str] | None = None) -> No
         )
         history.append(signature)
         durations[str(root / job["folder"])] = float(payload["duration"])
-        plan_rows.append(
-            {
-                "video_id": job["video_id"],
-                "folder": job["folder"],
-                "signature": signature.text(),
-                "thumb": signature.thumb(),
-            }
-        )
+        if job["video_id"] in done:
+            plan_rows.append(
+                {
+                    "video_id": job["video_id"],
+                    "folder": job["folder"],
+                    "signature": signature.text(),
+                    "thumb": signature.thumb(),
+                }
+            )
+        else:
+            plan_rows.append(existing_plan[job["video_id"]])
     write_log(root / "affiliate-shorts" / "style-log.csv", rows)
     (root / "affiliate-shorts" / "style-plan.json").write_text(
         json.dumps(plan_rows, ensure_ascii=False, indent=2) + "\n",

@@ -1,7 +1,7 @@
 {
   "out": "/workspace/affiliate-shorts/batch2/22-eikaiwa-aruaru/out.mp4",
   "template": "aruaru",
-  "duration_sec": 38.58,
+  "duration_sec": 16.54,
   "scene_count": 14,
   "asset_count": 6,
   "asset_limit": 20,
@@ -54,8 +54,8 @@
     "voicevox": "使った声はクレジットが要る。四国めたん、白上虎太郎、玄野武宏、剣崎雌雄はクレジットを書けば商用可。青山龍星は個人事業・法人だと事前許可が要るので使っていない。効果音とBGMはこの場で合成したオリジナルなのでクレジット不要。"
   },
   "within_20_30": false,
-  "style_signature": "kane:C4-P4-T3-F3-H4-M4-B4-L3-A1",
+  "style_signature": "kane:C4-P4-T1-F3-H4-M4-B4-L1-A1",
   "irasutoya_count": 2,
   "within_style_length": true,
-  "style_thumb": "thumb:C4-P4-T3-F3"
+  "style_thumb": "thumb:C4-P4-T1-F3"
 }

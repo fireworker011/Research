@@ -1,7 +1,7 @@
 {
   "out": "/workspace/affiliate-shorts/batch2/17-water-aruaru/out.mp4",
   "template": "aruaru",
-  "duration_sec": 54.21,
+  "duration_sec": 17.88,
   "scene_count": 14,
   "asset_count": 6,
   "asset_limit": 20,
@@ -54,8 +54,8 @@
     "voicevox": "使った声はクレジットが要る。四国めたん、白上虎太郎、玄野武宏、剣崎雌雄はクレジットを書けば商用可。青山龍星は個人事業・法人だと事前許可が要るので使っていない。効果音とBGMはこの場で合成したオリジナルなのでクレジット不要。"
   },
   "within_20_30": false,
-  "style_signature": "kane:C6-P2-T1-F2-H1-M3-B1-L5-A3",
+  "style_signature": "kane:C6-P2-T1-F3-H1-M3-B1-L1-A3",
   "irasutoya_count": 1,
   "within_style_length": true,
-  "style_thumb": "thumb:C6-P2-T1-F2"
+  "style_thumb": "thumb:C6-P2-T1-F3"
 }

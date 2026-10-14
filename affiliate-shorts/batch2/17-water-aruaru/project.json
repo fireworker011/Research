@@ -64,7 +64,7 @@
       "tone": "hook",
       "voice_path": "/tmp/irasu-vary/17-water-aruaru/audio/scene_01.wav",
       "voice_seconds": 1.024,
-      "duration": 4.0,
+      "duration": 1.125,
       "lead": 0.0
     },
     {
@@ -91,7 +91,7 @@
       "tone": "item",
       "voice_path": "/tmp/irasu-vary/17-water-aruaru/audio/scene_02.wav",
       "voice_seconds": 1.152,
-      "duration": 4.0,
+      "duration": 1.2916666666666667,
       "lead": 0.0
     },
     {
@@ -118,7 +118,7 @@
       "tone": "item",
       "voice_path": "/tmp/irasu-vary/17-water-aruaru/audio/scene_03.wav",
       "voice_seconds": 1.013,
-      "duration": 4.0,
+      "duration": 1.125,
       "lead": 0.0
     },
     {
@@ -145,7 +145,7 @@
       "tone": "item",
       "voice_path": "/tmp/irasu-vary/17-water-aruaru/audio/scene_04.wav",
       "voice_seconds": 1.237,
-      "duration": 4.0,
+      "duration": 1.375,
       "lead": 0.0
     },
     {
@@ -172,7 +172,7 @@
       "tone": "item",
       "voice_path": "/tmp/irasu-vary/17-water-aruaru/audio/scene_05.wav",
       "voice_seconds": 1.141,
-      "duration": 4.0,
+      "duration": 1.25,
       "lead": 0.0
     },
     {
@@ -199,7 +199,7 @@
       "tone": "item",
       "voice_path": "/tmp/irasu-vary/17-water-aruaru/audio/scene_06.wav",
       "voice_seconds": 0.768,
-      "duration": 4.0,
+      "duration": 0.875,
       "lead": 0.0
     },
     {
@@ -226,7 +226,7 @@
       "tone": "item",
       "voice_path": "/tmp/irasu-vary/17-water-aruaru/audio/scene_07.wav",
       "voice_seconds": 1.323,
-      "duration": 4.0,
+      "duration": 1.4583333333333333,
       "lead": 0.0
     },
     {
@@ -253,7 +253,7 @@
       "tone": "item",
       "voice_path": "/tmp/irasu-vary/17-water-aruaru/audio/scene_08.wav",
       "voice_seconds": 0.928,
-      "duration": 4.0,
+      "duration": 1.0416666666666667,
       "lead": 0.0
     },
     {
@@ -280,7 +280,7 @@
       "tone": "punch",
       "voice_path": "/tmp/irasu-vary/17-water-aruaru/audio/scene_09.wav",
       "voice_seconds": 1.6,
-      "duration": 4.0,
+      "duration": 1.7083333333333333,
       "lead": 0.0
     },
     {
@@ -307,7 +307,7 @@
       "tone": "punch",
       "voice_path": "/tmp/irasu-vary/17-water-aruaru/audio/scene_10.wav",
       "voice_seconds": 1.109,
-      "duration": 4.0,
+      "duration": 1.2083333333333333,
       "lead": 0.0
     },
     {
@@ -334,7 +334,7 @@
       "tone": "punch",
       "voice_path": "/tmp/irasu-vary/17-water-aruaru/audio/scene_11.wav",
       "voice_seconds": 1.376,
-      "duration": 4.0,
+      "duration": 1.5,
       "lead": 0.0
     },
     {
@@ -361,7 +361,7 @@
       "tone": "close",
       "voice_path": "/tmp/irasu-vary/17-water-aruaru/audio/scene_12.wav",
       "voice_seconds": 1.472,
-      "duration": 4.0,
+      "duration": 1.5833333333333333,
       "lead": 0.0
     },
     {
@@ -388,7 +388,7 @@
       "tone": "close",
       "voice_path": "/tmp/irasu-vary/17-water-aruaru/audio/scene_13.wav",
       "voice_seconds": 1.173,
-      "duration": 4.0,
+      "duration": 1.2916666666666667,
       "lead": 0.0
     },
     {
@@ -409,7 +409,7 @@
       "series_note": "ボトル係",
       "voice_path": "/tmp/irasu-vary/17-water-aruaru/audio/scene_14.wav",
       "voice_seconds": 0.15,
-      "duration": 2.2083333333333335,
+      "duration": 1.0416666666666667,
       "lead": 0.0
     }
   ],
@@ -589,16 +589,16 @@
     "voicevox": "使った声はクレジットが要る。四国めたん、白上虎太郎、玄野武宏、剣崎雌雄はクレジットを書けば商用可。青山龍星は個人事業・法人だと事前許可が要るので使っていない。効果音とBGMはこの場で合成したオリジナルなのでクレジット不要。"
   },
   "notes": [],
-  "style_signature": "kane:C6-P2-T1-F2-H1-M3-B1-L5-A3",
+  "style_signature": "kane:C6-P2-T1-F3-H1-M3-B1-L1-A3",
   "style_axes": {
     "C": "C6",
     "P": "P2",
     "T": "T1",
-    "F": "F2",
+    "F": "F3",
     "H": "H1",
     "M": "M3",
     "B": "B1",
-    "L": "L5",
+    "L": "L1",
     "A": "A3",
     "line": "kane"
   },

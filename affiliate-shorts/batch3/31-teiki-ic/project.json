@@ -60,7 +60,7 @@
       "duration_hint": 2.2,
       "voice_path": "/tmp/irasu-vary/31-teiki-ic/audio/scene_01.wav",
       "voice_seconds": 1.227,
-      "duration": 2.0416666666666665,
+      "duration": 1.2916666666666667,
       "lead": 0.0
     },
     {
@@ -88,7 +88,7 @@
       "duration_hint": 2.2,
       "voice_path": "/tmp/irasu-vary/31-teiki-ic/audio/scene_02.wav",
       "voice_seconds": 1.707,
-      "duration": 2.5,
+      "duration": 1.7916666666666667,
       "lead": 0.0
     },
     {
@@ -114,7 +114,7 @@
       "duration_hint": 2.2,
       "voice_path": "/tmp/irasu-vary/31-teiki-ic/audio/scene_03.wav",
       "voice_seconds": 1.248,
-      "duration": 2.0416666666666665,
+      "duration": 1.3333333333333333,
       "lead": 0.0
     },
     {
@@ -140,7 +140,7 @@
       "duration_hint": 2.2,
       "voice_path": "/tmp/irasu-vary/31-teiki-ic/audio/scene_04.wav",
       "voice_seconds": 1.269,
-      "duration": 2.0833333333333335,
+      "duration": 1.3333333333333333,
       "lead": 0.0
     },
     {
@@ -166,7 +166,7 @@
       "duration_hint": 2.2,
       "voice_path": "/tmp/irasu-vary/31-teiki-ic/audio/scene_05.wav",
       "voice_seconds": 0.896,
-      "duration": 1.7083333333333333,
+      "duration": 0.9583333333333334,
       "lead": 0.0
     },
     {
@@ -192,7 +192,7 @@
       "duration_hint": 2.2,
       "voice_path": "/tmp/irasu-vary/31-teiki-ic/audio/scene_06.wav",
       "voice_seconds": 1.547,
-      "duration": 2.375,
+      "duration": 1.625,
       "lead": 0.0
     },
     {
@@ -218,7 +218,7 @@
       "duration_hint": 2.2,
       "voice_path": "/tmp/irasu-vary/31-teiki-ic/audio/scene_07.wav",
       "voice_seconds": 1.355,
-      "duration": 2.1666666666666665,
+      "duration": 1.4166666666666667,
       "lead": 0.0
     },
     {
@@ -244,7 +244,7 @@
       "duration_hint": 2.2,
       "voice_path": "/tmp/irasu-vary/31-teiki-ic/audio/scene_08.wav",
       "voice_seconds": 0.917,
-      "duration": 1.75,
+      "duration": 1.0,
       "lead": 0.0
     },
     {
@@ -270,7 +270,7 @@
       "duration_hint": 2.2,
       "voice_path": "/tmp/irasu-vary/31-teiki-ic/audio/scene_09.wav",
       "voice_seconds": 2.123,
-      "duration": 2.5,
+      "duration": 2.2083333333333335,
       "lead": 0.0
     },
     {
@@ -296,7 +296,7 @@
       "duration_hint": 2.2,
       "voice_path": "/tmp/irasu-vary/31-teiki-ic/audio/scene_10.wav",
       "voice_seconds": 0.971,
-      "duration": 1.7916666666666667,
+      "duration": 1.0416666666666667,
       "lead": 0.0
     },
     {
@@ -322,7 +322,7 @@
       "duration_hint": 2.2,
       "voice_path": "/tmp/irasu-vary/31-teiki-ic/audio/scene_11.wav",
       "voice_seconds": 1.024,
-      "duration": 1.8333333333333333,
+      "duration": 1.0833333333333333,
       "lead": 0.0
     },
     {
@@ -348,7 +348,7 @@
       "duration_hint": 2.2,
       "voice_path": "/tmp/irasu-vary/31-teiki-ic/audio/scene_12.wav",
       "voice_seconds": 1.685,
-      "duration": 2.5,
+      "duration": 1.75,
       "lead": 0.0
     },
     {
@@ -374,7 +374,7 @@
       "duration_hint": 2.2,
       "voice_path": "/tmp/irasu-vary/31-teiki-ic/audio/scene_13.wav",
       "voice_seconds": 1.771,
-      "duration": 2.5,
+      "duration": 1.8333333333333333,
       "lead": 0.0
     },
     {
@@ -395,7 +395,7 @@
       "series_note": "窓口係",
       "voice_path": "/tmp/irasu-vary/31-teiki-ic/audio/scene_14.wav",
       "voice_seconds": 0.15,
-      "duration": 2.2083333333333335,
+      "duration": 1.0416666666666667,
       "lead": 0.0
     }
   ],
@@ -571,7 +571,7 @@
     "voicevox": "使った声はクレジットが要る。四国めたん、白上虎太郎、玄野武宏、剣崎雌雄はクレジットを書けば商用可。青山龍星は個人事業・法人だと事前許可が要るので使っていない。効果音とBGMはこの場で合成したオリジナルなのでクレジット不要。"
   },
   "notes": [],
-  "style_signature": "kane:C4-P1-T1-F4-H2-M2-B6-L2-A2",
+  "style_signature": "kane:C4-P1-T1-F4-H2-M2-B6-L1-A2",
   "style_axes": {
     "C": "C4",
     "P": "P1",
@@ -580,7 +580,7 @@
     "H": "H2",
     "M": "M2",
     "B": "B6",
-    "L": "L2",
+    "L": "L1",
     "A": "A2",
     "line": "kane"
   },

@@ -165,7 +165,7 @@ def _place_caption(
     faces: list[tuple[int, int, int, int]],
     mode: str,
     y_ratio: float,
-) -> tuple[int, int]:
+) -> tuple[int, int] | None:
     margin = 32
     if bar_w > width - margin * 2:
         bar_w = width - margin * 2
@@ -188,9 +188,11 @@ def _place_caption(
         left = max(margin, min(left, width - margin - bar_w))
         top = max(margin, min(top, height - margin - bar_h))
         box = (left, top, left + bar_w, top + bar_h)
+        if box[2] > width - margin or box[3] > height - margin:
+            continue
         if _clear_of_faces(box, faces):
             return left, top
-    return margin, margin
+    return None
 
 
 def _render_placed_telop(text: str, role: str, placement: dict, scale: float) -> np.ndarray:
@@ -212,40 +214,64 @@ def _render_placed_telop(text: str, role: str, placement: dict, scale: float) ->
     max_h = int(height * (0.55 if role == "credit" else 0.34))
     font_path = str(placement["font"])
     bold_path = str(placement.get("font_bold") or "")
+    y_ratio = float(placement["y_ratio"])
+    modes = ["vertical", "band"] if mode == "vertical" else [mode, "band"]
+    for mode_try in modes:
+        attempt = size
+        while attempt >= 28:
+            drawn = _draw_caption_attempt(
+                text, role, font_path, bold_path, attempt, mode_try, y_ratio,
+                fill, stroke_color, stroke, faces, width, height, max_w, max_h,
+                bool(placement.get("emphasis")), str(placement.get("bar") or ""),
+                tuple(placement["bar_fill"]),
+            )
+            if drawn is not None:
+                arr = np.array(drawn)
+                if not caption_hits_edge(arr, 12) and not caption_overlaps_face(arr, faces):
+                    return arr
+            attempt -= 6
+    return np.array(image)
+
+
+def _draw_caption_attempt(
+    text, role, font_path, bold_path, size, mode, y_ratio,
+    fill, stroke_color, stroke, faces, width, height, max_w, max_h,
+    emphasis, bar_kind, bar_fill,
+):
+    margin = 36
+    image = Image.new("RGBA", (width, height), (0, 0, 0, 0))
     if mode == "vertical":
         font, size, columns = _fit_vertical(text, font_path, size, max_w, height - margin * 2)
-        block_w = max(size, len(columns) * (size + 16))
-        block_h = max((size + 4) * max(len(column) for column in columns), size)
-        left, top = _place_vertical(width, height, block_w, block_h, faces)
-        draw = ImageDraw.Draw(image)
-        _draw_vertical(draw, columns, font, fill, stroke_color, stroke, size, left, top)
-        return np.array(image)
+        block_w = max(size + stroke * 2, len(columns) * (size + 16) + stroke)
+        block_h = max((size + 4) * max(len(column) for column in columns) + stroke * 2, size)
+        placed = _place_vertical(width, height, block_w, block_h, faces)
+        if placed is None:
+            return None
+        left, top = placed
+        _draw_vertical(ImageDraw.Draw(image), columns, font, fill, stroke_color, stroke, size, left, top)
+        return image
     font = load_font(font_path, size)
-    wrapped = text
-    while size > 22:
-        font = load_font(font_path, size)
-        wrapped = _wrap_chars(text, font, max_w)
-        tw, th = _text_size(font, wrapped)
-        if tw <= max_w and th <= max_h:
-            break
-        size -= 2
+    wrapped = _wrap_chars(text, font, max_w)
     tw, th = _text_size(font, wrapped)
-    pad_x, pad_y = 24, 14
+    if tw > max_w or th > max_h:
+        return None
+    pad_x, pad_y = 24, 14 + stroke
     bar_w = min(width - margin * 2, max(tw + pad_x * 2, 80))
-    bar_h = min(height - margin * 2, th + pad_y * 2)
-    left, top = _place_caption(width, height, bar_w, bar_h, faces, mode, float(placement["y_ratio"]))
+    bar_h = th + pad_y * 2
+    if bar_h > height - margin * 2 or bar_w > width - margin * 2:
+        return None
+    placed = _place_caption(width, height, bar_w, bar_h, faces, mode, y_ratio)
+    if placed is None:
+        return None
+    left, top = placed
     draw = ImageDraw.Draw(image)
     if mode == "note":
         _draw_note(image, wrapped, font, fill, stroke_color, stroke, bar_w, bar_h, left, top)
-        return np.array(image)
-    bar_fill = tuple(placement["bar_fill"])
-    radius = 8 if placement.get("bar") == "square" else 18
+        return image
+    radius = 8 if bar_kind == "square" else 18
     draw.rounded_rectangle((left, top, left + bar_w, top + bar_h), radius=min(radius, bar_h // 2), fill=bar_fill)
-    _draw_emphasis(
-        draw, wrapped, font, bold_path, size, fill, stroke_color, stroke,
-        left, top, bar_w, pad_y, bool(placement.get("emphasis")),
-    )
-    return np.array(image)
+    _draw_emphasis(draw, wrapped, font, bold_path, size, fill, stroke_color, stroke, left, top, bar_w, pad_y, emphasis)
+    return image
 
 
 def _place_vertical(
@@ -254,16 +280,22 @@ def _place_vertical(
     block_w: int,
     block_h: int,
     faces: list[tuple[int, int, int, int]],
-) -> tuple[int, int]:
-    margin = 32
-    top = max(margin, min((height - block_h) // 2, height - margin - block_h))
+) -> tuple[int, int] | None:
+    margin = 36
+    if block_w > width - margin * 2 or block_h > height - margin * 2:
+        return None
     xs = [margin, max(margin, width - margin - block_w)]
-    xs.extend(range(margin, max(margin + 1, width - margin - block_w), 24))
-    for left in xs:
-        box = (left, top, left + block_w, top + block_h)
-        if _clear_of_faces(box, faces):
-            return left, top
-    return margin, top
+    xs.extend(range(margin, max(margin + 1, width - margin - block_w), 28))
+    ys = [margin, max(margin, height - margin - block_h)]
+    ys.extend(range(margin, max(margin + 1, height - margin - block_h), 28))
+    for top in ys:
+        for left in xs:
+            box = (left, top, left + block_w, top + block_h)
+            if box[2] > width - margin or box[3] > height - margin:
+                continue
+            if _clear_of_faces(box, faces):
+                return left, top
+    return None
 
 
 def _draw_emphasis(draw, text, font, bold_path, size, fill, stroke_color, stroke, left, top, bar_w, pad_y, emphasis: bool) -> None:
