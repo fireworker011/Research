@@ -1,0 +1,52 @@
+{
+  "pass": true,
+  "checks": [
+    {
+      "name": "duration",
+      "pass": true,
+      "detail": "20.58秒（20秒以上30秒以下）"
+    },
+    {
+      "name": "resolution",
+      "pass": true,
+      "detail": "1080x1920"
+    },
+    {
+      "name": "audio",
+      "pass": true,
+      "detail": "音声 あり、平均 -28.6 dB"
+    },
+    {
+      "name": "caption_overflow",
+      "pass": true,
+      "detail": "はみ出し無し"
+    },
+    {
+      "name": "text_boxes",
+      "pass": true,
+      "detail": "字幕の帯は無し"
+    },
+    {
+      "name": "name_tags",
+      "pass": true,
+      "detail": "名札とタグは無し"
+    },
+    {
+      "name": "mouth_overlay_absent",
+      "pass": true,
+      "detail": "口の重ね絵は無い"
+    }
+  ],
+  "duration_sec": 20.58,
+  "width": 1080,
+  "height": 1920,
+  "mouth_overlay": false,
+  "media": {
+    "exists": true,
+    "duration": 20.583333,
+    "width": 1080,
+    "height": 1920,
+    "has_audio": true,
+    "mean_volume_db": -28.6
+  }
+}
