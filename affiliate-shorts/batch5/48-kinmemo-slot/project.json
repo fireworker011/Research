@@ -1,0 +1,324 @@
+{
+  "template": "sukatto",
+  "title": "つり銭口の硬貨が、朝に自分で入れたものだった話",
+  "punchline": "朝に自分で入れた硬貨が、つり銭口へ残っとった",
+  "brief": {
+    "title": "つり銭口の硬貨が、朝に自分で入れたものだった話",
+    "asset_urls": {
+      "rival_smug": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgmfOy1dvPW5nkAXq91r1d2JpatnBWDQHwMOsQRfjoJK3UhP4qRvRGgzacoQu3ogBLYq4zj0tYolJd4_6rjS4tUa8DR5lSj_PQaqXzd6Cs_DivuxoRAkIygU6GV36iS3QhIj3oa6vnevpY/s800/pose_doyagao_man.png",
+      "hero_trouble": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhxJL1uWPRrar9S-FPxNv7FCtcDsBUM5B8ItxCoPVFnqtsBKjv7TyPF54QNeSpcg2QCm3Fn8maHs9AscQD5Bmegje_6Zdt2xtzqXkriOKe76Aq37zUYxI0kfBoONd8SbYE_loSyJw3rkVY8/s800/businessman1_nayami.png",
+      "hero_tired": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEi5O7ebIPQwPb7j8zWG0W4g3EN_nlmRZvPEfGKxwGsCnV44eGJARhg0Zz2mBNr7m9BK61Ebp00-9v4cX_V-YkzlJB5YAj7Dpb9slFkX2GG7xGyXKCYl1wMwzi6eWXoCHVuQIFSjsaL-5CM/s800/tsukareta_business_man.png"
+    }
+  },
+  "scenes": [
+    {
+      "id": 1,
+      "role": "hook",
+      "speaker": "rival",
+      "style_id": 11,
+      "credit": "VOICEVOX:玄野武宏",
+      "text": "これ、誰の硬貨や",
+      "telop": "これ、誰の硬貨や",
+      "bg": "office",
+      "characters": [
+        {
+          "id": "rival_smug",
+          "who": "rival",
+          "label": ""
+        }
+      ],
+      "props": [],
+      "code_props": [],
+      "effect": "zoom",
+      "sfx": "none",
+      "duration_hint": 2.37,
+      "voice_path": "/tmp/irasu-vary/48-kinmemo-slot/audio/scene_01.wav",
+      "voice_seconds": 1.131,
+      "duration": 5.791666666666667,
+      "lead": 0.0
+    },
+    {
+      "id": 2,
+      "role": "develop",
+      "speaker": "narrator",
+      "style_id": 2,
+      "credit": "VOICEVOX:四国めたん",
+      "text": "自販機のつり銭口に、硬貨が一つ残っとった",
+      "telop": "自販機のつり銭口に、\n硬貨が一つ残っとった",
+      "bg": "office",
+      "characters": [
+        {
+          "id": "hero_trouble",
+          "who": "hero",
+          "label": ""
+        }
+      ],
+      "props": [],
+      "code_props": [],
+      "effect": "none",
+      "sfx": "coin",
+      "duration_hint": 5.53,
+      "voice_path": "/tmp/irasu-vary/48-kinmemo-slot/audio/scene_02.wav",
+      "voice_seconds": 2.688,
+      "duration": 5.75,
+      "lead": 0.0
+    },
+    {
+      "id": 3,
+      "role": "develop",
+      "speaker": "narrator",
+      "style_id": 2,
+      "credit": "VOICEVOX:四国めたん",
+      "text": "朝のだ",
+      "telop": "朝のだ",
+      "bg": "office",
+      "characters": [
+        {
+          "id": "hero_trouble",
+          "who": "hero",
+          "label": ""
+        }
+      ],
+      "props": [],
+      "code_props": [],
+      "effect": "none",
+      "sfx": "whoosh",
+      "duration_hint": 0.97,
+      "voice_path": "/tmp/irasu-vary/48-kinmemo-slot/audio/scene_03.wav",
+      "voice_seconds": 0.555,
+      "duration": 5.75,
+      "lead": 0.0
+    },
+    {
+      "id": 4,
+      "role": "develop",
+      "speaker": "hero",
+      "style_id": 12,
+      "credit": "VOICEVOX:白上虎太郎",
+      "text": "投入口のつまみを、一回だけ奥へ戻した",
+      "telop": "投入口のつまみを、\n一回だけ奥へ戻した",
+      "bg": "office",
+      "characters": [
+        {
+          "id": "hero_tired",
+          "who": "hero",
+          "label": ""
+        }
+      ],
+      "props": [],
+      "code_props": [],
+      "effect": "shake",
+      "sfx": "none",
+      "duration_hint": 5.53,
+      "voice_path": "/tmp/irasu-vary/48-kinmemo-slot/audio/scene_04.wav",
+      "voice_seconds": 2.731,
+      "duration": 5.75,
+      "lead": 0.0
+    },
+    {
+      "id": 5,
+      "role": "punch",
+      "speaker": "narrator",
+      "style_id": 2,
+      "credit": "VOICEVOX:四国めたん",
+      "text": "朝に自分で入れた硬貨が、つり銭口へ残っとった",
+      "telop": "朝に自分で入れた硬貨が、\nつり銭口へ残っとった",
+      "bg": "office",
+      "characters": [
+        {
+          "id": "hero_trouble",
+          "who": "hero",
+          "label": ""
+        }
+      ],
+      "props": [],
+      "code_props": [],
+      "effect": "zoom",
+      "sfx": "coin",
+      "duration_hint": 11.05,
+      "voice_path": "/tmp/irasu-vary/48-kinmemo-slot/audio/scene_05.wav",
+      "voice_seconds": 2.848,
+      "duration": 5.75,
+      "lead": 0.0
+    },
+    {
+      "id": 6,
+      "role": "credit",
+      "speaker": "narrator",
+      "style_id": 2,
+      "credit": "VOICEVOX:四国めたん",
+      "text": "",
+      "telop": "VOICEVOX:玄野武宏\nVOICEVOX:四国めたん\nVOICEVOX:白上虎太郎\nイラスト：いらすとや",
+      "bg": "credit",
+      "characters": [],
+      "props": [],
+      "code_props": [],
+      "effect": "none",
+      "sfx": "none",
+      "duration_hint": 2.2,
+      "voice_path": "/tmp/irasu-vary/48-kinmemo-slot/audio/scene_06.wav",
+      "voice_seconds": 0.15,
+      "duration": 2.2083333333333335,
+      "lead": 0.0
+    }
+  ],
+  "credits": [
+    "VOICEVOX:玄野武宏",
+    "VOICEVOX:四国めたん",
+    "VOICEVOX:白上虎太郎",
+    "イラスト：いらすとや"
+  ],
+  "asset_ids": [
+    "rival_smug",
+    "hero_trouble",
+    "hero_tired"
+  ],
+  "asset_report": {
+    "count": 3,
+    "limit": 20,
+    "within_limit": true,
+    "accepted": [
+      {
+        "id": "rival_smug",
+        "kind": "person",
+        "path": "/tmp/irasu-b5/48-kinmemo-slot/assets/rival_smug.png",
+        "url": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgmfOy1dvPW5nkAXq91r1d2JpatnBWDQHwMOsQRfjoJK3UhP4qRvRGgzacoQu3ogBLYq4zj0tYolJd4_6rjS4tUa8DR5lSj_PQaqXzd6Cs_DivuxoRAkIygU6GV36iS3QhIj3oa6vnevpY/s800/pose_doyagao_man.png",
+        "title": "pinned",
+        "alt": "rival_smug",
+        "link": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgmfOy1dvPW5nkAXq91r1d2JpatnBWDQHwMOsQRfjoJK3UhP4qRvRGgzacoQu3ogBLYq4zj0tYolJd4_6rjS4tUa8DR5lSj_PQaqXzd6Cs_DivuxoRAkIygU6GV36iS3QhIj3oa6vnevpY/s800/pose_doyagao_man.png",
+        "page": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgmfOy1dvPW5nkAXq91r1d2JpatnBWDQHwMOsQRfjoJK3UhP4qRvRGgzacoQu3ogBLYq4zj0tYolJd4_6rjS4tUa8DR5lSj_PQaqXzd6Cs_DivuxoRAkIygU6GV36iS3QhIj3oa6vnevpY/s800/pose_doyagao_man.png"
+      },
+      {
+        "id": "hero_trouble",
+        "kind": "person",
+        "path": "/tmp/irasu-b5/48-kinmemo-slot/assets/hero_trouble.png",
+        "url": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhxJL1uWPRrar9S-FPxNv7FCtcDsBUM5B8ItxCoPVFnqtsBKjv7TyPF54QNeSpcg2QCm3Fn8maHs9AscQD5Bmegje_6Zdt2xtzqXkriOKe76Aq37zUYxI0kfBoONd8SbYE_loSyJw3rkVY8/s800/businessman1_nayami.png",
+        "title": "pinned",
+        "alt": "hero_trouble",
+        "link": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhxJL1uWPRrar9S-FPxNv7FCtcDsBUM5B8ItxCoPVFnqtsBKjv7TyPF54QNeSpcg2QCm3Fn8maHs9AscQD5Bmegje_6Zdt2xtzqXkriOKe76Aq37zUYxI0kfBoONd8SbYE_loSyJw3rkVY8/s800/businessman1_nayami.png",
+        "page": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhxJL1uWPRrar9S-FPxNv7FCtcDsBUM5B8ItxCoPVFnqtsBKjv7TyPF54QNeSpcg2QCm3Fn8maHs9AscQD5Bmegje_6Zdt2xtzqXkriOKe76Aq37zUYxI0kfBoONd8SbYE_loSyJw3rkVY8/s800/businessman1_nayami.png"
+      },
+      {
+        "id": "hero_tired",
+        "kind": "person",
+        "path": "/tmp/irasu-b5/48-kinmemo-slot/assets/hero_tired.png",
+        "url": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEi5O7ebIPQwPb7j8zWG0W4g3EN_nlmRZvPEfGKxwGsCnV44eGJARhg0Zz2mBNr7m9BK61Ebp00-9v4cX_V-YkzlJB5YAj7Dpb9slFkX2GG7xGyXKCYl1wMwzi6eWXoCHVuQIFSjsaL-5CM/s800/tsukareta_business_man.png",
+        "title": "pinned",
+        "alt": "hero_tired",
+        "link": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEi5O7ebIPQwPb7j8zWG0W4g3EN_nlmRZvPEfGKxwGsCnV44eGJARhg0Zz2mBNr7m9BK61Ebp00-9v4cX_V-YkzlJB5YAj7Dpb9slFkX2GG7xGyXKCYl1wMwzi6eWXoCHVuQIFSjsaL-5CM/s800/tsukareta_business_man.png",
+        "page": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEi5O7ebIPQwPb7j8zWG0W4g3EN_nlmRZvPEfGKxwGsCnV44eGJARhg0Zz2mBNr7m9BK61Ebp00-9v4cX_V-YkzlJB5YAj7Dpb9slFkX2GG7xGyXKCYl1wMwzi6eWXoCHVuQIFSjsaL-5CM/s800/tsukareta_business_man.png"
+      }
+    ],
+    "rejected": []
+  },
+  "asset_paths": {
+    "rival_smug": "/tmp/irasu-vary/48-kinmemo-slot/assets/rival_smug.png",
+    "hero_trouble": "/tmp/irasu-vary/48-kinmemo-slot/assets/hero_trouble.png",
+    "hero_tired": "/tmp/irasu-vary/48-kinmemo-slot/assets/hero_tired.png",
+    "hero_angry": "/tmp/irasu-vary/48-kinmemo-slot/assets/hero_angry.png",
+    "hero_smile": "/tmp/irasu-vary/48-kinmemo-slot/assets/hero_smile.png",
+    "boss_angry": "/tmp/irasu-vary/48-kinmemo-slot/assets/boss_angry.png"
+  },
+  "layout": {
+    "telop_y_ratio": 0.84,
+    "character_x_ratio": 0.5,
+    "screenshot_count": 0
+  },
+  "settings": {
+    "speed": 1.28,
+    "hook_speed": 1.48,
+    "telop_scale": 1.0,
+    "sfx_gain": 0.22,
+    "bgm_gain": 0.045,
+    "mouth_gain": 0.0,
+    "bgm": false,
+    "tail": 0.16,
+    "role_speed": {
+      "hook": 1.48,
+      "develop": 1.28,
+      "punch": 1.28,
+      "close": 1.28,
+      "credit": 1.28
+    },
+    "role_tail": {
+      "hook": 0.16,
+      "develop": 0.16,
+      "punch": 0.16,
+      "close": 0.16,
+      "credit": 0.0
+    },
+    "bgm_kind": "B1"
+  },
+  "telop_style": {
+    "bar": "round",
+    "stroke": 5,
+    "size": 78,
+    "slide": 0.16,
+    "y_ratio": 0.84,
+    "bar_fill": [
+      0,
+      0,
+      0,
+      170
+    ],
+    "bar_fills": {},
+    "colors": {
+      "hook": [
+        255,
+        226,
+        40,
+        255
+      ],
+      "develop": [
+        255,
+        255,
+        255,
+        255
+      ],
+      "punch": [
+        255,
+        226,
+        40,
+        255
+      ],
+      "close": [
+        255,
+        226,
+        40,
+        255
+      ],
+      "credit": [
+        255,
+        255,
+        255,
+        255
+      ]
+    }
+  },
+  "terms": {
+    "irasutoya": "いらすとやは1つの制作物につき20点まで商用無料（同じ絵の重複は1点）。21点以上の商用利用は有償。クレジット表記は不要。素材そのものの再配布や、イラストを主体にした商品化は不可。背景はコード描画にして点数をキャラと小物に使っている。",
+    "voicevox": "使った声はクレジットが要る。四国めたん、白上虎太郎、玄野武宏、剣崎雌雄はクレジットを書けば商用可。青山龍星は個人事業・法人だと事前許可が要るので使っていない。効果音とBGMはこの場で合成したオリジナルなのでクレジット不要。"
+  },
+  "notes": [],
+  "style_signature": "kane:C6-P6-T1-F5-H3-M3-B1-L3-A1",
+  "style_axes": {
+    "C": "C6",
+    "P": "P6",
+    "T": "T1",
+    "F": "F5",
+    "H": "H3",
+    "M": "M3",
+    "B": "B1",
+    "L": "L3",
+    "A": "A1",
+    "line": "kane"
+  },
+  "style_cast": [
+    "hero_trouble",
+    "hero_tired"
+  ],
+  "style_used_assets": [
+    "hero_tired",
+    "hero_trouble"
+  ]
+}

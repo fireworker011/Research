@@ -21,7 +21,7 @@
     },
     "asset_urls": {
       "hero_trouble": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhxJL1uWPRrar9S-FPxNv7FCtcDsBUM5B8ItxCoPVFnqtsBKjv7TyPF54QNeSpcg2QCm3Fn8maHs9AscQD5Bmegje_6Zdt2xtzqXkriOKe76Aq37zUYxI0kfBoONd8SbYE_loSyJw3rkVY8/s800/businessman1_nayami.png",
-      "hero_angry": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEh-_r1tYuiOicwB0kiiTCh8agF8SToBv9jqsc4LcnWPdgfAE65qjQmPobIVnj1j9iX_x3hsvaQke3Za0nmVGXG1LT5HG-sSX1W6t_Sy4oMh1dtA3H3eTmGMaaoDRb4mtEqS31VG3h2LlwH7/s800/businessman7_angry.png",
+      "hero_angry": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjNZa7ijupIB1glzdfPBDcjiYSmA5vivkbKmqryJ9C11F00i6aifmrQbVGFJcJBgN9SnkUMuQsor8OqrhFv6cc7Qc6_gBEHZjOgV457XveJw0jakqDI2_boGirQKY4h1DpFj4S-tddLG4k/s800/business02_angry.png",
       "hero_tired": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEi5O7ebIPQwPb7j8zWG0W4g3EN_nlmRZvPEfGKxwGsCnV44eGJARhg0Zz2mBNr7m9BK61Ebp00-9v4cX_V-YkzlJB5YAj7Dpb9slFkX2GG7xGyXKCYl1wMwzi6eWXoCHVuQIFSjsaL-5CM/s800/tsukareta_business_man.png",
       "hero_smile": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhy3dDvRMBHJ-tn1A2AUBt4iUbmcOXxRuHUegd9lKUBveMfLADwYFD0QsmGhDqoctcd1lk7bY5wO3M04TuC_EVB8TcyirHiMlsvyn-HPGcHJHl6wMEEcrZb5vc-YuKF8ddVD16Wadzfqurn/s800/businessman5_ureshii.png",
       "rival_smug": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgmfOy1dvPW5nkAXq91r1d2JpatnBWDQHwMOsQRfjoJK3UhP4qRvRGgzacoQu3ogBLYq4zj0tYolJd4_6rjS4tUa8DR5lSj_PQaqXzd6Cs_DivuxoRAkIygU6GV36iS3QhIj3oa6vnevpY/s800/pose_doyagao_man.png",
@@ -59,9 +59,9 @@
       "sfx": "rise",
       "duration_hint": 2.2,
       "tone": "rank",
-      "voice_path": "/tmp/irasu-work/01-card-ranking/audio/scene_01.wav",
+      "voice_path": "/tmp/irasu-still/01/audio/scene_01.wav",
       "voice_seconds": 1.077,
-      "duration": 1.4583333333333333
+      "duration": 1.1666666666666667
     },
     {
       "id": 2,
@@ -85,9 +85,9 @@
       "sfx": "rise",
       "duration_hint": 2.2,
       "tone": "rank",
-      "voice_path": "/tmp/irasu-work/01-card-ranking/audio/scene_02.wav",
+      "voice_path": "/tmp/irasu-still/01/audio/scene_02.wav",
       "voice_seconds": 1.717,
-      "duration": 2.0416666666666665
+      "duration": 1.8333333333333333
     },
     {
       "id": 3,
@@ -111,9 +111,9 @@
       "sfx": "tick",
       "duration_hint": 2.2,
       "tone": "rank",
-      "voice_path": "/tmp/irasu-work/01-card-ranking/audio/scene_03.wav",
+      "voice_path": "/tmp/irasu-still/01/audio/scene_03.wav",
       "voice_seconds": 1.003,
-      "duration": 1.3333333333333333
+      "duration": 1.125
     },
     {
       "id": 4,
@@ -137,9 +137,9 @@
       "sfx": "none",
       "duration_hint": 2.2,
       "tone": "rank",
-      "voice_path": "/tmp/irasu-work/01-card-ranking/audio/scene_04.wav",
+      "voice_path": "/tmp/irasu-still/01/audio/scene_04.wav",
       "voice_seconds": 0.864,
-      "duration": 1.2083333333333333
+      "duration": 1.0
     },
     {
       "id": 5,
@@ -163,9 +163,9 @@
       "sfx": "rise",
       "duration_hint": 2.2,
       "tone": "rank",
-      "voice_path": "/tmp/irasu-work/01-card-ranking/audio/scene_05.wav",
+      "voice_path": "/tmp/irasu-still/01/audio/scene_05.wav",
       "voice_seconds": 1.803,
-      "duration": 2.125
+      "duration": 1.9166666666666667
     },
     {
       "id": 6,
@@ -189,9 +189,9 @@
       "sfx": "tick",
       "duration_hint": 2.2,
       "tone": "rank",
-      "voice_path": "/tmp/irasu-work/01-card-ranking/audio/scene_06.wav",
+      "voice_path": "/tmp/irasu-still/01/audio/scene_06.wav",
       "voice_seconds": 0.896,
-      "duration": 1.2083333333333333
+      "duration": 1.0
     },
     {
       "id": 7,
@@ -215,9 +215,9 @@
       "sfx": "none",
       "duration_hint": 2.2,
       "tone": "rank",
-      "voice_path": "/tmp/irasu-work/01-card-ranking/audio/scene_07.wav",
+      "voice_path": "/tmp/irasu-still/01/audio/scene_07.wav",
       "voice_seconds": 1.131,
-      "duration": 1.4583333333333333
+      "duration": 1.25
     },
     {
       "id": 8,
@@ -242,9 +242,9 @@
       "duration_hint": 2.2,
       "tone": "rank",
       "hold": 1.8,
-      "voice_path": "/tmp/irasu-work/01-card-ranking/audio/scene_08.wav",
+      "voice_path": "/tmp/irasu-still/01/audio/scene_08.wav",
       "voice_seconds": 3.04,
-      "duration": 3.5416666666666665
+      "duration": 3.3333333333333335
     },
     {
       "id": 9,
@@ -268,9 +268,9 @@
       "sfx": "shock",
       "duration_hint": 2.2,
       "tone": "punch",
-      "voice_path": "/tmp/irasu-work/01-card-ranking/audio/scene_09.wav",
+      "voice_path": "/tmp/irasu-still/01/audio/scene_09.wav",
       "voice_seconds": 1.205,
-      "duration": 1.7083333333333333
+      "duration": 1.5
     },
     {
       "id": 10,
@@ -283,7 +283,7 @@
       "bg": "office",
       "characters": [
         {
-          "id": "rival_pale",
+          "id": "rival_smug",
           "who": "rival",
           "label": "明細係"
         }
@@ -294,9 +294,9 @@
       "sfx": "none",
       "duration_hint": 2.2,
       "tone": "punch",
-      "voice_path": "/tmp/irasu-work/01-card-ranking/audio/scene_10.wav",
+      "voice_path": "/tmp/irasu-still/01/audio/scene_10.wav",
       "voice_seconds": 0.725,
-      "duration": 1.2083333333333333
+      "duration": 1.0
     },
     {
       "id": 11,
@@ -309,9 +309,9 @@
       "bg": "office",
       "characters": [
         {
-          "id": "rival_bow",
-          "who": "rival",
-          "label": "明細係"
+          "id": "hero_smile",
+          "who": "hero",
+          "label": ""
         }
       ],
       "props": [],
@@ -320,9 +320,9 @@
       "sfx": "coin",
       "duration_hint": 2.2,
       "tone": "punch",
-      "voice_path": "/tmp/irasu-work/01-card-ranking/audio/scene_11.wav",
+      "voice_path": "/tmp/irasu-still/01/audio/scene_11.wav",
       "voice_seconds": 1.376,
-      "duration": 1.875
+      "duration": 1.6666666666666667
     },
     {
       "id": 12,
@@ -346,9 +346,9 @@
       "sfx": "none",
       "duration_hint": 2.2,
       "tone": "close",
-      "voice_path": "/tmp/irasu-work/01-card-ranking/audio/scene_12.wav",
+      "voice_path": "/tmp/irasu-still/01/audio/scene_12.wav",
       "voice_seconds": 1.611,
-      "duration": 2.2083333333333335
+      "duration": 1.7916666666666667
     },
     {
       "id": 13,
@@ -372,9 +372,9 @@
       "sfx": "rise",
       "duration_hint": 2.2,
       "tone": "close",
-      "voice_path": "/tmp/irasu-work/01-card-ranking/audio/scene_13.wav",
+      "voice_path": "/tmp/irasu-still/01/audio/scene_13.wav",
       "voice_seconds": 1.248,
-      "duration": 1.8333333333333333
+      "duration": 1.4166666666666667
     },
     {
       "id": 14,
@@ -392,9 +392,9 @@
       "sfx": "none",
       "duration_hint": 2.2,
       "series_note": "明細係",
-      "voice_path": "/tmp/irasu-work/01-card-ranking/audio/scene_14.wav",
+      "voice_path": "/tmp/irasu-still/01/audio/scene_14.wav",
       "voice_seconds": 0.15,
-      "duration": 2.4166666666666665
+      "duration": 2.0
     }
   ],
   "credits": [
@@ -409,19 +409,17 @@
     "hero_angry",
     "hero_tired",
     "hero_smile",
-    "boss_angry",
-    "rival_pale",
-    "rival_bow"
+    "boss_angry"
   ],
   "asset_report": {
-    "count": 8,
+    "count": 6,
     "limit": 20,
     "within_limit": true,
     "accepted": [
       {
         "id": "rival_smug",
         "kind": "person",
-        "path": "/tmp/irasu-work/01-card-ranking/assets/rival_smug.png",
+        "path": "/tmp/irasu-still/01/assets/rival_smug.png",
         "url": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgmfOy1dvPW5nkAXq91r1d2JpatnBWDQHwMOsQRfjoJK3UhP4qRvRGgzacoQu3ogBLYq4zj0tYolJd4_6rjS4tUa8DR5lSj_PQaqXzd6Cs_DivuxoRAkIygU6GV36iS3QhIj3oa6vnevpY/s800/pose_doyagao_man.png",
         "title": "pinned",
         "alt": "rival_smug",
@@ -431,7 +429,7 @@
       {
         "id": "hero_trouble",
         "kind": "person",
-        "path": "/tmp/irasu-work/01-card-ranking/assets/hero_trouble.png",
+        "path": "/tmp/irasu-still/01/assets/hero_trouble.png",
         "url": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhxJL1uWPRrar9S-FPxNv7FCtcDsBUM5B8ItxCoPVFnqtsBKjv7TyPF54QNeSpcg2QCm3Fn8maHs9AscQD5Bmegje_6Zdt2xtzqXkriOKe76Aq37zUYxI0kfBoONd8SbYE_loSyJw3rkVY8/s800/businessman1_nayami.png",
         "title": "pinned",
         "alt": "hero_trouble",
@@ -441,17 +439,17 @@
       {
         "id": "hero_angry",
         "kind": "person",
-        "path": "/tmp/irasu-work/01-card-ranking/assets/hero_angry.png",
-        "url": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEh-_r1tYuiOicwB0kiiTCh8agF8SToBv9jqsc4LcnWPdgfAE65qjQmPobIVnj1j9iX_x3hsvaQke3Za0nmVGXG1LT5HG-sSX1W6t_Sy4oMh1dtA3H3eTmGMaaoDRb4mtEqS31VG3h2LlwH7/s800/businessman7_angry.png",
+        "path": "/tmp/irasu-still/01/assets/hero_angry.png",
+        "url": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjNZa7ijupIB1glzdfPBDcjiYSmA5vivkbKmqryJ9C11F00i6aifmrQbVGFJcJBgN9SnkUMuQsor8OqrhFv6cc7Qc6_gBEHZjOgV457XveJw0jakqDI2_boGirQKY4h1DpFj4S-tddLG4k/s800/business02_angry.png",
         "title": "pinned",
         "alt": "hero_angry",
-        "link": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEh-_r1tYuiOicwB0kiiTCh8agF8SToBv9jqsc4LcnWPdgfAE65qjQmPobIVnj1j9iX_x3hsvaQke3Za0nmVGXG1LT5HG-sSX1W6t_Sy4oMh1dtA3H3eTmGMaaoDRb4mtEqS31VG3h2LlwH7/s800/businessman7_angry.png",
-        "page": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEh-_r1tYuiOicwB0kiiTCh8agF8SToBv9jqsc4LcnWPdgfAE65qjQmPobIVnj1j9iX_x3hsvaQke3Za0nmVGXG1LT5HG-sSX1W6t_Sy4oMh1dtA3H3eTmGMaaoDRb4mtEqS31VG3h2LlwH7/s800/businessman7_angry.png"
+        "link": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjNZa7ijupIB1glzdfPBDcjiYSmA5vivkbKmqryJ9C11F00i6aifmrQbVGFJcJBgN9SnkUMuQsor8OqrhFv6cc7Qc6_gBEHZjOgV457XveJw0jakqDI2_boGirQKY4h1DpFj4S-tddLG4k/s800/business02_angry.png",
+        "page": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjNZa7ijupIB1glzdfPBDcjiYSmA5vivkbKmqryJ9C11F00i6aifmrQbVGFJcJBgN9SnkUMuQsor8OqrhFv6cc7Qc6_gBEHZjOgV457XveJw0jakqDI2_boGirQKY4h1DpFj4S-tddLG4k/s800/business02_angry.png"
       },
       {
         "id": "hero_tired",
         "kind": "person",
-        "path": "/tmp/irasu-work/01-card-ranking/assets/hero_tired.png",
+        "path": "/tmp/irasu-still/01/assets/hero_tired.png",
         "url": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEi5O7ebIPQwPb7j8zWG0W4g3EN_nlmRZvPEfGKxwGsCnV44eGJARhg0Zz2mBNr7m9BK61Ebp00-9v4cX_V-YkzlJB5YAj7Dpb9slFkX2GG7xGyXKCYl1wMwzi6eWXoCHVuQIFSjsaL-5CM/s800/tsukareta_business_man.png",
         "title": "pinned",
         "alt": "hero_tired",
@@ -461,7 +459,7 @@
       {
         "id": "hero_smile",
         "kind": "person",
-        "path": "/tmp/irasu-work/01-card-ranking/assets/hero_smile.png",
+        "path": "/tmp/irasu-still/01/assets/hero_smile.png",
         "url": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhy3dDvRMBHJ-tn1A2AUBt4iUbmcOXxRuHUegd9lKUBveMfLADwYFD0QsmGhDqoctcd1lk7bY5wO3M04TuC_EVB8TcyirHiMlsvyn-HPGcHJHl6wMEEcrZb5vc-YuKF8ddVD16Wadzfqurn/s800/businessman5_ureshii.png",
         "title": "pinned",
         "alt": "hero_smile",
@@ -471,45 +469,23 @@
       {
         "id": "boss_angry",
         "kind": "person",
-        "path": "/tmp/irasu-work/01-card-ranking/assets/boss_angry.png",
+        "path": "/tmp/irasu-still/01/assets/boss_angry.png",
         "url": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjHP6Z99Wq0Hf3Ii9NZk1tUIlGBQKW7fKhHjtlIM9lUmiU_XIwwBCW_IRu91RKhlhBE0qMKWiNUq8ISkpgdER-nzCs8YEtseVITZD6V0B9f9kJ4OUtHzWVCiXpFrZ3QEjpAWzsVr9eEi8pQ/s800/pose_sugoi_okoru_man.png",
         "title": "pinned",
         "alt": "boss_angry",
         "link": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjHP6Z99Wq0Hf3Ii9NZk1tUIlGBQKW7fKhHjtlIM9lUmiU_XIwwBCW_IRu91RKhlhBE0qMKWiNUq8ISkpgdER-nzCs8YEtseVITZD6V0B9f9kJ4OUtHzWVCiXpFrZ3QEjpAWzsVr9eEi8pQ/s800/pose_sugoi_okoru_man.png",
         "page": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjHP6Z99Wq0Hf3Ii9NZk1tUIlGBQKW7fKhHjtlIM9lUmiU_XIwwBCW_IRu91RKhlhBE0qMKWiNUq8ISkpgdER-nzCs8YEtseVITZD6V0B9f9kJ4OUtHzWVCiXpFrZ3QEjpAWzsVr9eEi8pQ/s800/pose_sugoi_okoru_man.png"
-      },
-      {
-        "id": "rival_pale",
-        "kind": "person",
-        "path": "/tmp/irasu-work/01-card-ranking/assets/rival_pale.png",
-        "url": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEi2aqf82E2vPsRDjhHRSzVXSzvLd3t_6ZfH1Y3w-eKILaooOeCEu21h_g4F819e-TL4u8S4e1XZ1AOI9gfMkJp6IZTFCyIGUBiiHq86qEeKe59JE7Bk3nOgPvpQo6JxhiGDIPJyXcnSb3cF/s800/money_tsuchou_shock_man.png",
-        "title": "pinned",
-        "alt": "rival_pale",
-        "link": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEi2aqf82E2vPsRDjhHRSzVXSzvLd3t_6ZfH1Y3w-eKILaooOeCEu21h_g4F819e-TL4u8S4e1XZ1AOI9gfMkJp6IZTFCyIGUBiiHq86qEeKe59JE7Bk3nOgPvpQo6JxhiGDIPJyXcnSb3cF/s800/money_tsuchou_shock_man.png",
-        "page": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEi2aqf82E2vPsRDjhHRSzVXSzvLd3t_6ZfH1Y3w-eKILaooOeCEu21h_g4F819e-TL4u8S4e1XZ1AOI9gfMkJp6IZTFCyIGUBiiHq86qEeKe59JE7Bk3nOgPvpQo6JxhiGDIPJyXcnSb3cF/s800/money_tsuchou_shock_man.png"
-      },
-      {
-        "id": "rival_bow",
-        "kind": "person",
-        "path": "/tmp/irasu-work/01-card-ranking/assets/rival_bow.png",
-        "url": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhXVsD9VIHym9LT-UAiWhsDTiYU2l70xSUUOZC8suvWuCqcUH3Gx8G0c0UEHOfKErpYCK4ZdXlUkWCJdJW2ApshJJ6pJHdnAfdGUIHMhAjQ4b3u1_5VHwXk7xOxkt49pSQw3t3YoEGxfcGb/s800/job_bus_driver_man_ojigi.png",
-        "title": "pinned",
-        "alt": "rival_bow",
-        "link": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhXVsD9VIHym9LT-UAiWhsDTiYU2l70xSUUOZC8suvWuCqcUH3Gx8G0c0UEHOfKErpYCK4ZdXlUkWCJdJW2ApshJJ6pJHdnAfdGUIHMhAjQ4b3u1_5VHwXk7xOxkt49pSQw3t3YoEGxfcGb/s800/job_bus_driver_man_ojigi.png",
-        "page": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhXVsD9VIHym9LT-UAiWhsDTiYU2l70xSUUOZC8suvWuCqcUH3Gx8G0c0UEHOfKErpYCK4ZdXlUkWCJdJW2ApshJJ6pJHdnAfdGUIHMhAjQ4b3u1_5VHwXk7xOxkt49pSQw3t3YoEGxfcGb/s800/job_bus_driver_man_ojigi.png"
       }
     ],
     "rejected": []
   },
   "asset_paths": {
-    "rival_smug": "/tmp/irasu-work/01-card-ranking/assets/rival_smug.png",
-    "hero_trouble": "/tmp/irasu-work/01-card-ranking/assets/hero_trouble.png",
-    "hero_angry": "/tmp/irasu-work/01-card-ranking/assets/hero_angry.png",
-    "hero_tired": "/tmp/irasu-work/01-card-ranking/assets/hero_tired.png",
-    "hero_smile": "/tmp/irasu-work/01-card-ranking/assets/hero_smile.png",
-    "boss_angry": "/tmp/irasu-work/01-card-ranking/assets/boss_angry.png",
-    "rival_pale": "/tmp/irasu-work/01-card-ranking/assets/rival_pale.png",
-    "rival_bow": "/tmp/irasu-work/01-card-ranking/assets/rival_bow.png"
+    "rival_smug": "/tmp/irasu-still/01/assets/rival_smug.png",
+    "hero_trouble": "/tmp/irasu-still/01/assets/hero_trouble.png",
+    "hero_angry": "/tmp/irasu-still/01/assets/hero_angry.png",
+    "hero_tired": "/tmp/irasu-still/01/assets/hero_tired.png",
+    "hero_smile": "/tmp/irasu-still/01/assets/hero_smile.png",
+    "boss_angry": "/tmp/irasu-still/01/assets/boss_angry.png"
   },
   "layout": {
     "telop_y_ratio": 0.78,

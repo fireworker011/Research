@@ -49,8 +49,8 @@ ASSET_CATALOG: dict[str, dict] = {
     "rival_bow": {
         "kind": "person",
         "who": "rival",
-        "queries": ["謝罪をする男性", "お辞儀する男性", "謝る男性 お辞儀"],
-        "needles": ["謝", "辞儀", "土下座", "男性"],
+        "queries": ["お辞儀をしている男性会社員", "謝るサラリーマン"],
+        "needles": ["辞儀", "謝", "会社", "サラリー", "男性"],
         "gender": "男性",
     },
     "boss_angry": {

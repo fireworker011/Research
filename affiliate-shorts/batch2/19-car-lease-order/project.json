@@ -1,0 +1,624 @@
+{
+  "template": "ranking",
+  "title": "カーリースで見落とす順",
+  "punchline": "契約書の返却の欄を読んだ。精算の条件が先に書いてあった",
+  "brief": {
+    "template": "ranking",
+    "hook": "カーリースで見落とす順",
+    "series_character": "返却係",
+    "bullets": [
+      "途中でやめにくい",
+      "走る距離の上限「そんなに乗らない」",
+      "車の傷の精算",
+      "契約が終わったあと「返すとき考える」"
+    ],
+    "punchline": "契約書の返却の欄を読んだ。精算の条件が先に書いてあった",
+    "closing": "先に読むのは返却の欄",
+    "lines": {
+      "rank_aside": "まだ序の口だ",
+      "boss_line": "この精算は何だ",
+      "rank_close": "返却の欄だけ読め"
+    },
+    "asset_urls": {
+      "hero_trouble": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhxJL1uWPRrar9S-FPxNv7FCtcDsBUM5B8ItxCoPVFnqtsBKjv7TyPF54QNeSpcg2QCm3Fn8maHs9AscQD5Bmegje_6Zdt2xtzqXkriOKe76Aq37zUYxI0kfBoONd8SbYE_loSyJw3rkVY8/s800/businessman1_nayami.png",
+      "hero_angry": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjNZa7ijupIB1glzdfPBDcjiYSmA5vivkbKmqryJ9C11F00i6aifmrQbVGFJcJBgN9SnkUMuQsor8OqrhFv6cc7Qc6_gBEHZjOgV457XveJw0jakqDI2_boGirQKY4h1DpFj4S-tddLG4k/s800/business02_angry.png",
+      "hero_tired": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEi5O7ebIPQwPb7j8zWG0W4g3EN_nlmRZvPEfGKxwGsCnV44eGJARhg0Zz2mBNr7m9BK61Ebp00-9v4cX_V-YkzlJB5YAj7Dpb9slFkX2GG7xGyXKCYl1wMwzi6eWXoCHVuQIFSjsaL-5CM/s800/tsukareta_business_man.png",
+      "hero_smile": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhy3dDvRMBHJ-tn1A2AUBt4iUbmcOXxRuHUegd9lKUBveMfLADwYFD0QsmGhDqoctcd1lk7bY5wO3M04TuC_EVB8TcyirHiMlsvyn-HPGcHJHl6wMEEcrZb5vc-YuKF8ddVD16Wadzfqurn/s800/businessman5_ureshii.png",
+      "rival_smug": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgmfOy1dvPW5nkAXq91r1d2JpatnBWDQHwMOsQRfjoJK3UhP4qRvRGgzacoQu3ogBLYq4zj0tYolJd4_6rjS4tUa8DR5lSj_PQaqXzd6Cs_DivuxoRAkIygU6GV36iS3QhIj3oa6vnevpY/s800/pose_doyagao_man.png",
+      "rival_pale": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEi2aqf82E2vPsRDjhHRSzVXSzvLd3t_6ZfH1Y3w-eKILaooOeCEu21h_g4F819e-TL4u8S4e1XZ1AOI9gfMkJp6IZTFCyIGUBiiHq86qEeKe59JE7Bk3nOgPvpQo6JxhiGDIPJyXcnSb3cF/s800/money_tsuchou_shock_man.png",
+      "rival_bow": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjiEZczawhFUZ4JguLwDcUFj6zRJGy-WWRp2Kb4TtoVWHZ9g8yq9XODYEg26GqfVRSJriWVWCF9Ue8I-2BymjSb4VDlhDPJ59Noegdwdyumf1WkAkg3szuae8_DiBQl44Is1TgJXJZ6H0E/s800/pose_syazai_man.png",
+      "boss_angry": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjHP6Z99Wq0Hf3Ii9NZk1tUIlGBQKW7fKhHjtlIM9lUmiU_XIwwBCW_IRu91RKhlhBE0qMKWiNUq8ISkpgdER-nzCs8YEtseVITZD6V0B9f9kJ4OUtHzWVCiXpFrZ3QEjpAWzsVr9eEi8pQ/s800/pose_sugoi_okoru_man.png",
+      "mug": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgSgOkZbP1J1A0YQrFdOYyAu3IVUzr7gTOxUqJTbvTFK7HG6kSEm3WsCyJ83Z7yDuueR2JZ2pFs6SlJYVQt6qMd-M_6dbuJqgI226j9lcaewgHc-oFIowbziSd9vXoHbFExejAccEk9SNeF/s800/syokki_mug_cup.png"
+    }
+  },
+  "scenes": [
+    {
+      "id": 1,
+      "role": "hook",
+      "speaker": "narrator",
+      "style_id": 2,
+      "credit": "VOICEVOX:四国めたん",
+      "text": "カーリースで見落とす順",
+      "telop": "カーリースで見落とす順",
+      "bg": "office",
+      "characters": [
+        {
+          "id": "rival_smug",
+          "who": "rival",
+          "label": "返却係"
+        },
+        {
+          "id": "hero_trouble",
+          "who": "hero",
+          "label": ""
+        }
+      ],
+      "props": [],
+      "code_props": [],
+      "effect": "zoom",
+      "sfx": "rise",
+      "duration_hint": 2.2,
+      "tone": "rank",
+      "voice_path": "/tmp/irasu-vary/19-car-lease-order/audio/scene_01.wav",
+      "voice_seconds": 0.896,
+      "duration": 0.9166666666666666,
+      "lead": 0.0
+    },
+    {
+      "id": 2,
+      "role": "develop",
+      "speaker": "narrator",
+      "style_id": 2,
+      "credit": "VOICEVOX:四国めたん",
+      "text": "第3位、途中でやめにくい",
+      "telop": "第3位、途中でやめにくい",
+      "bg": "office",
+      "characters": [
+        {
+          "id": "rival_smug",
+          "who": "rival",
+          "label": "返却係"
+        }
+      ],
+      "props": [],
+      "code_props": [],
+      "effect": "zoom",
+      "sfx": "rise",
+      "duration_hint": 2.2,
+      "tone": "rank",
+      "voice_path": "/tmp/irasu-vary/19-car-lease-order/audio/scene_02.wav",
+      "voice_seconds": 1.557,
+      "duration": 1.5833333333333333,
+      "lead": 0.0
+    },
+    {
+      "id": 3,
+      "role": "develop",
+      "speaker": "rival",
+      "style_id": 11,
+      "credit": "VOICEVOX:玄野武宏",
+      "text": "そんなに乗らない",
+      "telop": "そんなに乗らない",
+      "bg": "office",
+      "characters": [
+        {
+          "id": "rival_smug",
+          "who": "rival",
+          "label": "返却係"
+        }
+      ],
+      "props": [],
+      "code_props": [],
+      "effect": "none",
+      "sfx": "tick",
+      "duration_hint": 2.2,
+      "tone": "rank",
+      "voice_path": "/tmp/irasu-vary/19-car-lease-order/audio/scene_03.wav",
+      "voice_seconds": 0.651,
+      "duration": 0.6666666666666666,
+      "lead": 0.0
+    },
+    {
+      "id": 4,
+      "role": "develop",
+      "speaker": "hero",
+      "style_id": 34,
+      "credit": "VOICEVOX:白上虎太郎",
+      "text": "まだ序の口だ",
+      "telop": "まだ序の口だ",
+      "bg": "office",
+      "characters": [
+        {
+          "id": "hero_angry",
+          "who": "hero",
+          "label": ""
+        }
+      ],
+      "props": [],
+      "code_props": [],
+      "effect": "none",
+      "sfx": "none",
+      "duration_hint": 2.2,
+      "tone": "rank",
+      "voice_path": "/tmp/irasu-vary/19-car-lease-order/audio/scene_04.wav",
+      "voice_seconds": 0.747,
+      "duration": 0.75,
+      "lead": 0.0
+    },
+    {
+      "id": 5,
+      "role": "develop",
+      "speaker": "narrator",
+      "style_id": 2,
+      "credit": "VOICEVOX:四国めたん",
+      "text": "第2位、走る距離の上限",
+      "telop": "第2位、走る距離の上限",
+      "bg": "office",
+      "characters": [
+        {
+          "id": "hero_tired",
+          "who": "hero",
+          "label": ""
+        }
+      ],
+      "props": [],
+      "code_props": [],
+      "effect": "zoom",
+      "sfx": "rise",
+      "duration_hint": 2.2,
+      "tone": "rank",
+      "voice_path": "/tmp/irasu-vary/19-car-lease-order/audio/scene_05.wav",
+      "voice_seconds": 1.483,
+      "duration": 1.5,
+      "lead": 0.0
+    },
+    {
+      "id": 6,
+      "role": "develop",
+      "speaker": "narrator",
+      "style_id": 2,
+      "credit": "VOICEVOX:四国めたん",
+      "text": "車の傷の精算",
+      "telop": "車の傷の精算",
+      "bg": "office_night",
+      "characters": [
+        {
+          "id": "hero_tired",
+          "who": "hero",
+          "label": ""
+        }
+      ],
+      "props": [],
+      "code_props": [],
+      "effect": "none",
+      "sfx": "tick",
+      "duration_hint": 2.2,
+      "tone": "rank",
+      "voice_path": "/tmp/irasu-vary/19-car-lease-order/audio/scene_06.wav",
+      "voice_seconds": 1.003,
+      "duration": 1.0416666666666667,
+      "lead": 0.0
+    },
+    {
+      "id": 7,
+      "role": "develop",
+      "speaker": "narrator",
+      "style_id": 2,
+      "credit": "VOICEVOX:四国めたん",
+      "text": "契約が終わったあと",
+      "telop": "契約が終わったあと",
+      "bg": "office",
+      "characters": [
+        {
+          "id": "rival_smug",
+          "who": "rival",
+          "label": "返却係"
+        }
+      ],
+      "props": [],
+      "code_props": [],
+      "effect": "none",
+      "sfx": "none",
+      "duration_hint": 2.2,
+      "tone": "rank",
+      "voice_path": "/tmp/irasu-vary/19-car-lease-order/audio/scene_07.wav",
+      "voice_seconds": 1.056,
+      "duration": 1.2916666666666667,
+      "lead": 0.0
+    },
+    {
+      "id": 8,
+      "role": "punch",
+      "speaker": "narrator",
+      "style_id": 2,
+      "credit": "VOICEVOX:四国めたん",
+      "text": "第1位、契約書の返却の欄を読んだ",
+      "telop": "第1位、契約書の\n返却の欄を読んだ",
+      "bg": "chat",
+      "characters": [
+        {
+          "id": "hero_smile",
+          "who": "hero",
+          "label": ""
+        }
+      ],
+      "props": [],
+      "code_props": [],
+      "effect": "zoom",
+      "sfx": "shock",
+      "duration_hint": 2.2,
+      "tone": "rank",
+      "hold": 1.8,
+      "voice_path": "/tmp/irasu-vary/19-car-lease-order/audio/scene_08.wav",
+      "voice_seconds": 2.453,
+      "duration": 2.6666666666666665,
+      "lead": 0.0
+    },
+    {
+      "id": 9,
+      "role": "punch",
+      "speaker": "boss",
+      "style_id": 21,
+      "credit": "VOICEVOX:剣崎雌雄",
+      "text": "この精算は何だ",
+      "telop": "この精算は何だ",
+      "bg": "office",
+      "characters": [
+        {
+          "id": "boss_angry",
+          "who": "boss",
+          "label": ""
+        }
+      ],
+      "props": [],
+      "code_props": [],
+      "effect": "shake",
+      "sfx": "shock",
+      "duration_hint": 2.2,
+      "tone": "punch",
+      "voice_path": "/tmp/irasu-vary/19-car-lease-order/audio/scene_09.wav",
+      "voice_seconds": 1.035,
+      "duration": 1.2916666666666667,
+      "lead": 0.0
+    },
+    {
+      "id": 10,
+      "role": "punch",
+      "speaker": "rival",
+      "style_id": 11,
+      "credit": "VOICEVOX:玄野武宏",
+      "text": "返すとき考える",
+      "telop": "返すとき考える",
+      "bg": "office",
+      "characters": [
+        {
+          "id": "rival_smug",
+          "who": "rival",
+          "label": "返却係"
+        }
+      ],
+      "props": [],
+      "code_props": [],
+      "effect": "none",
+      "sfx": "none",
+      "duration_hint": 2.2,
+      "tone": "punch",
+      "voice_path": "/tmp/irasu-vary/19-car-lease-order/audio/scene_10.wav",
+      "voice_seconds": 0.896,
+      "duration": 1.1666666666666667,
+      "lead": 0.0
+    },
+    {
+      "id": 11,
+      "role": "punch",
+      "speaker": "narrator",
+      "style_id": 2,
+      "credit": "VOICEVOX:四国めたん",
+      "text": "精算の条件が先に書いてあった",
+      "telop": "精算の条件が\n先に書いてあった",
+      "bg": "office",
+      "characters": [
+        {
+          "id": "hero_smile",
+          "who": "hero",
+          "label": ""
+        }
+      ],
+      "props": [],
+      "code_props": [],
+      "effect": "zoom",
+      "sfx": "coin",
+      "duration_hint": 2.2,
+      "tone": "punch",
+      "voice_path": "/tmp/irasu-vary/19-car-lease-order/audio/scene_11.wav",
+      "voice_seconds": 1.813,
+      "duration": 2.0833333333333335,
+      "lead": 0.0
+    },
+    {
+      "id": 12,
+      "role": "close",
+      "speaker": "narrator",
+      "style_id": 2,
+      "credit": "VOICEVOX:四国めたん",
+      "text": "先に読むのは返却の欄",
+      "telop": "先に読むのは返却の欄",
+      "bg": "lines",
+      "characters": [
+        {
+          "id": "hero_smile",
+          "who": "hero",
+          "label": ""
+        }
+      ],
+      "props": [],
+      "code_props": [],
+      "effect": "zoom",
+      "sfx": "none",
+      "duration_hint": 2.2,
+      "tone": "close",
+      "voice_path": "/tmp/irasu-vary/19-car-lease-order/audio/scene_12.wav",
+      "voice_seconds": 1.376,
+      "duration": 1.6666666666666667,
+      "lead": 0.0
+    },
+    {
+      "id": 13,
+      "role": "close",
+      "speaker": "narrator",
+      "style_id": 2,
+      "credit": "VOICEVOX:四国めたん",
+      "text": "返却の欄だけ読め",
+      "telop": "返却の欄だけ読め",
+      "bg": "lines",
+      "characters": [
+        {
+          "id": "hero_smile",
+          "who": "hero",
+          "label": ""
+        }
+      ],
+      "props": [],
+      "code_props": [],
+      "effect": "none",
+      "sfx": "rise",
+      "duration_hint": 2.2,
+      "tone": "close",
+      "voice_path": "/tmp/irasu-vary/19-car-lease-order/audio/scene_13.wav",
+      "voice_seconds": 1.12,
+      "duration": 1.375,
+      "lead": 0.0
+    },
+    {
+      "id": 14,
+      "role": "credit",
+      "speaker": "narrator",
+      "style_id": 2,
+      "credit": "VOICEVOX:四国めたん",
+      "text": "",
+      "telop": "VOICEVOX:四国めたん\nVOICEVOX:玄野武宏\nVOICEVOX:白上虎太郎\nVOICEVOX:剣崎雌雄\nイラスト：いらすとや",
+      "bg": "credit",
+      "characters": [],
+      "props": [],
+      "code_props": [],
+      "effect": "none",
+      "sfx": "none",
+      "duration_hint": 2.2,
+      "series_note": "返却係",
+      "voice_path": "/tmp/irasu-vary/19-car-lease-order/audio/scene_14.wav",
+      "voice_seconds": 0.15,
+      "duration": 2.0,
+      "lead": 0.0
+    }
+  ],
+  "credits": [
+    "VOICEVOX:四国めたん",
+    "VOICEVOX:玄野武宏",
+    "VOICEVOX:白上虎太郎",
+    "VOICEVOX:剣崎雌雄",
+    "イラスト：いらすとや"
+  ],
+  "asset_ids": [
+    "rival_smug",
+    "hero_trouble",
+    "hero_angry",
+    "hero_tired",
+    "hero_smile",
+    "boss_angry"
+  ],
+  "asset_report": {
+    "count": 6,
+    "limit": 20,
+    "within_limit": true,
+    "accepted": [
+      {
+        "id": "rival_smug",
+        "kind": "person",
+        "path": "/tmp/irasu-rest/19-car-lease-order/assets/rival_smug.png",
+        "url": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgmfOy1dvPW5nkAXq91r1d2JpatnBWDQHwMOsQRfjoJK3UhP4qRvRGgzacoQu3ogBLYq4zj0tYolJd4_6rjS4tUa8DR5lSj_PQaqXzd6Cs_DivuxoRAkIygU6GV36iS3QhIj3oa6vnevpY/s800/pose_doyagao_man.png",
+        "title": "pinned",
+        "alt": "rival_smug",
+        "link": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgmfOy1dvPW5nkAXq91r1d2JpatnBWDQHwMOsQRfjoJK3UhP4qRvRGgzacoQu3ogBLYq4zj0tYolJd4_6rjS4tUa8DR5lSj_PQaqXzd6Cs_DivuxoRAkIygU6GV36iS3QhIj3oa6vnevpY/s800/pose_doyagao_man.png",
+        "page": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgmfOy1dvPW5nkAXq91r1d2JpatnBWDQHwMOsQRfjoJK3UhP4qRvRGgzacoQu3ogBLYq4zj0tYolJd4_6rjS4tUa8DR5lSj_PQaqXzd6Cs_DivuxoRAkIygU6GV36iS3QhIj3oa6vnevpY/s800/pose_doyagao_man.png"
+      },
+      {
+        "id": "hero_trouble",
+        "kind": "person",
+        "path": "/tmp/irasu-rest/19-car-lease-order/assets/hero_trouble.png",
+        "url": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhxJL1uWPRrar9S-FPxNv7FCtcDsBUM5B8ItxCoPVFnqtsBKjv7TyPF54QNeSpcg2QCm3Fn8maHs9AscQD5Bmegje_6Zdt2xtzqXkriOKe76Aq37zUYxI0kfBoONd8SbYE_loSyJw3rkVY8/s800/businessman1_nayami.png",
+        "title": "pinned",
+        "alt": "hero_trouble",
+        "link": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhxJL1uWPRrar9S-FPxNv7FCtcDsBUM5B8ItxCoPVFnqtsBKjv7TyPF54QNeSpcg2QCm3Fn8maHs9AscQD5Bmegje_6Zdt2xtzqXkriOKe76Aq37zUYxI0kfBoONd8SbYE_loSyJw3rkVY8/s800/businessman1_nayami.png",
+        "page": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhxJL1uWPRrar9S-FPxNv7FCtcDsBUM5B8ItxCoPVFnqtsBKjv7TyPF54QNeSpcg2QCm3Fn8maHs9AscQD5Bmegje_6Zdt2xtzqXkriOKe76Aq37zUYxI0kfBoONd8SbYE_loSyJw3rkVY8/s800/businessman1_nayami.png"
+      },
+      {
+        "id": "hero_angry",
+        "kind": "person",
+        "path": "/tmp/irasu-rest/19-car-lease-order/assets/hero_angry.png",
+        "url": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjNZa7ijupIB1glzdfPBDcjiYSmA5vivkbKmqryJ9C11F00i6aifmrQbVGFJcJBgN9SnkUMuQsor8OqrhFv6cc7Qc6_gBEHZjOgV457XveJw0jakqDI2_boGirQKY4h1DpFj4S-tddLG4k/s800/business02_angry.png",
+        "title": "pinned",
+        "alt": "hero_angry",
+        "link": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjNZa7ijupIB1glzdfPBDcjiYSmA5vivkbKmqryJ9C11F00i6aifmrQbVGFJcJBgN9SnkUMuQsor8OqrhFv6cc7Qc6_gBEHZjOgV457XveJw0jakqDI2_boGirQKY4h1DpFj4S-tddLG4k/s800/business02_angry.png",
+        "page": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjNZa7ijupIB1glzdfPBDcjiYSmA5vivkbKmqryJ9C11F00i6aifmrQbVGFJcJBgN9SnkUMuQsor8OqrhFv6cc7Qc6_gBEHZjOgV457XveJw0jakqDI2_boGirQKY4h1DpFj4S-tddLG4k/s800/business02_angry.png"
+      },
+      {
+        "id": "hero_tired",
+        "kind": "person",
+        "path": "/tmp/irasu-rest/19-car-lease-order/assets/hero_tired.png",
+        "url": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEi5O7ebIPQwPb7j8zWG0W4g3EN_nlmRZvPEfGKxwGsCnV44eGJARhg0Zz2mBNr7m9BK61Ebp00-9v4cX_V-YkzlJB5YAj7Dpb9slFkX2GG7xGyXKCYl1wMwzi6eWXoCHVuQIFSjsaL-5CM/s800/tsukareta_business_man.png",
+        "title": "pinned",
+        "alt": "hero_tired",
+        "link": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEi5O7ebIPQwPb7j8zWG0W4g3EN_nlmRZvPEfGKxwGsCnV44eGJARhg0Zz2mBNr7m9BK61Ebp00-9v4cX_V-YkzlJB5YAj7Dpb9slFkX2GG7xGyXKCYl1wMwzi6eWXoCHVuQIFSjsaL-5CM/s800/tsukareta_business_man.png",
+        "page": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEi5O7ebIPQwPb7j8zWG0W4g3EN_nlmRZvPEfGKxwGsCnV44eGJARhg0Zz2mBNr7m9BK61Ebp00-9v4cX_V-YkzlJB5YAj7Dpb9slFkX2GG7xGyXKCYl1wMwzi6eWXoCHVuQIFSjsaL-5CM/s800/tsukareta_business_man.png"
+      },
+      {
+        "id": "hero_smile",
+        "kind": "person",
+        "path": "/tmp/irasu-rest/19-car-lease-order/assets/hero_smile.png",
+        "url": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhy3dDvRMBHJ-tn1A2AUBt4iUbmcOXxRuHUegd9lKUBveMfLADwYFD0QsmGhDqoctcd1lk7bY5wO3M04TuC_EVB8TcyirHiMlsvyn-HPGcHJHl6wMEEcrZb5vc-YuKF8ddVD16Wadzfqurn/s800/businessman5_ureshii.png",
+        "title": "pinned",
+        "alt": "hero_smile",
+        "link": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhy3dDvRMBHJ-tn1A2AUBt4iUbmcOXxRuHUegd9lKUBveMfLADwYFD0QsmGhDqoctcd1lk7bY5wO3M04TuC_EVB8TcyirHiMlsvyn-HPGcHJHl6wMEEcrZb5vc-YuKF8ddVD16Wadzfqurn/s800/businessman5_ureshii.png",
+        "page": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhy3dDvRMBHJ-tn1A2AUBt4iUbmcOXxRuHUegd9lKUBveMfLADwYFD0QsmGhDqoctcd1lk7bY5wO3M04TuC_EVB8TcyirHiMlsvyn-HPGcHJHl6wMEEcrZb5vc-YuKF8ddVD16Wadzfqurn/s800/businessman5_ureshii.png"
+      },
+      {
+        "id": "boss_angry",
+        "kind": "person",
+        "path": "/tmp/irasu-rest/19-car-lease-order/assets/boss_angry.png",
+        "url": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjHP6Z99Wq0Hf3Ii9NZk1tUIlGBQKW7fKhHjtlIM9lUmiU_XIwwBCW_IRu91RKhlhBE0qMKWiNUq8ISkpgdER-nzCs8YEtseVITZD6V0B9f9kJ4OUtHzWVCiXpFrZ3QEjpAWzsVr9eEi8pQ/s800/pose_sugoi_okoru_man.png",
+        "title": "pinned",
+        "alt": "boss_angry",
+        "link": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjHP6Z99Wq0Hf3Ii9NZk1tUIlGBQKW7fKhHjtlIM9lUmiU_XIwwBCW_IRu91RKhlhBE0qMKWiNUq8ISkpgdER-nzCs8YEtseVITZD6V0B9f9kJ4OUtHzWVCiXpFrZ3QEjpAWzsVr9eEi8pQ/s800/pose_sugoi_okoru_man.png",
+        "page": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjHP6Z99Wq0Hf3Ii9NZk1tUIlGBQKW7fKhHjtlIM9lUmiU_XIwwBCW_IRu91RKhlhBE0qMKWiNUq8ISkpgdER-nzCs8YEtseVITZD6V0B9f9kJ4OUtHzWVCiXpFrZ3QEjpAWzsVr9eEi8pQ/s800/pose_sugoi_okoru_man.png"
+      }
+    ],
+    "rejected": []
+  },
+  "asset_paths": {
+    "rival_smug": "/tmp/irasu-vary/19-car-lease-order/assets/rival_smug.png",
+    "hero_trouble": "/tmp/irasu-vary/19-car-lease-order/assets/hero_trouble.png",
+    "hero_angry": "/tmp/irasu-vary/19-car-lease-order/assets/hero_angry.png",
+    "hero_tired": "/tmp/irasu-vary/19-car-lease-order/assets/hero_tired.png",
+    "hero_smile": "/tmp/irasu-vary/19-car-lease-order/assets/hero_smile.png",
+    "boss_angry": "/tmp/irasu-vary/19-car-lease-order/assets/boss_angry.png"
+  },
+  "layout": {
+    "telop_y_ratio": 0.78,
+    "character_x_ratio": 0.5,
+    "screenshot_count": 0
+  },
+  "settings": {
+    "speed": 1.534,
+    "hook_speed": 1.767,
+    "telop_scale": 1.0,
+    "sfx_gain": 0.26,
+    "bgm_gain": 0.045,
+    "mouth_gain": 0.0,
+    "bgm": true,
+    "tail": 0.14,
+    "role_speed": {
+      "hook": 1.767,
+      "develop": 1.534,
+      "punch": 1.369,
+      "close": 1.416,
+      "credit": 1.534
+    },
+    "role_tail": {
+      "hook": 0.1,
+      "develop": 0.12,
+      "punch": 0.28,
+      "close": 0.16,
+      "credit": 0.0
+    },
+    "bgm_kind": "B6"
+  },
+  "telop_style": {
+    "bar": "square",
+    "stroke": 7,
+    "size": 86,
+    "slide": 0.12,
+    "y_ratio": 0.78,
+    "bar_fill": [
+      0,
+      0,
+      0,
+      170
+    ],
+    "bar_fills": {
+      "rank": [
+        48,
+        28,
+        8,
+        210
+      ],
+      "punch": [
+        48,
+        28,
+        8,
+        210
+      ]
+    },
+    "colors": {
+      "hook": [
+        255,
+        206,
+        64,
+        255
+      ],
+      "develop": [
+        255,
+        255,
+        255,
+        255
+      ],
+      "rank": [
+        255,
+        206,
+        64,
+        255
+      ],
+      "punch": [
+        255,
+        206,
+        64,
+        255
+      ],
+      "close": [
+        255,
+        255,
+        255,
+        255
+      ],
+      "credit": [
+        255,
+        255,
+        255,
+        255
+      ]
+    }
+  },
+  "terms": {
+    "irasutoya": "いらすとやは1つの制作物につき20点まで商用無料（同じ絵の重複は1点）。21点以上の商用利用は有償。クレジット表記は不要。素材そのものの再配布や、イラストを主体にした商品化は不可。背景はコード描画にして点数をキャラと小物に使っている。",
+    "voicevox": "使った声はクレジットが要る。四国めたん、白上虎太郎、玄野武宏、剣崎雌雄はクレジットを書けば商用可。青山龍星は個人事業・法人だと事前許可が要るので使っていない。効果音とBGMはこの場で合成したオリジナルなのでクレジット不要。"
+  },
+  "notes": [],
+  "style_signature": "kane:C6-P1-T2-F1-H5-M4-B6-L1-A2",
+  "style_axes": {
+    "C": "C6",
+    "P": "P1",
+    "T": "T2",
+    "F": "F1",
+    "H": "H5",
+    "M": "M4",
+    "B": "B6",
+    "L": "L1",
+    "A": "A2",
+    "line": "kane"
+  },
+  "style_cast": [
+    "hero_trouble"
+  ],
+  "style_used_assets": [
+    "hero_trouble"
+  ]
+}

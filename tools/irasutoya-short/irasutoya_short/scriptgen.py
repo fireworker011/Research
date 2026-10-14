@@ -114,12 +114,12 @@ def _sukatto(ctx: dict) -> list[dict]:
         _scene(4, "develop", "narrator", _bullet(bullets, 1, "そう言い残して定時で帰っていった"), "office", ["rival_smug"], "none", "whoosh", label=series),
         _scene(5, "develop", "hero", _line(ctx, "hero_refuse", "俺の仕事じゃねえだろ"), "office", ["hero_angry"], "shake", "none", emotion="angry"),
         _scene(6, "develop", "narrator", _bullet(bullets, 2, "誰もいない夜、終電まで残った"), "office_night", ["hero_tired"], "none", "none"),
-        _scene(7, "develop", "narrator", _bullet(bullets, 3, "月曜の朝、何事もなかった顔だった"), "office", ["rival_smug"], "none", "none", label=series, props=["mug"]),
+        _scene(7, "develop", "narrator", _bullet(bullets, 3, "月曜の朝、何事もなかった顔だった"), "office", ["rival_smug"], "none", "none", label=series),
         _scene(8, "develop", "hero", _line(ctx, "hero_aside", "まだ気づいてないのか"), "office", ["hero_angry"], "lines", "none", emotion="angry"),
         _scene(9, "punch", "narrator", ctx["punch_action"], "chat", ["hero_smile"], "zoom", "notify"),
         _scene(10, "punch", "boss", _line(ctx, "boss_line", "どういうことだ"), "office", ["boss_angry"], "shake", "shock"),
-        _scene(11, "punch", "rival", ctx["panic_line"], "office", ["rival_pale"], "none", "none", label=series),
-        _scene(12, "punch", "narrator", ctx["punch_result"], "office", ["rival_bow"], "zoom", "coin", label=series),
+        _scene(11, "punch", "rival", ctx["panic_line"], "office", ["rival_smug"], "none", "none", label=series),
+        _scene(12, "punch", "narrator", ctx["punch_result"], "office", ["hero_smile"], "zoom", "coin", label=series),
         _scene(13, "close", "narrator", ctx["closing"], "lines", ["hero_smile"], "zoom", "none"),
     ]
 
@@ -128,7 +128,7 @@ def _before_after(ctx: dict) -> list[dict]:
     series = ctx["series"]
     bullets = ctx["bullets"]
     return [
-        _scene(1, "hook", "narrator", ctx["hook"], "office", ["hero_smile", "rival_bow"], "zoom", "whoosh", label=series, tone="after"),
+        _scene(1, "hook", "narrator", ctx["hook"], "office", ["hero_trouble", "hero_smile"], "zoom", "whoosh", label=series, tone="after"),
         _scene(2, "develop", "narrator", "ビフォー、" + _bullet(bullets, 0, "机に書類が置かれた"), "office", ["hero_trouble"], "none", "paper", code_props=["papers"], tone="before"),
         _scene(3, "develop", "rival", ctx["rival_line"], "office", ["rival_smug"], "none", "none", label=series, tone="before"),
         _scene(4, "develop", "narrator", _bullet(bullets, 1, "定時で帰っていった"), "office", ["rival_smug"], "none", "whoosh", label=series, tone="before"),
@@ -137,10 +137,10 @@ def _before_after(ctx: dict) -> list[dict]:
         _scene(7, "develop", "narrator", _line(ctx, "turn_line", "ここから、アフター"), "office", ["hero_smile"], "lines", "rise", tone="turn", hold=1.6),
         _scene(8, "punch", "narrator", ctx["punch_action"], "chat", ["hero_smile"], "zoom", "coin", tone="after"),
         _scene(9, "punch", "boss", _line(ctx, "boss_line", "どういうことだ"), "office", ["boss_angry"], "shake", "shock", tone="after"),
-        _scene(10, "punch", "rival", ctx["panic_line"], "office", ["rival_pale"], "none", "none", label=series, tone="after"),
-        _scene(11, "punch", "narrator", ctx["punch_result"], "office", ["rival_bow"], "zoom", "coin", label=series, tone="after"),
+        _scene(10, "punch", "rival", ctx["panic_line"], "office", ["rival_smug"], "none", "none", label=series, tone="after"),
+        _scene(11, "punch", "narrator", ctx["punch_result"], "office", ["hero_smile"], "zoom", "coin", label=series, tone="after"),
         _scene(12, "close", "narrator", ctx["closing"], "lines", ["hero_smile"], "zoom", "none", tone="close"),
-        _scene(13, "close", "narrator", _line(ctx, "after_gap", "ビフォーとアフターは、この差"), "lines", ["hero_smile", "rival_bow"], "none", "none", tone="after"),
+        _scene(13, "close", "narrator", _line(ctx, "after_gap", "ビフォーとアフターは、この差"), "lines", ["hero_trouble", "hero_smile"], "none", "none", tone="after"),
     ]
 
 
@@ -177,7 +177,7 @@ def _aruaru(ctx: dict) -> list[dict]:
             _scene(8, "develop", "narrator", _line(ctx, "more_line", "まだある。一番はここからだ"), "office", ["hero_smile"], "lines", "rise", tone="item"),
             _scene(9, "punch", "narrator", ctx["punch_action"], "chat", ["hero_smile"], "zoom", "rise", tone="punch"),
             _scene(10, "punch", "boss", _line(ctx, "boss_line", "どういうことだ"), "office", ["boss_angry"], "shake", "shock", tone="punch"),
-            _scene(11, "punch", "narrator", ctx["punch_result"], "office", ["rival_bow"], "zoom", "coin", label=series, tone="punch"),
+            _scene(11, "punch", "narrator", ctx["punch_result"], "office", ["hero_smile"], "zoom", "coin", label=series, tone="punch"),
             _scene(12, "close", "narrator", ctx["closing"], "lines", ["hero_smile"], "zoom", "none", tone="close"),
             _scene(13, "close", "narrator", _line(ctx, "count_line", "何個、当てはまった？"), "lines", ["hero_smile"], "none", "tick", tone="close"),
         ]
@@ -201,8 +201,8 @@ def _ranking(ctx: dict) -> list[dict]:
         _scene(7, "develop", "narrator", _bullet(bullets, 3, "何事もなかった顔だった"), "office", ["rival_smug"], "none", "none", label=series, tone="rank"),
         _scene(8, "punch", "narrator", f"第1位、{ctx['punch_action']}", "chat", ["hero_smile"], "zoom", "shock", tone="rank", hold=1.8),
         _scene(9, "punch", "boss", _line(ctx, "boss_line", "どういうことだ"), "office", ["boss_angry"], "shake", "shock", tone="punch"),
-        _scene(10, "punch", "rival", ctx["panic_line"], "office", ["rival_pale"], "none", "none", label=series, tone="punch"),
-        _scene(11, "punch", "narrator", ctx["punch_result"], "office", ["rival_bow"], "zoom", "coin", label=series, tone="punch"),
+        _scene(10, "punch", "rival", ctx["panic_line"], "office", ["rival_smug"], "none", "none", label=series, tone="punch"),
+        _scene(11, "punch", "narrator", ctx["punch_result"], "office", ["hero_smile"], "zoom", "coin", label=series, tone="punch"),
         _scene(12, "close", "narrator", ctx["closing"], "lines", ["hero_smile"], "zoom", "none", tone="close"),
         _scene(13, "close", "narrator", _line(ctx, "rank_close", "1位だけ、覚えとくといい"), "lines", ["hero_smile"], "none", "rise", tone="close"),
     ]
@@ -219,11 +219,11 @@ def _qa(ctx: dict) -> list[dict]:
         _scene(4, "develop", "narrator", _bullet(bullets, 1, "定時で帰っていった"), "office", ["rival_smug"], "none", "tick", label=series, tone="guess"),
         _scene(5, "develop", "narrator", _bullet(bullets, 2, "終電まで残った"), "office_night", ["hero_tired"], "none", "tick", tone="guess"),
         _scene(6, "develop", "hero", _line(ctx, "not_answer", "それは、答えじゃない"), "office", ["hero_angry"], "lines", "none", emotion="angry", tone="guess"),
-        _scene(7, "develop", "narrator", _bullet(bullets, 3, "何事もなかった顔だった"), "office", ["rival_pale"], "none", "tick", label=series, tone="guess"),
+        _scene(7, "develop", "narrator", _bullet(bullets, 3, "何事もなかった顔だった"), "office", ["hero_trouble"], "none", "tick", label=series, tone="guess"),
         _scene(8, "punch", "narrator", "答えは、" + ctx["punch_action"], "chat", ["hero_smile"], "zoom", "shock", tone="answer"),
         _scene(9, "punch", "boss", _line(ctx, "boss_line", "どういうことだ"), "office", ["boss_angry"], "shake", "shock", tone="answer"),
-        _scene(10, "punch", "rival", ctx["panic_line"], "office", ["rival_pale"], "none", "none", label=series, tone="answer"),
-        _scene(11, "punch", "narrator", ctx["punch_result"], "office", ["rival_bow"], "zoom", "coin", label=series, tone="answer"),
+        _scene(10, "punch", "rival", ctx["panic_line"], "office", ["rival_smug"], "none", "none", label=series, tone="answer"),
+        _scene(11, "punch", "narrator", ctx["punch_result"], "office", ["hero_smile"], "zoom", "coin", label=series, tone="answer"),
         _scene(12, "close", "narrator", ctx["closing"], "lines", ["hero_smile"], "zoom", "notify", tone="question"),
         _scene(13, "close", "narrator", _line(ctx, "answer_landed", "答えは、もう出てる"), "lines", ["hero_smile"], "none", "none", tone="answer"),
     ]

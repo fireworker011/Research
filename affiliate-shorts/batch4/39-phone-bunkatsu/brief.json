@@ -1,0 +1,29 @@
+{
+  "template": "sukatto",
+  "hook": "端末の分割が残ってた",
+  "series_character": "端末係",
+  "bullets": [
+    "通信料だけ見て安心する",
+    "機種を変えた月に終わる「もう払い終わった」",
+    "残りの回数を見てない",
+    "解約の紙に端末の行「通信だけ止めればいい」"
+  ],
+  "punchline": "請求の端末の行を数えた。通信を止めても残っていた",
+  "closing": "先に見るのは端末の行",
+  "lines": {
+    "hero_refuse": "今日は止めない",
+    "hero_aside": "まだ残ってる",
+    "boss_line": "この行は何だ"
+  },
+  "asset_urls": {
+    "hero_trouble": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhxJL1uWPRrar9S-FPxNv7FCtcDsBUM5B8ItxCoPVFnqtsBKjv7TyPF54QNeSpcg2QCm3Fn8maHs9AscQD5Bmegje_6Zdt2xtzqXkriOKe76Aq37zUYxI0kfBoONd8SbYE_loSyJw3rkVY8/s800/businessman1_nayami.png",
+    "hero_angry": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjNZa7ijupIB1glzdfPBDcjiYSmA5vivkbKmqryJ9C11F00i6aifmrQbVGFJcJBgN9SnkUMuQsor8OqrhFv6cc7Qc6_gBEHZjOgV457XveJw0jakqDI2_boGirQKY4h1DpFj4S-tddLG4k/s800/business02_angry.png",
+    "hero_tired": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEi5O7ebIPQwPb7j8zWG0W4g3EN_nlmRZvPEfGKxwGsCnV44eGJARhg0Zz2mBNr7m9BK61Ebp00-9v4cX_V-YkzlJB5YAj7Dpb9slFkX2GG7xGyXKCYl1wMwzi6eWXoCHVuQIFSjsaL-5CM/s800/tsukareta_business_man.png",
+    "hero_smile": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhy3dDvRMBHJ-tn1A2AUBt4iUbmcOXxRuHUegd9lKUBveMfLADwYFD0QsmGhDqoctcd1lk7bY5wO3M04TuC_EVB8TcyirHiMlsvyn-HPGcHJHl6wMEEcrZb5vc-YuKF8ddVD16Wadzfqurn/s800/businessman5_ureshii.png",
+    "rival_smug": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgmfOy1dvPW5nkAXq91r1d2JpatnBWDQHwMOsQRfjoJK3UhP4qRvRGgzacoQu3ogBLYq4zj0tYolJd4_6rjS4tUa8DR5lSj_PQaqXzd6Cs_DivuxoRAkIygU6GV36iS3QhIj3oa6vnevpY/s800/pose_doyagao_man.png",
+    "rival_pale": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEi2aqf82E2vPsRDjhHRSzVXSzvLd3t_6ZfH1Y3w-eKILaooOeCEu21h_g4F819e-TL4u8S4e1XZ1AOI9gfMkJp6IZTFCyIGUBiiHq86qEeKe59JE7Bk3nOgPvpQo6JxhiGDIPJyXcnSb3cF/s800/money_tsuchou_shock_man.png",
+    "rival_bow": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjiEZczawhFUZ4JguLwDcUFj6zRJGy-WWRp2Kb4TtoVWHZ9g8yq9XODYEg26GqfVRSJriWVWCF9Ue8I-2BymjSb4VDlhDPJ59Noegdwdyumf1WkAkg3szuae8_DiBQl44Is1TgJXJZ6H0E/s800/pose_syazai_man.png",
+    "boss_angry": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjHP6Z99Wq0Hf3Ii9NZk1tUIlGBQKW7fKhHjtlIM9lUmiU_XIwwBCW_IRu91RKhlhBE0qMKWiNUq8ISkpgdER-nzCs8YEtseVITZD6V0B9f9kJ4OUtHzWVCiXpFrZ3QEjpAWzsVr9eEi8pQ/s800/pose_sugoi_okoru_man.png",
+    "mug": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgSgOkZbP1J1A0YQrFdOYyAu3IVUzr7gTOxUqJTbvTFK7HG6kSEm3WsCyJ83Z7yDuueR2JZ2pFs6SlJYVQt6qMd-M_6dbuJqgI226j9lcaewgHc-oFIowbziSd9vXoHbFExejAccEk9SNeF/s800/syokki_mug_cup.png"
+  }
+}

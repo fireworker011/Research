@@ -7,6 +7,7 @@ import json
 import shutil
 from pathlib import Path
 
+from irasutoya_short.picture_first import make_picture_first
 from irasutoya_short.pipeline import make, revise
 from irasutoya_short.render import bundled_font
 from irasutoya_short.templates import describe_templates
@@ -37,6 +38,14 @@ def main() -> None:
     make_p.add_argument("--template", default="", help="sukatto / before_after / aruaru / ranking / qa")
     make_p.add_argument("--no-bgm", action="store_true")
 
+    pic_p = sub.add_parser("picture-first", help="口パクの絵を先に固定し、声をあとから合わせる")
+    pic_p.add_argument("brief", type=Path)
+    pic_p.add_argument("--work", type=Path, default=Path("work"))
+    pic_p.add_argument("--out", type=Path, required=True)
+    pic_p.add_argument("--screenshots", default="", help="参考動画のスクショが入ったフォルダ（5〜10枚）")
+    pic_p.add_argument("--template", default="", help="sukatto / before_after / aruaru / ranking / qa")
+    pic_p.add_argument("--no-bgm", action="store_true")
+
     rev_p = sub.add_parser("revise", help="口語の指示で作り直す")
     rev_p.add_argument("work", type=Path)
     rev_p.add_argument("note")
@@ -57,6 +66,15 @@ def main() -> None:
         return
     if args.cmd == "make":
         summary = make(
+            args.brief,
+            args.work,
+            args.out,
+            _shots(args.screenshots),
+            bgm=not args.no_bgm,
+            template=args.template,
+        )
+    elif args.cmd == "picture-first":
+        summary = make_picture_first(
             args.brief,
             args.work,
             args.out,

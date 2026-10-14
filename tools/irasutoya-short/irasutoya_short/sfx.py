@@ -88,8 +88,28 @@ def make_sfx(name: str) -> np.ndarray | None:
     return None if fn is None else fn()
 
 
-def bgm_loop(seconds: float) -> np.ndarray:
-    """ごく小さいペンタトニック。任意BGM。"""
+def bgm_loop(seconds: float, kind: str = "B4") -> np.ndarray:
+    """オリジナルのベッド。B4 は従来の木琴。声より小さく使う。"""
+    if kind == "B1":
+        return np.zeros(int(seconds * SR), dtype=np.float32)
+    table = {
+        "B2": _piano,
+        "B3": _lofi,
+        "B4": _xylophone,
+        "B5": _guitar,
+        "B6": _ambience,
+    }
+    if kind not in table:
+        raise ValueError(f"未知のBGM: {kind}")
+    bed = table[kind](seconds)
+    peak = float(np.max(np.abs(bed))) if bed.size else 0.0
+    if peak > 1e-6:
+        bed = bed / peak * np.float32(0.18)
+    return bed.astype(np.float32)
+
+
+def _xylophone(seconds: float) -> np.ndarray:
+    """ごく小さいペンタトニック。公開済みの木琴に相当。"""
     n = int(seconds * SR)
     t = np.arange(n, dtype=np.float32) / SR
     notes = np.array([523.25, 587.33, 659.25, 783.99, 880.0], dtype=np.float32)
@@ -107,3 +127,62 @@ def bgm_loop(seconds: float) -> np.ndarray:
         out[a:b] += np.sin(2 * np.pi * freq * lt) * np.exp(-lt * 6) * 0.15
         i += 1
     return out
+
+
+def _tone(freq: float, n: int, decay: float, harmonic: float) -> np.ndarray:
+    t = np.arange(n, dtype=np.float32) / SR
+    wave = np.sin(2 * np.pi * freq * t) + harmonic * np.sin(2 * np.pi * freq * 2 * t)
+    return wave.astype(np.float32) * np.exp(-t * decay)
+
+
+def _piano(seconds: float) -> np.ndarray:
+    n = int(seconds * SR)
+    out = np.zeros(n, dtype=np.float32)
+    chords = ((262.0, 330.0, 392.0), (220.0, 262.0, 330.0), (196.0, 247.0, 294.0), (174.0, 220.0, 262.0))
+    step = int(1.6 * SR)
+    span = int(1.45 * SR)
+    for index in range(0, n, step):
+        chord = chords[(index // step) % len(chords)]
+        end = min(n, index + span)
+        for freq in chord:
+            out[index:end] += _tone(freq, end - index, 1.15, 0.18) * 0.22
+    return out
+
+
+def _lofi(seconds: float) -> np.ndarray:
+    n = int(seconds * SR)
+    out = _piano(seconds) * 0.55
+    rng = np.random.default_rng(3)
+    noise = rng.normal(0, 1, n).astype(np.float32)
+    kernel = np.ones(400, dtype=np.float32) / 400
+    noise = np.convolve(noise, kernel, mode="same").astype(np.float32)
+    t = np.arange(n, dtype=np.float32) / SR
+    wobble = 0.85 + 0.15 * np.sin(2 * np.pi * 0.18 * t)
+    out += noise * wobble * 0.04
+    return out
+
+
+def _guitar(seconds: float) -> np.ndarray:
+    n = int(seconds * SR)
+    out = np.zeros(n, dtype=np.float32)
+    notes = (196.0, 247.0, 294.0, 330.0, 247.0, 220.0)
+    beat = 0.62
+    span = int(0.48 * SR)
+    for index, freq in enumerate(notes * (int(seconds / beat) + 1)):
+        start = int(index * beat * SR)
+        if start >= n:
+            break
+        end = min(n, start + span)
+        out[start:end] += _tone(freq, end - start, 7.5, 0.35) * 0.4
+    return out
+
+
+def _ambience(seconds: float) -> np.ndarray:
+    n = int(seconds * SR)
+    rng = np.random.default_rng(6)
+    white = rng.normal(0, 1, n).astype(np.float32)
+    brown = np.cumsum(white)
+    peak = float(np.max(np.abs(brown))) or 1.0
+    t = np.arange(n, dtype=np.float32) / SR
+    amp = 0.08 * (0.65 + 0.35 * np.sin(2 * np.pi * 0.07 * t))
+    return (brown / peak).astype(np.float32) * amp

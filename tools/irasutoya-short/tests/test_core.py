@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import io
+import json
 import tempfile
 import unittest
 from pathlib import Path
@@ -10,7 +11,8 @@ from pathlib import Path
 import numpy as np
 from PIL import Image
 
-from irasutoya_short.audio import mix_tracks, samples_for_frames
+from irasutoya_short.audio import mix_tracks, samples_for_frames, write_wav
+from irasutoya_short.picture_first import fit_voice_to_lock, speed_factor
 from irasutoya_short.constants import BLOCKED_STYLE_IDS, FPS, SAMPLE_RATE
 from irasutoya_short.irasutoya import _download, cache_file, match_score, normalize_entries
 from irasutoya_short.lipsync import mouth_envelope
@@ -379,6 +381,64 @@ class AssetPickTests(unittest.TestCase):
         dest = root / "out.png"
         _download(url, dest, cache_root=root)
         self.assertEqual(dest.read_bytes(), data)
+
+
+class PictureFirstTests(unittest.TestCase):
+    def test_speed_factor_stays_in_range(self) -> None:
+        self.assertEqual(speed_factor(100, 100), 1.0)
+        self.assertEqual(speed_factor(200, 100), 1.1)
+        self.assertEqual(speed_factor(50, 100), 0.9)
+        self.assertEqual(speed_factor(0, 100), 1.0)
+
+    def test_voice_fit_does_not_recut_pictures(self) -> None:
+        env = np.array([0.4, 0.9, 0.2, 0.0], dtype=np.float32)
+        root = Path(tempfile.mkdtemp())
+        wav = root / "scene_01.wav"
+        voice = np.ones(48000, dtype=np.float32) * 0.2
+        write_wav(wav, voice)
+        scene = {
+            "id": 1,
+            "text": "試し",
+            "style_id": 2,
+            "role": "hook",
+            "duration": 2.0,
+            "voice_path": str(wav),
+            "_voice": voice,
+            "envelope": env.copy(),
+        }
+        locks = {1: {"duration": 2.0, "envelope": env.copy(), "voice_samples": 24000}}
+        project = {
+            "settings": {"speed": 1.0, "hook_speed": 1.0, "role_speed": {"hook": 1.0}},
+            "scenes": [scene],
+        }
+
+        class _Speaker:
+            def speak(self, text: str, style_id: int, speed: float) -> np.ndarray:
+                return np.ones(int(48000 / speed), dtype=np.float32) * 0.2
+
+        fit_voice_to_lock(project, _Speaker(), root, locks)
+        self.assertEqual(scene["duration"], 2.0)
+        self.assertEqual(scene["voice_rate_factor"], 1.1)
+        self.assertTrue(np.array_equal(scene["envelope"], env))
+        self.assertGreater(scene["voice_pause_sec"], 0)
+        self.assertEqual(len(scene["_voice"]), samples_for_frames(int(round(2.0 * FPS))))
+
+
+class BatchBriefTests(unittest.TestCase):
+    def test_batch2_and_batch3_scripts(self) -> None:
+        root = Path(__file__).resolve().parents[3] / "affiliate-shorts"
+        folders = (
+            list((root / "batch2").glob("*/brief.json"))
+            + list((root / "batch3").glob("*/brief.json"))
+            + list((root / "batch4").glob("*/brief.json"))
+        )
+        self.assertGreaterEqual(len(folders), 34)
+        for path in folders:
+            brief = json.loads(path.read_text(encoding="utf-8"))
+            script = generate_script(brief)
+            self.assertGreaterEqual(len(script["scenes"]), 12)
+            self.assertLessEqual(len(script["scenes"]), 14)
+            self.assertTrue(script["credits"])
 
 
 if __name__ == "__main__":

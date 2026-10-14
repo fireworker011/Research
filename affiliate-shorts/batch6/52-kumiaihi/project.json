@@ -1,0 +1,336 @@
+{
+  "template": "sukatto",
+  "title": "増えた行は組合費",
+  "punchline": "増えたのは組合費だった",
+  "brief": {
+    "title": "増えた行は組合費",
+    "asset_urls": {
+      "rival_smug": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgmfOy1dvPW5nkAXq91r1d2JpatnBWDQHwMOsQRfjoJK3UhP4qRvRGgzacoQu3ogBLYq4zj0tYolJd4_6rjS4tUa8DR5lSj_PQaqXzd6Cs_DivuxoRAkIygU6GV36iS3QhIj3oa6vnevpY/s800/pose_doyagao_man.png",
+      "hero_trouble": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhxJL1uWPRrar9S-FPxNv7FCtcDsBUM5B8ItxCoPVFnqtsBKjv7TyPF54QNeSpcg2QCm3Fn8maHs9AscQD5Bmegje_6Zdt2xtzqXkriOKe76Aq37zUYxI0kfBoONd8SbYE_loSyJw3rkVY8/s800/businessman1_nayami.png",
+      "hero_angry": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjNZa7ijupIB1glzdfPBDcjiYSmA5vivkbKmqryJ9C11F00i6aifmrQbVGFJcJBgN9SnkUMuQsor8OqrhFv6cc7Qc6_gBEHZjOgV457XveJw0jakqDI2_boGirQKY4h1DpFj4S-tddLG4k/s800/business02_angry.png",
+      "hero_tired": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEi5O7ebIPQwPb7j8zWG0W4g3EN_nlmRZvPEfGKxwGsCnV44eGJARhg0Zz2mBNr7m9BK61Ebp00-9v4cX_V-YkzlJB5YAj7Dpb9slFkX2GG7xGyXKCYl1wMwzi6eWXoCHVuQIFSjsaL-5CM/s800/tsukareta_business_man.png"
+    }
+  },
+  "scenes": [
+    {
+      "id": 1,
+      "role": "hook",
+      "speaker": "rival",
+      "style_id": 11,
+      "credit": "VOICEVOX:玄野武宏",
+      "text": "保険料、増えた",
+      "telop": "保険料、増えた",
+      "bg": "office",
+      "characters": [
+        {
+          "id": "rival_smug",
+          "who": "rival",
+          "label": ""
+        }
+      ],
+      "props": [],
+      "code_props": [],
+      "effect": "zoom",
+      "sfx": "none",
+      "duration_hint": 2.0,
+      "voice_path": "/tmp/irasu-vary/52-kumiaihi/audio/scene_01.wav",
+      "voice_seconds": 1.109,
+      "duration": 2.2916666666666665,
+      "lead": 0.0
+    },
+    {
+      "id": 2,
+      "role": "develop",
+      "speaker": "narrator",
+      "style_id": 2,
+      "credit": "VOICEVOX:四国めたん",
+      "text": "社会保険の下に、知らない行があった",
+      "telop": "社会保険の下に、\n知らない行があった",
+      "bg": "office",
+      "characters": [
+        {
+          "id": "hero_trouble",
+          "who": "hero",
+          "label": ""
+        }
+      ],
+      "props": [],
+      "code_props": [
+        "papers"
+      ],
+      "effect": "none",
+      "sfx": "paper",
+      "duration_hint": 2.2,
+      "voice_path": "/tmp/irasu-vary/52-kumiaihi/audio/scene_02.wav",
+      "voice_seconds": 2.325,
+      "duration": 2.3333333333333335,
+      "lead": 0.0
+    },
+    {
+      "id": 3,
+      "role": "develop",
+      "speaker": "hero",
+      "style_id": 34,
+      "credit": "VOICEVOX:白上虎太郎",
+      "text": "名前が違う",
+      "telop": "名前が違う",
+      "bg": "office",
+      "characters": [
+        {
+          "id": "hero_angry",
+          "who": "hero",
+          "label": ""
+        }
+      ],
+      "props": [],
+      "code_props": [],
+      "effect": "shake",
+      "sfx": "none",
+      "duration_hint": 2.2,
+      "voice_path": "/tmp/irasu-vary/52-kumiaihi/audio/scene_03.wav",
+      "voice_seconds": 0.939,
+      "duration": 2.2916666666666665,
+      "lead": 0.0
+    },
+    {
+      "id": 4,
+      "role": "develop",
+      "speaker": "hero",
+      "style_id": 12,
+      "credit": "VOICEVOX:白上虎太郎",
+      "text": "その行の名前だけ読んだ",
+      "telop": "その行の名前だけ読んだ",
+      "bg": "office",
+      "characters": [
+        {
+          "id": "hero_tired",
+          "who": "hero",
+          "label": ""
+        }
+      ],
+      "props": [],
+      "code_props": [],
+      "effect": "none",
+      "sfx": "none",
+      "duration_hint": 2.2,
+      "voice_path": "/tmp/irasu-vary/52-kumiaihi/audio/scene_04.wav",
+      "voice_seconds": 1.451,
+      "duration": 2.2916666666666665,
+      "lead": 0.0
+    },
+    {
+      "id": 5,
+      "role": "punch",
+      "speaker": "narrator",
+      "style_id": 2,
+      "credit": "VOICEVOX:四国めたん",
+      "text": "増えたのは組合費だった",
+      "telop": "増えたのは組合費だった",
+      "bg": "office",
+      "characters": [
+        {
+          "id": "hero_trouble",
+          "who": "hero",
+          "label": ""
+        }
+      ],
+      "props": [],
+      "code_props": [],
+      "effect": "zoom",
+      "sfx": "coin",
+      "duration_hint": 2.2,
+      "voice_path": "/tmp/irasu-vary/52-kumiaihi/audio/scene_05.wav",
+      "voice_seconds": 1.397,
+      "duration": 19.583333333333332,
+      "lead": 0.0
+    },
+    {
+      "id": 6,
+      "role": "credit",
+      "speaker": "narrator",
+      "style_id": 2,
+      "credit": "VOICEVOX:四国めたん",
+      "text": "",
+      "telop": "VOICEVOX:玄野武宏\nVOICEVOX:四国めたん\nVOICEVOX:白上虎太郎\nイラスト：いらすとや",
+      "bg": "credit",
+      "characters": [],
+      "props": [],
+      "code_props": [],
+      "effect": "none",
+      "sfx": "none",
+      "duration_hint": 2.2,
+      "voice_path": "/tmp/irasu-vary/52-kumiaihi/audio/scene_06.wav",
+      "voice_seconds": 0.15,
+      "duration": 2.2083333333333335,
+      "lead": 0.0
+    }
+  ],
+  "credits": [
+    "VOICEVOX:玄野武宏",
+    "VOICEVOX:四国めたん",
+    "VOICEVOX:白上虎太郎",
+    "イラスト：いらすとや"
+  ],
+  "asset_ids": [
+    "rival_smug",
+    "hero_trouble",
+    "hero_angry",
+    "hero_tired"
+  ],
+  "asset_report": {
+    "count": 4,
+    "limit": 20,
+    "within_limit": true,
+    "accepted": [
+      {
+        "id": "rival_smug",
+        "kind": "person",
+        "path": "/tmp/irasu-b6/52-kumiaihi/assets/rival_smug.png",
+        "url": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgmfOy1dvPW5nkAXq91r1d2JpatnBWDQHwMOsQRfjoJK3UhP4qRvRGgzacoQu3ogBLYq4zj0tYolJd4_6rjS4tUa8DR5lSj_PQaqXzd6Cs_DivuxoRAkIygU6GV36iS3QhIj3oa6vnevpY/s800/pose_doyagao_man.png",
+        "title": "pinned",
+        "alt": "rival_smug",
+        "link": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgmfOy1dvPW5nkAXq91r1d2JpatnBWDQHwMOsQRfjoJK3UhP4qRvRGgzacoQu3ogBLYq4zj0tYolJd4_6rjS4tUa8DR5lSj_PQaqXzd6Cs_DivuxoRAkIygU6GV36iS3QhIj3oa6vnevpY/s800/pose_doyagao_man.png",
+        "page": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgmfOy1dvPW5nkAXq91r1d2JpatnBWDQHwMOsQRfjoJK3UhP4qRvRGgzacoQu3ogBLYq4zj0tYolJd4_6rjS4tUa8DR5lSj_PQaqXzd6Cs_DivuxoRAkIygU6GV36iS3QhIj3oa6vnevpY/s800/pose_doyagao_man.png"
+      },
+      {
+        "id": "hero_trouble",
+        "kind": "person",
+        "path": "/tmp/irasu-b6/52-kumiaihi/assets/hero_trouble.png",
+        "url": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhxJL1uWPRrar9S-FPxNv7FCtcDsBUM5B8ItxCoPVFnqtsBKjv7TyPF54QNeSpcg2QCm3Fn8maHs9AscQD5Bmegje_6Zdt2xtzqXkriOKe76Aq37zUYxI0kfBoONd8SbYE_loSyJw3rkVY8/s800/businessman1_nayami.png",
+        "title": "pinned",
+        "alt": "hero_trouble",
+        "link": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhxJL1uWPRrar9S-FPxNv7FCtcDsBUM5B8ItxCoPVFnqtsBKjv7TyPF54QNeSpcg2QCm3Fn8maHs9AscQD5Bmegje_6Zdt2xtzqXkriOKe76Aq37zUYxI0kfBoONd8SbYE_loSyJw3rkVY8/s800/businessman1_nayami.png",
+        "page": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhxJL1uWPRrar9S-FPxNv7FCtcDsBUM5B8ItxCoPVFnqtsBKjv7TyPF54QNeSpcg2QCm3Fn8maHs9AscQD5Bmegje_6Zdt2xtzqXkriOKe76Aq37zUYxI0kfBoONd8SbYE_loSyJw3rkVY8/s800/businessman1_nayami.png"
+      },
+      {
+        "id": "hero_angry",
+        "kind": "person",
+        "path": "/tmp/irasu-b6/52-kumiaihi/assets/hero_angry.png",
+        "url": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjNZa7ijupIB1glzdfPBDcjiYSmA5vivkbKmqryJ9C11F00i6aifmrQbVGFJcJBgN9SnkUMuQsor8OqrhFv6cc7Qc6_gBEHZjOgV457XveJw0jakqDI2_boGirQKY4h1DpFj4S-tddLG4k/s800/business02_angry.png",
+        "title": "pinned",
+        "alt": "hero_angry",
+        "link": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjNZa7ijupIB1glzdfPBDcjiYSmA5vivkbKmqryJ9C11F00i6aifmrQbVGFJcJBgN9SnkUMuQsor8OqrhFv6cc7Qc6_gBEHZjOgV457XveJw0jakqDI2_boGirQKY4h1DpFj4S-tddLG4k/s800/business02_angry.png",
+        "page": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjNZa7ijupIB1glzdfPBDcjiYSmA5vivkbKmqryJ9C11F00i6aifmrQbVGFJcJBgN9SnkUMuQsor8OqrhFv6cc7Qc6_gBEHZjOgV457XveJw0jakqDI2_boGirQKY4h1DpFj4S-tddLG4k/s800/business02_angry.png"
+      },
+      {
+        "id": "hero_tired",
+        "kind": "person",
+        "path": "/tmp/irasu-b6/52-kumiaihi/assets/hero_tired.png",
+        "url": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEi5O7ebIPQwPb7j8zWG0W4g3EN_nlmRZvPEfGKxwGsCnV44eGJARhg0Zz2mBNr7m9BK61Ebp00-9v4cX_V-YkzlJB5YAj7Dpb9slFkX2GG7xGyXKCYl1wMwzi6eWXoCHVuQIFSjsaL-5CM/s800/tsukareta_business_man.png",
+        "title": "pinned",
+        "alt": "hero_tired",
+        "link": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEi5O7ebIPQwPb7j8zWG0W4g3EN_nlmRZvPEfGKxwGsCnV44eGJARhg0Zz2mBNr7m9BK61Ebp00-9v4cX_V-YkzlJB5YAj7Dpb9slFkX2GG7xGyXKCYl1wMwzi6eWXoCHVuQIFSjsaL-5CM/s800/tsukareta_business_man.png",
+        "page": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEi5O7ebIPQwPb7j8zWG0W4g3EN_nlmRZvPEfGKxwGsCnV44eGJARhg0Zz2mBNr7m9BK61Ebp00-9v4cX_V-YkzlJB5YAj7Dpb9slFkX2GG7xGyXKCYl1wMwzi6eWXoCHVuQIFSjsaL-5CM/s800/tsukareta_business_man.png"
+      }
+    ],
+    "rejected": []
+  },
+  "asset_paths": {
+    "rival_smug": "/tmp/irasu-vary/52-kumiaihi/assets/rival_smug.png",
+    "hero_trouble": "/tmp/irasu-vary/52-kumiaihi/assets/hero_trouble.png",
+    "hero_angry": "/tmp/irasu-vary/52-kumiaihi/assets/hero_angry.png",
+    "hero_tired": "/tmp/irasu-vary/52-kumiaihi/assets/hero_tired.png",
+    "hero_smile": "/tmp/irasu-vary/52-kumiaihi/assets/hero_smile.png",
+    "boss_angry": "/tmp/irasu-vary/52-kumiaihi/assets/boss_angry.png"
+  },
+  "layout": {
+    "telop_y_ratio": 0.84,
+    "character_x_ratio": 0.5,
+    "screenshot_count": 0
+  },
+  "settings": {
+    "speed": 1.28,
+    "hook_speed": 1.48,
+    "telop_scale": 1.0,
+    "sfx_gain": 0.22,
+    "bgm_gain": 0.045,
+    "mouth_gain": 0.0,
+    "bgm": true,
+    "tail": 0.16,
+    "role_speed": {
+      "hook": 1.48,
+      "develop": 1.28,
+      "punch": 1.28,
+      "close": 1.28,
+      "credit": 1.28
+    },
+    "role_tail": {
+      "hook": 0.16,
+      "develop": 0.16,
+      "punch": 0.16,
+      "close": 0.16,
+      "credit": 0.0
+    },
+    "bgm_kind": "B6"
+  },
+  "telop_style": {
+    "bar": "round",
+    "stroke": 5,
+    "size": 78,
+    "slide": 0.16,
+    "y_ratio": 0.84,
+    "bar_fill": [
+      0,
+      0,
+      0,
+      170
+    ],
+    "bar_fills": {},
+    "colors": {
+      "hook": [
+        255,
+        226,
+        40,
+        255
+      ],
+      "develop": [
+        255,
+        255,
+        255,
+        255
+      ],
+      "punch": [
+        255,
+        226,
+        40,
+        255
+      ],
+      "close": [
+        255,
+        226,
+        40,
+        255
+      ],
+      "credit": [
+        255,
+        255,
+        255,
+        255
+      ]
+    }
+  },
+  "terms": {
+    "irasutoya": "いらすとやは1つの制作物につき20点まで商用無料（同じ絵の重複は1点）。21点以上の商用利用は有償。クレジット表記は不要。素材そのものの再配布や、イラストを主体にした商品化は不可。背景はコード描画にして点数をキャラと小物に使っている。",
+    "voicevox": "使った声はクレジットが要る。四国めたん、白上虎太郎、玄野武宏、剣崎雌雄はクレジットを書けば商用可。青山龍星は個人事業・法人だと事前許可が要るので使っていない。効果音とBGMはこの場で合成したオリジナルなのでクレジット不要。"
+  },
+  "notes": [],
+  "style_signature": "kane:C1-P1-T3-F3-H4-M5-B6-L3-A3",
+  "style_axes": {
+    "C": "C1",
+    "P": "P1",
+    "T": "T3",
+    "F": "F3",
+    "H": "H4",
+    "M": "M5",
+    "B": "B6",
+    "L": "L3",
+    "A": "A3",
+    "line": "kane"
+  },
+  "style_cast": [
+    "hero_trouble"
+  ],
+  "style_used_assets": [
+    "hero_trouble"
+  ]
+}

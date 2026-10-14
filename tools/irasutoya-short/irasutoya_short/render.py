@@ -4,7 +4,6 @@ from __future__ import annotations
 
 import shutil
 import subprocess
-from functools import lru_cache
 from pathlib import Path
 
 import numpy as np
@@ -14,6 +13,7 @@ from irasutoya_short.audio import fit_length, samples_for_frames, write_wav
 from irasutoya_short.backgrounds import concentration, render_bg
 from irasutoya_short.constants import FONT_CANDIDATES, FPS, HEIGHT, WIDTH
 from irasutoya_short.sprites import load_rgba, mouth_levels, scale_rgba
+from irasutoya_short.style_draw import build_still, load_font, telop_placement
 from irasutoya_short.templates import telop_bar_fill, telop_color, telop_style
 
 def bundled_font() -> str:
@@ -78,20 +78,23 @@ def render_telop(
     y_ratio: float,
     tone: str = "",
     style: dict | None = None,
+    placement: dict | None = None,
 ) -> np.ndarray:
+    if placement is not None:
+        return _render_placed_telop(text, role, placement, scale)
     overlay = np.zeros((height, width, 4), dtype=np.uint8)
     if not text.strip():
         return overlay
     look = style or telop_style("sukatto")
     tone_name = tone or role
-    max_w = int(width * 0.88)
-    start = 64 if role == "credit" else int(look["size"])
-    size = max(28, int(start * scale))
+    max_w = int(width * 0.92)
+    start = 64 if role == "credit" else max(int(look["size"]), 104)
+    size = max(36, int(start * scale))
     font = find_font(size)
     while size > 28:
         font = find_font(size)
         tw, th = _text_size(font, text)
-        if tw <= max_w and th <= int(height * 0.28):
+        if tw <= max_w and th <= int(height * 0.34):
             break
         size -= 2
     tw, th = _text_size(font, text)
@@ -113,7 +116,7 @@ def render_telop(
     fill = telop_color(look, tone_name, role)
     tx = cx - tw // 2
     ty = top + pad_y - 4
-    stroke = 3 if role == "credit" else int(look["stroke"])
+    stroke = 4 if role == "credit" else max(6, int(look["stroke"]))
     for dx in range(-stroke, stroke + 1):
         for dy in range(-stroke, stroke + 1):
             if dx * dx + dy * dy > stroke * stroke:
@@ -123,15 +126,124 @@ def render_telop(
     return np.array(img)
 
 
-@lru_cache(maxsize=32)
-def _label(text: str) -> np.ndarray:
-    font = find_font(36)
+def _stroke_ink(fill: tuple[int, int, int, int]) -> tuple[int, int, int, int]:
+    lum = 0.3 * fill[0] + 0.59 * fill[1] + 0.11 * fill[2]
+    if lum > 170:
+        return (0, 0, 0, 255)
+    return (255, 255, 255, 255)
+
+
+def _render_placed_telop(text: str, role: str, placement: dict, scale: float) -> np.ndarray:
+    width = int(placement.get("width") or WIDTH)
+    height = int(placement.get("height") or HEIGHT)
+    image = Image.new("RGBA", (width, height), (0, 0, 0, 0))
+    if not text.strip():
+        return np.array(image)
+    mode = str(placement["mode"])
+    size = max(28, int(int(placement["size"]) * scale))
+    if role == "credit":
+        size = min(size, 54)
+    font = load_font(str(placement["font"]), size)
+    bold_path = str(placement.get("font_bold") or "")
+    fill = tuple(placement["fill"])
+    stroke_color = _stroke_ink(fill)
+    stroke = 3 if role == "credit" else int(placement["stroke"])
+    draw = ImageDraw.Draw(image)
+    if mode == "vertical":
+        font, size = _fit_vertical(text, str(placement["font"]), size, width, height)
+        _draw_vertical(draw, text, font, fill, stroke_color, stroke, size, width, height)
+        return np.array(image)
+    while size > 26:
+        font = load_font(str(placement["font"]), size)
+        tw, th = _text_size(font, text)
+        limit_w = int(width * (0.96 if placement.get("full_width") else 0.84))
+        limit_h = int(height * (0.42 if mode == "center" else 0.30))
+        if tw <= limit_w and th <= limit_h:
+            break
+        size -= 2
     tw, th = _text_size(font, text)
-    img = Image.new("RGBA", (tw + 36, th + 20), (0, 0, 0, 0))
-    draw = ImageDraw.Draw(img)
-    draw.rounded_rectangle((0, 0, img.width - 1, img.height - 1), radius=12, fill=(220, 60, 30, 230))
-    draw.text((18, 6), text, font=font, fill=(255, 255, 255, 255))
-    return np.array(img)
+    pad_x, pad_y = 28, 16
+    bar_w = width - 36 if placement.get("full_width") else min(width - 48, tw + pad_x * 2)
+    bar_h = th + pad_y * 2
+    top = int(height * float(placement["y_ratio"]) - bar_h / 2)
+    top = max(12, min(height - bar_h - 12, top))
+    left = 18 if placement.get("full_width") else (width - bar_w) // 2
+    if mode == "note":
+        _draw_note(image, text, font, fill, stroke_color, stroke, bar_w, bar_h, placement)
+        return np.array(image)
+    bar_fill = tuple(placement["bar_fill"])
+    radius = 8 if placement.get("bar") == "square" else 22
+    draw.rounded_rectangle((left, top, left + bar_w, top + bar_h), radius=radius, fill=bar_fill)
+    if mode == "bubble":
+        tail = (left + 70, top + bar_h - 2, left + 120, top + bar_h - 2, left + 46, top + bar_h + 36)
+        draw.polygon(tail, fill=bar_fill)
+    _draw_emphasis(draw, text, font, bold_path, size, fill, stroke_color, stroke, left, top, bar_w, pad_y, bool(placement.get("emphasis")))
+    return np.array(image)
+
+
+def _draw_emphasis(draw, text, font, bold_path, size, fill, stroke_color, stroke, left, top, bar_w, pad_y, emphasis: bool) -> None:
+    if not emphasis or "\n" not in text or not bold_path:
+        tw, _th = _text_size(font, text)
+        tx = left + (bar_w - tw) // 2
+        ty = top + pad_y - 2
+        _stroke_text(draw, (tx, ty), text, font, fill, stroke_color, stroke, align="center")
+        return
+    head, _, rest = text.partition("\n")
+    head_font = load_font(bold_path, size + 8)
+    body_font = font
+    hw, hh = _text_size(head_font, head)
+    rw, _rh = _text_size(body_font, rest) if rest else (0, 0)
+    y = top + 8
+    _stroke_text(draw, (left + (bar_w - hw) // 2, y), head, head_font, fill, stroke_color, stroke + 2, align="center")
+    if rest:
+        _stroke_text(draw, (left + (bar_w - rw) // 2, y + hh + 6), rest, body_font, fill, stroke_color, max(2, stroke - 1), align="center")
+
+
+def _stroke_text(draw, xy, text, font, fill, stroke_color, stroke, align: str) -> None:
+    x, y = xy
+    if stroke > 0:
+        for dx in range(-stroke, stroke + 1, 2):
+            for dy in range(-stroke, stroke + 1, 2):
+                if dx * dx + dy * dy > stroke * stroke:
+                    continue
+                draw.multiline_text((x + dx, y + dy), text, font=font, fill=stroke_color, spacing=6, align=align)
+    draw.multiline_text((x, y), text, font=font, fill=fill, spacing=6, align=align)
+
+
+def _fit_vertical(text: str, path: str, size: int, width: int, height: int) -> tuple[ImageFont.ImageFont, int]:
+    columns = [column for column in text.split("\n") if column] or [text]
+    longest = max(len(column) for column in columns)
+    while size > 22:
+        tall = longest * (size + 4)
+        wide = len(columns) * (size + 16)
+        if tall <= int(height * 0.84) and wide <= int(width * 0.62):
+            break
+        size -= 2
+    return load_font(path, size), size
+
+
+def _draw_vertical(draw, text, font, fill, stroke_color, stroke, size, width, height) -> None:
+    columns = [column for column in text.split("\n") if column] or [text]
+    x = int(width * 0.05)
+    for column in columns:
+        y = int(height * 0.08)
+        for char in column:
+            _stroke_text(draw, (x, y), char, font, fill, stroke_color, max(1, stroke), align="left")
+            y += size + 4
+        x += size + 16
+
+
+def _draw_note(image, text, font, fill, stroke_color, stroke, bar_w, bar_h, placement) -> None:
+    note = Image.new("RGBA", (bar_w, bar_h), (0, 0, 0, 0))
+    draw = ImageDraw.Draw(note)
+    paper = tuple(placement["bar_fill"])
+    draw.rounded_rectangle((0, 0, bar_w - 1, bar_h - 1), radius=6, fill=paper)
+    tw, _th = _text_size(font, text)
+    _stroke_text(draw, ((bar_w - tw) // 2, 12), text, font, fill, stroke_color, stroke, align="center")
+    turned = note.rotate(7, expand=True, resample=Image.Resampling.BICUBIC)
+    x = int(placement["width"]) - turned.width - 28
+    y = int(placement["height"]) - turned.height - 48
+    image.alpha_composite(turned, (max(0, x), max(0, y)))
 
 
 def _zoom(frame: np.ndarray, zoom: float) -> np.ndarray:
@@ -161,6 +273,40 @@ def _shake(frame: np.ndarray, amp: int, t: float) -> np.ndarray:
     dx = int(amp * np.sin(t * 47))
     dy = int(amp * np.cos(t * 33))
     return shift_frame(frame, dx, dy)
+
+
+def _is_reaction(scene: dict) -> bool:
+    if scene.get("effect") in ("shake", "zoom_shake"):
+        return True
+    return scene.get("sfx") in ("shock",)
+
+
+def _light_motion(frame: np.ndarray, scene: dict, local_t: float, axes: dict | None = None) -> np.ndarray:
+    """ゆっくりズームとパン。反応のシーンだけ、小さく揺らす。字幕はここより後に載せる。"""
+    tempo = "" if not axes else str(axes.get("M") or "")
+    if tempo == "M6":
+        return frame.copy()
+    duration = max(float(scene.get("duration") or 0.01), 0.01)
+    p = min(1.0, local_t / duration)
+    if not axes or tempo == "M2":
+        dx = int(round((p - 0.5) * 28))
+        dy = int(round((0.5 - p) * 12))
+        moved = shift_frame(frame, dx, dy)
+        if _is_reaction(scene):
+            moved = _shake(moved, 5, local_t)
+        return _zoom(moved, 1.02 + 0.045 * p)
+    if tempo == "M1":
+        pan, rise, base = 48, 0.08, 1.03
+    elif tempo == "M3":
+        pan, rise, base = 16, 0.02, 1.01
+    else:
+        pan, rise, base = 28, 0.045, 1.02
+    dx = int(round((p - 0.5) * pan))
+    dy = int(round((0.5 - p) * 12))
+    moved = shift_frame(frame, dx, dy)
+    if _is_reaction(scene):
+        moved = _shake(moved, 5, local_t)
+    return _zoom(moved, base + rise * p)
 
 
 class SpriteBook:
@@ -207,9 +353,6 @@ def _place_characters(frame, scene, book: SpriteBook, openness: float, mouth_gai
         x = int(xs[index] - sprite.shape[1] / 2)
         y = foot - sprite.shape[0]
         blit(frame, sprite, x, y)
-        if ch.get("label"):
-            tag = _label(ch["label"])
-            blit(frame, tag, x + sprite.shape[1] // 2 - tag.shape[1] // 2, max(0, y - tag.shape[0] - 6))
 
 
 def _talking(ch: dict, scene: dict, index: int) -> bool:
@@ -263,45 +406,81 @@ def compose_frame(scene, book, bg, lines, telop, openness, mouth_gain, layout, l
     look = style or telop_style("sukatto")
     slide_seconds = max(0.04, float(look.get("slide", 0.16)))
     slide = int(30 * max(0.0, 1.0 - local_t / slide_seconds))
+    frame = _light_motion(frame, scene, local_t)
     blit(frame, telop, 0, slide)
-    zoom = 1.0
-    if scene["effect"] in ("zoom", "zoom_shake"):
-        p = min(1.0, local_t / max(scene["duration"], 0.01))
-        zoom = 1.0 + 0.08 * np.sin(p * np.pi)
-    amp = 12 if scene["effect"] in ("shake", "zoom_shake") else 0
-    frame = _shake(frame, amp, local_t)
-    return _zoom(frame, float(zoom))
+    return frame
 
 
-def render_movie(project: dict, out_path: Path, preview_dir: Path | None = None) -> None:
+def _styled_layers(project: dict, scenes: list[dict], book: SpriteBook, settings: dict):
+    axes = project["style_axes"]
+    cast = list(project.get("style_cast") or [])
+    used: set[str] = set()
+    stills = []
+    leads = []
+    telops = []
+    for index, scene in enumerate(scenes):
+        stills.append(build_still(scene, book, axes, cast, index, len(scenes), used))
+        if float(scene.get("lead") or 0) > 0:
+            leads.append(build_still(scene, book, axes, cast, index, len(scenes), used, hide_people=True))
+        else:
+            leads.append(None)
+        telops.append(
+            render_telop(
+                scene["telop"],
+                scene["role"],
+                WIDTH,
+                HEIGHT,
+                settings["telop_scale"],
+                0.5,
+                str(scene.get("tone") or scene["role"]),
+                None,
+                telop_placement(axes, scene),
+            )
+        )
+    project["style_used_assets"] = sorted(used)
+    return stills, leads, telops
+
+
+def render_movie(project: dict, out_path: Path, preview_dir: Path | None = None, *, pictures_only: bool = False) -> int:
+    """フレームを書き出す。pictures_only のときは声を載せない。戻り値はフレーム数。"""
     scenes = project["scenes"]
     settings = project["settings"]
     layout = project["layout"]
     style = project.get("telop_style") or telop_style(str(project.get("template") or "sukatto"))
     book = SpriteBook(project["asset_paths"])
-    bgs = {name: render_bg(name) for name in {s["bg"] for s in scenes}}
-    lines = concentration()
-    telops = [
-        render_telop(
-            s["telop"],
-            s["role"],
-            WIDTH,
-            HEIGHT,
-            settings["telop_scale"],
-            0.5 if s["role"] == "credit" else layout["telop_y_ratio"],
-            str(s.get("tone") or s["role"]),
-            style,
-        )
-        for s in scenes
-    ]
+    axes = project.get("style_axes")
+    if axes:
+        bgs = {}
+        lines = None
+        stills, leads, telops = _styled_layers(project, scenes, book, settings)
+    else:
+        stills, leads = [], []
+        bgs = {name: render_bg(name) for name in {s["bg"] for s in scenes}}
+        lines = concentration()
+        telops = [
+            render_telop(
+                s["telop"],
+                s["role"],
+                WIDTH,
+                HEIGHT,
+                settings["telop_scale"],
+                0.5 if s["role"] == "credit" else layout["telop_y_ratio"],
+                str(s.get("tone") or s["role"]),
+                style,
+            )
+            for s in scenes
+        ]
     nframes = sum(int(round(s["duration"] * FPS)) for s in scenes)
-    audio = fit_length(np.asarray(project["audio"], dtype=np.float32), samples_for_frames(nframes))
     if preview_dir is not None:
         preview_dir.mkdir(parents=True, exist_ok=True)
     out_path.parent.mkdir(parents=True, exist_ok=True)
     wav_path = out_path.with_suffix(".mix.wav")
-    write_wav(wav_path, audio)
-    proc = _open_encoder(out_path, wav_path)
+    if pictures_only:
+        proc = _open_video_encoder(out_path)
+    else:
+        audio = fit_length(np.asarray(project["audio"], dtype=np.float32), samples_for_frames(nframes))
+        write_wav(wav_path, audio)
+        proc = _open_encoder(out_path, wav_path)
     scene_i = 0
     scene_frame = 0
     scene_len = int(round(scenes[0]["duration"] * FPS))
@@ -317,10 +496,16 @@ def render_movie(project: dict, out_path: Path, preview_dir: Path | None = None)
             env = scene["envelope"]
             openness = float(env[scene_frame]) if scene_frame < len(env) else 0.0
             local_t = scene_frame / FPS
-            frame = compose_frame(
-                scene, book, bgs[scene["bg"]], lines, telops[scene_i],
-                openness, settings["mouth_gain"], layout, local_t, style,
-            )
+            if axes:
+                lead = float(scene.get("lead") or 0)
+                base = leads[scene_i] if leads[scene_i] is not None and local_t < lead else stills[scene_i]
+                frame = _light_motion(base.copy(), scene, local_t, axes)
+                blit(frame, telops[scene_i], 0, 0)
+            else:
+                frame = compose_frame(
+                    scene, book, bgs[scene["bg"]], lines, telops[scene_i],
+                    openness, settings["mouth_gain"], layout, local_t, style,
+                )
             peak = int(np.argmax(env)) if len(env) else 0
             if preview_dir is not None and scene_frame == peak:
                 Image.fromarray(frame, "RGB").save(preview_dir / f"scene_{scene['id']:02d}.png")
@@ -332,7 +517,46 @@ def render_movie(project: dict, out_path: Path, preview_dir: Path | None = None)
     else:
         _finish_encoder(proc, out_path)
     finally:
-        wav_path.unlink(missing_ok=True)
+        if not pictures_only:
+            wav_path.unlink(missing_ok=True)
+    return nframes
+
+
+def mux_voice(video: Path, wav: Path, out_path: Path) -> None:
+    """書き出した絵はそのままに、声だけ載せる。"""
+    if shutil.which("ffmpeg") is None:
+        raise RuntimeError("ffmpeg がありません。docs/GROK_BUILD.md のパッケージ手順を実行してください。")
+    out_path.parent.mkdir(parents=True, exist_ok=True)
+    cmd = [
+        "ffmpeg", "-y", "-loglevel", "error",
+        "-i", str(video),
+        "-i", str(wav),
+        "-c:v", "copy",
+        "-c:a", "aac", "-b:a", "160k",
+        "-movflags", "+faststart",
+        "-shortest",
+        str(out_path),
+    ]
+    proc = subprocess.run(cmd, capture_output=True)
+    if proc.returncode != 0:
+        err = proc.stderr.decode("utf-8", "replace").strip()
+        raise RuntimeError(f"ffmpeg が失敗しました: {err or out_path}")
+
+
+def _open_video_encoder(path: Path) -> subprocess.Popen[bytes]:
+    if shutil.which("ffmpeg") is None:
+        raise RuntimeError("ffmpeg がありません。docs/GROK_BUILD.md のパッケージ手順を実行してください。")
+    cmd = [
+        "ffmpeg", "-y", "-loglevel", "error",
+        "-f", "rawvideo", "-pix_fmt", "rgb24", "-s", f"{WIDTH}x{HEIGHT}", "-r", str(FPS),
+        "-i", "pipe:0",
+        "-an",
+        "-c:v", "libx264", "-preset", "veryfast", "-crf", "20",
+        "-pix_fmt", "yuv420p", "-vsync", "cfr",
+        "-movflags", "+faststart",
+        str(path),
+    ]
+    return subprocess.Popen(cmd, stdin=subprocess.PIPE, stderr=subprocess.PIPE)
 
 
 def _open_encoder(path: Path, wav_path: Path) -> subprocess.Popen[bytes]:
