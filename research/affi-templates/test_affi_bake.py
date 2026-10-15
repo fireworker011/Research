@@ -1323,6 +1323,8 @@ def test_chain_punch_slider_is_off_until_asked(tmp_path: Path) -> None:
     assert "orange tabby cat" in affi_av.CHAIN_PROMPT and "pet camera" in affi_av.CHAIN_PROMPT
     assert "living room" in affi_av.CHAIN_PROMPT
     assert "about 2.5 seconds" in affi_av.CHAIN_PROMPT and "about 7.5 seconds" in affi_av.CHAIN_PROMPT
+    assert "looks straight at the dark lamp" in affi_av.CHAIN_PROMPT
+    assert "freezes mid-punch" in affi_av.CHAIN_PROMPT
     assert "static medium shot" in affi_av.CHAIN_PROMPT.lower()
     assert "integrated_multimodal_description:" in affi_av.CHAIN_PROMPT
     assert "non_diegetic_music: N/A" in affi_av.CHAIN_PROMPT
