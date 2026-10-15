@@ -282,6 +282,9 @@ LORA_FILES = {
     "amateur": "amateur-photoreal-h3.safetensors",
     # 3D tentacle pack only. 2D-General (version 3293041) is not registered.
     "tentacles3d": "Tentacles-3D_minimaxh3_3344593_epoch_7.safetensors",
+    # Tentacles H3 1.0.1. No trained word. Sample stacks use 0.9 with mystic, 0.95 alone.
+    # Model 2971784 version 3367732 fileId 3255755. The vine fill stays on tentacles3d.
+    "tentacles101": "Tentacles_H3_101_.safetensors",
     # Facial ropes. Trigger cmst stays on the beat, not in the action.
     "cmst": "face_cum_000001000.safetensors",
     # Jack-O pose. No trigger word. Wash push and the horn bedroom anal. Not stacked with doggy.
@@ -297,10 +300,24 @@ LORA_FILES = {
     # Side/rear view so the shaft stays readable where it meets the pussy.
     # Civitai 2967815 version 3362792 fileId 3250615. No trigger word.
     "siderear": "MMH3_NSFW_Doggystyle_Sex_3354622_epoch_20.safetensors",
-    # Anus and vagina as two holes. Anime stills. Card range 0.9-1.2 reads as illustration.
-    # Ward photoreal uses 0.40. Triggers zxqanus and zxqvagina. zxqmei stays off (character token).
-    # Civitai 2974434 version 3371009 fileId 3259145.
-    "anuspussy": "anus_pussy_v2.safetensors",
+    # Anus and vagina as two holes. Eros retrain of the same card.
+    # Author: the first file is weaker on EROS v5. This file is for EROS v5 INT8.
+    # Ward photoreal stays 0.40. Triggers zxqanus and zxqvagina. zxqmei stays off (character token).
+    # Civitai 2974434 version 3397856 fileId 3288079.
+    "anuspussy": "anus_pussy_eros_v2.safetensors",
+    # Missionary grind augmenter. Trigger MISSIONLG. Card strength 1.0.
+    # Trained as him on top, rolling grind, she lifts her hips. Not on the ward M-shape
+    # (kneel, pelvis stays down, full-body PROFILE). Registered only.
+    # Model 3000657 version 3403761 fileId 3294817.
+    "missionlg": "MISSIONLG_H3_v1.safetensors",
+    # Messy oral. Trigger ME$$Y. Sample strength 1.0. Face-fuck, spit foam, pull-out.
+    # Ward oral stays on blowjob v3. Registered only.
+    # Model 2997232 version 3399472 fileId 3289886.
+    "messyblow": "MessyBlowjob_v1_H3.safetensors",
+    # Extreme close-up of a join. Sample strength 0.5. No trained word.
+    # A ward frame keeps both feet, so this key stays off the beats.
+    # Model 2997416 version 3399711 fileId 3290118.
+    "closeup": "closeup_nsfw.safetensors",
     # FunPhantom facial. Version 3290895 fileId 3175377. Trigger cmst.
     # Drive copy uses this name. The version's published name is face_cum_000001000.safetensors.
     "cumfacial": "cum_facial_000005400.safetensors",
@@ -332,13 +349,17 @@ LORA_URLS = {
     "slime": "https://civitai.com/models/2533949",
     "anthro": "https://civitai.com/models/2945034",
     "tentacles3d": "https://civitai.com/api/download/models/3347053?fileId=3234017",
+    "tentacles101": "https://civitai.com/api/download/models/3367732?fileId=3255755",
     "cmst": "https://civitai.com/api/download/models/3290895?fileId=3175377",
     "jacko": "https://civitai.com/api/download/models/3355328?fileId=3244536",
     "spoonlg": "https://civitai.com/api/download/models/3363705?fileId=3251540",
     "jpnmoans": "https://civitai.com/api/download/models/3282509?fileId=3166743",
     "doggy": "https://civitai.com/api/download/models/3317042?fileId=3202556",
     "siderear": "https://civitai.com/api/download/models/3362792?fileId=3250615",
-    "anuspussy": "https://civitai.com/api/download/models/3371009?fileId=3259145",
+    "anuspussy": "https://civitai.com/api/download/models/3397856?fileId=3288079",
+    "missionlg": "https://civitai.com/api/download/models/3403761?fileId=3294817",
+    "messyblow": "https://civitai.com/api/download/models/3399472?fileId=3289886",
+    "closeup": "https://civitai.com/api/download/models/3399711?fileId=3290118",
     "cumfacial": "https://civitai.com/api/download/models/3290895?fileId=3175377",
     "solodildo": "https://civitai.com/api/download/models/3282820?fileId=3167066",
     "charswap": "https://huggingface.co/akatz-ai/MiniMax-H3-Character-Swap-LoRA/resolve/main/h3_character_swap_pro4500_1000.safetensors",
@@ -364,6 +385,7 @@ LORA_STRENGTHS = {
     "anthro": 0.45,
     "amateur": 0.35,
     "tentacles3d": 0.45,
+    "tentacles101": 0.9,
     "cmst": 0.65,
     "jacko": 0.8,
     "spoonlg": 1.0,
@@ -371,6 +393,9 @@ LORA_STRENGTHS = {
     "doggy": 0.5,
     "siderear": 0.8,
     "anuspussy": 0.4,
+    "missionlg": 1.0,
+    "messyblow": 1.0,
+    "closeup": 0.5,
     # FunPhantom says start at 0.75-0.85.
     "cumfacial": 0.8,
     # The dildo card lists no strength. Ward beats keep 0.7.
@@ -5816,6 +5841,8 @@ _LORA_TRIGGER_TOKENS = (
     ("spoonlg", "SPOONLG."),
     ("jpnmoans", "jpnMoans"),
     ("blowjob", "bl0w_j0b"),
+    ("messyblow", "ME$$Y."),
+    ("missionlg", "MISSIONLG"),
     ("cunny", "performing cunnilingus"),
     ("thumbinbutt", "thum1n8utt"),
     ("solodildo", DILDO_TRIGGER),

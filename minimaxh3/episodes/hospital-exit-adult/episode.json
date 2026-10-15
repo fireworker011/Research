@@ -2335,8 +2335,8 @@
           "place": "A fictional derelict old hospital toilet stall at night. Cracked grey tiles, peeling walls, a closed stall partition, a flickering broken fluorescent tube. The bowl is a plant-flesh toilet bowl with a wide open red fleshy mouth, green rind, thick plant-flesh lips, amber sap dripping from the rim, brown roots on the tiles, and a second green pitcher plant behind the bowl. No clocks. No readable letters. Every adult in frame is fully nude. Clear sticky mucus covers the plant-flesh bowl, the lips, the rim, and the tiles.",
           "extra_loras": [
             [
-              "tentacles3d",
-              0.45
+              "tentacles101",
+              0.9
             ],
             [
               "mystic",

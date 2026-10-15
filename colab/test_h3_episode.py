@@ -2315,7 +2315,11 @@ def test_hospital_toilet_and_routes_stay_consistent():
             assert "exactly three" not in low and "exactly three" not in fill["action"].lower()
             assert "under the toilet seat" not in low
             assert "hold her thighs" not in low
-            assert "tentacles3d" in extra_keys(four)
+            assert "tentacles101" in extra_keys(four)
+            assert "tentacles3d" not in extra_keys(four)
+            assert extra_lora_entries(four)[0] == ("tentacles101", 0.9)
+            fill_keys = extra_keys(fill)
+            assert "tentacles3d" in fill_keys and "tentacles101" not in fill_keys
             assert "2d" not in json.dumps(four.get("extra_loras")).lower()
             assert "3293041" not in LORA_URLS["tentacles3d"]
             fill_low = fill["action"].lower()
@@ -2448,10 +2452,43 @@ def test_hospital_finger_pose_and_squat_toilet_modes():
     assert "models/3362792" in LORA_URLS["siderear"]
     assert "fileId=3250615" in LORA_URLS["siderear"]
     assert LORA_STRENGTHS["siderear"] == 0.8
-    assert LORA_FILES["anuspussy"] == "anus_pussy_v2.safetensors"
-    assert "models/3371009" in LORA_URLS["anuspussy"]
-    assert "fileId=3259145" in LORA_URLS["anuspussy"]
+    assert LORA_FILES["anuspussy"] == "anus_pussy_eros_v2.safetensors"
+    assert "models/3397856" in LORA_URLS["anuspussy"]
+    assert "fileId=3288079" in LORA_URLS["anuspussy"]
+    assert "3371009" not in LORA_URLS["anuspussy"]
     assert LORA_STRENGTHS["anuspussy"] == 0.4
+    assert LORA_FILES["tentacles101"] == "Tentacles_H3_101_.safetensors"
+    assert "models/3367732" in LORA_URLS["tentacles101"]
+    assert "fileId=3255755" in LORA_URLS["tentacles101"]
+    assert LORA_STRENGTHS["tentacles101"] == 0.9
+    assert LORA_FILES["missionlg"] == "MISSIONLG_H3_v1.safetensors"
+    assert "models/3403761" in LORA_URLS["missionlg"]
+    assert "fileId=3294817" in LORA_URLS["missionlg"]
+    assert LORA_STRENGTHS["missionlg"] == 1.0
+    assert LORA_FILES["messyblow"] == "MessyBlowjob_v1_H3.safetensors"
+    assert "models/3399472" in LORA_URLS["messyblow"]
+    assert "fileId=3289886" in LORA_URLS["messyblow"]
+    assert LORA_STRENGTHS["messyblow"] == 1.0
+    assert LORA_FILES["closeup"] == "closeup_nsfw.safetensors"
+    assert "models/3399711" in LORA_URLS["closeup"]
+    assert "fileId=3290118" in LORA_URLS["closeup"]
+    assert LORA_STRENGTHS["closeup"] == 0.5
+    for story, pose in (("受け入れる", None), ("誘う", "M字"), ("誘う", "四つん這い股広げ")):
+        kw = {"story_override": story}
+        if pose:
+            kw["invite_pose_override"] = pose
+        held = prepare_episode(raw, **kw)
+        for beat in held["beats"]:
+            keys = extra_keys(beat)
+            assert "missionlg" not in keys
+            assert "messyblow" not in keys
+            assert "closeup" not in keys
+        if pose and "四つん這い" in pose:
+            dog = next(b for b in held["beats"] if b["id"] == "06-doggy")
+            assert "anuspussy" in extra_keys(dog)
+            prompt = build_beat_prompt(held, dog, trigger=merge_trigger("", dog))
+            assert "zxqanus" in prompt and "zxqvagina" in prompt
+            assert "zxqmei" not in prompt
     off = prepare_episode(raw, story_override="accept")
     assert off["render"]["toilet"] == "off"
     assert not any(b["id"] == "04-toilet" for b in off["beats"])
