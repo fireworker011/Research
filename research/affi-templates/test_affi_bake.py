@@ -415,6 +415,9 @@ def test_reference_notebook_is_one_japanese_form_per_story() -> None:
     assert picked["範囲の切り方"] == bake.SPLIT_CHOICES[0][0]
     assert picked["題字"] == "" and picked["ロゴ"] == "" and picked["曲"] == ""
     assert "speaker_install_argv" in blob
+    pick_src = next(src for src in code if "#@title 選ぶ" in src)
+    assert pick_src.index("pip") < pick_src.index("import affi_bake")
+    assert "gTTS" in pick_src
     run_src = next(src for src in code if "#@title 実行" in src)
     assert 'HF_TOKEN = "" #@param {type:"string"}' in run_src
     assert "https://huggingface.co/settings/tokens" in run_src
