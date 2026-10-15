@@ -565,3 +565,64 @@ def test_captions_are_drawn_by_libass(tmp_path: Path) -> None:
     band = frame[512 - int(512 * 0.30) - 40 : 512 - int(512 * 0.30) + 5]
     assert band.max() > 200
     assert frame[:100].max() < 40
+
+
+@needs_ffmpeg
+def test_homage_builds_the_sheet_from_measured_cuts(tmp_path: Path) -> None:
+    red = tmp_path / "red.mov"
+    blue = tmp_path / "blue.mov"
+    _clip_with_beeps(red, 3.0, [], colour="red")
+    _clip_with_beeps(blue, 3.0, [], colour="blue")
+    joined = tmp_path / "cut.mov"
+    subprocess.run(
+        bake.delivery_join_argv([(red, 3.0), (blue, 3.0)], joined, width=288, height=512),
+        check=True,
+        capture_output=True,
+    )
+    job = bake.plan_homage(
+        video=str(joined),
+        person="出さない",
+        animals={"guest": "短い足の茶色い犬", "retort": "出さない", "polite": "出さない"},
+        place="昼の台所",
+        lines_text="ひとつ",
+        speech=[{"start_s": 0.4, "end_s": 1.2, "speaker": "A", "text": "砂漠のオアシス"}],
+        turns=[],
+        probe=lambda _text, _role: 0.4,
+        duration_s=6,
+    )
+    assert job["status"] == "ready"
+    assert job["source_cuts"] == [3.0]
+    assert [row["end_s"] for row in job["cuts"]] == [3.0, 6.0]
+    assert len(job["clips"]) == 2
+    blob = "\n".join(clip["prompt"] for clip in job["clips"])
+    assert "カメラの動きは測っていない" in blob
+    assert "砂漠" not in blob
+    assert job["clips"][0]["task"] == "t2va"
+
+
+def test_structure_report_counts_cuts_order_and_speakers_without_a_score() -> None:
+    report = affi_match.structure_report(
+        [1.0],
+        [1.0 + 1 / 24],
+        [{"start_s": 0.2, "end_s": 1.0, "role": "guest"}],
+        [{"start_s": 0.2, "end_s": 1.0, "role": "guest"}],
+    )
+    assert report["shot_order"] == "同じ"
+    assert report["cuts"]["matched"] == 1
+    assert report["speakers"] == {"source": 1, "same_role": 1}
+    assert set(report) == {"cuts", "shot_order", "speakers"}
+    text = affi_match.structure_text(report)
+    assert "全体の割合は出さない" in text
+    assert "元のせりふとは比べない" in text
+    assert "%" not in text
+    different = affi_match.structure_report(
+        [1.0],
+        [4.0],
+        [{"start_s": 0.0, "end_s": 1.0, "role": "guest"}],
+        [{"start_s": 0.0, "end_s": 1.0, "role": "retort"}],
+    )
+    assert different["shot_order"] == "違う"
+    assert different["speakers"]["same_role"] == 0
+    unknown = affi_match.structure_report(None, [1.0], [], [])
+    assert unknown["cuts"] is None
+    assert unknown["shot_order"] == "測れない"

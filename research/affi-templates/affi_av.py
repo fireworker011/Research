@@ -31,6 +31,62 @@ TURBO_SCALE = 1.0
 REPAIR_SCALE = 0.6
 TURBO_STEPS = 9
 TURBO_VIDEO_SHIFT = 6
+# Civitai model 2994324, modelVersionId 3395787, v1.0.
+# progressive_acceleration_slider_v1.0.safetensors. Card strength 4. Range -8 to 8.
+# This runner refuses a scale below 0, so the command uses 4 only.
+CHAIN_FILENAME = "progressive_acceleration_slider_v1.0.safetensors"
+CHAIN_SCALE = 4.0
+CHAIN_VERSION = 3395787
+CHAIN_LABEL = "百裂拳"
+# Drive file 越来越快1k.mp4. ffprobe: 5.167s, 1376x768, 24fps, 124 frames. No interior cut.
+CHAIN_SOURCE_ID = "1arPpEWTu5XDFPcDn_eO3zSlJHbXgVKDD"
+CHAIN_SOURCE_NAME = "越来越快1k.mp4"
+CHAIN_SOURCE_URL = (
+    "https://drive.google.com/file/d/1arPpEWTu5XDFPcDn_eO3zSlJHbXgVKDD/view"
+)
+CHAIN_SOURCE_DURATION_S = 5.167
+# The written clip is 8 seconds. Punches run until about 7.5, then the cat settles.
+# 8 * 24 = 192 frames, which is 17 * 11 + 5, so H3 accepts it as written.
+CHAIN_DURATION_S = 8.0
+CHAIN_WIDTH = 1376
+CHAIN_HEIGHT = 768
+CHAIN_FPS = 24
+CHAIN_FRAMES = 124
+CHAIN_PROMPT = (
+    "integrated_multimodal_description: [Shot 1] Live-action. A living room. "
+    "Static medium shot, wooden floor, white pet camera with wooden top and front lens on the right. "
+    "At the start the blue lamp on the camera is lit. "
+    "One orange tabby cat lies tightly curled on its side on the floor to the left, "
+    "head tucked into its body, eyes closed, paws drawn in, completely still. "
+    "At about 2.5 seconds the blue lamp goes out. "
+    "The cat opens its eyes and looks straight at the dark lamp. "
+    "Only then does it lift its head, uncurl its spine, plant both forepaws on the floor, "
+    "push its body up, and rise onto all fours facing the camera. "
+    "It then throws a rapid continuous chain of punches with both forepaws into the pet camera. "
+    "The paws become a blur with motion trails and afterimages. Each punch is faster than the last. "
+    "The camera shakes and rocks under the impacts. "
+    "The punching continues without pause until about 7.5 seconds. Then the blue lamp lights again. "
+    "The cat freezes mid-punch, both forepaws hanging in the air, and its eyes snap to the lit lamp. "
+    "It drops its shoulders, folds its forelegs under its chest, "
+    "tucks its head down, curls its spine back into a tight ball, draws its paws in, "
+    "and settles motionless on the floor with eyes closed until the end. "
+    "No one speaks. Mouths do not form words. No writing. No logo.\n"
+    "\n"
+    "overall_soundscape: Soft quiet room tone while the lamp is on and the cat sleeps. "
+    "When the lamp goes out, soft fabric and floor contact sounds as the cat rises, "
+    "then a continuous rapid series of dull thuds and impacts land on the plastic camera body with no pause. "
+    "The impacts stop the moment the lamp lights again, followed by a short held silence, "
+    "then soft settling sounds as the cat curls back up, "
+    "then quiet returns.\n"
+    "\n"
+    "non_diegetic_music: N/A"
+)
+CHAIN_NOTE = (
+    "百裂拳を載せる。progressive_acceleration_slider_v1.0.safetensors の強さは 4。"
+    "Turbo 1.0 と Motion Repair 0.6 はそのまま。"
+    "場所はリビング。茶トラは青いランプが消えたのを見てから起きて白いペットカメラに拳を出す。"
+    "ランプが点いた瞬間に固まって、また丸くなる。書くのは8秒。"
+)
 PLACEHOLDER_LINE = "台詞は入力"
 I2VA_HEADER = (
     "For the target video, at 0.00 seconds into the target video, "
@@ -395,19 +451,38 @@ def lora_dir() -> Path:
     return Path("hf-cache") / "loras"
 
 
-def lora_rows() -> list[dict[str, Any]]:
-    return [
+def lora_rows(chain: bool = False) -> list[dict[str, Any]]:
+    rows = [
         {"file": TURBO_FILENAME, "scale": TURBO_SCALE, "role": "FL2VA の 8step。声を残す"},
         {"file": REPAIR_FILENAME, "scale": REPAIR_SCALE, "role": "動作のつながり"},
     ]
+    if chain:
+        rows.append(
+            {
+                "file": CHAIN_FILENAME,
+                "scale": CHAIN_SCALE,
+                "role": "百裂拳。ネコがペットカメラに出す。強さはカードの 4。0 未満は渡さない。",
+            }
+        )
+    return rows
 
 
-def lora_cli() -> list[str]:
+def lora_cli(chain: bool = False) -> list[str]:
     folder = lora_dir()
     args = ["--steps", str(TURBO_STEPS), "--video-shift", str(TURBO_VIDEO_SHIFT)]
-    for row in lora_rows():
+    for row in lora_rows(chain=chain):
         args.extend(["--lora", f"{folder / row['file']}:{row['scale']:.1f}"])
     return args
+
+
+def with_chain(prompt: str) -> str:
+    """One acceleration line. The shot text above it stays."""
+    body = str(prompt or "")
+    if CHAIN_PROMPT in body:
+        return body if body.endswith("\n") else body + "\n"
+    if body and not body.endswith("\n"):
+        body += "\n"
+    return body + CHAIN_PROMPT + "\n"
 
 
 def _caption_span(cut: Mapping[str, Any], clips: Sequence[Mapping[str, Any]]) -> tuple[Any, Any]:
