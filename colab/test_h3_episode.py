@@ -376,6 +376,15 @@ def test_notebook_is_one_cell_and_isolated():
     assert "1番のつなぎに従う" not in src
     assert "次のシーンへ続ける" not in src
     assert "H3_EPISODE_COMBAT" in src
+    assert 'MISSIONLG = "正常位LoRAオフ（迷ったらこれ）"' in src
+    assert "正常位LoRAオン（M字の挿入と絶頂）" in src
+    assert 'MESSYBLOW = "フェラは今のまま（迷ったらこれ）"' in src
+    assert "フェラをMessyに差し替える" in src
+    assert 'CLOSEUP = "超近距離オフ（迷ったらこれ）"' in src
+    assert "超近距離オン（穴の見える拍）" in src
+    assert "H3_EPISODE_MISSIONLG" in src
+    assert "H3_EPISODE_MESSYBLOW" in src
+    assert "H3_EPISODE_CLOSEUP" in src
     assert "H3_EPISODE_STORY" in src
     assert "H3_EPISODE_INVITE_POSE" in src
     assert "H3_EPISODE_TOILET" in src
@@ -2315,7 +2324,11 @@ def test_hospital_toilet_and_routes_stay_consistent():
             assert "exactly three" not in low and "exactly three" not in fill["action"].lower()
             assert "under the toilet seat" not in low
             assert "hold her thighs" not in low
-            assert "tentacles3d" in extra_keys(four)
+            assert "tentacles101" in extra_keys(four)
+            assert "tentacles3d" not in extra_keys(four)
+            assert extra_lora_entries(four)[0] == ("tentacles101", 0.9)
+            fill_keys = extra_keys(fill)
+            assert "tentacles3d" in fill_keys and "tentacles101" not in fill_keys
             assert "2d" not in json.dumps(four.get("extra_loras")).lower()
             assert "3293041" not in LORA_URLS["tentacles3d"]
             fill_low = fill["action"].lower()
@@ -2448,10 +2461,43 @@ def test_hospital_finger_pose_and_squat_toilet_modes():
     assert "models/3362792" in LORA_URLS["siderear"]
     assert "fileId=3250615" in LORA_URLS["siderear"]
     assert LORA_STRENGTHS["siderear"] == 0.8
-    assert LORA_FILES["anuspussy"] == "anus_pussy_v2.safetensors"
-    assert "models/3371009" in LORA_URLS["anuspussy"]
-    assert "fileId=3259145" in LORA_URLS["anuspussy"]
+    assert LORA_FILES["anuspussy"] == "anus_pussy_eros_v2.safetensors"
+    assert "models/3397856" in LORA_URLS["anuspussy"]
+    assert "fileId=3288079" in LORA_URLS["anuspussy"]
+    assert "3371009" not in LORA_URLS["anuspussy"]
     assert LORA_STRENGTHS["anuspussy"] == 0.4
+    assert LORA_FILES["tentacles101"] == "Tentacles_H3_101_.safetensors"
+    assert "models/3367732" in LORA_URLS["tentacles101"]
+    assert "fileId=3255755" in LORA_URLS["tentacles101"]
+    assert LORA_STRENGTHS["tentacles101"] == 0.9
+    assert LORA_FILES["missionlg"] == "MISSIONLG_H3_v1.safetensors"
+    assert "models/3403761" in LORA_URLS["missionlg"]
+    assert "fileId=3294817" in LORA_URLS["missionlg"]
+    assert LORA_STRENGTHS["missionlg"] == 1.0
+    assert LORA_FILES["messyblow"] == "MessyBlowjob_v1_H3.safetensors"
+    assert "models/3399472" in LORA_URLS["messyblow"]
+    assert "fileId=3289886" in LORA_URLS["messyblow"]
+    assert LORA_STRENGTHS["messyblow"] == 1.0
+    assert LORA_FILES["closeup"] == "closeup_nsfw.safetensors"
+    assert "models/3399711" in LORA_URLS["closeup"]
+    assert "fileId=3290118" in LORA_URLS["closeup"]
+    assert LORA_STRENGTHS["closeup"] == 0.5
+    for story, pose in (("受け入れる", None), ("誘う", "M字"), ("誘う", "四つん這い股広げ")):
+        kw = {"story_override": story}
+        if pose:
+            kw["invite_pose_override"] = pose
+        held = prepare_episode(raw, **kw)
+        for beat in held["beats"]:
+            keys = extra_keys(beat)
+            assert "missionlg" not in keys
+            assert "messyblow" not in keys
+            assert "closeup" not in keys
+        if pose and "四つん這い" in pose:
+            dog = next(b for b in held["beats"] if b["id"] == "06-doggy")
+            assert "anuspussy" in extra_keys(dog)
+            prompt = build_beat_prompt(held, dog, trigger=merge_trigger("", dog))
+            assert "zxqanus" in prompt and "zxqvagina" in prompt
+            assert "zxqmei" not in prompt
     off = prepare_episode(raw, story_override="accept")
     assert off["render"]["toilet"] == "off"
     assert not any(b["id"] == "04-toilet" for b in off["beats"])
@@ -2562,6 +2608,100 @@ def test_hospital_finger_pose_and_squat_toilet_modes():
     pee_act = next(b for b in pee["beats"] if b["id"] == "04-toilet")
     assert "facing the camera" in pee_act["action"].lower()
     assert pee_act["source"] == "t2v"
+
+
+def test_card_lora_choices_stay_off_until_the_form_says_on():
+    raw = load_episode(HOSPITAL_DIR / "episode.json")
+    assert ui_default("missionlg") == "正常位LoRAオフ（迷ったらこれ）"
+    assert ui_choices("missionlg") == [
+        "正常位LoRAオフ（迷ったらこれ）",
+        "正常位LoRAオン（M字の挿入と絶頂）",
+    ]
+    assert ui_default("messyblow") == "フェラは今のまま（迷ったらこれ）"
+    assert ui_choices("messyblow") == [
+        "フェラは今のまま（迷ったらこれ）",
+        "フェラをMessyに差し替える",
+    ]
+    assert ui_default("closeup") == "超近距離オフ（迷ったらこれ）"
+    assert ui_choices("closeup") == [
+        "超近距離オフ（迷ったらこれ）",
+        "超近距離オン（穴の見える拍）",
+    ]
+    off = prepare_episode(raw, story_override="誘う", invite_pose_override="M字")
+    seat_off = next(b for b in off["beats"] if b["id"] == "03-kiss")
+    assert "missionlg" not in extra_keys(seat_off)
+    on = prepare_episode(
+        raw,
+        story_override="誘う",
+        invite_pose_override="M字",
+        missionlg_override="正常位LoRAオン（M字の挿入と絶頂）",
+    )
+    assert on["render"]["missionlg"] == "on"
+    seat = next(b for b in on["beats"] if b["id"] == "03-kiss")
+    peak = next(b for b in on["beats"] if b["id"] == "03-kiss-peak")
+    walk = next(b for b in on["beats"] if b["id"] == "03-kiss-walk")
+    assert ("missionlg", 1.0) in extra_lora_entries(seat)
+    assert ("missionlg", 1.0) in extra_lora_entries(peak)
+    assert "missionlg" not in extra_keys(walk)
+    assert seat["action"] == seat_off["action"]
+    seat_prompt = build_beat_prompt(on, seat, trigger=merge_trigger("", seat))
+    assert "MISSIONLG" in seat_prompt
+    assert "missionary" not in seat_prompt.lower()
+    assert validate_episode(on, root=HOSPITAL_DIR) == []
+    toilet = prepare_episode(
+        raw,
+        story_override="受け入れる",
+        toilet_override="masturbate",
+        missionlg_override="on",
+    )
+    bowl = next(b for b in toilet["beats"] if b["id"] == "04-toilet")
+    assert "m-shape" in bowl["action"].lower()
+    assert "missionlg" not in extra_keys(bowl)
+    plain = prepare_episode(raw, story_override="受け入れる")
+    plain_oral = next(b for b in plain["beats"] if b["id"] == "03-kiss")
+    assert "blowjob" in extra_keys(plain_oral)
+    messy = prepare_episode(
+        raw,
+        story_override="受け入れる",
+        messyblow_override="フェラをMessyに差し替える",
+    )
+    assert messy["render"]["messyblow"] == "on"
+    oral = next(b for b in messy["beats"] if b["id"] == "03-kiss")
+    assert "bl0w_j0b" in str(plain_oral.get("trigger") or "")
+    assert extra_lora_entries(oral)[0] == ("messyblow", 1.0)
+    assert "blowjob" not in extra_keys(oral)
+    assert "mystic" in extra_keys(oral)
+    assert "bl0w_j0b" not in str(oral.get("trigger") or "")
+    assert oral["action"] == plain_oral["action"]
+    trig = merge_trigger("", oral)
+    assert "ME$$Y." in trig
+    assert "bl0w_j0b" not in trig
+    invite_plain = prepare_episode(raw, story_override="誘う", invite_pose_override="四つん這い股広げ")
+    close = prepare_episode(
+        raw,
+        story_override="誘う",
+        invite_pose_override="四つん這い股広げ",
+        closeup_override="超近距離オン（穴の見える拍）",
+    )
+    assert close["render"]["closeup"] == "on"
+    dog = next(b for b in close["beats"] if b["id"] == "06-doggy")
+    dog_plain = next(b for b in invite_plain["beats"] if b["id"] == "06-doggy")
+    cover = next(b for b in close["beats"] if b["id"] == "01-cover")
+    assert "anuspussy" in extra_keys(dog)
+    assert ("closeup", 0.5) in extra_lora_entries(dog)
+    assert "closeup" not in extra_keys(dog_plain)
+    assert "anuspussy" not in extra_keys(cover)
+    assert "closeup" not in extra_keys(cover)
+    for beat, plain_beat in zip(close["beats"], invite_plain["beats"]):
+        assert beat["id"] == plain_beat["id"]
+        assert beat.get("action") == plain_beat.get("action")
+        if "anuspussy" in extra_keys(plain_beat):
+            assert ("closeup", 0.5) in extra_lora_entries(beat)
+        else:
+            assert "closeup" not in extra_keys(beat)
+    assert validate_episode(close, root=HOSPITAL_DIR) == []
+    bad = prepare_episode(raw, story_override="受け入れる", missionlg_override="nope")
+    assert any("missionlg" in err for err in validate_episode(bad, root=HOSPITAL_DIR))
 
 
 def test_hospital_full_form_stays_under_beat_cap():
@@ -3831,6 +3971,9 @@ def test_connect_modes_t2v_chain_landing_and_ui_labels():
     assert ui_default("scene") == "全体に従う（迷ったらこれ）"
     assert "□誘う・四つん這い股広げ" in ui_choices("scene")
     assert "格闘LoRAオフ" in picked
+    assert "正常位LoRAオフ（迷ったらこれ）" in picked
+    assert "フェラは今のまま（迷ったらこれ）" in picked
+    assert "超近距離オフ（迷ったらこれ）" in picked
     assert "○受け入れる（生存・完了・迷ったらこれ）" in picked
     assert ui_default("story") == "○受け入れる（生存・完了・迷ったらこれ）"
     assert ui_choices("story")[0].startswith("○受け入れる")

@@ -42,6 +42,12 @@ __PRESET_HELP__
 PRESET = __PRESET_DEFAULT__  #@param __PRESET_CHOICES__
 __COMBAT_HELP__
 COMBAT = __COMBAT_DEFAULT__  #@param __COMBAT_CHOICES__
+__MISSIONLG_HELP__
+MISSIONLG = __MISSIONLG_DEFAULT__  #@param __MISSIONLG_CHOICES__
+__MESSYBLOW_HELP__
+MESSYBLOW = __MESSYBLOW_DEFAULT__  #@param __MESSYBLOW_CHOICES__
+__CLOSEUP_HELP__
+CLOSEUP = __CLOSEUP_DEFAULT__  #@param __CLOSEUP_CHOICES__
 __STORY_HELP__
 STORY = __STORY_DEFAULT__  #@param __STORY_CHOICES__
 __POSE_HELP__
@@ -113,6 +119,9 @@ os.environ["H3_EPISODE_CAMERA"] = CAMERA
 os.environ["H3_EPISODE_CONNECT"] = CONNECT
 os.environ["H3_EPISODE_END_CONNECT"] = "follow"
 os.environ["H3_EPISODE_COMBAT"] = COMBAT
+os.environ["H3_EPISODE_MISSIONLG"] = MISSIONLG
+os.environ["H3_EPISODE_MESSYBLOW"] = MESSYBLOW
+os.environ["H3_EPISODE_CLOSEUP"] = CLOSEUP
 os.environ["H3_EPISODE_STORY"] = STORY
 os.environ["H3_EPISODE_INVITE_POSE"] = INVITE_POSE
 os.environ["H3_EPISODE_RIDE_BENT"] = RIDE_BENT
@@ -307,6 +316,15 @@ def make_nb() -> dict:
         .replace("__COMBAT_HELP__", form_markdown("combat", "4. 格闘 LoRA — ハイメモリ専用の任意"))
         .replace("__COMBAT_DEFAULT__", json.dumps(ui_default("combat"), ensure_ascii=False))
         .replace("__COMBAT_CHOICES__", json.dumps(ui_choices("combat"), ensure_ascii=False))
+        .replace("__MISSIONLG_HELP__", form_markdown("missionlg", "正常位 LoRA — 迷ったらオフ。M字の挿入と絶頂だけ"))
+        .replace("__MISSIONLG_DEFAULT__", json.dumps(ui_default("missionlg"), ensure_ascii=False))
+        .replace("__MISSIONLG_CHOICES__", json.dumps(ui_choices("missionlg"), ensure_ascii=False))
+        .replace("__MESSYBLOW_HELP__", form_markdown("messyblow", "フェラ LoRA — 迷ったら今の v3。オンで口の拍だけ差し替え"))
+        .replace("__MESSYBLOW_DEFAULT__", json.dumps(ui_default("messyblow"), ensure_ascii=False))
+        .replace("__MESSYBLOW_CHOICES__", json.dumps(ui_choices("messyblow"), ensure_ascii=False))
+        .replace("__CLOSEUP_HELP__", form_markdown("closeup", "超近距離 LoRA — 迷ったらオフ。穴の見える拍だけ"))
+        .replace("__CLOSEUP_DEFAULT__", json.dumps(ui_default("closeup"), ensure_ascii=False))
+        .replace("__CLOSEUP_CHOICES__", json.dumps(ui_choices("closeup"), ensure_ascii=False))
         .replace("__STORY_HELP__", form_markdown("story", "5. 構成 — 病棟はここで完了か失敗かが分かれる"))
         .replace("__STORY_DEFAULT__", json.dumps(ui_default("story"), ensure_ascii=False))
         .replace("__STORY_CHOICES__", json.dumps(ui_choices("story"), ensure_ascii=False))

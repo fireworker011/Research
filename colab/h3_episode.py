@@ -142,6 +142,9 @@ from h3_episode_packs import (
     canonical_camera,
     canonical_dog,
     canonical_combat,
+    canonical_closeup,
+    canonical_messyblow,
+    canonical_missionlg,
     canonical_connect,
     canonical_end_connect,
     canonical_gin,
@@ -282,6 +285,9 @@ LORA_FILES = {
     "amateur": "amateur-photoreal-h3.safetensors",
     # 3D tentacle pack only. 2D-General (version 3293041) is not registered.
     "tentacles3d": "Tentacles-3D_minimaxh3_3344593_epoch_7.safetensors",
+    # Tentacles H3 1.0.1. No trained word. Sample stacks use 0.9 with mystic, 0.95 alone.
+    # Model 2971784 version 3367732 fileId 3255755. The vine fill stays on tentacles3d.
+    "tentacles101": "Tentacles_H3_101_.safetensors",
     # Facial ropes. Trigger cmst stays on the beat, not in the action.
     "cmst": "face_cum_000001000.safetensors",
     # Jack-O pose. No trigger word. Wash push and the horn bedroom anal. Not stacked with doggy.
@@ -297,10 +303,24 @@ LORA_FILES = {
     # Side/rear view so the shaft stays readable where it meets the pussy.
     # Civitai 2967815 version 3362792 fileId 3250615. No trigger word.
     "siderear": "MMH3_NSFW_Doggystyle_Sex_3354622_epoch_20.safetensors",
-    # Anus and vagina as two holes. Anime stills. Card range 0.9-1.2 reads as illustration.
-    # Ward photoreal uses 0.40. Triggers zxqanus and zxqvagina. zxqmei stays off (character token).
-    # Civitai 2974434 version 3371009 fileId 3259145.
-    "anuspussy": "anus_pussy_v2.safetensors",
+    # Anus and vagina as two holes. Eros retrain of the same card.
+    # Author: the first file is weaker on EROS v5. This file is for EROS v5 INT8.
+    # Ward photoreal stays 0.40. Triggers zxqanus and zxqvagina. zxqmei stays off (character token).
+    # Civitai 2974434 version 3397856 fileId 3288079.
+    "anuspussy": "anus_pussy_eros_v2.safetensors",
+    # Missionary grind augmenter. Trigger MISSIONLG. Card strength 1.0.
+    # Trained as him on top, rolling grind, she lifts her hips. Not on the ward M-shape
+    # (kneel, pelvis stays down, full-body PROFILE). Registered only.
+    # Model 3000657 version 3403761 fileId 3294817.
+    "missionlg": "MISSIONLG_H3_v1.safetensors",
+    # Messy oral. Trigger ME$$Y. Sample strength 1.0. Face-fuck, spit foam, pull-out.
+    # Ward oral stays on blowjob v3. Registered only.
+    # Model 2997232 version 3399472 fileId 3289886.
+    "messyblow": "MessyBlowjob_v1_H3.safetensors",
+    # Extreme close-up of a join. Sample strength 0.5. No trained word.
+    # A ward frame keeps both feet, so this key stays off the beats.
+    # Model 2997416 version 3399711 fileId 3290118.
+    "closeup": "closeup_nsfw.safetensors",
     # FunPhantom facial. Version 3290895 fileId 3175377. Trigger cmst.
     # Drive copy uses this name. The version's published name is face_cum_000001000.safetensors.
     "cumfacial": "cum_facial_000005400.safetensors",
@@ -332,13 +352,17 @@ LORA_URLS = {
     "slime": "https://civitai.com/models/2533949",
     "anthro": "https://civitai.com/models/2945034",
     "tentacles3d": "https://civitai.com/api/download/models/3347053?fileId=3234017",
+    "tentacles101": "https://civitai.com/api/download/models/3367732?fileId=3255755",
     "cmst": "https://civitai.com/api/download/models/3290895?fileId=3175377",
     "jacko": "https://civitai.com/api/download/models/3355328?fileId=3244536",
     "spoonlg": "https://civitai.com/api/download/models/3363705?fileId=3251540",
     "jpnmoans": "https://civitai.com/api/download/models/3282509?fileId=3166743",
     "doggy": "https://civitai.com/api/download/models/3317042?fileId=3202556",
     "siderear": "https://civitai.com/api/download/models/3362792?fileId=3250615",
-    "anuspussy": "https://civitai.com/api/download/models/3371009?fileId=3259145",
+    "anuspussy": "https://civitai.com/api/download/models/3397856?fileId=3288079",
+    "missionlg": "https://civitai.com/api/download/models/3403761?fileId=3294817",
+    "messyblow": "https://civitai.com/api/download/models/3399472?fileId=3289886",
+    "closeup": "https://civitai.com/api/download/models/3399711?fileId=3290118",
     "cumfacial": "https://civitai.com/api/download/models/3290895?fileId=3175377",
     "solodildo": "https://civitai.com/api/download/models/3282820?fileId=3167066",
     "charswap": "https://huggingface.co/akatz-ai/MiniMax-H3-Character-Swap-LoRA/resolve/main/h3_character_swap_pro4500_1000.safetensors",
@@ -364,6 +388,7 @@ LORA_STRENGTHS = {
     "anthro": 0.45,
     "amateur": 0.35,
     "tentacles3d": 0.45,
+    "tentacles101": 0.9,
     "cmst": 0.65,
     "jacko": 0.8,
     "spoonlg": 1.0,
@@ -371,6 +396,9 @@ LORA_STRENGTHS = {
     "doggy": 0.5,
     "siderear": 0.8,
     "anuspussy": 0.4,
+    "missionlg": 1.0,
+    "messyblow": 1.0,
+    "closeup": 0.5,
     # FunPhantom says start at 0.75-0.85.
     "cumfacial": 0.8,
     # The dildo card lists no strength. Ward beats keep 0.7.
@@ -4253,6 +4281,50 @@ def apply_appearance(ep: dict[str, Any]) -> dict[str, Any]:
     return out
 
 
+def _missionlg_beat(beat: dict[str, Any]) -> bool:
+    """M-shape insert and peak: partner kneels between the open legs. Walks stay off."""
+    action = str(beat.get("action") or "").lower()
+    if "m-shape" not in action or "kneel" not in action or "between" not in action:
+        return False
+    return not str(beat.get("id") or "").endswith("-walk")
+
+
+def apply_card_loras(ep: dict[str, Any]) -> dict[str, Any]:
+    """Form choices. Off leaves the beat extras alone."""
+    render = ep.get("render") or {}
+    mission = canonical_missionlg(str(render.get("missionlg") or "")) == "on"
+    messy = canonical_messyblow(str(render.get("messyblow") or "")) == "on"
+    close = canonical_closeup(str(render.get("closeup") or "")) == "on"
+    if not (mission or messy or close):
+        return ep
+    for beat in ep.get("beats") or []:
+        if not isinstance(beat, dict):
+            continue
+        entries = extra_lora_entries(beat)
+        keys = {key for key, _strength in entries}
+        changed = False
+        if messy and "blowjob" in keys:
+            entries = [
+                ("messyblow", float(LORA_STRENGTHS["messyblow"])) if key == "blowjob" else (key, strength)
+                for key, strength in entries
+            ]
+            trigger = str(beat.get("trigger") or "")
+            if "bl0w_j0b" in trigger:
+                beat["trigger"] = trigger.replace("bl0w_j0b", "").strip()
+            keys = {key for key, _strength in entries}
+            changed = True
+        if mission and _missionlg_beat(beat) and "missionlg" not in keys:
+            entries.append(("missionlg", float(LORA_STRENGTHS["missionlg"])))
+            keys.add("missionlg")
+            changed = True
+        if close and "anuspussy" in keys and "closeup" not in keys:
+            entries.append(("closeup", float(LORA_STRENGTHS["closeup"])))
+            changed = True
+        if changed:
+            beat["extra_loras"] = [[key, strength] for key, strength in entries]
+    return ep
+
+
 def prepare_episode(
     ep: dict[str, Any],
     *,
@@ -4282,6 +4354,9 @@ def prepare_episode(
     rei_pose_override: str | None = None,
     appearance_override: str | dict[str, Any] | None = None,
     checkpoint_override: str | None = None,
+    missionlg_override: str | None = None,
+    messyblow_override: str | None = None,
+    closeup_override: str | None = None,
 ) -> dict[str, Any]:
     """Apply Colab/CLI overrides, then wire beats for the chosen connect mode."""
     out = copy.deepcopy(ep)
@@ -4303,6 +4378,12 @@ def prepare_episode(
         render["story"] = canonical_story(story_override) or story_override
     if combat_override not in (None, ""):
         render["combat"] = canonical_combat(combat_override) or combat_override
+    if missionlg_override not in (None, ""):
+        render["missionlg"] = canonical_missionlg(missionlg_override) or missionlg_override
+    if messyblow_override not in (None, ""):
+        render["messyblow"] = canonical_messyblow(messyblow_override) or messyblow_override
+    if closeup_override not in (None, ""):
+        render["closeup"] = canonical_closeup(closeup_override) or closeup_override
     if invite_pose_override not in (None, ""):
         render["invite_pose"] = canonical_invite_pose(invite_pose_override) or invite_pose_override
     if checkpoint_override not in (None, ""):
@@ -4375,7 +4456,8 @@ def prepare_episode(
     out = _honor_beat_connect(out)
     out = apply_end_connect(out, end_connect=end_connect_override)
     out = apply_look_triggers(keep_chain_cast(out))
-    return apply_appearance(out)
+    out = apply_appearance(out)
+    return apply_card_loras(out)
 
 
 def gpu_index_map(ep: dict[str, Any]) -> dict[str, int]:
@@ -5007,6 +5089,14 @@ def validate_episode(ep: dict[str, Any], *, root: Path | str | None = None) -> l
         combat_key = canonical_combat(combat)
         if combat_key not in COMBAT_MODES:
             errs.append(f"render.combat must be one of {list(COMBAT_MODES)}")
+    for flag, canon in (
+        ("missionlg", canonical_missionlg),
+        ("messyblow", canonical_messyblow),
+        ("closeup", canonical_closeup),
+    ):
+        raw_flag = str(render.get(flag) or "").strip()
+        if raw_flag and canon(raw_flag) not in ("off", "on"):
+            errs.append(f"render.{flag} must be off or on")
     story = str(render.get("story") or "").strip()
     if story:
         story_key = canonical_story(story)
@@ -5816,6 +5906,8 @@ _LORA_TRIGGER_TOKENS = (
     ("spoonlg", "SPOONLG."),
     ("jpnmoans", "jpnMoans"),
     ("blowjob", "bl0w_j0b"),
+    ("messyblow", "ME$$Y."),
+    ("missionlg", "MISSIONLG"),
     ("cunny", "performing cunnilingus"),
     ("thumbinbutt", "thum1n8utt"),
     ("solodildo", DILDO_TRIGGER),
@@ -7304,6 +7396,9 @@ def run_episode(
     rei_pose_override: str | None = None,
     appearance_override: str | dict[str, Any] | None = None,
     checkpoint_override: str | None = None,
+    missionlg_override: str | None = None,
+    messyblow_override: str | None = None,
+    closeup_override: str | None = None,
     start_at: str | None = None,
     port: int = PORT,
     object_info: dict[str, Any] | None = None,
@@ -7341,6 +7436,9 @@ def run_episode(
         rei_pose_override=rei_pose_override,
         appearance_override=appearance_override,
         checkpoint_override=checkpoint_override,
+        missionlg_override=missionlg_override,
+        messyblow_override=messyblow_override,
+        closeup_override=closeup_override,
     )
     print(
         describe_run(
@@ -7349,6 +7447,9 @@ def run_episode(
             camera=episode_camera_pack(ep),
             preset=str((ep.get("render") or {}).get("preset") or ""),
             combat=episode_combat(ep),
+            missionlg=str((ep.get("render") or {}).get("missionlg") or ""),
+            messyblow=str((ep.get("render") or {}).get("messyblow") or ""),
+            closeup=str((ep.get("render") or {}).get("closeup") or ""),
             story=episode_story(ep),
             invite_pose=episode_invite_pose(ep),
             ride_bent=str((ep.get("render") or {}).get("ride_bent") or ""),
