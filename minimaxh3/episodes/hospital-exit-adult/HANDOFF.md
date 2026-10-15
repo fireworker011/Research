@@ -28,11 +28,13 @@
 - `anuspussy` を Eros 版に差し替えた。ファイル `anus_pussy_eros_v2.safetensors`。Civitai 2974434、version 3397856、fileId 3288079。作者は、前の版が公式チェックポイントでは動くが EROS v5 では弱い、と書いている。病棟のチェックポイントは 10Eros Max beta5 int8。強度は 0.40 のまま。トリガーは `zxqanus` と `zxqvagina`。`zxqmei` は足さない。今まで `anuspussy` が付いていた拍は、このファイルになる。
 - 触手の行為 `04-toilet` だけ `tentacles101` 0.9。ファイル `Tentacles_H3_101_.safetensors`。Civitai 2971784、version 3367732、fileId 3255755。トリガー語はカードに無い。サンプルは mystic と積むとき 0.9、単体は 0.95。2D-General（3293041）は登録しない。fill の蔦は `tentacles3d` 0.45 のまま。4本の HOLD の文は残す。サンプル動画は抜き差しとカットが多い。文が HOLD のままなので、絵が前後し始めたら 0.9 を下げる。
 
-登録だけ。拍には積んでいない。
+上の2枚は毎回このファイル。ドロップダウンにはしない。
 
-- 正常位 `missionlg`。ファイル `MISSIONLG_H3_v1.safetensors`。version 3403761、fileId 3294817。トリガー `MISSIONLG`。カードの強度は 1.0。学習は、相手が上に乗って腰を回し、受けが腰を上げる。病棟の M字は、相手が膝をつき、あやの骨盤は床、PROFILE の全身。1.0 で積むと膝つきと全身が崩れる。サンプルの一部は GRINDLG との合成ファイルと beta6 を使っている。公開ファイルはその合成ではない。M字の文をこのカードの乗り方に変えてから積む。
-- フェラ `messyblow`。ファイル `MessyBlowjob_v1_H3.safetensors`。version 3399472、fileId 3289886。トリガー `ME$$Y.`。サンプル強度は 1.0。絵は顔を前後に突く、泡、口から抜く。今の口は `blowjob` v3 と `bl0w_j0b`。このキーに差し替えると、その口の文と違う動きになる。
-- 超近距離 `closeup`。ファイル `closeup_nsfw.safetensors`。version 3399711、fileId 3290118。サンプル強度は 0.5。トリガー語は無い。サンプルの文は穴の抜き差しの寄り。病棟の画面は両足まで入れる。このキーを四つん這いと立ちに積むと、足が切れる。
+フォームの選択肢。既定はオフ。オンにした回だけ積む。動作の本文は変えない。開いたままの Colab は、開き直して Run all。マージ前に試すときは、フォームの BRANCH を `cursor/h3-lora-cards-d736` にする。
+
+- 正常位 `missionlg`。ファイル `MISSIONLG_H3_v1.safetensors`。version 3403761、fileId 3294817。トリガー `MISSIONLG`。カードの強度は 1.0。既定は「正常位LoRAオフ（迷ったらこれ）」。オンは「正常位LoRAオン（M字の挿入と絶頂）」。オンのとき、動作文に M-shape と kneel と between がある挿入と絶頂だけ `missionlg` 1.0 を足す。id が `-walk` で終わる歩きと、便器の一人 M字は足さない。学習は、相手が上に乗って腰を回し、受けが腰を上げる。病棟の M字は、相手が膝をつき、あやの骨盤は床、PROFILE の全身。1.0 は膝つきの文と喧嘩する。サンプルの一部は GRINDLG との合成ファイルと beta6 を使っている。公開ファイルはその合成ではない。
+- フェラ `messyblow`。ファイル `MessyBlowjob_v1_H3.safetensors`。version 3399472、fileId 3289886。トリガー `ME$$Y.`。サンプル強度は 1.0。既定は「フェラは今のまま（迷ったらこれ）」。オンは「フェラをMessyに差し替える」。`blowjob` が付いている拍だけ `messyblow` 1.0 に差し替え、その拍の `bl0w_j0b` を外して `ME$$Y.` を足す。口の文はそのまま。絵は顔を前後に突く、泡、口から抜く。
+- 超近距離 `closeup`。ファイル `closeup_nsfw.safetensors`。version 3399711、fileId 3290118。サンプル強度は 0.5。トリガー語は無い。既定は「超近距離オフ（迷ったらこれ）」。オンは「超近距離オン（穴の見える拍）」。`anuspussy` が付いている拍に `closeup` 0.5 を足す。画面が穴へ寄る。病棟の画面は両足まで入れる。オンにすると足が切れることがある。
 
 ## いま（2026-09-30）
 

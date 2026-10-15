@@ -251,6 +251,48 @@ COMBAT_ALIASES: dict[str, str] = _label_aliases(
     },
 )
 
+
+def _on_off_modes(off_choice: str, off_when: str, on_choice: str, on_when: str) -> dict[str, dict[str, Any]]:
+    return {
+        "off": {
+            "label_ja": "オフ",
+            "choice_ja": off_choice,
+            "when_ja": off_when,
+            "hint_ja": off_when,
+            "recommend": True,
+        },
+        "on": {
+            "label_ja": "オン",
+            "choice_ja": on_choice,
+            "when_ja": on_when,
+            "hint_ja": on_when,
+        },
+    }
+
+
+# Card LoRAs the ward can try from the form. Default off. The sentences stay.
+MISSIONLG_MODES = _on_off_modes(
+    "正常位LoRAオフ（迷ったらこれ）",
+    "M字は今の膝つきのまま。MISSIONLG は積まない",
+    "正常位LoRAオン（M字の挿入と絶頂）",
+    "M字の挿入と絶頂だけ MISSIONLG 1.0。相手が上に乗る学習なので、膝つきの文と喧嘩する",
+)
+MESSYBLOW_MODES = _on_off_modes(
+    "フェラは今のまま（迷ったらこれ）",
+    "口は blowjob v3 と bl0w_j0b",
+    "フェラをMessyに差し替える",
+    "blowjob が付いている拍だけ MessyBlowjob 1.0 と ME$$Y. に差し替える",
+)
+CLOSEUP_MODES = _on_off_modes(
+    "超近距離オフ（迷ったらこれ）",
+    "穴の見える拍は今の全身のまま",
+    "超近距離オン（穴の見える拍）",
+    "anuspussy が付いている拍に closeup 0.5。画面が穴へ寄る",
+)
+MISSIONLG_ALIASES = _label_aliases(MISSIONLG_MODES, {"なし": "off", "する": "on", "missionlg": "on"})
+MESSYBLOW_ALIASES = _label_aliases(MESSYBLOW_MODES, {"なし": "off", "する": "on", "messy": "on", "messyblow": "on"})
+CLOSEUP_ALIASES = _label_aliases(CLOSEUP_MODES, {"なし": "off", "する": "on", "closeup": "on"})
+
 # Hospital-exit story pack. Body JSON is ○受け入れる. Other futures are on_* overlays.
 # Kasumi has no on_* keys; this dropdown is ignored there.
 STORY_MODES: dict[str, dict[str, Any]] = {
@@ -1381,6 +1423,27 @@ def canonical_combat(name: str) -> str:
     return COMBAT_ALIASES.get(raw, raw)
 
 
+def _canonical_on_off(name: str, modes: dict[str, dict[str, Any]], aliases: dict[str, str]) -> str:
+    raw = str(name or "").strip()
+    if not raw:
+        return ""
+    if raw in modes:
+        return raw
+    return aliases.get(raw, raw)
+
+
+def canonical_missionlg(name: str) -> str:
+    return _canonical_on_off(name, MISSIONLG_MODES, MISSIONLG_ALIASES)
+
+
+def canonical_messyblow(name: str) -> str:
+    return _canonical_on_off(name, MESSYBLOW_MODES, MESSYBLOW_ALIASES)
+
+
+def canonical_closeup(name: str) -> str:
+    return _canonical_on_off(name, CLOSEUP_MODES, CLOSEUP_ALIASES)
+
+
 def canonical_story(name: str) -> str:
     raw = str(name or "").strip()
     if not raw:
@@ -1733,6 +1796,12 @@ def _registry(kind: str) -> dict[str, dict[str, Any]]:
         return PRESET_CANON
     if kind == "combat":
         return COMBAT_MODES
+    if kind == "missionlg":
+        return MISSIONLG_MODES
+    if kind == "messyblow":
+        return MESSYBLOW_MODES
+    if kind == "closeup":
+        return CLOSEUP_MODES
     if kind == "story":
         return STORY_MODES
     if kind == "invite_pose":
@@ -1817,6 +1886,9 @@ def describe_run(
     camera: str = "",
     preset: str = "",
     combat: str = "",
+    missionlg: str = "",
+    messyblow: str = "",
+    closeup: str = "",
     story: str = "",
     invite_pose: str = "",
     toilet: str = "",
@@ -1844,6 +1916,9 @@ def describe_run(
     cam_key = canonical_camera(camera) or DEFAULT_CAMERA_PACK
     p_key = canonical_preset(preset) or "balance"
     f_key = canonical_combat(combat) or "off"
+    ml_key = canonical_missionlg(missionlg) or "off"
+    mb_key = canonical_messyblow(messyblow) or "off"
+    cu_key = canonical_closeup(closeup) or "off"
     s_key = canonical_story(story) or "accept"
     pose_key = canonical_invite_pose(invite_pose) or "all_fours"
     t_key = canonical_toilet(toilet) or "off"
@@ -1857,6 +1932,9 @@ def describe_run(
     cam = CAMERA_PACKS.get(cam_key) or CAMERA_PACKS[DEFAULT_CAMERA_PACK]
     p = PRESET_CANON.get(p_key) or PRESET_CANON["balance"]
     f = COMBAT_MODES.get(f_key) or COMBAT_MODES["off"]
+    ml = MISSIONLG_MODES.get(ml_key) or MISSIONLG_MODES["off"]
+    mb = MESSYBLOW_MODES.get(mb_key) or MESSYBLOW_MODES["off"]
+    cu = CLOSEUP_MODES.get(cu_key) or CLOSEUP_MODES["off"]
     s = STORY_MODES.get(s_key) or STORY_MODES["accept"]
     pose = INVITE_POSE_MODES.get(pose_key) or INVITE_POSE_MODES["all_fours"]
     t = TOILET_MODES.get(t_key) or TOILET_MODES["off"]
@@ -1916,6 +1994,9 @@ def describe_run(
         f"  2 カメラ  {cam['choice_ja']}  — {cam['when_ja']}\n"
         f"  3 画質    {p['choice_ja']}  — {p['when_ja']}\n"
         f"  4 格闘    {f['choice_ja']}  — {f['when_ja']}\n"
+        f"  正常位    {ml['choice_ja']}  — {ml['when_ja']}\n"
+        f"  フェラ    {mb['choice_ja']}  — {mb['when_ja']}\n"
+        f"  近距離    {cu['choice_ja']}  — {cu['when_ja']}\n"
         f"  5 構成    {s['choice_ja']}  — {s['when_ja']}\n"
         f"  6 誘う    {pose['choice_ja']}  — {pose['when_ja']}\n"
         f"  騎乗曲げ  {RIDE_PERSON_JA.get(ride_bent, ride_bent or 'なし')}\n"

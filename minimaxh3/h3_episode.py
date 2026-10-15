@@ -142,6 +142,9 @@ from h3_episode_packs import (
     canonical_camera,
     canonical_dog,
     canonical_combat,
+    canonical_closeup,
+    canonical_messyblow,
+    canonical_missionlg,
     canonical_connect,
     canonical_end_connect,
     canonical_gin,
@@ -4278,6 +4281,50 @@ def apply_appearance(ep: dict[str, Any]) -> dict[str, Any]:
     return out
 
 
+def _missionlg_beat(beat: dict[str, Any]) -> bool:
+    """M-shape insert and peak: partner kneels between the open legs. Walks stay off."""
+    action = str(beat.get("action") or "").lower()
+    if "m-shape" not in action or "kneel" not in action or "between" not in action:
+        return False
+    return not str(beat.get("id") or "").endswith("-walk")
+
+
+def apply_card_loras(ep: dict[str, Any]) -> dict[str, Any]:
+    """Form choices. Off leaves the beat extras alone."""
+    render = ep.get("render") or {}
+    mission = canonical_missionlg(str(render.get("missionlg") or "")) == "on"
+    messy = canonical_messyblow(str(render.get("messyblow") or "")) == "on"
+    close = canonical_closeup(str(render.get("closeup") or "")) == "on"
+    if not (mission or messy or close):
+        return ep
+    for beat in ep.get("beats") or []:
+        if not isinstance(beat, dict):
+            continue
+        entries = extra_lora_entries(beat)
+        keys = {key for key, _strength in entries}
+        changed = False
+        if messy and "blowjob" in keys:
+            entries = [
+                ("messyblow", float(LORA_STRENGTHS["messyblow"])) if key == "blowjob" else (key, strength)
+                for key, strength in entries
+            ]
+            trigger = str(beat.get("trigger") or "")
+            if "bl0w_j0b" in trigger:
+                beat["trigger"] = trigger.replace("bl0w_j0b", "").strip()
+            keys = {key for key, _strength in entries}
+            changed = True
+        if mission and _missionlg_beat(beat) and "missionlg" not in keys:
+            entries.append(("missionlg", float(LORA_STRENGTHS["missionlg"])))
+            keys.add("missionlg")
+            changed = True
+        if close and "anuspussy" in keys and "closeup" not in keys:
+            entries.append(("closeup", float(LORA_STRENGTHS["closeup"])))
+            changed = True
+        if changed:
+            beat["extra_loras"] = [[key, strength] for key, strength in entries]
+    return ep
+
+
 def prepare_episode(
     ep: dict[str, Any],
     *,
@@ -4307,6 +4354,9 @@ def prepare_episode(
     rei_pose_override: str | None = None,
     appearance_override: str | dict[str, Any] | None = None,
     checkpoint_override: str | None = None,
+    missionlg_override: str | None = None,
+    messyblow_override: str | None = None,
+    closeup_override: str | None = None,
 ) -> dict[str, Any]:
     """Apply Colab/CLI overrides, then wire beats for the chosen connect mode."""
     out = copy.deepcopy(ep)
@@ -4328,6 +4378,12 @@ def prepare_episode(
         render["story"] = canonical_story(story_override) or story_override
     if combat_override not in (None, ""):
         render["combat"] = canonical_combat(combat_override) or combat_override
+    if missionlg_override not in (None, ""):
+        render["missionlg"] = canonical_missionlg(missionlg_override) or missionlg_override
+    if messyblow_override not in (None, ""):
+        render["messyblow"] = canonical_messyblow(messyblow_override) or messyblow_override
+    if closeup_override not in (None, ""):
+        render["closeup"] = canonical_closeup(closeup_override) or closeup_override
     if invite_pose_override not in (None, ""):
         render["invite_pose"] = canonical_invite_pose(invite_pose_override) or invite_pose_override
     if checkpoint_override not in (None, ""):
@@ -4400,7 +4456,8 @@ def prepare_episode(
     out = _honor_beat_connect(out)
     out = apply_end_connect(out, end_connect=end_connect_override)
     out = apply_look_triggers(keep_chain_cast(out))
-    return apply_appearance(out)
+    out = apply_appearance(out)
+    return apply_card_loras(out)
 
 
 def gpu_index_map(ep: dict[str, Any]) -> dict[str, int]:
@@ -5032,6 +5089,14 @@ def validate_episode(ep: dict[str, Any], *, root: Path | str | None = None) -> l
         combat_key = canonical_combat(combat)
         if combat_key not in COMBAT_MODES:
             errs.append(f"render.combat must be one of {list(COMBAT_MODES)}")
+    for flag, canon in (
+        ("missionlg", canonical_missionlg),
+        ("messyblow", canonical_messyblow),
+        ("closeup", canonical_closeup),
+    ):
+        raw_flag = str(render.get(flag) or "").strip()
+        if raw_flag and canon(raw_flag) not in ("off", "on"):
+            errs.append(f"render.{flag} must be off or on")
     story = str(render.get("story") or "").strip()
     if story:
         story_key = canonical_story(story)
@@ -7331,6 +7396,9 @@ def run_episode(
     rei_pose_override: str | None = None,
     appearance_override: str | dict[str, Any] | None = None,
     checkpoint_override: str | None = None,
+    missionlg_override: str | None = None,
+    messyblow_override: str | None = None,
+    closeup_override: str | None = None,
     start_at: str | None = None,
     port: int = PORT,
     object_info: dict[str, Any] | None = None,
@@ -7368,6 +7436,9 @@ def run_episode(
         rei_pose_override=rei_pose_override,
         appearance_override=appearance_override,
         checkpoint_override=checkpoint_override,
+        missionlg_override=missionlg_override,
+        messyblow_override=messyblow_override,
+        closeup_override=closeup_override,
     )
     print(
         describe_run(
@@ -7376,6 +7447,9 @@ def run_episode(
             camera=episode_camera_pack(ep),
             preset=str((ep.get("render") or {}).get("preset") or ""),
             combat=episode_combat(ep),
+            missionlg=str((ep.get("render") or {}).get("missionlg") or ""),
+            messyblow=str((ep.get("render") or {}).get("messyblow") or ""),
+            closeup=str((ep.get("render") or {}).get("closeup") or ""),
             story=episode_story(ep),
             invite_pose=episode_invite_pose(ep),
             ride_bent=str((ep.get("render") or {}).get("ride_bent") or ""),
