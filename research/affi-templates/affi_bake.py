@@ -3408,6 +3408,8 @@ def bake_cell() -> str:
 焼く = False #@param {type:"boolean"}
 最初の1本だけ = False #@param {type:"boolean"}
 重みが無いとき落とす = False #@param {type:"boolean"}
+#@markdown 百裂拳のファイルが無いときだけ、この欄に Civitai の API トークンを貼る。https://civitai.com/user/account の API Keys。貼ったままこのノートを保存しない。
+CIVITAI_TOKEN = "" #@param {type:"string"}
 
 import os
 import shlex
@@ -3564,14 +3566,17 @@ else:
 
                                     prepare_fast_loras(cache / "loras")
                         if lines and affi_bake.commands_want_chain("\\n".join(lines)):
-                            if not os.environ.get("CIVITAI_TOKEN") and userdata is not None:
+                            secret = str(CIVITAI_TOKEN or "").strip()
+                            if not secret:
+                                secret = str(os.environ.get("CIVITAI_TOKEN") or "").strip()
+                            if not secret and userdata is not None:
                                 try:
                                     secret = str(userdata.get("CIVITAI_TOKEN") or "").strip()
                                 except Exception:
                                     secret = ""
-                                if secret:
-                                    os.environ["CIVITAI_TOKEN"] = secret
-                                    print("CIVITAI_TOKEN を読みました（値は表示しません）")
+                            if secret:
+                                os.environ["CIVITAI_TOKEN"] = secret
+                                print("CIVITAI_TOKEN を読みました（値は表示しません）")
                             try:
                                 affi_bake.prepare_chain_lora(cache / "loras")
                             except SystemExit as exc:

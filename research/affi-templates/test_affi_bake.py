@@ -422,6 +422,9 @@ def test_reference_notebook_is_one_japanese_form_per_story() -> None:
     assert "同意済みなら、そのトークンを欄に貼るだけでよい。" in run_src
     assert "speaker_gate_lines" not in run_src
     assert 'globals().get("HF_TOKEN")' in bake_src
+    assert 'CIVITAI_TOKEN = "" #@param {type:"string"}' in bake_src
+    assert 'str(CIVITAI_TOKEN or "").strip()' in bake_src
+    assert "貼ったままこのノートを保存しない。" in bake_src
     assert "skip_done=True" in bake_src
     assert "measure_repro_clip" in bake_src
     assert "all_clips_made" in bake_src
