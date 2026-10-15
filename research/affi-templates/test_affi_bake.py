@@ -1320,6 +1320,9 @@ def test_chain_punch_slider_is_off_until_asked(tmp_path: Path) -> None:
     blob = "\n".join(clip["prompt"] for clip in punched["clips"])
     assert affi_av.CHAIN_PROMPT not in plain_blob
     assert affi_av.CHAIN_PROMPT in blob
+    assert "One cat" in affi_av.CHAIN_PROMPT and "pet camera" in affi_av.CHAIN_PROMPT
+    assert "sandbag" not in affi_av.CHAIN_PROMPT.lower()
+    assert " man " not in f" {affi_av.CHAIN_PROMPT.lower()} "
     assert "砂漠" not in blob and "ひとつ" not in blob and "元の顔" not in blob
     assert "昼の台所" in blob
     assert _CJK.search(affi_av.CHAIN_PROMPT) is None

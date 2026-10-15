@@ -39,14 +39,15 @@ CHAIN_SCALE = 4.0
 CHAIN_VERSION = 3395787
 CHAIN_LABEL = "百裂拳"
 CHAIN_PROMPT = (
-    "The action already written above accelerates smoothly over this clip. "
-    "Each repetition is faster than the last, with motion trails and afterimages. "
-    "Punches are a rapid chain. Each punch is faster than the one before, and the fists leave afterimages."
+    "One cat throws a rapid chain of punches into one pet camera. "
+    "Each punch is faster than the one before, with motion trails and afterimages. "
+    "The punches accelerate smoothly over this clip."
 )
 CHAIN_NOTE = (
     "百裂拳を載せる。progressive_acceleration_slider_v1.0.safetensors の強さは 4。"
     "Turbo 1.0 と Motion Repair 0.6 はそのまま。"
-    "動作は時間とともに速くなる。拳は後のほうほど速い。"
+    "拳を出すのはネコ。当たるのはペットカメラ。"
+    "拳は後のほうほど速い。"
 )
 PLACEHOLDER_LINE = "台詞は入力"
 I2VA_HEADER = (
@@ -422,7 +423,7 @@ def lora_rows(chain: bool = False) -> list[dict[str, Any]]:
             {
                 "file": CHAIN_FILENAME,
                 "scale": CHAIN_SCALE,
-                "role": "百裂拳。動作が時間とともに速くなる。強さはカードの 4。0 未満は渡さない。",
+                "role": "百裂拳。ネコがペットカメラに出す。強さはカードの 4。0 未満は渡さない。",
             }
         )
     return rows
