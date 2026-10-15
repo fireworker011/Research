@@ -1320,8 +1320,10 @@ def test_chain_punch_slider_is_off_until_asked(tmp_path: Path) -> None:
     blob = "\n".join(clip["prompt"] for clip in punched["clips"])
     assert affi_av.CHAIN_PROMPT not in plain_blob
     assert affi_av.CHAIN_PROMPT in blob
-    assert "One cat" in affi_av.CHAIN_PROMPT and "pet camera" in affi_av.CHAIN_PROMPT
-    assert "static medium shot" in affi_av.CHAIN_PROMPT
+    assert "orange tabby cat" in affi_av.CHAIN_PROMPT and "pet camera" in affi_av.CHAIN_PROMPT
+    assert "living room" in affi_av.CHAIN_PROMPT
+    assert "about 2.5 seconds" in affi_av.CHAIN_PROMPT and "about 7.5 seconds" in affi_av.CHAIN_PROMPT
+    assert "static medium shot" in affi_av.CHAIN_PROMPT.lower()
     assert "integrated_multimodal_description:" in affi_av.CHAIN_PROMPT
     assert "non_diegetic_music: N/A" in affi_av.CHAIN_PROMPT
     low = affi_av.CHAIN_PROMPT.lower()
@@ -1338,7 +1340,7 @@ def test_chain_punch_slider_is_off_until_asked(tmp_path: Path) -> None:
     assert f"{affi_av.CHAIN_FILENAME}:4.0" in command
     assert f"{affi_av.TURBO_FILENAME}:1.0" in command
     assert f"{affi_av.REPAIR_FILENAME}:0.6" in command
-    assert "-8" not in command
+    assert "safetensors:-" not in command
     assert bake.commands_want_chain(command) is True
     assert bake.commands_want_chain(plain_cmd) is False
     spec = parse_lora_args([f"loras/{affi_av.CHAIN_FILENAME}:4.0"])[0]
@@ -1358,10 +1360,12 @@ def test_chain_punch_slider_is_off_until_asked(tmp_path: Path) -> None:
     assert affi_av.CHAIN_SOURCE_NAME in shown
     assert affi_av.CHAIN_SOURCE_ID in shown
     assert "5.167秒" in shown
+    assert "8秒" in shown
+    assert "リビング" in shown
     assert "せりふは読んでいない" in shown
     assert "中のカットは無い" in shown
     job = bake.plan_chain()
-    assert job["duration_s"] == 5.167
+    assert job["duration_s"] == 8.0
     assert job["aspect"] == "16:9"
     assert job["task"] == "t2va"
     assert job["clips"][0]["image"] == ""
