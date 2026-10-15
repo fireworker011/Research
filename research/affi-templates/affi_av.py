@@ -38,6 +38,17 @@ CHAIN_FILENAME = "progressive_acceleration_slider_v1.0.safetensors"
 CHAIN_SCALE = 4.0
 CHAIN_VERSION = 3395787
 CHAIN_LABEL = "百裂拳"
+# Drive file 越来越快1k.mp4. ffprobe: 5.167s, 1376x768, 24fps, 124 frames. No interior cut.
+CHAIN_SOURCE_ID = "1arPpEWTu5XDFPcDn_eO3zSlJHbXgVKDD"
+CHAIN_SOURCE_NAME = "越来越快1k.mp4"
+CHAIN_SOURCE_URL = (
+    "https://drive.google.com/file/d/1arPpEWTu5XDFPcDn_eO3zSlJHbXgVKDD/view"
+)
+CHAIN_DURATION_S = 5.167
+CHAIN_WIDTH = 1376
+CHAIN_HEIGHT = 768
+CHAIN_FPS = 24
+CHAIN_FRAMES = 124
 # The source prompt is one static medium shot: the fighter on the left, the target on the right,
 # chain punches that accelerate. The fighter is a cat. The target is a pet camera.
 CHAIN_PROMPT = (

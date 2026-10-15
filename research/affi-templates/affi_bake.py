@@ -745,10 +745,13 @@ def commands_file(
     handle: str | None = None,
     mode: str | None = None,
     out_dir: str | Path | None = None,
+    chain: bool = False,
 ) -> Path | None:
     """Path of commands.txt for the choice that 「実行」 just wrote."""
     kind = resolve_task(task)
     root = Path(out_dir) if out_dir is not None else _bake_root()
+    if chain and kind != "table":
+        return root / "chain" / "commands.txt"
     if kind == "table":
         return None
     if kind == "i2v":
@@ -894,6 +897,8 @@ def run_choice(
             thin_below=thin_below,
             min_gap_pt=min_gap_pt,
         )
+    if chain:
+        return _run_chain(out_dir)
     if kind == "job":
         return _run_job(
             handle,
@@ -2225,6 +2230,75 @@ def i2v_second_choices() -> list[str]:
     return labels
 
 
+def plan_chain() -> dict[str, Any]:
+    """One clip from the measured Drive file. The source face is not the still."""
+    seconds = float(affi_av.CHAIN_DURATION_S)
+    if not _accepts(seconds):
+        raise ValueError(f"H3 が受け取れない秒数: {seconds}")
+    aspect, width, height = _aspect(f"{affi_av.CHAIN_WIDTH}x{affi_av.CHAIN_HEIGHT}")
+    prompt = affi_av.with_chain("")
+    clip = {
+        "id": "01-chain",
+        "cut_ids": ["s01"],
+        "trim_s": seconds,
+        "request_s": seconds,
+        "prompt_name": "01-chain.txt",
+        "prompt": prompt,
+        "part_index": 0,
+        "part_count": 1,
+        "start_s": 0.0,
+        "end_s": seconds,
+        "image": "",
+        "task": "t2va",
+    }
+    notes = [
+        f"元動画は Drive の {affi_av.CHAIN_SOURCE_NAME}。{affi_av.CHAIN_SOURCE_URL}",
+        (
+            f"測ったのは {_num(seconds)}秒、{affi_av.CHAIN_WIDTH}x{affi_av.CHAIN_HEIGHT}、"
+            f"{affi_av.CHAIN_FPS}fps、{affi_av.CHAIN_FRAMES}フレーム。中のカットは無い。"
+        ),
+        "せりふは読んでいない。元の顔の静止画は使わない。",
+        affi_av.CHAIN_NOTE,
+    ]
+    return {
+        "status": "ready",
+        "blocked": [],
+        "task": "t2va",
+        "aspect": aspect,
+        "delivery_width": width,
+        "delivery_height": height,
+        "duration_s": seconds,
+        "image": "",
+        "bgm_file": "",
+        "captions_on_join": False,
+        "bgm_on_join": False,
+        "subtitle_spec": "白ゴシック。細い影。画面の下から約30%。",
+        "clips": [clip],
+        "cuts": [{"id": "s01", "start_s": 0.0, "end_s": seconds, "subtitle": ""}],
+        "performance": {"captions": {"rows": [], "summary": "せりふは読んでいない。"}},
+        "overlay": {},
+        "source_id": affi_av.CHAIN_SOURCE_ID,
+        "source_name": affi_av.CHAIN_SOURCE_NAME,
+        "notes": notes,
+        "chain": True,
+        "posts": False,
+    }
+
+
+def _run_chain(out_dir: str | Path | None) -> str:
+    job = plan_chain()
+    root = Path(out_dir) if out_dir is not None else _bake_root()
+    path = write_job(job, root / "chain")
+    lines = [
+        f"百裂拳。{_num(float(job['duration_s']))}秒。ショット1。画面 {job['aspect']}。",
+        *job["notes"],
+        f"status={job['status']}",
+        f"書いた {path.parent}",
+        "mp4 は焼いていない。投稿していない。",
+    ]
+    return "\n".join(lines)
+
+
 def plan_i2v(
     *,
     image: str | None,
@@ -3205,7 +3279,7 @@ def choice_cell() -> str:
             f"秒 = {_py(default_second)} #@param {_param_list(seconds)}",
             f"画面 = {_py(aspects[0])} #@param {_param_list(aspects)}",
             'プロンプト = "" #@param {type:"raw"}',
-            "#@markdown 百裂拳はオフが初期値。オンのときだけ Progressive Acceleration（progressive_acceleration_slider_v1.0.safetensors、modelVersionId 3395787）を強さ 4 で足す。カメラは元の文のまま止まっている。左のネコが右のペットカメラに拳を出す。拳は後のほうほど速い。カードの範囲は -8 から 8。このランナーは 0 未満を受け取らないので、強さは 4 だけ。Turbo 1.0 と Motion Repair 0.6 はそのまま。元動画を再現には載せない。",
+            "#@markdown 百裂拳はオフが初期値。オンのとき、元動画は Drive の 越来越快1k.mp4。測ったのは 5.167秒、1376x768。中のカットは無い。せりふは読んでいない。書くのはその1本。カメラは止まっている。左のネコが右のペットカメラに拳を出す。LoRA は Progressive Acceleration の強さ 4。元の顔の静止画は使わない。表を見るでは使わない。",
             "百裂拳 = False #@param {type:\"boolean\"}",
             "",
             "import affi_bake",
@@ -3452,6 +3526,7 @@ else:
                         handle=globals().get("HANDLE"),
                         mode=globals().get("MODE"),
                         out_dir=Path("/content/affi-bake") if on_colab else Path("affi-bake"),
+                        chain=bool(globals().get("百裂拳")),
                     )
                     if path is None:
                         print("先に「選ぶ」を押してください。")
@@ -3676,6 +3751,7 @@ else:
                     handle=globals().get("HANDLE"),
                     mode=globals().get("MODE"),
                     out_dir=Path("/content/affi-bake") if on_colab else Path("affi-bake"),
+                    chain=bool(globals().get("百裂拳")),
                 )
             if commands is None or not Path(commands).is_file():
                 print("先に「選ぶ」と「実行」を押してください。")
@@ -3815,7 +3891,7 @@ def _intro() -> str:
         "焼いたあとに比べるのは、カットの秒、ショットの順、誰がいつ話すかです。全体の割合は出しません。元のせりふとは比べません。",
         "このメニューは、読み込みが取る `cursor/affi-template-bake-44d6` にこのコードが入ってから Colab で動きます。",
         "",
-        "**百裂拳** は「選ぶ」のチェックです。オフが初期値です。オンのときだけ、Progressive Acceleration（`progressive_acceleration_slider_v1.0.safetensors`、modelVersionId 3395787）を強さ 4 で足します。カメラは元の文のまま、止まっているミディアムです。左のネコが右のペットカメラに拳を出します。拳は後のほうほど速くなります。カードの範囲は -8 から 8 ですが、このランナーは 0 未満を受け取らないので、渡す強さは 4 だけです。Turbo 1.0 と Motion Repair 0.6 はそのままです。元動画を再現には載せません。このチェックも、同じブランチに入ってから Colab に出ます。",
+        "**百裂拳** は「選ぶ」のチェックです。オフが初期値です。オンのとき、元動画は Drive の `越来越快1k.mp4` です。測ったのは 5.167秒、1376x768、24fps、124フレームです。中のカットは無い。せりふは読んでいない。書くのはその1本で、画面は 16:9 です。カメラは止まっているミディアムです。左のネコが右のペットカメラに拳を出します。Progressive Acceleration は強さ 4 です。元の顔の静止画は使いません。表を見るでは使いません。このチェックも、`cursor/affi-template-bake-44d6` にこのコードが入ってから Colab に出ます。",
         "",
         "## 4つの話",
         "",
@@ -4040,7 +4116,7 @@ def reference_notebook() -> dict[str, Any]:
                     "- 元動画を再現 … 元の mp4 を Ref2VA の参照にする。カットと無音の位置で 5〜14.4 秒の範囲に分ける。読めたせりふは口がその文だけを作る。FL2VA の Turbo は載せない。ここでは焼きません",
                     "- 構成のまま1本 … 構成欄が空なら 71.552秒。ファイルを書くとそのカット。人、動物、セリフ、場所を「この1本」に書く。H3 は絵だけ。声、口、字幕、曲は「仕上げ」。空欄なら焼かない",
                     "- mp4の構成で差し替える … 元動画のカットとせりふの秒を動かさない。人、動物、セリフ、場所だけ替える。せりふがその秒に入らなければ焼く前に止まる。H3 は口の開閉の絵だけ。声、字幕、曲は「仕上げ」。一致はカット、ショット順、誰がいつ話すか。全体の割合は出さない",
-                    "- 百裂拳 … 「選ぶ」がオンのときだけ Progressive Acceleration を強さ 4 で足す。カメラは止まっている。左のネコが右のペットカメラに拳を出す。オフなら Turbo と Motion Repair だけ。元動画を再現には載せない",
+                    "- 百裂拳 … オンのとき、Drive の 越来越快1k.mp4 の測った 5.167秒を1本書く。中のカットは無い。せりふは読んでいない。左のネコが右のペットカメラに拳を出す。強さ 4。元の顔の静止画は使わない",
                     "",
                 ]
             ),

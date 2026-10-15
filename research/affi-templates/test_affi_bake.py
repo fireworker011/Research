@@ -1354,8 +1354,26 @@ def test_chain_punch_slider_is_off_until_asked(tmp_path: Path) -> None:
         chain=True,
         out_dir=tmp_path / "dance",
     )
-    assert "百裂拳を載せる" in shown
-    assert affi_av.CHAIN_FILENAME in shown
+    assert "百裂拳" in shown
+    assert affi_av.CHAIN_SOURCE_NAME in shown
+    assert affi_av.CHAIN_SOURCE_ID in shown
+    assert "5.167秒" in shown
+    assert "せりふは読んでいない" in shown
+    assert "中のカットは無い" in shown
+    job = bake.plan_chain()
+    assert job["duration_s"] == 5.167
+    assert job["aspect"] == "16:9"
+    assert job["task"] == "t2va"
+    assert job["clips"][0]["image"] == ""
+    assert job["clips"][0]["prompt"] == affi_av.with_chain("")
+    assert "ip_man" not in job["clips"][0]["prompt"].lower()
+    saved = bake.write_job(job, tmp_path / "chain")
+    text = saved.read_text(encoding="utf-8")
+    assert f"{affi_av.CHAIN_FILENAME}:4.0" in text
+    assert "--image" not in text
+    assert bake.commands_file("話でジョブを書く", handle="nuts0629", mode="dance", out_dir=tmp_path, chain=True) == (
+        tmp_path / "chain" / "commands.txt"
+    )
     typed = bake.plan_i2v(image="", prompt="The dog turns its head.", duration_s="10", chain=True)
     assert affi_av.CHAIN_PROMPT in typed["prompt"]
     saved = bake.write_i2v(typed, tmp_path / "typed")
