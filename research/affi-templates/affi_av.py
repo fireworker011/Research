@@ -31,6 +31,23 @@ TURBO_SCALE = 1.0
 REPAIR_SCALE = 0.6
 TURBO_STEPS = 9
 TURBO_VIDEO_SHIFT = 6
+# Civitai model 2994324, modelVersionId 3395787, v1.0.
+# progressive_acceleration_slider_v1.0.safetensors. Card strength 4. Range -8 to 8.
+# This runner refuses a scale below 0, so the command uses 4 only.
+CHAIN_FILENAME = "progressive_acceleration_slider_v1.0.safetensors"
+CHAIN_SCALE = 4.0
+CHAIN_VERSION = 3395787
+CHAIN_LABEL = "百裂拳"
+CHAIN_PROMPT = (
+    "The action already written above accelerates smoothly over this clip. "
+    "Each repetition is faster than the last, with motion trails and afterimages. "
+    "Punches are a rapid chain. Each punch is faster than the one before, and the fists leave afterimages."
+)
+CHAIN_NOTE = (
+    "百裂拳を載せる。progressive_acceleration_slider_v1.0.safetensors の強さは 4。"
+    "Turbo 1.0 と Motion Repair 0.6 はそのまま。"
+    "動作は時間とともに速くなる。拳は後のほうほど速い。"
+)
 PLACEHOLDER_LINE = "台詞は入力"
 I2VA_HEADER = (
     "For the target video, at 0.00 seconds into the target video, "
@@ -395,19 +412,38 @@ def lora_dir() -> Path:
     return Path("hf-cache") / "loras"
 
 
-def lora_rows() -> list[dict[str, Any]]:
-    return [
+def lora_rows(chain: bool = False) -> list[dict[str, Any]]:
+    rows = [
         {"file": TURBO_FILENAME, "scale": TURBO_SCALE, "role": "FL2VA の 8step。声を残す"},
         {"file": REPAIR_FILENAME, "scale": REPAIR_SCALE, "role": "動作のつながり"},
     ]
+    if chain:
+        rows.append(
+            {
+                "file": CHAIN_FILENAME,
+                "scale": CHAIN_SCALE,
+                "role": "百裂拳。動作が時間とともに速くなる。強さはカードの 4。0 未満は渡さない。",
+            }
+        )
+    return rows
 
 
-def lora_cli() -> list[str]:
+def lora_cli(chain: bool = False) -> list[str]:
     folder = lora_dir()
     args = ["--steps", str(TURBO_STEPS), "--video-shift", str(TURBO_VIDEO_SHIFT)]
-    for row in lora_rows():
+    for row in lora_rows(chain=chain):
         args.extend(["--lora", f"{folder / row['file']}:{row['scale']:.1f}"])
     return args
+
+
+def with_chain(prompt: str) -> str:
+    """One acceleration line. The shot text above it stays."""
+    body = str(prompt or "")
+    if CHAIN_PROMPT in body:
+        return body if body.endswith("\n") else body + "\n"
+    if body and not body.endswith("\n"):
+        body += "\n"
+    return body + CHAIN_PROMPT + "\n"
 
 
 def _caption_span(cut: Mapping[str, Any], clips: Sequence[Mapping[str, Any]]) -> tuple[Any, Any]:

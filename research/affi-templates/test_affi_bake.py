@@ -95,6 +95,7 @@ def test_dance_is_one_ten_second_clip_and_text_bakes_without_a_still(tmp_path: P
     assert f"--image {still}" in command
     assert f"{affi_av.TURBO_FILENAME}:1.0" in command
     assert f"{affi_av.REPAIR_FILENAME}:0.6" in command
+    assert affi_av.CHAIN_FILENAME not in command
     assert "--steps 9" in command
     assert "--video-shift 6" in command
     assert "Combat" not in command
@@ -386,6 +387,7 @@ def test_reference_notebook_is_one_japanese_form_per_story() -> None:
     exec(picker, picked)
     assert picked["HANDLE"] == "nuts0629"
     assert picked["MODE"] == "interview"
+    assert picked["百裂拳"] is False
     assert "affi_av.py" in blob
     assert "run_choice" in blob
     assert "手入力で I2V" in blob
@@ -829,6 +831,8 @@ def test_commands_to_run_uses_the_written_job_and_stops_when_blocked(tmp_path: P
         (cache / "loras" / name).parent.mkdir(parents=True, exist_ok=True)
         (cache / "loras" / name).write_bytes(b"x")
     assert bake.missing_weight_files(cache) == []
+    chain_only = bake.missing_weight_files(cache, chain=True)
+    assert chain_only == [str(cache / "loras" / affi_av.CHAIN_FILENAME)]
     assert bake.commands_file("表を見る", out_dir=tmp_path) is None
 
 
@@ -1287,6 +1291,68 @@ def test_homage_stops_before_bake_when_the_line_does_not_fit(tmp_path: Path) -> 
     written = bake.write_job(ready, tmp_path / "homage").parent / "commands.txt"
     assert "--task t2va" in written.read_text(encoding="utf-8")
     assert "--image" not in written.read_text(encoding="utf-8")
+    assert affi_av.CHAIN_FILENAME not in written.read_text(encoding="utf-8")
+
+
+def test_chain_punch_slider_is_off_until_asked(tmp_path: Path) -> None:
+    speech = [
+        {"start_s": 0.2, "end_s": 1.0, "speaker": "A", "text": "砂漠のオアシスでナプキン"},
+        {"start_s": 3.0, "end_s": 4.2, "speaker": "B", "text": "元の顔"},
+    ]
+    common = dict(
+        video="",
+        person="成人の人",
+        animals=_HOMAGE_ANIMALS,
+        place="昼の台所",
+        lines_text="ひとつ\nふたつ",
+        duration_s=6,
+        cuts=[2.5],
+        speech=speech,
+        turns=[],
+        probe=lambda _text, _role: 0.5,
+    )
+    plain = bake.plan_homage(**common)
+    punched = bake.plan_homage(**common, chain=True)
+    assert plain["chain"] is False and punched["chain"] is True
+    assert punched["duration_s"] == 6 and punched["source_cuts"] == [2.5]
+    assert len(punched["clips"]) == len(plain["clips"])
+    plain_blob = "\n".join(clip["prompt"] for clip in plain["clips"])
+    blob = "\n".join(clip["prompt"] for clip in punched["clips"])
+    assert affi_av.CHAIN_PROMPT not in plain_blob
+    assert affi_av.CHAIN_PROMPT in blob
+    assert "砂漠" not in blob and "ひとつ" not in blob and "元の顔" not in blob
+    assert "昼の台所" in blob
+    assert _CJK.search(affi_av.CHAIN_PROMPT) is None
+    assert affi_av.CHAIN_SCALE == 4.0 and affi_av.CHAIN_VERSION == 3395787
+    assert all(row["scale"] >= 0 for row in affi_av.lora_rows(chain=True))
+    plain_cmd = (bake.write_job(plain, tmp_path / "plain").parent / "commands.txt").read_text(encoding="utf-8")
+    command = (bake.write_job(punched, tmp_path / "chain").parent / "commands.txt").read_text(encoding="utf-8")
+    assert affi_av.CHAIN_FILENAME not in plain_cmd
+    assert f"{affi_av.CHAIN_FILENAME}:4.0" in command
+    assert f"{affi_av.TURBO_FILENAME}:1.0" in command
+    assert f"{affi_av.REPAIR_FILENAME}:0.6" in command
+    assert "-8" not in command
+    assert bake.commands_want_chain(command) is True
+    assert bake.commands_want_chain(plain_cmd) is False
+    spec = parse_lora_args([f"loras/{affi_av.CHAIN_FILENAME}:4.0"])[0]
+    assert spec.scale == 4.0
+    still = tmp_path / "still.jpg"
+    still.write_bytes(b"jpeg")
+    shown = bake.run_choice(
+        "話でジョブを書く",
+        handle="nuts0629",
+        mode="dance",
+        fill_label="テンプレ",
+        image=str(still),
+        chain=True,
+        out_dir=tmp_path / "dance",
+    )
+    assert "百裂拳を載せる" in shown
+    assert affi_av.CHAIN_FILENAME in shown
+    typed = bake.plan_i2v(image="", prompt="The dog turns its head.", duration_s="10", chain=True)
+    assert affi_av.CHAIN_PROMPT in typed["prompt"]
+    saved = bake.write_i2v(typed, tmp_path / "typed")
+    assert f"{affi_av.CHAIN_FILENAME}:4.0" in saved.read_text(encoding="utf-8")
 
 
 def test_homage_uses_one_still_per_speaker(tmp_path: Path) -> None:

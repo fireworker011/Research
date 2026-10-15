@@ -16,6 +16,7 @@ import shlex
 import shutil
 import subprocess
 import sys
+import urllib.request
 from pathlib import Path
 from typing import Any, Mapping, Sequence
 
@@ -766,7 +767,7 @@ def commands_file(
     raise RuntimeError(f"やることが無い: {kind}")
 
 
-def missing_weight_files(cache: str | Path, task: str = "") -> list[str]:
+def missing_weight_files(cache: str | Path, task: str = "", *, chain: bool = False) -> list[str]:
     """Files the bake needs before it starts. A source-video job uses transformer_ref and no FL2V LoRA."""
     root = Path(cache)
     kind = ""
@@ -791,11 +792,44 @@ def missing_weight_files(cache: str | Path, task: str = "") -> list[str]:
     if not marker.is_file():
         missing.append(str(marker))
     loras = root / "loras"
-    for filename in (affi_av.TURBO_FILENAME, affi_av.REPAIR_FILENAME):
+    names = [affi_av.TURBO_FILENAME, affi_av.REPAIR_FILENAME]
+    if chain:
+        names.append(affi_av.CHAIN_FILENAME)
+    for filename in names:
         path = loras / filename
         if not path.is_file():
             missing.append(str(path))
     return missing
+
+
+def commands_want_chain(text: str) -> bool:
+    """True when a written command asks for the 百裂拳 slider."""
+    return affi_av.CHAIN_FILENAME in str(text or "")
+
+
+def prepare_chain_lora(dest_dir: str | Path) -> Path:
+    """Download the 百裂拳 slider. Skip a file that is already there.
+
+    The runner is cloned on Colab after this module loads, so the download
+    helper is imported here.
+    """
+    try:
+        from h3_runner.loras import _download_civitai, inspect_lora_file
+    except ImportError as exc:
+        raise ValueError("百裂拳の受け取りに h3-runner が要る。") from exc
+    folder = Path(dest_dir)
+    folder.mkdir(parents=True, exist_ok=True)
+    dest = folder / affi_av.CHAIN_FILENAME
+    token = (os.environ.get("CIVITAI_TOKEN") or "").strip()
+    _download_civitai(
+        affi_av.CHAIN_VERSION,
+        dest,
+        affi_av.CHAIN_LABEL,
+        token,
+        urllib.request.urlopen,
+    )
+    inspect_lora_file(dest)
+    return dest
 
 
 def prepare_command(command: str, cache: str | Path) -> str:
@@ -847,6 +881,7 @@ def run_choice(
     sheet_lines: str = "",
     sheet_pack: str = "",
     sheet_images: Mapping[str, str] | None = None,
+    chain: bool = False,
 ) -> str:
     """Run the one selected action. A job or an I2V command is written. mp4 is not rendered unless bake_here."""
     kind = resolve_task(task)
@@ -871,9 +906,10 @@ def run_choice(
             title=title,
             logo=logo,
             bgm=bgm,
+            chain=chain,
         )
     if kind == "i2v":
-        return _run_i2v(image, prompt, duration_s, aspect, bake_here, out_dir)
+        return _run_i2v(image, prompt, duration_s, aspect, bake_here, out_dir, chain=chain)
     if kind == "repro":
         return _run_repro(video, image, aspect, out_dir, prefer=resolve_split(split))
     if kind == "sheet":
@@ -886,6 +922,7 @@ def run_choice(
             bgm,
             out_dir,
             sheet_pack,
+            chain=chain,
         )
     if kind == "homage":
         return _run_homage(
@@ -897,6 +934,7 @@ def run_choice(
             sheet_images,
             bgm,
             out_dir,
+            chain=chain,
         )
     raise RuntimeError(f"やることが無い: {kind}")
 
@@ -951,6 +989,7 @@ def _run_job(
     title: str = "",
     logo: str = "",
     bgm: str = "",
+    chain: bool = False,
 ) -> str:
     if not handle:
         return "先に「選ぶ」を実行してください。"
@@ -974,6 +1013,7 @@ def _run_job(
             title=title,
             logo=logo,
             bgm=bgm,
+            chain=chain,
         )
     except ValueError as exc:
         return f"止まった: {exc}"
@@ -1004,6 +1044,8 @@ def _run_job(
     lines.append(perf["captions"]["summary"])
     lines.append(perf["bgm"]["summary"])
     lines.append("LoRA " + " / ".join(f"{row['file']} {row['scale']}" for row in perf["lora"]))
+    if job.get("chain"):
+        lines.append(affi_av.CHAIN_NOTE)
     lines.append("mp4 は焼いていない。投稿していない。")
     lines.append("---")
     lines.append(story_check(handle, mode))
@@ -1017,6 +1059,8 @@ def _run_i2v(
     aspect: str,
     bake_here: bool,
     out_dir: str | Path | None,
+    *,
+    chain: bool = False,
 ) -> str:
     try:
         job = plan_i2v(
@@ -1024,6 +1068,7 @@ def _run_i2v(
             prompt=prompt,
             duration_s=duration_s,
             aspect=aspect,
+            chain=chain,
         )
     except ValueError as exc:
         return f"止まった: {exc}"
@@ -1034,6 +1079,8 @@ def _run_i2v(
         f"{job['status']} 秒 {job['duration_s']} {path}",
     ]
     lines.extend(f"- {reason}" for reason in job["blocked"])
+    if job.get("chain"):
+        lines.append(affi_av.CHAIN_NOTE)
     lines.append(job["commands"][-1])
     ran = False
     if bake_here:
@@ -1298,6 +1345,7 @@ def bake_reference(
     title: str = "",
     logo: str = "",
     bgm: str = "",
+    chain: bool = False,
 ) -> dict[str, Any]:
     """One job. The template's timeline is the cut list. H3 only packs generation.
 
@@ -1413,6 +1461,9 @@ def bake_reference(
                 )
                 cursor = end_s
                 serial += 1
+    if chain:
+        for clip in clips:
+            clip["prompt"] = affi_av.with_chain(str(clip["prompt"]))
     performance = affi_av.performance(
         handle,
         list(item.get("characters") or []),
@@ -1421,6 +1472,8 @@ def bake_reference(
         view["audio"],
         burn=style != "字幕なし",
     )
+    if chain:
+        performance["lora"] = affi_av.lora_rows(chain=True)
     if bgm_text:
         performance["bgm"] = {
             "prompt": "N/A",
@@ -1486,6 +1539,7 @@ def bake_reference(
         "posts": False,
         "seconds_from": "reference-template",
         "commands": [],
+        "chain": bool(chain),
     }
 
 
@@ -1539,6 +1593,7 @@ def _argv(
     aspect: str,
     out_path: Path,
     image: str,
+    chain: bool = False,
 ) -> list[str]:
     args = [
         "python3",
@@ -1558,7 +1613,7 @@ def _argv(
     ]
     if image:
         args.extend(["--image", image])
-    args.extend(affi_av.lora_cli())
+    args.extend(affi_av.lora_cli(chain=chain))
     return args
 
 
@@ -1571,7 +1626,15 @@ def _clip_task_image(clip: Mapping[str, Any], image: str, task: str) -> tuple[st
     return task, image
 
 
-def _command(job_dir: Path, clip: Mapping[str, Any], image: str, aspect: str, task: str) -> str:
+def _command(
+    job_dir: Path,
+    clip: Mapping[str, Any],
+    image: str,
+    aspect: str,
+    task: str,
+    *,
+    chain: bool = False,
+) -> str:
     use_task, use_image = _clip_task_image(clip, image, task)
     args = _argv(
         task=use_task,
@@ -1580,6 +1643,7 @@ def _command(job_dir: Path, clip: Mapping[str, Any], image: str, aspect: str, ta
         aspect=aspect,
         out_path=job_dir / "clips" / f"{clip['id']}.mp4",
         image="" if use_task == "t2va" else use_image,
+        chain=chain,
     )
     return " ".join(shlex.quote(part) for part in args)
 
@@ -1598,8 +1662,10 @@ def write_job(job: dict[str, Any], folder: str | Path) -> Path:
     if job["blocked"]:
         commands.extend(f"# {reason}" for reason in job["blocked"])
     task = str(job.get("task") or "fl2va")
+    chain = bool(job.get("chain"))
     commands.extend(
-        _command(job_dir, clip, str(job.get("image") or ""), str(job["aspect"]), task) for clip in job["clips"]
+        _command(job_dir, clip, str(job.get("image") or ""), str(job["aspect"]), task, chain=chain)
+        for clip in job["clips"]
     )
     job["commands"] = commands
     path = job_dir / "job.json"
@@ -1757,6 +1823,7 @@ def _job_from_pack(
     *,
     stills: Mapping[str, str] | None = None,
     extra: Mapping[str, Any] | None = None,
+    chain: bool = False,
 ) -> dict[str, Any]:
     """Picture clips for one filled sheet. H3 does not get the spoken line."""
     use_stills = stills is not None
@@ -1790,6 +1857,8 @@ def _job_from_pack(
             prompt = structure.picture_prompt(filled, cursor, end_s)
             if request_s > trim_s + 0.05:
                 prompt += f"After {_num(trim_s)} seconds the same frame holds. The mouth stays still.\n"
+            if chain:
+                prompt = affi_av.with_chain(prompt)
             clip = {
                 "id": clip_id,
                 "cut_ids": [str(shot["id"]) for shot in group],
@@ -1868,6 +1937,7 @@ def _job_from_pack(
         job["notes"] = notes
     if extra:
         job.update(extra)
+    job["chain"] = bool(chain)
     return job
 
 
@@ -1880,6 +1950,7 @@ def plan_sheet(
     image: str | None = None,
     bgm: str = "",
     pack_path: str = "",
+    chain: bool = False,
 ) -> dict[str, Any]:
     """One sheet job. An empty path is the 71.552s sheet. H3 gets the picture only."""
     pack = structure.load(structure.pack_file(pack_path))
@@ -1892,7 +1963,7 @@ def plan_sheet(
         reasons.append("静止画のファイルが無い。場所を直すか、欄を空にする。")
     if bgm_text and not Path(bgm_text).is_file():
         reasons.append("曲のファイルが無い。場所を直すか、欄を空にする。")
-    return _job_from_pack(filled, reasons, image_text, bgm_text)
+    return _job_from_pack(filled, reasons, image_text, bgm_text, chain=chain)
 
 
 def _run_sheet(
@@ -1904,6 +1975,8 @@ def _run_sheet(
     bgm: str,
     out_dir: str | Path | None,
     pack_path: str = "",
+    *,
+    chain: bool = False,
 ) -> str:
     try:
         job = plan_sheet(
@@ -1914,6 +1987,7 @@ def _run_sheet(
             image=image,
             bgm=bgm,
             pack_path=pack_path,
+            chain=chain,
         )
     except ValueError as exc:
         return f"止まった: {exc}"
@@ -1931,6 +2005,8 @@ def _run_sheet(
         lines.append(f"範囲 {len(job['clips'])} 本。次は「焼く」。絵のあと「仕上げ」。")
     else:
         lines.append("空の欄があるので焼かない。")
+    if job.get("chain"):
+        lines.append(affi_av.CHAIN_NOTE)
     lines.append("mp4 は焼いていない。投稿していない。")
     return "\n".join(lines)
 
@@ -1986,6 +2062,7 @@ def plan_homage(
     speech: Sequence[Mapping[str, Any]] | None = None,
     turns: Sequence[tuple[float, float, str]] | None = None,
     duration_s: float | None = None,
+    chain: bool = False,
 ) -> dict[str, Any]:
     """Replace person, lines, and place. Cut times stay on the source.
 
@@ -2038,6 +2115,7 @@ def plan_homage(
                 for row in filled["captions"]
             ],
         },
+        chain=chain,
     )
     return job
 
@@ -2060,6 +2138,8 @@ def _run_homage(
     role_images: Mapping[str, str] | None,
     bgm: str,
     out_dir: str | Path | None,
+    *,
+    chain: bool = False,
 ) -> str:
     try:
         job = plan_homage(
@@ -2070,6 +2150,7 @@ def _run_homage(
             lines_text=lines_text,
             role_images=role_images,
             bgm=bgm,
+            chain=chain,
         )
     except ValueError as exc:
         return f"止まった: {exc}"
@@ -2090,6 +2171,8 @@ def _run_homage(
         lines.append(f"範囲 {len(job['clips'])} 本。次は「焼く」。絵のあと「仕上げ」。")
     else:
         lines.append("焼かない。")
+    if job.get("chain"):
+        lines.append(affi_av.CHAIN_NOTE)
     lines.append("mp4 は焼いていない。投稿していない。")
     return "\n".join(lines)
 
@@ -2148,6 +2231,7 @@ def plan_i2v(
     prompt: str,
     duration_s: float | str = 10,
     aspect: str = "9:16",
+    chain: bool = False,
 ) -> dict[str, Any]:
     """One hand-written clip. Empty image is T2VA. A file is I2VA. Does not render."""
     seconds = float(duration_s)
@@ -2165,6 +2249,8 @@ def plan_i2v(
     else:
         ref.reject_likeness(raw)
         prepared = affi_av.t2v_prompt(raw) if task == "t2va" else affi_av.i2v_prompt(raw)
+        if chain:
+            prepared = affi_av.with_chain(prepared)
     if image_text and not Path(image_text).is_file():
         blocked.append("静止画のファイルが無い。場所を直すか、欄を空にする。")
     width, height = (1080, 1920) if aspect == "9:16" else (1920, 1080)
@@ -2184,6 +2270,7 @@ def plan_i2v(
         "posts": False,
         "commands": [],
         "argv": [],
+        "chain": bool(chain),
     }
 
 
@@ -2202,6 +2289,7 @@ def write_i2v(job: dict[str, Any], folder: str | Path) -> Path:
         aspect=str(job["aspect"]),
         out_path=out_path,
         image="" if task == "t2va" else str(job.get("image") or ""),
+        chain=bool(job.get("chain")),
     )
     label = "T2V" if task == "t2va" else "I2V"
     commands = [
@@ -3117,6 +3205,8 @@ def choice_cell() -> str:
             f"秒 = {_py(default_second)} #@param {_param_list(seconds)}",
             f"画面 = {_py(aspects[0])} #@param {_param_list(aspects)}",
             'プロンプト = "" #@param {type:"raw"}',
+            "#@markdown 百裂拳はオフが初期値。オンのときだけ Progressive Acceleration（progressive_acceleration_slider_v1.0.safetensors、modelVersionId 3395787）を強さ 4 で足す。動作は時間とともに速くなる。拳は後のほうほど速い。カードの範囲は -8 から 8。このランナーは 0 未満を受け取らないので、強さは 4 だけ。Turbo 1.0 と Motion Repair 0.6 はそのまま。元動画を再現には載せない。",
+            "百裂拳 = False #@param {type:\"boolean\"}",
             "",
             "import affi_bake",
             "",
@@ -3221,6 +3311,7 @@ def run_cell() -> str:
             '            "polite": globals().get("丁寧の静止画", ""),',
             '            "owner": globals().get("人の静止画", ""),',
             "        },",
+            '        chain=bool(globals().get("百裂拳")),',
             "    )",
             '    if 何をする == "表を見る" and display is not None and Markdown is not None:',
             "        display(Markdown(text))",
@@ -3396,6 +3487,20 @@ else:
                                     from h3_runner.loras import prepare_fast_loras
 
                                     prepare_fast_loras(cache / "loras")
+                        if lines and affi_bake.commands_want_chain("\\n".join(lines)):
+                            if not os.environ.get("CIVITAI_TOKEN") and userdata is not None:
+                                try:
+                                    secret = str(userdata.get("CIVITAI_TOKEN") or "").strip()
+                                except Exception:
+                                    secret = ""
+                                if secret:
+                                    os.environ["CIVITAI_TOKEN"] = secret
+                                    print("CIVITAI_TOKEN を読みました（値は表示しません）")
+                            try:
+                                affi_bake.prepare_chain_lora(cache / "loras")
+                            except SystemExit as exc:
+                                print(f"止まった: {exc}")
+                                lines = []
                         repro = affi_bake.resolve_task(task) == "repro"
                         homage = affi_bake.resolve_task(task) == "homage"
                         made = False
@@ -3710,6 +3815,8 @@ def _intro() -> str:
         "焼いたあとに比べるのは、カットの秒、ショットの順、誰がいつ話すかです。全体の割合は出しません。元のせりふとは比べません。",
         "このメニューは、読み込みが取る `cursor/affi-template-bake-44d6` にこのコードが入ってから Colab で動きます。",
         "",
+        "**百裂拳** は「選ぶ」のチェックです。オフが初期値です。オンのときだけ、Progressive Acceleration（`progressive_acceleration_slider_v1.0.safetensors`、modelVersionId 3395787）を強さ 4 で足します。動作は時間とともに速くなります。拳は後のほうほど速くなります。カードの範囲は -8 から 8 ですが、このランナーは 0 未満を受け取らないので、渡す強さは 4 だけです。Turbo 1.0 と Motion Repair 0.6 はそのままです。元動画を再現には載せません。このチェックも、同じブランチに入ってから Colab に出ます。",
+        "",
         "## 4つの話",
         "",
     ]
@@ -3933,6 +4040,7 @@ def reference_notebook() -> dict[str, Any]:
                     "- 元動画を再現 … 元の mp4 を Ref2VA の参照にする。カットと無音の位置で 5〜14.4 秒の範囲に分ける。読めたせりふは口がその文だけを作る。FL2VA の Turbo は載せない。ここでは焼きません",
                     "- 構成のまま1本 … 構成欄が空なら 71.552秒。ファイルを書くとそのカット。人、動物、セリフ、場所を「この1本」に書く。H3 は絵だけ。声、口、字幕、曲は「仕上げ」。空欄なら焼かない",
                     "- mp4の構成で差し替える … 元動画のカットとせりふの秒を動かさない。人、動物、セリフ、場所だけ替える。せりふがその秒に入らなければ焼く前に止まる。H3 は口の開閉の絵だけ。声、字幕、曲は「仕上げ」。一致はカット、ショット順、誰がいつ話すか。全体の割合は出さない",
+                    "- 百裂拳 … 「選ぶ」がオンのときだけ Progressive Acceleration を強さ 4 で足す。オフなら Turbo と Motion Repair だけ。元動画を再現には載せない",
                     "",
                 ]
             ),
