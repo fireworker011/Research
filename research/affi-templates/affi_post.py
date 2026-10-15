@@ -19,7 +19,6 @@ from pathlib import Path
 from typing import Any, Callable, Mapping, Sequence
 
 import numpy as np
-from gtts import gTTS
 
 import affi_finish
 
@@ -197,6 +196,8 @@ def synth_edge(text: str, role: str, dest: Path, voice: str | None = None) -> No
         subprocess.check_call(["espeak-ng", "-v", name, "-w", str(dest), text])
         return
     if chosen.startswith("gtts:"):
+        from gtts import gTTS
+
         lang = chosen.split(":", 1)[1].strip() or "ja"
         gTTS(text, lang=lang).save(str(dest))
         return
