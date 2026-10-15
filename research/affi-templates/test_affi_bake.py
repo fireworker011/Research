@@ -1321,8 +1321,12 @@ def test_chain_punch_slider_is_off_until_asked(tmp_path: Path) -> None:
     assert affi_av.CHAIN_PROMPT not in plain_blob
     assert affi_av.CHAIN_PROMPT in blob
     assert "One cat" in affi_av.CHAIN_PROMPT and "pet camera" in affi_av.CHAIN_PROMPT
-    assert "sandbag" not in affi_av.CHAIN_PROMPT.lower()
-    assert " man " not in f" {affi_av.CHAIN_PROMPT.lower()} "
+    assert "static medium shot" in affi_av.CHAIN_PROMPT
+    assert "integrated_multimodal_description:" in affi_av.CHAIN_PROMPT
+    assert "non_diegetic_music: N/A" in affi_av.CHAIN_PROMPT
+    low = affi_av.CHAIN_PROMPT.lower()
+    assert "sandbag" not in low and "leather" not in low and "ip_man" not in low and "ip man" not in low
+    assert " man " not in f" {low} "
     assert "砂漠" not in blob and "ひとつ" not in blob and "元の顔" not in blob
     assert "昼の台所" in blob
     assert _CJK.search(affi_av.CHAIN_PROMPT) is None

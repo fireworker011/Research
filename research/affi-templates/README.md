@@ -135,7 +135,7 @@ python3 research/affi-templates/affi_reference.py judge
 4. 字幕。声と同じ文を `captions.json` に書く。型が字幕を焼かない話では焼かない。長いカットを分けたときは、声が出る最初の部分の秒に合わせる。
 5. BGM。婚活のピアノだけ。曲名はコピーしない。曲なし・不明・トレンド・曲名は入力のまま、は足さない。
 
-LoRA は FL2VA の Turbo（強さ 1.0、steps 9）と Motion Repair V2（強さ 0.6）。Larry と Combat は使わない。int8 の経路では LoRA は外れる。百裂拳は「選ぶ」のチェックで、初期値はオフです。オンのときだけ Progressive Acceleration（progressive_acceleration_slider_v1.0.safetensors、Civitai modelVersionId 3395787）を強さ 4 で足す。拳を出すのはネコ。当たるのはペットカメラ。カードの範囲は -8 から 8。このランナーは 0 未満を受け取らないので、渡すのは 4 だけ。オフのシートは Turbo と Motion Repair だけ。元動画を再現には載せない。
+LoRA は FL2VA の Turbo（強さ 1.0、steps 9）と Motion Repair V2（強さ 0.6）。Larry と Combat は使わない。int8 の経路では LoRA は外れる。百裂拳は「選ぶ」のチェックで、初期値はオフです。オンのときだけ Progressive Acceleration（progressive_acceleration_slider_v1.0.safetensors、Civitai modelVersionId 3395787）を強さ 4 で足す。元の文は止まっているミディアムで、左が拳、右が的。拳はネコ。的はペットカメラ。カードの範囲は -8 から 8。このランナーは 0 未満を受け取らないので、渡すのは 4 だけ。オフのシートは Turbo と Motion Repair だけ。元動画を再現には載せない。
 
 「選ぶ」で「自分の文で1本」にすると、「実行」が自分で書いたプロンプトからコマンドを書きます。静止画が空なら `--task t2va` です。ファイルがあれば `--task i2va` で、その画像が最初のコマです。最後のコマは渡しません。mp4 は同じノートの一番下「焼く」で焼きます。別のノートは開きません。焼くはオフが初期値です。オンにすると残りの範囲を続けて焼いて、そろったら1本につなぎます。最初の1本だけはオフが初期値です。重みも、焼いた mp4 も、そのときマウントしたアカウントのマイドライブです。重みのフォルダは `h3-weights`、mp4 は `affi-bake` です。無いときだけ「重みが無いとき落とす」を入れます。プレビューは 144.1GB です。オフなら落としません。投稿しません。
 

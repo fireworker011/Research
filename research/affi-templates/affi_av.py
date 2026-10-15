@@ -38,15 +38,26 @@ CHAIN_FILENAME = "progressive_acceleration_slider_v1.0.safetensors"
 CHAIN_SCALE = 4.0
 CHAIN_VERSION = 3395787
 CHAIN_LABEL = "百裂拳"
+# The source prompt is one static medium shot: the fighter on the left, the target on the right,
+# chain punches that accelerate. The fighter is a cat. The target is a pet camera.
 CHAIN_PROMPT = (
-    "One cat throws a rapid chain of punches into one pet camera. "
-    "Each punch is faster than the one before, with motion trails and afterimages. "
-    "The punches accelerate smoothly over this clip."
+    "integrated_multimodal_description: [Shot 1] Live-action. "
+    "The camera holds a static medium shot for the whole clip. "
+    "One cat on the left throws a rapid chain of punches into one pet camera on the right. "
+    "The cat's forepaws become a blur. Each punch is faster than the one before, "
+    "with motion trails and afterimages. "
+    "The pet camera shakes under the impacts. "
+    "The whole clip is this punching action. "
+    "No one speaks. Mouths do not form words. No writing. No logo.\n"
+    "\n"
+    "overall_soundscape: Impacts land on the pet camera in a continuous rapid series, without a pause.\n"
+    "\n"
+    "non_diegetic_music: N/A"
 )
 CHAIN_NOTE = (
     "百裂拳を載せる。progressive_acceleration_slider_v1.0.safetensors の強さは 4。"
     "Turbo 1.0 と Motion Repair 0.6 はそのまま。"
-    "拳を出すのはネコ。当たるのはペットカメラ。"
+    "カメラは元の文のまま止まっている。左のネコが右のペットカメラに拳を出す。"
     "拳は後のほうほど速い。"
 )
 PLACEHOLDER_LINE = "台詞は入力"
