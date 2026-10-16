@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import inspect
+import io
 import json
 import re
 import sys
@@ -28,6 +29,7 @@ from h3_runner.loras import (  # noqa: E402
     inspect_lora_file,
     parse_lora_args,
     read_safetensors_header,
+    _download_civitai,
     prepare_fast_loras,
     reject_pruned_adaln,
 )
@@ -577,6 +579,56 @@ class LoraPrepareTest(unittest.TestCase):
             self.assertEqual([path.name for path in written], [TURBO_FILENAME, REPAIR_FILENAME])
             self.assertEqual(calls, [(TURBO_REPO, TURBO_FILENAME), (REPAIR_REPO, REPAIR_FILENAME)])
             self.assertFalse((root / COMBAT_FILENAME).exists())
+
+    def test_civitai_download_sends_a_browser_user_agent(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            dest = Path(tmp) / "slider.safetensors"
+            good = Path(tmp) / "good.safetensors"
+            _native_lora(good)
+            payload = good.read_bytes()
+            seen: dict[str, str] = {}
+
+            class Response:
+                headers = {"Content-Type": "application/octet-stream"}
+
+                def read(self, _n=-1):
+                    if seen.get("read"):
+                        return b""
+                    seen["read"] = "1"
+                    return payload
+
+                def close(self) -> None:
+                    return None
+
+                def geturl(self) -> str:
+                    return "https://civitai.com/api/download/models/3395787"
+
+            def opener(request):
+                seen["ua"] = request.get_header("User-agent") or ""
+                return Response()
+
+            _download_civitai(3395787, dest, "百裂拳", "present", opener)
+            self.assertIn("Mozilla", seen["ua"])
+            self.assertEqual(dest.read_bytes(), payload)
+
+    def test_civitai_cloudflare_1010_is_not_a_token_error(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            dest = Path(tmp) / "slider.safetensors"
+
+            def opener(request):
+                raise urllib.error.HTTPError(
+                    request.full_url,
+                    403,
+                    "Forbidden",
+                    None,
+                    io.BytesIO(b"error code: 1010"),
+                )
+
+            with self.assertRaises(SystemExit) as caught:
+                _download_civitai(3395787, dest, "百裂拳", "present", opener)
+            message = str(caught.exception)
+            self.assertIn("1010", message)
+            self.assertNotIn("CIVITAI_TOKEN ではダウンロードできなかった", message)
 
     def test_civitai_403_with_token_stops(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:

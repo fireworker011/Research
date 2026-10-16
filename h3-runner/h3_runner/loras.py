@@ -245,18 +245,40 @@ def _download_hf(repo: str, filename: str, dest: Path, hub_download) -> None:
     print(f"書いた: {dest} ({dest.stat().st_size} bytes)", flush=True)
 
 
+_CIVITAI_UA = (
+    "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 "
+    "(KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36"
+)
+
+
+def _http_snippet(exc: urllib.error.HTTPError) -> str:
+    try:
+        raw = exc.read(200)
+    except Exception:
+        return ""
+    if not raw:
+        return ""
+    return raw.decode("utf-8", "replace")
+
+
 def _download_civitai(version_id: int, dest: Path, label: str, token: str, opener) -> None:
     if _already(dest):
         print(f"飛ばす: {dest.name} は既にある ({dest.stat().st_size} bytes)", flush=True)
         return
     url = f"https://civitai.com/api/download/models/{version_id}"
-    request = urllib.request.Request(url)
+    request = urllib.request.Request(url, headers={"User-Agent": _CIVITAI_UA})
     if token:
         request.add_header("Authorization", f"Bearer {token}")
     print(f"落とす: Civitai {label} version {version_id} → {dest}", flush=True)
     try:
         response = opener(request)
     except urllib.error.HTTPError as exc:
+        snippet = _http_snippet(exc)
+        if exc.code == 403 and "1010" in snippet:
+            raise SystemExit(
+                f"Civitai {label}（modelVersionId {version_id}）が 403。"
+                "ダウンロードの前で止まった（1010）。このセルからやり直す。"
+            )
         if exc.code == 403 and not token:
             raise SystemExit(
                 f"Civitai {label}（modelVersionId {version_id}）が 403。"
@@ -269,6 +291,17 @@ def _download_civitai(version_id: int, dest: Path, label: str, token: str, opene
                 "CIVITAI_TOKEN ではダウンロードできなかった。トークンを確認して、このセルからやり直す。"
             )
         raise
+    final = str(getattr(response, "geturl", lambda: "")() or "")
+    headers = getattr(response, "headers", {}) or {}
+    ctype = str(headers.get("Content-Type") or headers.get("content-type") or "")
+    if "text/html" in ctype.lower() or "auth.civitai.com" in final:
+        close = getattr(response, "close", None)
+        if close is not None:
+            close()
+        raise SystemExit(
+            f"Civitai {label}（modelVersionId {version_id}）がファイルを返さなかった。"
+            "CIVITAI_TOKEN を確認して、このセルからやり直す。"
+        )
     dest.parent.mkdir(parents=True, exist_ok=True)
     partial = dest.with_name(dest.name + ".partial")
     try:
