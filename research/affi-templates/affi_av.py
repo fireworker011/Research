@@ -45,9 +45,13 @@ CHAIN_SOURCE_URL = (
     "https://drive.google.com/file/d/1arPpEWTu5XDFPcDn_eO3zSlJHbXgVKDD/view"
 )
 CHAIN_SOURCE_DURATION_S = 5.167
-# The written clip is 8 seconds. Punches run until about 7.5, then the cat settles.
-# 8 * 24 = 192 frames, which is 17 * 11 + 5, so H3 accepts it as written.
-CHAIN_DURATION_S = 8.0
+# The punch span is the measured file: 5.167s = 124 frames.
+# It starts at 2.50s (frame 60) and ends at 7.667s (frame 184).
+# The clip ends at frame 209 so the cat can return to the opening curl.
+# 209 = 17 * 12 + 5, so H3 accepts 8.708s as written.
+CHAIN_PUNCH_START_S = 2.5
+CHAIN_PUNCH_END_S = 2.5 + 5.167
+CHAIN_DURATION_S = 209 / 24
 CHAIN_WIDTH = 1376
 CHAIN_HEIGHT = 768
 CHAIN_FPS = 24
@@ -55,11 +59,11 @@ CHAIN_FRAMES = 124
 CHAIN_PROMPT = (
     "integrated_multimodal_description: [Shot 1] Live-action. A living room. "
     "Static medium shot, wooden floor, white pet camera with wooden top and front lens on the right. "
-    "At the start the blue lamp on the camera is lit. "
+    "At 0.00 seconds the blue lamp on the camera is lit. "
     "One orange tabby cat lies tightly curled on its side on the floor to the left, "
     "head tucked into its body, eyes closed, paws drawn in, completely still. "
     "One ear stays turned toward the pet camera. "
-    "At about 2.5 seconds the blue lamp goes out. "
+    "At 2.50 seconds the blue lamp goes out. "
     "The cat opens its eyes and looks straight at the dark lamp, "
     "then glances once across the empty living room. "
     "Only then does it lift its head, uncurl its spine, plant both forepaws on the floor, "
@@ -67,18 +71,19 @@ CHAIN_PROMPT = (
     "It then throws a rapid continuous chain of punches with both forepaws into the pet camera. "
     "The paws become a blur with motion trails and afterimages. Each punch is faster than the last. "
     "The camera shakes and rocks under the impacts. "
-    "The punching continues without pause until about 7.5 seconds. Then the blue lamp lights again. "
+    "The punching continues without pause until 7.667 seconds. At 7.667 seconds the blue lamp lights again. "
     "The cat freezes mid-punch, both forepaws hanging in the air, and its eyes snap to the lit lamp. "
     "It drops its shoulders, folds its forelegs under its chest, "
     "tucks its head down, and hurries back into the same tight curl it held at the start, "
     "one ear turned toward the pet camera again, paws drawn in, "
-    "and settles motionless on the floor with eyes closed until the end. "
+    "and settles motionless on the floor with eyes closed until 8.708 seconds. "
     "No one speaks. Mouths do not form words. No writing. No logo.\n"
     "\n"
     "overall_soundscape: Soft quiet room tone while the lamp is on and the cat sleeps. "
     "When the lamp goes out, soft fabric and floor contact sounds as the cat rises, "
-    "then a continuous rapid series of dull thuds and impacts land on the plastic camera body with no pause. "
-    "The impacts stop the moment the lamp lights again, followed by a short held silence, "
+    "then from 2.50 seconds until 7.667 seconds a continuous rapid series of dull thuds and impacts "
+    "land on the plastic camera body with no pause. "
+    "The impacts stop at 7.667 seconds, followed by a short held silence, "
     "then soft settling sounds as the cat curls back up, "
     "then quiet returns.\n"
     "\n"
@@ -89,7 +94,8 @@ CHAIN_NOTE = (
     "Turbo 1.0 と Motion Repair 0.6 はそのまま。"
     "場所はリビング。茶トラは最初からカメラへ耳を向けて丸くなっている。"
     "青いランプが消えたのを見て、部屋を一度見てから起きて白いペットカメラに拳を出す。"
-    "ランプが点いた瞬間に固まって、最初と同じ丸さに戻る。書くのは8秒。"
+    "拳は測った5.167秒で、2.50秒から7.667秒まで。"
+    "ランプが点いた瞬間に固まって、8.708秒まで最初と同じ丸さに戻る。"
 )
 PLACEHOLDER_LINE = "台詞は入力"
 I2VA_HEADER = (
