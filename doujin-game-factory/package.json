@@ -1,0 +1,16 @@
+{
+  "name": "doujin-game-factory",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Phone-first IR pipeline for adult doujin ADV. Wolf RPG is an optional compile target, not the runtime.",
+  "type": "commonjs",
+  "scripts": {
+    "test": "node --test test/*.test.js",
+    "check": "node --check src/cli.js && node --check src/compliance.js && node --check src/finance.js && node --check src/generate.js && node --check src/emit-woditor.js && node --check src/emit-html.js && node --check src/emit-event-code.js",
+    "generate": "node src/cli.js generate --seed data/seeds/sample-adult-adv.json",
+    "preview": "node src/cli.js preview --in output/ir/game.json",
+    "woditor": "node src/cli.js woditor --in output/ir/game.json",
+    "finance": "node src/cli.js finance --price 2200 --copies 50 --works 3",
+    "gate": "node src/cli.js gate --price 2200 --copies 0 --works 0"
+  }
+}
