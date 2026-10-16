@@ -58,8 +58,10 @@ CHAIN_PROMPT = (
     "At the start the blue lamp on the camera is lit. "
     "One orange tabby cat lies tightly curled on its side on the floor to the left, "
     "head tucked into its body, eyes closed, paws drawn in, completely still. "
+    "One ear stays turned toward the pet camera. "
     "At about 2.5 seconds the blue lamp goes out. "
-    "The cat opens its eyes and looks straight at the dark lamp. "
+    "The cat opens its eyes and looks straight at the dark lamp, "
+    "then glances once across the empty living room. "
     "Only then does it lift its head, uncurl its spine, plant both forepaws on the floor, "
     "push its body up, and rise onto all fours facing the camera. "
     "It then throws a rapid continuous chain of punches with both forepaws into the pet camera. "
@@ -68,7 +70,8 @@ CHAIN_PROMPT = (
     "The punching continues without pause until about 7.5 seconds. Then the blue lamp lights again. "
     "The cat freezes mid-punch, both forepaws hanging in the air, and its eyes snap to the lit lamp. "
     "It drops its shoulders, folds its forelegs under its chest, "
-    "tucks its head down, curls its spine back into a tight ball, draws its paws in, "
+    "tucks its head down, and hurries back into the same tight curl it held at the start, "
+    "one ear turned toward the pet camera again, paws drawn in, "
     "and settles motionless on the floor with eyes closed until the end. "
     "No one speaks. Mouths do not form words. No writing. No logo.\n"
     "\n"
@@ -84,8 +87,9 @@ CHAIN_PROMPT = (
 CHAIN_NOTE = (
     "百裂拳を載せる。progressive_acceleration_slider_v1.0.safetensors の強さは 4。"
     "Turbo 1.0 と Motion Repair 0.6 はそのまま。"
-    "場所はリビング。茶トラは青いランプが消えたのを見てから起きて白いペットカメラに拳を出す。"
-    "ランプが点いた瞬間に固まって、また丸くなる。書くのは8秒。"
+    "場所はリビング。茶トラは最初からカメラへ耳を向けて丸くなっている。"
+    "青いランプが消えたのを見て、部屋を一度見てから起きて白いペットカメラに拳を出す。"
+    "ランプが点いた瞬間に固まって、最初と同じ丸さに戻る。書くのは8秒。"
 )
 PLACEHOLDER_LINE = "台詞は入力"
 I2VA_HEADER = (

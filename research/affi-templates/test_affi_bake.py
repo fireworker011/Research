@@ -1330,6 +1330,9 @@ def test_chain_punch_slider_is_off_until_asked(tmp_path: Path) -> None:
     assert "living room" in affi_av.CHAIN_PROMPT
     assert "about 2.5 seconds" in affi_av.CHAIN_PROMPT and "about 7.5 seconds" in affi_av.CHAIN_PROMPT
     assert "looks straight at the dark lamp" in affi_av.CHAIN_PROMPT
+    assert "One ear stays turned toward the pet camera" in affi_av.CHAIN_PROMPT
+    assert "glances once across the empty living room" in affi_av.CHAIN_PROMPT
+    assert "same tight curl it held at the start" in affi_av.CHAIN_PROMPT
     assert "freezes mid-punch" in affi_av.CHAIN_PROMPT
     assert "static medium shot" in affi_av.CHAIN_PROMPT.lower()
     assert "integrated_multimodal_description:" in affi_av.CHAIN_PROMPT
