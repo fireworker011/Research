@@ -1328,7 +1328,8 @@ def test_chain_punch_slider_is_off_until_asked(tmp_path: Path) -> None:
     assert affi_av.CHAIN_PROMPT in blob
     assert "orange tabby cat" in affi_av.CHAIN_PROMPT and "pet camera" in affi_av.CHAIN_PROMPT
     assert "living room" in affi_av.CHAIN_PROMPT
-    assert "about 2.5 seconds" in affi_av.CHAIN_PROMPT and "about 7.5 seconds" in affi_av.CHAIN_PROMPT
+    assert "2.50 seconds" in affi_av.CHAIN_PROMPT and "7.667 seconds" in affi_av.CHAIN_PROMPT
+    assert "8.708 seconds" in affi_av.CHAIN_PROMPT
     assert "looks straight at the dark lamp" in affi_av.CHAIN_PROMPT
     assert "One ear stays turned toward the pet camera" in affi_av.CHAIN_PROMPT
     assert "glances once across the empty living room" in affi_av.CHAIN_PROMPT
@@ -1371,12 +1372,14 @@ def test_chain_punch_slider_is_off_until_asked(tmp_path: Path) -> None:
     assert affi_av.CHAIN_SOURCE_NAME in shown
     assert affi_av.CHAIN_SOURCE_ID in shown
     assert "5.167秒" in shown
-    assert "8秒" in shown
+    assert "8.708秒" in shown
+    assert "2.5秒" in shown and "7.667秒" in shown
     assert "リビング" in shown
     assert "せりふは読んでいない" in shown
     assert "中のカットは無い" in shown
     job = bake.plan_chain()
-    assert job["duration_s"] == 8.0
+    assert job["duration_s"] == 209 / 24
+    assert job["clips"][0]["request_s"] == 209 / 24
     assert job["aspect"] == "16:9"
     assert job["task"] == "t2va"
     assert job["clips"][0]["image"] == ""
