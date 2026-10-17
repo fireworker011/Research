@@ -37,6 +37,11 @@ TURBO_VIDEO_SHIFT = 6
 CHAIN_FILENAME = "progressive_acceleration_slider_v1.0.safetensors"
 CHAIN_SCALE = 4.0
 CHAIN_VERSION = 3395787
+# Naomi uploaded this file to Drive after Civitai returned 403.
+CHAIN_DRIVE_ID = "1kYtEc59-lCLGfCq6Gfm_M3VXEjZFMWtW"
+CHAIN_DRIVE_URL = (
+    "https://drive.google.com/file/d/1kYtEc59-lCLGfCq6Gfm_M3VXEjZFMWtW/view"
+)
 CHAIN_LABEL = "百裂拳"
 # Drive file 越来越快1k.mp4. ffprobe: 5.167s, 1376x768, 24fps, 124 frames. No interior cut.
 CHAIN_SOURCE_ID = "1arPpEWTu5XDFPcDn_eO3zSlJHbXgVKDD"

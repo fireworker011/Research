@@ -1300,6 +1300,19 @@ def test_homage_stops_before_bake_when_the_line_does_not_fit(tmp_path: Path) -> 
     assert affi_av.CHAIN_FILENAME not in written.read_text(encoding="utf-8")
 
 
+def test_chain_slider_is_copied_from_drive_before_civitai(tmp_path: Path, monkeypatch) -> None:
+    name = affi_av.CHAIN_FILENAME
+    root = tmp_path / "MyDrive"
+    root.mkdir()
+    (root / name).write_bytes(b"slider-bytes")
+    assert bake._find_chain_drive_file([root]) == root / name
+    dest = tmp_path / "loras" / name
+    monkeypatch.setattr(bake, "_find_chain_drive_file", lambda _roots=None: root / name)
+    assert bake.chain_lora_from_drive(dest) is True
+    assert dest.read_bytes() == b"slider-bytes"
+    assert bake.chain_lora_from_drive(dest) is True
+
+
 def test_chain_punch_slider_is_off_until_asked(tmp_path: Path) -> None:
     speech = [
         {"start_s": 0.2, "end_s": 1.0, "speaker": "A", "text": "砂漠のオアシスでナプキン"},
