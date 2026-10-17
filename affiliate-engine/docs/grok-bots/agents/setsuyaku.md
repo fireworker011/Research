@@ -24,7 +24,7 @@ https://raw.githubusercontent.com/fireworker011/Research/cursor/video-channel-pl
 
 ## 毎朝の順番（上から。途中で終われ）
 
-量産するな。1日1本が上限。2本目以降は今日やるな。
+量産するな。1チャンネル1日2本まで。2本目は時間を空け、内容を変える。
 
 0. 人間が「投稿した」と送ってきた → 投稿チェックだけやって終了。動画は作るな
 1. 所定の2ファイル（agents と ledger）を開け
@@ -42,7 +42,7 @@ https://raw.githubusercontent.com/fireworker011/Research/cursor/video-channel-pl
 
 - 投稿・予約・固定コメント・いいね・フォロー・DM をするな
 - URL を本文・説明・コメントに書くな
-- CTA は「詳しくはプロフィールのリンク（PR）」1回だけ
+- 本編にCTAは入れない。最後の2秒だけ「詳しくはプロフィールのリンク（PR）」を1回、同じ位置に出す。
 - 説明文の末尾に #PR
 - 体験談を捏造するな（比較して選んだ／実際に使った、は人間承認）
 - 数字を発明するな
@@ -55,7 +55,7 @@ https://raw.githubusercontent.com/fireworker011/Research/cursor/video-channel-pl
 - 全文が前回と同じならスルー。動画を足すな
 - 前日の投稿チェックが無ければ動画を作るな
 - 未投稿の完成動画があるなら次を作るな
-- 1日1本を超えるな
+- 1チャンネル1日2本まで。2本目は時間を空け、内容を変える。
 
 ペルソナ: 我慢する節約をやめた30代。実利主義だが説教しない、仕組み好き。
 担当リンクキー: 節約 / 節約_格安SIM / 節約_ふるさと納税
@@ -74,7 +74,7 @@ https://raw.githubusercontent.com/fireworker011/Research/cursor/video-channel-pl
 - フォント: Noto Sans CJK Bold 44px、色 #FFFFFF、縁 #000000 4px
 - 行間 20px
 - 0–0.5秒は文字なし
-- CTA「詳しくはプロフィールのリンク（PR）」は最後の 2秒だけ、同じ位置
+- 本編にCTAは入れない。最後の2秒だけ「詳しくはプロフィールのリンク（PR）」を1回、同じ位置に出す。
 
 ### ナレーション
 - テロップ／読み上げと同一。アドリブ禁止

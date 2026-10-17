@@ -29,6 +29,8 @@ const RECIPE_ARCHIVE_DIR = path.join(ROOT, 'docs', 'grok-bots', 'archive', 'reci
 const PACKET_OUT = path.join(OUTPUT_DIR, 'video', 'packets');
 const GITHUB_REPO = process.env.GITHUB_REPOSITORY || 'fireworker011/Research';
 const GITHUB_REF = process.env.GROK_BOT_REF || 'cursor/video-channel-playbook-e013';
+const POST_CAP = '1チャンネル1日2本まで。2本目は時間を空け、内容を変える。';
+const CTA_RULE = '本編にCTAは入れない。最後の2秒だけ「詳しくはプロフィールのリンク（PR）」を1回、同じ位置に出す。';
 
 function loadCatalog() {
   const raw = JSON.parse(fs.readFileSync(DATA_PATH, 'utf-8'));
@@ -327,7 +329,7 @@ function renderProductionSection(prod) {
     `- フォント: ${t.font} ${t.size_px}px、色 ${t.color}、縁 ${t.stroke} ${t.stroke_px}px`,
     `- 行間 ${t.line_gap_px}px`,
     `- 0–${prod.silent_head_sec}秒は文字なし`,
-    `- CTA「${PROFILE_CTA}」は最後の ${prod.cta_last_sec}秒だけ、同じ位置`,
+    `- ${CTA_RULE}`,
     '',
     '### ナレーション',
     `- ${prod.narration.source}`,
@@ -377,7 +379,7 @@ function renderDailyOrder(genre, entry) {
   return [
     '## 毎朝の順番（上から。途中で終われ）',
     '',
-    '量産するな。1日1本が上限。2本目以降は今日やるな。',
+    `量産するな。${POST_CAP}`,
     '',
     '0. 人間が「投稿した」と送ってきた → 投稿チェックだけやって終了。動画は作るな',
     '1. 所定の2ファイル（agents と ledger）を開け',
@@ -602,7 +604,7 @@ ${renderDailyOrder(genre, entry)}
 
 - 投稿・予約・固定コメント・いいね・フォロー・DM をするな
 - URL を本文・説明・コメントに書くな
-- CTA は「${catalog.cta}」1回だけ
+- ${CTA_RULE}
 - 説明文の末尾に #PR
 - 体験談を捏造するな（比較して選んだ／実際に使った、は人間承認）
 - 数字を発明するな
@@ -615,7 +617,7 @@ ${renderDailyOrder(genre, entry)}
 - 全文が前回と同じならスルー。動画を足すな
 - 前日の投稿チェックが無ければ動画を作るな
 - 未投稿の完成動画があるなら次を作るな
-- 1日1本を超えるな
+- ${POST_CAP}
 
 ペルソナ: ${genre.persona}
 担当リンクキー: ${genre.link_keys.join(' / ')}
@@ -667,10 +669,10 @@ function wakeText(genre) {
     '',
     '例外: 私が「投稿した」と送ったら、全文が同じでも投稿チェックだけやれ。動画は作るな。',
     '',
-    '動画を作ってよいのは、台帳が許可し、未投稿がなく、直近投稿のチェックが済んでいるときだけ。1日1本。前日の投稿チェックが無ければ作るな。',
+    `動画を作ってよいのは、台帳が許可し、未投稿がなく、直近投稿のチェックが済んでいるときだけ。${POST_CAP}前日の投稿チェックが無ければ作るな。`,
     '',
     '投稿するな。予約するな。いいね・フォロー・DMするな。URLを動画の本文・説明・コメントに書くな。',
-    'CTAは「詳しくはプロフィールのリンク（PR）」1回だけ。説明の末尾に #PR。',
+    `${CTA_RULE}説明の末尾に #PR。`,
     ''
   ].join('\n');
 }
@@ -938,6 +940,23 @@ function selfTest() {
   const petArchive = fs.readFileSync(path.join(RECIPE_ARCHIVE_DIR, 'pet.md'), 'utf-8');
   if (!petArchive.includes('pet_20260729_01')) throw new Error('pet archive missing waiting id');
   if (!petArchive.includes('リプで教えてください')) throw new Error('pet archive missing reply line');
+  if (!pet.includes(POST_CAP)) throw new Error('pet agent missing post cap');
+  if (!pet.includes(CTA_RULE)) throw new Error('pet agent missing CTA rule');
+  if (pet.includes('1日1本') || pet.includes('2本目以降は今日やるな')) {
+    throw new Error('pet agent still has the old post cap');
+  }
+  if (!wakeSample.includes(POST_CAP)) throw new Error('wake text missing post cap');
+  if (!wakeSample.includes('台帳が許可し、未投稿がなく、直近投稿のチェックが済んでいるときだけ')) {
+    throw new Error('wake text dropped the make conditions');
+  }
+  if (!wakeSample.includes('前日の投稿チェックが無ければ作るな')) throw new Error('wake text dropped yesterday check');
+  if (!wakeSample.includes('予約するな')) throw new Error('wake text dropped the reservation ban');
+  if (!wakeSample.includes('#PR')) throw new Error('wake text dropped PR mark');
+  if (!phone.includes(POST_CAP)) throw new Error('PHONE.md missing post cap');
+  if (!ledgerPet.includes(POST_CAP)) throw new Error('pet ledger missing post cap');
+  if (!ledgerPet.includes('前日の投稿チェックがなければ動画を作るな。未投稿があるなら作るな。')) {
+    throw new Error('pet ledger dropped the other gates');
+  }
   if (written.length < 20) throw new Error(`expected many agent files, got ${written.length}`);
   console.log(`self-test ok: ${catalog.genres.length} agents, ${seenId.size} packets, ${kataCatalog.katas.length} katas, no mass-produce`);
 }
