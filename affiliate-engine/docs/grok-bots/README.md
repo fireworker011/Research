@@ -19,4 +19,4 @@
 台帳: `data/video_ledger.json`  
 生成コマンド: `cd affiliate-engine && node src/genre-video-gen.js --write-agents`
 
-旧 `launch-keys/LIVE-video-*.md` は機能分割の下書き。Grok Bot 上では作らなくてよい。中身は各 `agents/ジャンル_*.md` に入った。
+旧 `launch-keys/` の下書きは [archive/launch-keys/](archive/launch-keys/) にある。Grok Bot 上では作らなくてよい。中身は各 `agents/<id>.md` に入っている。`agents/ジャンル_*.md` は `<id>.md` と同一だったので、正本へのリンクだけにした。今は作らないレシピの本文は [archive/recipes/](archive/recipes/) にある。

@@ -25,9 +25,12 @@ const LEDGER_PATH = path.join(ROOT, 'data', 'video_ledger.json');
 const AGENT_DIR = path.join(ROOT, 'docs', 'grok-bots', 'agents');
 const WAKE_DIR = path.join(ROOT, 'docs', 'grok-bots', 'wake');
 const LEDGER_DIR = path.join(ROOT, 'docs', 'grok-bots', 'ledger');
+const RECIPE_ARCHIVE_DIR = path.join(ROOT, 'docs', 'grok-bots', 'archive', 'recipes');
 const PACKET_OUT = path.join(OUTPUT_DIR, 'video', 'packets');
 const GITHUB_REPO = process.env.GITHUB_REPOSITORY || 'fireworker011/Research';
 const GITHUB_REF = process.env.GROK_BOT_REF || 'cursor/video-channel-playbook-e013';
+const POST_CAP = '1チャンネル1日2本まで。2本目は時間を空け、内容を変える。';
+const CTA_RULE = '本編にCTAは入れない。最後の2秒だけ「詳しくはプロフィールのリンク（PR）」を1回、同じ位置に出す。';
 
 function loadCatalog() {
   const raw = JSON.parse(fs.readFileSync(DATA_PATH, 'utf-8'));
@@ -326,7 +329,7 @@ function renderProductionSection(prod) {
     `- フォント: ${t.font} ${t.size_px}px、色 ${t.color}、縁 ${t.stroke} ${t.stroke_px}px`,
     `- 行間 ${t.line_gap_px}px`,
     `- 0–${prod.silent_head_sec}秒は文字なし`,
-    `- CTA「${PROFILE_CTA}」は最後の ${prod.cta_last_sec}秒だけ、同じ位置`,
+    `- ${CTA_RULE}`,
     '',
     '### ナレーション',
     `- ${prod.narration.source}`,
@@ -376,7 +379,7 @@ function renderDailyOrder(genre, entry) {
   return [
     '## 毎朝の順番（上から。途中で終われ）',
     '',
-    '量産するな。1日1本が上限。2本目以降は今日やるな。',
+    `量産するな。${POST_CAP}`,
     '',
     '0. 人間が「投稿した」と送ってきた → 投稿チェックだけやって終了。動画は作るな',
     '1. 所定の2ファイル（agents と ledger）を開け',
@@ -462,26 +465,128 @@ function renderLedgerMd(genre, entry, ledger) {
   ].join('\n');
 }
 
-function renderAgent(catalog, genre, kataCatalog, prod, ledger) {
-  const entry = genreLedger(ledger, genre);
+function packetGroups(genre, entry) {
   const experiment = (genre.packets || []).filter((p) => p.phase === 'experiment');
   const ready = (genre.packets || []).filter((p) => p.phase !== 'experiment' && p.phase !== 'after_experiment');
   const after = (genre.packets || []).filter((p) => p.phase === 'after_experiment');
   const now = genre.experiment_lock ? experiment : [...experiment, ...ready];
   const later = genre.experiment_lock ? [...ready, ...after] : after;
   const makeId = canMakeVideo(entry) ? entry.next_id : null;
+  const current = [];
+  const waitingNow = [];
+  for (const packet of now) {
+    if (makeId && packet.id === makeId) current.push(packet);
+    else waitingNow.push(packet);
+  }
+  return { current, waitingNow, later };
+}
 
-  const blocks = (list) =>
-    list
-      .map((packet) => {
-        const status = makeId && packet.id === makeId ? 'make' : 'wait';
-        return renderThrow(buildPacket(catalog, genre, packet, kataCatalog, prod), status);
-      })
+function renderRecipeIndex(built) {
+  const run = built.phase === 'experiment' ? 'production' : built.phase === 'after_experiment' ? 'parked' : 'ready';
+  return [
+    `宛先: ${built.bot_name}`,
+    'from: manager',
+    `run: ${run}`,
+    'post: false',
+    '',
+    '条件を全部満たすまで、このレシピで動画を作るな。IMAGINE_THROW は条件クリア時だけ Grok Imagine に投げろ。文を足すな。投稿するな。',
+    '',
+    `- id: ${built.id}`,
+    '- status: 待つ。今は作るな',
+    `- kata: ${built.kata}（${built.kata_name}）`,
+    `- genre: ${built.genre}`,
+    `- link_key: ${built.link_key || 'なし（認知・観察）'}`,
+    `- phase: ${built.phase}`,
+    `- output: ${built.output}`,
+    '- aspect: 9:16',
+    `- duration_sec: ${built.timing.duration_sec}`,
+    '- duration: レシピの完成尺（下のテロップ表）',
+    `- imagine_clips: ${built.timing.clip_count} × 5秒`
+  ].join('\n');
+}
+
+function renderNameStub(genre) {
+  const agentRel = agentRepoPath(genre);
+  const ledgerRel = ledgerRepoPath(genre);
+  return [
+    `# ${genre.bot_name}`,
+    '',
+    `このファイルは \`${genre.id}.md\` と一字一句同じ複製だった。ルールは正本に残してあり、ここには繰り返さない。`,
+    '',
+    `正本: [${genre.id}.md](${genre.id}.md)`,
+    '',
+    githubRaw(agentRel),
+    '',
+    `台帳: [../ledger/${genre.id}.md](../ledger/${genre.id}.md)`,
+    '',
+    githubRaw(ledgerRel),
+    ''
+  ].join('\n');
+}
+
+function renderArchiveRecipes(genre, waitingNow, later, catalog, kataCatalog, prod) {
+  const parts = waitingNow.map((packet) =>
+    renderThrow(buildPacket(catalog, genre, packet, kataCatalog, prod), 'wait')
+  );
+  if (later.length) {
+    const laterBody = later
+      .map((packet) => renderThrow(buildPacket(catalog, genre, packet, kataCatalog, prod), 'wait'))
       .join('\n---\n\n');
+    parts.push(`## 後で使うレシピ（今は生成するな）\n\n${laterBody}`);
+  }
+  return [
+    `# ${genre.bot_name} の待つレシピ`,
+    '',
+    `正本の毎朝ファイル \`agents/${genre.id}.md\` から移した。文言は移す前と同じ。status が「今の1本」ではない。`,
+    '',
+    parts.join('\n---\n\n').trimEnd(),
+    ''
+  ].join('\n');
+}
+
+function renderAgent(catalog, genre, kataCatalog, prod, ledger) {
+  const entry = genreLedger(ledger, genre);
+  const { current, waitingNow, later } = packetGroups(genre, entry);
 
   const lockLine = genre.experiment_lock
     ? '実験3本は1本ずつ。after_experiment は出すな。投稿するな。型は visual_question と aruaru3 だけ。'
     : 'チャンネル未開設なら動画を作るな。準備レシピの量産禁止。投稿するな。';
+
+  const currentSection = current.length
+    ? [
+        '## 今使うレシピ',
+        '',
+        current
+          .map((packet) => renderThrow(buildPacket(catalog, genre, packet, kataCatalog, prod), 'make'))
+          .join('\n---\n\n')
+          .trimEnd()
+      ].join('\n')
+    : '';
+
+  const waiting = [...waitingNow, ...later];
+  let waitSection = '';
+  if (waiting.length) {
+    const indexes = waitingNow.map((packet) =>
+      renderRecipeIndex(buildPacket(catalog, genre, packet, kataCatalog, prod))
+    );
+    if (later.length) {
+      indexes.push('## 後で使うレシピ（今は生成するな）');
+      for (const packet of later) {
+        indexes.push(renderRecipeIndex(buildPacket(catalog, genre, packet, kataCatalog, prod)));
+      }
+    }
+    waitSection = [
+      '## 待つレシピ',
+      '',
+      `status が「今の1本」ではないレシピの本文（テロップ表、IMAGINE_THROW、テロップ／読み上げ、YouTube説明文）は [archive/recipes/${genre.id}.md](../archive/recipes/${genre.id}.md) に移した。文言は移す前と同じ。id と status はここにも残す。`,
+      '',
+      '条件を全部満たすまで、このレシピで動画を作るな。IMAGINE_THROW は条件クリア時だけ Grok Imagine に投げろ。文を足すな。投稿するな。',
+      '',
+      indexes.join('\n\n')
+    ].join('\n');
+  }
+
+  const tail = [renderKataSection(kataCatalog, genre), currentSection, waitSection].filter(Boolean).join('\n\n');
 
   return `# ${genre.bot_name}
 
@@ -499,7 +604,7 @@ ${renderDailyOrder(genre, entry)}
 
 - 投稿・予約・固定コメント・いいね・フォロー・DM をするな
 - URL を本文・説明・コメントに書くな
-- CTA は「${catalog.cta}」1回だけ
+- ${CTA_RULE}
 - 説明文の末尾に #PR
 - 体験談を捏造するな（比較して選んだ／実際に使った、は人間承認）
 - 数字を発明するな
@@ -512,7 +617,7 @@ ${renderDailyOrder(genre, entry)}
 - 全文が前回と同じならスルー。動画を足すな
 - 前日の投稿チェックが無ければ動画を作るな
 - 未投稿の完成動画があるなら次を作るな
-- 1日1本を超えるな
+- ${POST_CAP}
 
 ペルソナ: ${genre.persona}
 担当リンクキー: ${genre.link_keys.join(' / ')}
@@ -542,13 +647,7 @@ node src/genre-video-gen.js --genre ${genre.genre}
 node src/genre-video-gen.js --genre ${genre.genre} --id <id> --write
 \`\`\`
 
-${renderKataSection(kataCatalog, genre)}
-
-## 今使うレシピ
-
-${blocks(now) || '（なし）'}
-
-${later.length ? `## 後で使うレシピ（今は生成するな）\n\n${blocks(later)}` : ''}
+${tail}
 `.trim() + '\n';
 }
 
@@ -570,10 +669,10 @@ function wakeText(genre) {
     '',
     '例外: 私が「投稿した」と送ったら、全文が同じでも投稿チェックだけやれ。動画は作るな。',
     '',
-    '動画を作ってよいのは、台帳が許可し、未投稿がなく、直近投稿のチェックが済んでいるときだけ。1日1本。前日の投稿チェックが無ければ作るな。',
+    `動画を作ってよいのは、台帳が許可し、未投稿がなく、直近投稿のチェックが済んでいるときだけ。${POST_CAP}前日の投稿チェックが無ければ作るな。`,
     '',
     '投稿するな。予約するな。いいね・フォロー・DMするな。URLを動画の本文・説明・コメントに書くな。',
-    'CTAは「詳しくはプロフィールのリンク（PR）」1回だけ。説明の末尾に #PR。',
+    `${CTA_RULE}説明の末尾に #PR。`,
     ''
   ].join('\n');
 }
@@ -632,7 +731,18 @@ function writeAgents(catalog, kataCatalog, prod) {
     const ascii = path.join(AGENT_DIR, `${genre.id}.md`);
     const named = path.join(AGENT_DIR, `${genre.bot_name}.md`);
     fs.writeFileSync(ascii, body, 'utf-8');
-    fs.writeFileSync(named, body, 'utf-8');
+    fs.writeFileSync(named, renderNameStub(genre), 'utf-8');
+    const { waitingNow, later } = packetGroups(genre, entry);
+    if (waitingNow.length || later.length) {
+      fs.mkdirSync(RECIPE_ARCHIVE_DIR, { recursive: true });
+      const archivePath = path.join(RECIPE_ARCHIVE_DIR, `${genre.id}.md`);
+      fs.writeFileSync(
+        archivePath,
+        renderArchiveRecipes(genre, waitingNow, later, catalog, kataCatalog, prod),
+        'utf-8'
+      );
+      written.push(path.relative(ROOT, archivePath));
+    }
     const wake = path.join(WAKE_DIR, `${genre.id}.txt`);
     fs.writeFileSync(wake, wakeText(genre), 'utf-8');
     const ledgerMd = path.join(LEDGER_DIR, `${genre.id}.md`);
@@ -801,6 +911,52 @@ function selfTest() {
   if (!phone.includes('投稿した。')) throw new Error('PHONE.md missing posted paste');
   const ledgerPet = fs.readFileSync(path.join(LEDGER_DIR, 'pet.md'), 'utf-8');
   if (!ledgerPet.includes('next_id: pet_20260801_02')) throw new Error('pet ledger next_id missing');
+  for (const genre of catalog.genres) {
+    const asciiBody = fs.readFileSync(path.join(AGENT_DIR, `${genre.id}.md`), 'utf-8');
+    const namedBody = fs.readFileSync(path.join(AGENT_DIR, `${genre.bot_name}.md`), 'utf-8');
+    if (namedBody === asciiBody) throw new Error(`stub duplicated full body for ${genre.id}`);
+    if (!namedBody.includes(`正本: [${genre.id}.md](${genre.id}.md)`)) {
+      throw new Error(`stub missing canonical link for ${genre.id}`);
+    }
+    if (namedBody.includes('## 編集仕様')) throw new Error(`stub still has the contract for ${genre.id}`);
+    const groups = packetGroups(genre, genreLedger(ledger, genre));
+    const archivePath = path.join(RECIPE_ARCHIVE_DIR, `${genre.id}.md`);
+    if (groups.waitingNow.length || groups.later.length) {
+      if (!fs.existsSync(archivePath)) throw new Error(`missing archive recipes for ${genre.id}`);
+      const archive = fs.readFileSync(archivePath, 'utf-8');
+      if (!archive.includes('status: 待つ。今は作るな')) {
+        throw new Error(`archive missing wait status for ${genre.id}`);
+      }
+    }
+    if (!groups.current.length && asciiBody.includes('## IMAGINE_THROW')) {
+      throw new Error(`${genre.id} daily file still has a waiting recipe body`);
+    }
+  }
+  if (sleep.includes('## IMAGINE_THROW')) throw new Error('sleep daily file still has recipe bodies');
+  const sleepArchive = fs.readFileSync(path.join(RECIPE_ARCHIVE_DIR, 'sleep.md'), 'utf-8');
+  if (!sleepArchive.includes('## IMAGINE_THROW')) throw new Error('sleep archive missing recipe bodies');
+  if (!pet.includes('pet_20260801_02')) throw new Error('pet current recipe id missing');
+  if (pet.includes('リプで教えてください')) throw new Error('pet daily file still has a waiting spoken line');
+  const petArchive = fs.readFileSync(path.join(RECIPE_ARCHIVE_DIR, 'pet.md'), 'utf-8');
+  if (!petArchive.includes('pet_20260729_01')) throw new Error('pet archive missing waiting id');
+  if (!petArchive.includes('リプで教えてください')) throw new Error('pet archive missing reply line');
+  if (!pet.includes(POST_CAP)) throw new Error('pet agent missing post cap');
+  if (!pet.includes(CTA_RULE)) throw new Error('pet agent missing CTA rule');
+  if (pet.includes('1日1本') || pet.includes('2本目以降は今日やるな')) {
+    throw new Error('pet agent still has the old post cap');
+  }
+  if (!wakeSample.includes(POST_CAP)) throw new Error('wake text missing post cap');
+  if (!wakeSample.includes('台帳が許可し、未投稿がなく、直近投稿のチェックが済んでいるときだけ')) {
+    throw new Error('wake text dropped the make conditions');
+  }
+  if (!wakeSample.includes('前日の投稿チェックが無ければ作るな')) throw new Error('wake text dropped yesterday check');
+  if (!wakeSample.includes('予約するな')) throw new Error('wake text dropped the reservation ban');
+  if (!wakeSample.includes('#PR')) throw new Error('wake text dropped PR mark');
+  if (!phone.includes(POST_CAP)) throw new Error('PHONE.md missing post cap');
+  if (!ledgerPet.includes(POST_CAP)) throw new Error('pet ledger missing post cap');
+  if (!ledgerPet.includes('前日の投稿チェックがなければ動画を作るな。未投稿があるなら作るな。')) {
+    throw new Error('pet ledger dropped the other gates');
+  }
   if (written.length < 20) throw new Error(`expected many agent files, got ${written.length}`);
   console.log(`self-test ok: ${catalog.genres.length} agents, ${seenId.size} packets, ${kataCatalog.katas.length} katas, no mass-produce`);
 }
