@@ -1,0 +1,158 @@
+{
+  "schema": "affi-h3-ready/v1",
+  "構成": "fridge_slit",
+  "人": "成人の飼い主。ゆるい部屋着。髪はひとつ結び。",
+  "客の動物": "キジトラの短毛",
+  "ツッコミの動物": "グレーのマンチカン",
+  "丁寧の動物": "白いスコティッシュフォールド",
+  "場所": "夜の台所。開いた冷蔵庫と床。",
+  "セリフ": "stories/fridge_slit_lines.txt",
+  "duration_s": 47.8,
+  "picture": "絵は口の開閉だけ。せりふは声用。声は、各行の start_s から mouth_s 秒に、あとから合わせる。",
+  "timing": [
+    {
+      "id": "c01",
+      "role": "retort",
+      "role_ja": "ツッコミ",
+      "start_s": 0.0,
+      "end_s": 2.4,
+      "mouth_s": 2.4,
+      "text": "まだ開いとる"
+    },
+    {
+      "id": "c02",
+      "role": "polite",
+      "role_ja": "丁寧",
+      "start_s": 6.8,
+      "end_s": 9.6,
+      "mouth_s": 2.8,
+      "text": "閉めて寝ましょう"
+    },
+    {
+      "id": "c03",
+      "role": "retort",
+      "role_ja": "ツッコミ",
+      "start_s": 14.0,
+      "end_s": 16.8,
+      "mouth_s": 2.8,
+      "text": "明かり、借りとる"
+    },
+    {
+      "id": "c04",
+      "role": "polite",
+      "role_ja": "丁寧",
+      "start_s": 16.8,
+      "end_s": 20.0,
+      "mouth_s": 3.2,
+      "text": "上にスイッチがあります"
+    },
+    {
+      "id": "c05",
+      "role": "owner",
+      "role_ja": "飼い主",
+      "start_s": 24.4,
+      "end_s": 26.8,
+      "mouth_s": 2.4,
+      "text": "閉めたぞ"
+    },
+    {
+      "id": "c06",
+      "role": "retort",
+      "role_ja": "ツッコミ",
+      "start_s": 31.2,
+      "end_s": 33.6,
+      "mouth_s": 2.4,
+      "text": "暗なった"
+    },
+    {
+      "id": "c07",
+      "role": "polite",
+      "role_ja": "丁寧",
+      "start_s": 33.6,
+      "end_s": 36.2,
+      "mouth_s": 2.6,
+      "text": "それが夜です"
+    },
+    {
+      "id": "c08",
+      "role": "retort",
+      "role_ja": "ツッコミ",
+      "start_s": 40.6,
+      "end_s": 43.4,
+      "mouth_s": 2.8,
+      "text": "隙間だけ残そ"
+    }
+  ],
+  "tts": {
+    "retort": {
+      "role_ja": "ツッコミ",
+      "voice": "ja-JP-KeitaNeural",
+      "lines": [
+        {
+          "id": "c01",
+          "start_s": 0.0,
+          "mouth_s": 2.4,
+          "text": "まだ開いとる"
+        },
+        {
+          "id": "c03",
+          "start_s": 14.0,
+          "mouth_s": 2.8,
+          "text": "明かり、借りとる"
+        },
+        {
+          "id": "c06",
+          "start_s": 31.2,
+          "mouth_s": 2.4,
+          "text": "暗なった"
+        },
+        {
+          "id": "c08",
+          "start_s": 40.6,
+          "mouth_s": 2.8,
+          "text": "隙間だけ残そ"
+        }
+      ]
+    },
+    "polite": {
+      "role_ja": "丁寧",
+      "voice": "ja-JP-NanamiNeural",
+      "lines": [
+        {
+          "id": "c02",
+          "start_s": 6.8,
+          "mouth_s": 2.8,
+          "text": "閉めて寝ましょう"
+        },
+        {
+          "id": "c04",
+          "start_s": 16.8,
+          "mouth_s": 3.2,
+          "text": "上にスイッチがあります"
+        },
+        {
+          "id": "c07",
+          "start_s": 33.6,
+          "mouth_s": 2.6,
+          "text": "それが夜です"
+        }
+      ]
+    },
+    "owner": {
+      "role_ja": "飼い主",
+      "voice": "gtts:ja",
+      "lines": [
+        {
+          "id": "c05",
+          "start_s": 24.4,
+          "mouth_s": 2.4,
+          "text": "閉めたぞ"
+        }
+      ]
+    }
+  },
+  "upload": {
+    "title": "冷蔵庫の光で寝て、指一本だけ残した",
+    "description": "夜、開いた冷蔵庫の光の中に座っていた。人が扉を閉めて暗くなり、指一本の隙間だけ残して止まる。\n"
+  }
+}

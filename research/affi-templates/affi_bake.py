@@ -3720,7 +3720,12 @@ def sheet_form_cell() -> str:
     for row in pack["captions"]:
         guide.append(f"#@markdown {row['id']} {structure.ROLE_JA[row['role']]}")
     body = "\n".join(guide)
-    menu = _param_list(["71.552秒", *[row["name"] for row in structure.story_index()]])
+    yaml_names = [
+        row["name"]
+        for row in structure.story_index()
+        if (structure.ROOT / "stories" / f"{row['name']}.yaml").is_file()
+    ]
+    menu = _param_list(["71.552秒", *yaml_names])
     return f"""#@title この1本 {{ display-mode: "form" }}
 #@markdown 「選ぶ」で構成のまま1本、または mp4の構成で差し替える、を選んだとき使う。人、動物、セリフ、場所だけ書く。
 #@markdown 構成は stories/INDEX.md の名前。71.552秒は固定のシート。パスも書ける。行を足してノートを作り直すと、この欄に増える。mp4の構成で差し替えるときは、構成欄は使わない。

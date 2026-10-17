@@ -1,0 +1,173 @@
+{
+  "schema": "affi-h3-ready/v1",
+  "構成": "mat_drag",
+  "人": "出さない",
+  "客の動物": "キジトラの短毛",
+  "ツッコミの動物": "グレーのマンチカン",
+  "丁寧の動物": "白いスコティッシュフォールド",
+  "場所": "浴室。乾いたバスマットと濡れた床。蛍光灯。",
+  "セリフ": "stories/mat_drag_lines.txt",
+  "duration_s": 49.8,
+  "picture": "絵は口の開閉だけ。せりふは声用。声は、各行の start_s から mouth_s 秒に、あとから合わせる。",
+  "timing": [
+    {
+      "id": "c01",
+      "role": "retort",
+      "role_ja": "ツッコミ",
+      "start_s": 0.0,
+      "end_s": 2.4,
+      "mouth_s": 2.4,
+      "text": "ここ乾いとる"
+    },
+    {
+      "id": "c02",
+      "role": "polite",
+      "role_ja": "丁寧",
+      "start_s": 6.8,
+      "end_s": 9.6,
+      "mouth_s": 2.8,
+      "text": "濡れる方です"
+    },
+    {
+      "id": "c03",
+      "role": "retort",
+      "role_ja": "ツッコミ",
+      "start_s": 9.6,
+      "end_s": 11.8,
+      "mouth_s": 2.2,
+      "text": "知らん"
+    },
+    {
+      "id": "c04",
+      "role": "retort",
+      "role_ja": "ツッコミ",
+      "start_s": 16.2,
+      "end_s": 18.8,
+      "mouth_s": 2.6,
+      "text": "尻が冷たい"
+    },
+    {
+      "id": "c05",
+      "role": "polite",
+      "role_ja": "丁寧",
+      "start_s": 18.8,
+      "end_s": 21.8,
+      "mouth_s": 3.0,
+      "text": "自分で引きました"
+    },
+    {
+      "id": "c06",
+      "role": "guest",
+      "role_ja": "客",
+      "start_s": 26.2,
+      "end_s": 28.6,
+      "mouth_s": 2.4,
+      "text": "僕は見てた"
+    },
+    {
+      "id": "c07",
+      "role": "retort",
+      "role_ja": "ツッコミ",
+      "start_s": 28.6,
+      "end_s": 31.4,
+      "mouth_s": 2.8,
+      "text": "見てるだけやん"
+    },
+    {
+      "id": "c08",
+      "role": "polite",
+      "role_ja": "丁寧",
+      "start_s": 35.8,
+      "end_s": 38.6,
+      "mouth_s": 2.8,
+      "text": "元の位置に戻します"
+    },
+    {
+      "id": "c09",
+      "role": "retort",
+      "role_ja": "ツッコミ",
+      "start_s": 43.0,
+      "end_s": 45.4,
+      "mouth_s": 2.4,
+      "text": "端だけ座る"
+    }
+  ],
+  "tts": {
+    "retort": {
+      "role_ja": "ツッコミ",
+      "voice": "ja-JP-KeitaNeural",
+      "lines": [
+        {
+          "id": "c01",
+          "start_s": 0.0,
+          "mouth_s": 2.4,
+          "text": "ここ乾いとる"
+        },
+        {
+          "id": "c03",
+          "start_s": 9.6,
+          "mouth_s": 2.2,
+          "text": "知らん"
+        },
+        {
+          "id": "c04",
+          "start_s": 16.2,
+          "mouth_s": 2.6,
+          "text": "尻が冷たい"
+        },
+        {
+          "id": "c07",
+          "start_s": 28.6,
+          "mouth_s": 2.8,
+          "text": "見てるだけやん"
+        },
+        {
+          "id": "c09",
+          "start_s": 43.0,
+          "mouth_s": 2.4,
+          "text": "端だけ座る"
+        }
+      ]
+    },
+    "polite": {
+      "role_ja": "丁寧",
+      "voice": "ja-JP-NanamiNeural",
+      "lines": [
+        {
+          "id": "c02",
+          "start_s": 6.8,
+          "mouth_s": 2.8,
+          "text": "濡れる方です"
+        },
+        {
+          "id": "c05",
+          "start_s": 18.8,
+          "mouth_s": 3.0,
+          "text": "自分で引きました"
+        },
+        {
+          "id": "c08",
+          "start_s": 35.8,
+          "mouth_s": 2.8,
+          "text": "元の位置に戻します"
+        }
+      ]
+    },
+    "guest": {
+      "role_ja": "客",
+      "voice": "espeak:ja",
+      "lines": [
+        {
+          "id": "c06",
+          "start_s": 26.2,
+          "mouth_s": 2.4,
+          "text": "僕は見てた"
+        }
+      ]
+    }
+  },
+  "upload": {
+    "title": "乾いたマットを、自分で濡れ床へ引いた",
+    "description": "乾いたバスマットに座ったあと、自分で濡れ床へ引いた。尻が冷えて、丁寧が元の位置に戻す。端だけ座る。\n"
+  }
+}

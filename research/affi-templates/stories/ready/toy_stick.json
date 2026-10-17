@@ -1,0 +1,173 @@
+{
+  "schema": "affi-h3-ready/v1",
+  "構成": "toy_stick",
+  "人": "出さない",
+  "客の動物": "キジトラの短毛",
+  "ツッコミの動物": "グレーのマンチカン",
+  "丁寧の動物": "白いスコティッシュフォールド",
+  "場所": "昼の床。木の棒。",
+  "セリフ": "stories/toy_stick_lines.txt",
+  "duration_s": 45.0,
+  "picture": "絵は口の開閉だけ。せりふは声用。声は、各行の start_s から mouth_s 秒に、あとから合わせる。",
+  "timing": [
+    {
+      "id": "c01",
+      "role": "retort",
+      "role_ja": "ツッコミ",
+      "start_s": 0.0,
+      "end_s": 2.6,
+      "mouth_s": 2.6,
+      "text": "振らんでいい"
+    },
+    {
+      "id": "c02",
+      "role": "polite",
+      "role_ja": "丁寧",
+      "start_s": 7.0,
+      "end_s": 9.6,
+      "mouth_s": 2.6,
+      "text": "動いてますよ"
+    },
+    {
+      "id": "c03",
+      "role": "guest",
+      "role_ja": "客",
+      "start_s": 9.6,
+      "end_s": 11.8,
+      "mouth_s": 2.2,
+      "text": "僕は見る"
+    },
+    {
+      "id": "c04",
+      "role": "polite",
+      "role_ja": "丁寧",
+      "start_s": 16.2,
+      "end_s": 18.6,
+      "mouth_s": 2.4,
+      "text": "一回だけです"
+    },
+    {
+      "id": "c05",
+      "role": "retort",
+      "role_ja": "ツッコミ",
+      "start_s": 18.6,
+      "end_s": 21.2,
+      "mouth_s": 2.6,
+      "text": "止まったやん"
+    },
+    {
+      "id": "c06",
+      "role": "retort",
+      "role_ja": "ツッコミ",
+      "start_s": 25.6,
+      "end_s": 28.4,
+      "mouth_s": 2.8,
+      "text": "自分で持つわ"
+    },
+    {
+      "id": "c07",
+      "role": "polite",
+      "role_ja": "丁寧",
+      "start_s": 28.4,
+      "end_s": 31.2,
+      "mouth_s": 2.8,
+      "text": "持ち方が逆です"
+    },
+    {
+      "id": "c08",
+      "role": "retort",
+      "role_ja": "ツッコミ",
+      "start_s": 35.6,
+      "end_s": 38.0,
+      "mouth_s": 2.4,
+      "text": "逆でええ"
+    },
+    {
+      "id": "c09",
+      "role": "guest",
+      "role_ja": "客",
+      "start_s": 38.0,
+      "end_s": 40.2,
+      "mouth_s": 2.2,
+      "text": "ヒモが余っとる"
+    }
+  ],
+  "tts": {
+    "retort": {
+      "role_ja": "ツッコミ",
+      "voice": "ja-JP-KeitaNeural",
+      "lines": [
+        {
+          "id": "c01",
+          "start_s": 0.0,
+          "mouth_s": 2.6,
+          "text": "振らんでいい"
+        },
+        {
+          "id": "c05",
+          "start_s": 18.6,
+          "mouth_s": 2.6,
+          "text": "止まったやん"
+        },
+        {
+          "id": "c06",
+          "start_s": 25.6,
+          "mouth_s": 2.8,
+          "text": "自分で持つわ"
+        },
+        {
+          "id": "c08",
+          "start_s": 35.6,
+          "mouth_s": 2.4,
+          "text": "逆でええ"
+        }
+      ]
+    },
+    "polite": {
+      "role_ja": "丁寧",
+      "voice": "ja-JP-NanamiNeural",
+      "lines": [
+        {
+          "id": "c02",
+          "start_s": 7.0,
+          "mouth_s": 2.6,
+          "text": "動いてますよ"
+        },
+        {
+          "id": "c04",
+          "start_s": 16.2,
+          "mouth_s": 2.4,
+          "text": "一回だけです"
+        },
+        {
+          "id": "c07",
+          "start_s": 28.4,
+          "mouth_s": 2.8,
+          "text": "持ち方が逆です"
+        }
+      ]
+    },
+    "guest": {
+      "role_ja": "客",
+      "voice": "espeak:ja",
+      "lines": [
+        {
+          "id": "c03",
+          "start_s": 9.6,
+          "mouth_s": 2.2,
+          "text": "僕は見る"
+        },
+        {
+          "id": "c09",
+          "start_s": 38.0,
+          "mouth_s": 2.2,
+          "text": "ヒモが余っとる"
+        }
+      ]
+    }
+  },
+  "upload": {
+    "title": "振らなくていいと言って、自分で持った",
+    "description": "床の棒を振らなくていいと言った。棒が止まると、自分の口で持つ。持ち方は逆のまま。\n"
+  }
+}

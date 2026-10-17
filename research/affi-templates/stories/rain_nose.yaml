@@ -1,0 +1,233 @@
+schema: affi-repro-structure/v1
+source_id: rain-window-nose
+pattern: junjun_ranran
+duration_s: 45.000
+canvas: "1080x1920"
+fps: 30
+file_in_repo: false
+cuts_s:
+  - 2.400
+  - 6.800
+  - 9.200
+  - 11.400
+  - 15.800
+  - 18.600
+  - 21.200
+  - 25.600
+  - 28.200
+  - 30.400
+  - 34.800
+  - 37.600
+  - 40.600
+silences_s: []
+measure:
+  cuts: せりふのショットの長さは、その台詞の口パク秒と同じ。動作のカットは絵の長さ。声はあとからこの秒に合わせる。
+  silences: この入力では測っていない。
+  captions: せりふは stories/rain_nose_lines.txt。絵のプロンプトには入れない。本編に字幕は焼かない。台詞は声用。
+  music: 曲も声も、口の動きのあとに合わせる。ファイルは指定しない。H3 には作らせない。
+  caption_y: 本編には出さない。
+change_only:
+  - person
+  - animals
+  - lines
+  - place
+slots:
+  person: 入力
+  animals:
+    guest: 入力
+    retort: 入力
+    polite: 入力
+  place: 入力
+narration: 独立した語りは無い。声はせりふ。
+registers:
+  guest: 短い相槌。キジトラの短毛。
+  retort: 方言のツッコミ。低い口調。
+  polite: 丁寧語。
+  owner: この話には出さない。
+  indoor_pair: この話では使わない。
+subtitle:
+  font: 白ゴシック
+  edge: 細い影
+  lines: 1
+  box: false
+  place: 中央やや下
+  content: 本編には焼かない。台詞は声用。
+watermark:
+  places: 上と中段
+  text: 自分のアカウント名
+punch:
+  - 外は閉まったままと言う
+  - 客がガラスを一回たたく
+  - 鼻が冷たい
+  - 窓に背を向けて座る
+shots:
+  - id: s01
+    start_s: 0.000
+    end_s: 2.400
+    place_part: window
+    on_screen: [retort, polite, guest]
+    camera: 低い位置から窓へ寄る。
+    picture: ツッコミが雨の窓の前に座る。ツッコミの口が開閉する。丁寧と客の口は閉じている。曇りの窓光。ガラスの冷たい面。文字は無い。
+  - id: s02
+    start_s: 2.400
+    end_s: 6.800
+    place_part: window
+    on_screen: [retort, polite, guest]
+    camera: ガラスの粒へ寄る。
+    picture: 雨粒がガラスを一筋伝う。全員の口は閉じている。曇りの窓光。ガラスの冷たい面。文字は無い。
+  - id: s03
+    start_s: 6.800
+    end_s: 9.200
+    place_part: window
+    on_screen: [retort, polite, guest]
+    camera: 丁寧の顔へ寄る。
+    picture: 丁寧が窓の外を見る。丁寧の口が開閉する。ツッコミと客の口は閉じている。曇りの窓光。短い毛の質感。文字は無い。
+  - id: s04
+    start_s: 9.200
+    end_s: 11.400
+    place_part: window
+    on_screen: [retort, polite, guest]
+    camera: 上げた前足へ寄る。
+    picture: 客がガラスの前で前足を上げる。客の口が開閉する。ツッコミと丁寧の口は閉じている。曇りの窓光。短い毛の質感。文字は無い。
+  - id: s05
+    start_s: 11.400
+    end_s: 15.800
+    place_part: window
+    on_screen: [retort, polite, guest]
+    camera: ガラスへ寄る。
+    picture: 客の前足がガラスを一回たたく。全員の口は閉じている。曇りの窓光。ガラスの冷たい面。文字は無い。
+  - id: s06
+    start_s: 15.800
+    end_s: 18.600
+    place_part: window
+    on_screen: [retort, polite, guest]
+    camera: 鍵の方へ少し寄る。
+    picture: 丁寧が閉まった鍵の方を見る。丁寧の口が開閉する。ツッコミと客の口は閉じている。曇りの窓光。金属の冷たい面。文字は無い。
+  - id: s07
+    start_s: 18.600
+    end_s: 21.200
+    place_part: window
+    on_screen: [retort, polite, guest]
+    camera: ツッコミの顔へ寄る。
+    picture: ツッコミが座ったまま外を見る。ツッコミの口が開閉する。丁寧と客の口は閉じている。曇りの窓光。短い毛の質感。文字は無い。
+  - id: s08
+    start_s: 21.200
+    end_s: 25.600
+    place_part: window
+    on_screen: [retort, polite, guest]
+    camera: 鼻とガラスへ寄る。
+    picture: ツッコミの鼻がガラスに一回触れる。全員の口は閉じている。曇りの窓光。ガラスの冷たい面。文字は無い。
+  - id: s09
+    start_s: 25.600
+    end_s: 28.200
+    place_part: window
+    on_screen: [retort, polite, guest]
+    camera: ツッコミの顔へ寄る。
+    picture: ツッコミが鼻を引く。ツッコミの口が開閉する。丁寧と客の口は閉じている。曇りの窓光。短い毛の質感。文字は無い。
+  - id: s10
+    start_s: 28.200
+    end_s: 30.400
+    place_part: window
+    on_screen: [retort, polite, guest]
+    camera: ガラスへ寄る。
+    picture: 丁寧がガラスを前足で一回示す。丁寧の口が開閉する。ツッコミと客の口は閉じている。曇りの窓光。ガラスの冷たい面。文字は無い。
+  - id: s11
+    start_s: 30.400
+    end_s: 34.800
+    place_part: window
+    on_screen: [retort, polite, guest]
+    camera: 二匹の顔へ寄る。
+    picture: 客がツッコミの鼻をのぞき込む。全員の口は閉じている。曇りの窓光。短い毛の質感。文字は無い。
+  - id: s12
+    start_s: 34.800
+    end_s: 37.600
+    place_part: window
+    on_screen: [retort, polite, guest]
+    camera: 客の顔へ寄る。
+    picture: 客が首を少し傾ける。客の口が開閉する。ツッコミと丁寧の口は閉じている。曇りの窓光。短い毛の質感。文字は無い。
+  - id: s13
+    start_s: 37.600
+    end_s: 40.600
+    place_part: window
+    on_screen: [retort, polite, guest]
+    camera: 背中へ寄る。
+    picture: ツッコミが窓に背を向ける。ツッコミの口が開閉する。丁寧と客の口は閉じている。曇りの窓光。短い毛の質感。文字は無い。
+  - id: s14
+    start_s: 40.600
+    end_s: 45.000
+    place_part: floor
+    on_screen: [retort, polite, guest]
+    camera: 少し引いて背中と窓を見る。
+    picture: ツッコミが窓に背を向けて座る。全員の口は閉じている。曇りの窓光。床の木目。文字は無い。
+captions:
+  - id: c01
+    shot: s01
+    role: retort
+    source_line: e-01
+    mouth_s: 2.400
+    seen_s: [0.200]
+    line: 入力
+  - id: c02
+    shot: s03
+    role: polite
+    source_line: e-02
+    mouth_s: 2.400
+    seen_s: [7.000]
+    line: 入力
+  - id: c03
+    shot: s04
+    role: guest
+    source_line: e-03
+    mouth_s: 2.200
+    seen_s: [9.400]
+    line: 入力
+  - id: c04
+    shot: s06
+    role: polite
+    source_line: e-04
+    mouth_s: 2.800
+    seen_s: [16.000]
+    line: 入力
+  - id: c05
+    shot: s07
+    role: retort
+    source_line: e-05
+    mouth_s: 2.600
+    seen_s: [18.800]
+    line: 入力
+  - id: c06
+    shot: s09
+    role: retort
+    source_line: e-06
+    mouth_s: 2.600
+    seen_s: [25.800]
+    line: 入力
+  - id: c07
+    shot: s10
+    role: polite
+    source_line: e-07
+    mouth_s: 2.200
+    seen_s: [28.400]
+    line: 入力
+  - id: c08
+    shot: s12
+    role: guest
+    source_line: e-08
+    mouth_s: 2.800
+    seen_s: [35.000]
+    line: 入力
+  - id: c09
+    shot: s13
+    role: retort
+    source_line: e-09
+    mouth_s: 3.000
+    seen_s: [37.800]
+    line: 入力
+score:
+  最初3秒: 16
+  テンポ: 18
+  見やすさ: 18
+  参考の型との一致: 18
+  壊れ: 20
+  合計: 90
+  メモ: 口パク秒を先に固定。声と曲のファイルは指定しない。本編に字幕とCTAは無い。

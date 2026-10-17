@@ -1,0 +1,241 @@
+schema: affi-repro-structure/v1
+source_id: soil-nose-plant
+pattern: junjun_ranran
+duration_s: 50.400
+canvas: "1080x1920"
+fps: 30
+file_in_repo: false
+cuts_s:
+  - 2.600
+  - 5.000
+  - 9.400
+  - 12.200
+  - 16.600
+  - 19.400
+  - 22.800
+  - 27.200
+  - 29.600
+  - 34.000
+  - 36.800
+  - 39.400
+  - 43.800
+  - 46.000
+silences_s: []
+measure:
+  cuts: せりふのショットの長さは、その台詞の口パク秒と同じ。動作のカットは絵の長さ。声はあとからこの秒に合わせる。
+  silences: この入力では測っていない。
+  captions: せりふは stories/soil_nose_lines.txt。絵のプロンプトには入れない。本編に字幕は焼かない。台詞は声用。
+  music: 曲も声も、口の動きのあとに合わせる。ファイルは指定しない。H3 には作らせない。
+  caption_y: 本編には出さない。
+change_only:
+  - person
+  - animals
+  - lines
+  - place
+slots:
+  person: 入力
+  animals:
+    guest: 入力
+    retort: 入力
+    polite: 入力
+  place: 入力
+narration: 独立した語りは無い。声はせりふ。
+registers:
+  guest: 短い相槌。キジトラの短毛。
+  retort: 方言のツッコミ。低い口調。
+  polite: 丁寧語。
+  owner: この話には出さない。
+  indoor_pair: この話では使わない。
+subtitle:
+  font: 白ゴシック
+  edge: 細い影
+  lines: 1
+  box: false
+  place: 中央やや下
+  content: 本編には焼かない。台詞は声用。
+watermark:
+  places: 上と中段
+  text: 自分のアカウント名
+punch:
+  - 鼻に土の粒が付いている
+  - 植木の葉は無事
+  - 拭ってもひげに一粒残る
+  - 三匹が鉢の前に座る
+shots:
+  - id: s01
+    start_s: 0.000
+    end_s: 2.600
+    place_part: pot
+    on_screen: [retort, polite, guest]
+    camera: 上から土へ寄る。
+    picture: 丁寧が植木鉢の土をのぞく。丁寧の口が開閉する。ツッコミと客の口は閉じている。窓の昼光。土の粒。文字は無い。
+  - id: s02
+    start_s: 2.600
+    end_s: 5.000
+    place_part: pot
+    on_screen: [retort, polite, guest]
+    camera: ツッコミの顔へ寄る。
+    picture: ツッコミが鉢の横で顔を背ける。ツッコミの口が開閉する。丁寧と客の口は閉じている。窓の昼光。短い毛の質感。文字は無い。
+  - id: s03
+    start_s: 5.000
+    end_s: 9.400
+    place_part: pot
+    on_screen: [retort, polite, guest]
+    camera: 鼻先へ寄る。
+    picture: ツッコミの鼻先に黒い粒が付いている。全員の口は閉じている。窓の昼光。土の粒。文字は無い。
+  - id: s04
+    start_s: 9.400
+    end_s: 12.200
+    place_part: pot
+    on_screen: [retort, polite, guest]
+    camera: 鼻先へ寄る。
+    picture: 丁寧がツッコミの鼻を見る。丁寧の口が開閉する。ツッコミと客の口は閉じている。窓の昼光。短い毛の質感。文字は無い。
+  - id: s05
+    start_s: 12.200
+    end_s: 16.600
+    place_part: pot
+    on_screen: [retort, polite, guest]
+    camera: こすった前足へ寄る。
+    picture: ツッコミが鼻を前足で一回こする。全員の口は閉じている。窓の昼光。短い毛の質感。文字は無い。
+  - id: s06
+    start_s: 16.600
+    end_s: 19.400
+    place_part: pot
+    on_screen: [retort, polite, guest]
+    camera: 鉢と鼻を横から見る。
+    picture: ツッコミが鉢に鼻を近づけて止める。ツッコミの口が開閉する。丁寧と客の口は閉じている。窓の昼光。土の粒。文字は無い。
+  - id: s07
+    start_s: 19.400
+    end_s: 22.800
+    place_part: pot
+    on_screen: [retort, polite, guest]
+    camera: 丁寧の顔へ寄る。
+    picture: 丁寧が首を横に一回振る。丁寧の口が開閉する。ツッコミと客の口は閉じている。窓の昼光。短い毛の質感。文字は無い。
+  - id: s08
+    start_s: 22.800
+    end_s: 27.200
+    place_part: pot
+    on_screen: [retort, polite, guest]
+    camera: 葉へ寄る。
+    picture: 客が鉢の葉を一回だけ嗅ぐ。全員の口は閉じている。窓の昼光。葉のつや。文字は無い。
+  - id: s09
+    start_s: 27.200
+    end_s: 29.600
+    place_part: pot
+    on_screen: [retort, polite, guest]
+    camera: 客の顔へ寄る。
+    picture: 客が葉から顔を離す。客の口が開閉する。ツッコミと丁寧の口は閉じている。窓の昼光。葉のつや。文字は無い。
+  - id: s10
+    start_s: 29.600
+    end_s: 34.000
+    place_part: pot
+    on_screen: [retort, polite, guest]
+    camera: 前足へ寄る。
+    picture: 丁寧が前足で鼻の粒を一回拭う。全員の口は閉じている。窓の昼光。短い毛の質感。文字は無い。
+  - id: s11
+    start_s: 34.000
+    end_s: 36.800
+    place_part: pot
+    on_screen: [retort, polite, guest]
+    camera: 鼻先へ寄る。
+    picture: ツッコミが拭われた鼻を見る。ツッコミの口が開閉する。丁寧と客の口は閉じている。窓の昼光。土の粒。文字は無い。
+  - id: s12
+    start_s: 36.800
+    end_s: 39.400
+    place_part: pot
+    on_screen: [retort, polite, guest]
+    camera: 上げた前足へ寄る。
+    picture: 丁寧が前足を上げたまま止まる。丁寧の口が開閉する。ツッコミと客の口は閉じている。窓の昼光。短い毛の質感。文字は無い。
+  - id: s13
+    start_s: 39.400
+    end_s: 43.800
+    place_part: pot
+    on_screen: [retort, polite, guest]
+    camera: 残った粒へ寄る。
+    picture: ひげの根に粒が一つ残る。全員の口は閉じている。窓の昼光。短い毛の質感。文字は無い。
+  - id: s14
+    start_s: 43.800
+    end_s: 46.000
+    place_part: pot
+    on_screen: [retort, polite, guest]
+    camera: 客の顔へ寄る。
+    picture: 客が残った粒を見る。客の口が開閉する。ツッコミと丁寧の口は閉じている。窓の昼光。短い毛の質感。文字は無い。
+  - id: s15
+    start_s: 46.000
+    end_s: 50.400
+    place_part: pot
+    on_screen: [retort, polite, guest]
+    camera: 少し引いて鉢と三匹を見る。
+    picture: 三匹が鉢の前に座って葉を見る。全員の口は閉じている。窓の昼光。葉のつや。文字は無い。
+captions:
+  - id: c01
+    shot: s01
+    role: polite
+    source_line: e-01
+    mouth_s: 2.600
+    seen_s: [0.200]
+    line: 入力
+  - id: c02
+    shot: s02
+    role: retort
+    source_line: e-02
+    mouth_s: 2.400
+    seen_s: [2.800]
+    line: 入力
+  - id: c03
+    shot: s04
+    role: polite
+    source_line: e-03
+    mouth_s: 2.800
+    seen_s: [9.600]
+    line: 入力
+  - id: c04
+    shot: s06
+    role: retort
+    source_line: e-04
+    mouth_s: 2.800
+    seen_s: [16.800]
+    line: 入力
+  - id: c05
+    shot: s07
+    role: polite
+    source_line: e-05
+    mouth_s: 3.400
+    seen_s: [19.600]
+    line: 入力
+  - id: c06
+    shot: s09
+    role: guest
+    source_line: e-06
+    mouth_s: 2.400
+    seen_s: [27.400]
+    line: 入力
+  - id: c07
+    shot: s11
+    role: retort
+    source_line: e-07
+    mouth_s: 2.800
+    seen_s: [34.200]
+    line: 入力
+  - id: c08
+    shot: s12
+    role: polite
+    source_line: e-08
+    mouth_s: 2.600
+    seen_s: [37.000]
+    line: 入力
+  - id: c09
+    shot: s14
+    role: guest
+    source_line: e-09
+    mouth_s: 2.200
+    seen_s: [44.000]
+    line: 入力
+score:
+  最初3秒: 18
+  テンポ: 18
+  見やすさ: 18
+  参考の型との一致: 18
+  壊れ: 20
+  合計: 92
+  メモ: 口パク秒を先に固定。声と曲のファイルは指定しない。本編に字幕とCTAは無い。

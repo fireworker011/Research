@@ -1,0 +1,173 @@
+{
+  "schema": "affi-h3-ready/v1",
+  "構成": "rain_nose",
+  "人": "出さない",
+  "客の動物": "キジトラの短毛",
+  "ツッコミの動物": "グレーのマンチカン",
+  "丁寧の動物": "白いスコティッシュフォールド",
+  "場所": "雨の窓辺。曇りの光。",
+  "セリフ": "stories/rain_nose_lines.txt",
+  "duration_s": 45.0,
+  "picture": "絵は口の開閉だけ。せりふは声用。声は、各行の start_s から mouth_s 秒に、あとから合わせる。",
+  "timing": [
+    {
+      "id": "c01",
+      "role": "retort",
+      "role_ja": "ツッコミ",
+      "start_s": 0.0,
+      "end_s": 2.4,
+      "mouth_s": 2.4,
+      "text": "外、しまっとる"
+    },
+    {
+      "id": "c02",
+      "role": "polite",
+      "role_ja": "丁寧",
+      "start_s": 6.8,
+      "end_s": 9.2,
+      "mouth_s": 2.4,
+      "text": "雨ですね"
+    },
+    {
+      "id": "c03",
+      "role": "guest",
+      "role_ja": "客",
+      "start_s": 9.2,
+      "end_s": 11.4,
+      "mouth_s": 2.2,
+      "text": "一回だけ"
+    },
+    {
+      "id": "c04",
+      "role": "polite",
+      "role_ja": "丁寧",
+      "start_s": 15.8,
+      "end_s": 18.6,
+      "mouth_s": 2.8,
+      "text": "開かないですよ"
+    },
+    {
+      "id": "c05",
+      "role": "retort",
+      "role_ja": "ツッコミ",
+      "start_s": 18.6,
+      "end_s": 21.2,
+      "mouth_s": 2.6,
+      "text": "見学でええ"
+    },
+    {
+      "id": "c06",
+      "role": "retort",
+      "role_ja": "ツッコミ",
+      "start_s": 25.6,
+      "end_s": 28.2,
+      "mouth_s": 2.6,
+      "text": "冷たいわ"
+    },
+    {
+      "id": "c07",
+      "role": "polite",
+      "role_ja": "丁寧",
+      "start_s": 28.2,
+      "end_s": 30.4,
+      "mouth_s": 2.2,
+      "text": "窓です"
+    },
+    {
+      "id": "c08",
+      "role": "guest",
+      "role_ja": "客",
+      "start_s": 34.8,
+      "end_s": 37.6,
+      "mouth_s": 2.8,
+      "text": "鼻、またつける？"
+    },
+    {
+      "id": "c09",
+      "role": "retort",
+      "role_ja": "ツッコミ",
+      "start_s": 37.6,
+      "end_s": 40.6,
+      "mouth_s": 3.0,
+      "text": "今日はここで打ち止め"
+    }
+  ],
+  "tts": {
+    "retort": {
+      "role_ja": "ツッコミ",
+      "voice": "ja-JP-KeitaNeural",
+      "lines": [
+        {
+          "id": "c01",
+          "start_s": 0.0,
+          "mouth_s": 2.4,
+          "text": "外、しまっとる"
+        },
+        {
+          "id": "c05",
+          "start_s": 18.6,
+          "mouth_s": 2.6,
+          "text": "見学でええ"
+        },
+        {
+          "id": "c06",
+          "start_s": 25.6,
+          "mouth_s": 2.6,
+          "text": "冷たいわ"
+        },
+        {
+          "id": "c09",
+          "start_s": 37.6,
+          "mouth_s": 3.0,
+          "text": "今日はここで打ち止め"
+        }
+      ]
+    },
+    "polite": {
+      "role_ja": "丁寧",
+      "voice": "ja-JP-NanamiNeural",
+      "lines": [
+        {
+          "id": "c02",
+          "start_s": 6.8,
+          "mouth_s": 2.4,
+          "text": "雨ですね"
+        },
+        {
+          "id": "c04",
+          "start_s": 15.8,
+          "mouth_s": 2.8,
+          "text": "開かないですよ"
+        },
+        {
+          "id": "c07",
+          "start_s": 28.2,
+          "mouth_s": 2.2,
+          "text": "窓です"
+        }
+      ]
+    },
+    "guest": {
+      "role_ja": "客",
+      "voice": "espeak:ja",
+      "lines": [
+        {
+          "id": "c03",
+          "start_s": 9.2,
+          "mouth_s": 2.2,
+          "text": "一回だけ"
+        },
+        {
+          "id": "c08",
+          "start_s": 34.8,
+          "mouth_s": 2.8,
+          "text": "鼻、またつける？"
+        }
+      ]
+    }
+  },
+  "upload": {
+    "title": "雨の窓を見学して、鼻が冷えた",
+    "description": "雨の窓を見学だと言って、鼻をつけた。冷たいので、今日はそこで打ち止めにする。\n"
+  }
+}

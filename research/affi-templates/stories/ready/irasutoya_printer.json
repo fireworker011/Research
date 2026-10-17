@@ -1,0 +1,133 @@
+{
+  "schema": "affi-irasutoya-ready/v1",
+  "hook": "共有プリンタを占拠した相手の資料だけ、裏紙のまま配られた話",
+  "series_character": "プリンタ占拠君",
+  "bullets": [
+    "共有プリンタの前に、自分の資料を山積みにした「終わるまで待て」",
+    "裏紙だ",
+    "山の下から、自分の分だけ抜いた"
+  ],
+  "punchline": "相手の提案書だけ、昨日の裏紙のまま配られた",
+  "closing": "",
+  "duration_s": 27.65,
+  "picture": "絵は口の開閉だけ。本編のテロップは空。声は、各行の start_s から mouth_s 秒に、あとから合わせる。クレジットの2.2秒は名前の表示だけ。",
+  "timing": [
+    {
+      "id": 1,
+      "role": "hook",
+      "speaker": "rival",
+      "start_s": 0.0,
+      "end_s": 2.37,
+      "mouth_s": 2.37,
+      "text": "終わるまで待て",
+      "speak": true
+    },
+    {
+      "id": 2,
+      "role": "develop",
+      "speaker": "narrator",
+      "start_s": 2.37,
+      "end_s": 7.9,
+      "mouth_s": 5.53,
+      "text": "共有プリンタの前に、自分の資料を山積みにした",
+      "speak": true
+    },
+    {
+      "id": 3,
+      "role": "develop",
+      "speaker": "narrator",
+      "start_s": 7.9,
+      "end_s": 8.87,
+      "mouth_s": 0.97,
+      "text": "裏紙だ",
+      "speak": true
+    },
+    {
+      "id": 4,
+      "role": "develop",
+      "speaker": "hero",
+      "start_s": 8.87,
+      "end_s": 14.4,
+      "mouth_s": 5.53,
+      "text": "山の下から、自分の分だけ抜いた",
+      "speak": true
+    },
+    {
+      "id": 5,
+      "role": "punch",
+      "speaker": "narrator",
+      "start_s": 14.4,
+      "end_s": 25.45,
+      "mouth_s": 11.05,
+      "text": "相手の提案書だけ、昨日の裏紙のまま配られた",
+      "speak": true
+    },
+    {
+      "id": 6,
+      "role": "credit",
+      "speaker": "narrator",
+      "start_s": 25.45,
+      "end_s": 27.65,
+      "mouth_s": 0.0,
+      "text": "",
+      "speak": false
+    }
+  ],
+  "tts": {
+    "rival": {
+      "role_ja": "相手",
+      "voice": "VOICEVOX:玄野武宏",
+      "style_id": 11,
+      "lines": [
+        {
+          "id": 1,
+          "start_s": 0.0,
+          "mouth_s": 2.37,
+          "text": "終わるまで待て"
+        }
+      ]
+    },
+    "narrator": {
+      "role_ja": "ナレーション",
+      "voice": "VOICEVOX:四国めたん",
+      "style_id": 2,
+      "lines": [
+        {
+          "id": 2,
+          "start_s": 2.37,
+          "mouth_s": 5.53,
+          "text": "共有プリンタの前に、自分の資料を山積みにした"
+        },
+        {
+          "id": 3,
+          "start_s": 7.9,
+          "mouth_s": 0.97,
+          "text": "裏紙だ"
+        },
+        {
+          "id": 5,
+          "start_s": 14.4,
+          "mouth_s": 11.05,
+          "text": "相手の提案書だけ、昨日の裏紙のまま配られた"
+        }
+      ]
+    },
+    "hero": {
+      "role_ja": "主人公",
+      "voice": "VOICEVOX:白上虎太郎",
+      "style_id": 34,
+      "lines": [
+        {
+          "id": 4,
+          "start_s": 8.87,
+          "mouth_s": 5.53,
+          "text": "山の下から、自分の分だけ抜いた"
+        }
+      ]
+    }
+  },
+  "upload": {
+    "title": "共有プリンタを占拠した相手の資料だけ、裏紙のまま配られた話",
+    "description": "「終わるまで待て」\n共有プリンタの前に、自分の資料を山積みにした。裏紙だ。山の下から、自分の分だけ抜いた。相手の提案書だけ、昨日の裏紙のまま配られた。\n\nVOICEVOX:四国めたん\nVOICEVOX:白上虎太郎\nVOICEVOX:玄野武宏\nVOICEVOX:剣崎雌雄\n"
+  }
+}

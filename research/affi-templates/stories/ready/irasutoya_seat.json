@@ -1,0 +1,133 @@
+{
+  "schema": "affi-irasutoya-ready/v1",
+  "hook": "荷物の上に座った相手の切符が、隣の車両の指定だった話",
+  "series_character": "席取り君",
+  "bullets": [
+    "自由席で、自分の荷物の上に相手が座った「ここ、空いてただろ」",
+    "指定は隣",
+    "荷物を持って、隣の車両に移った"
+  ],
+  "punchline": "相手の切符は、さっきの車両の指定席だった",
+  "closing": "",
+  "duration_s": 27.65,
+  "picture": "絵は口の開閉だけ。本編のテロップは空。声は、各行の start_s から mouth_s 秒に、あとから合わせる。クレジットの2.2秒は名前の表示だけ。",
+  "timing": [
+    {
+      "id": 1,
+      "role": "hook",
+      "speaker": "rival",
+      "start_s": 0.0,
+      "end_s": 2.37,
+      "mouth_s": 2.37,
+      "text": "ここ、空いてただろ",
+      "speak": true
+    },
+    {
+      "id": 2,
+      "role": "develop",
+      "speaker": "narrator",
+      "start_s": 2.37,
+      "end_s": 7.9,
+      "mouth_s": 5.53,
+      "text": "自由席で、自分の荷物の上に相手が座った",
+      "speak": true
+    },
+    {
+      "id": 3,
+      "role": "develop",
+      "speaker": "narrator",
+      "start_s": 7.9,
+      "end_s": 8.87,
+      "mouth_s": 0.97,
+      "text": "指定は隣",
+      "speak": true
+    },
+    {
+      "id": 4,
+      "role": "develop",
+      "speaker": "hero",
+      "start_s": 8.87,
+      "end_s": 14.4,
+      "mouth_s": 5.53,
+      "text": "荷物を持って、隣の車両に移った",
+      "speak": true
+    },
+    {
+      "id": 5,
+      "role": "punch",
+      "speaker": "narrator",
+      "start_s": 14.4,
+      "end_s": 25.45,
+      "mouth_s": 11.05,
+      "text": "相手の切符は、さっきの車両の指定席だった",
+      "speak": true
+    },
+    {
+      "id": 6,
+      "role": "credit",
+      "speaker": "narrator",
+      "start_s": 25.45,
+      "end_s": 27.65,
+      "mouth_s": 0.0,
+      "text": "",
+      "speak": false
+    }
+  ],
+  "tts": {
+    "rival": {
+      "role_ja": "相手",
+      "voice": "VOICEVOX:玄野武宏",
+      "style_id": 11,
+      "lines": [
+        {
+          "id": 1,
+          "start_s": 0.0,
+          "mouth_s": 2.37,
+          "text": "ここ、空いてただろ"
+        }
+      ]
+    },
+    "narrator": {
+      "role_ja": "ナレーション",
+      "voice": "VOICEVOX:四国めたん",
+      "style_id": 2,
+      "lines": [
+        {
+          "id": 2,
+          "start_s": 2.37,
+          "mouth_s": 5.53,
+          "text": "自由席で、自分の荷物の上に相手が座った"
+        },
+        {
+          "id": 3,
+          "start_s": 7.9,
+          "mouth_s": 0.97,
+          "text": "指定は隣"
+        },
+        {
+          "id": 5,
+          "start_s": 14.4,
+          "mouth_s": 11.05,
+          "text": "相手の切符は、さっきの車両の指定席だった"
+        }
+      ]
+    },
+    "hero": {
+      "role_ja": "主人公",
+      "voice": "VOICEVOX:白上虎太郎",
+      "style_id": 34,
+      "lines": [
+        {
+          "id": 4,
+          "start_s": 8.87,
+          "mouth_s": 5.53,
+          "text": "荷物を持って、隣の車両に移った"
+        }
+      ]
+    }
+  },
+  "upload": {
+    "title": "荷物の上に座った相手の切符が、隣の車両の指定だった話",
+    "description": "「ここ、空いてただろ」\n自由席で、自分の荷物の上に相手が座った。指定は隣。荷物を持って、隣の車両に移った。相手の切符は、さっきの車両の指定席だった。\n\nVOICEVOX:四国めたん\nVOICEVOX:白上虎太郎\nVOICEVOX:玄野武宏\nVOICEVOX:剣崎雌雄\n"
+  }
+}

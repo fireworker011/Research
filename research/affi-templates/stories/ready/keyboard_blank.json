@@ -1,0 +1,179 @@
+{
+  "schema": "affi-h3-ready/v1",
+  "構成": "keyboard_blank",
+  "人": "成人の飼い主。ゆるい部屋着。髪はひとつ結び。",
+  "客の動物": "キジトラの短毛",
+  "ツッコミの動物": "グレーのマンチカン",
+  "丁寧の動物": "白いスコティッシュフォールド",
+  "場所": "昼の机。キーボードと画面。",
+  "セリフ": "stories/keyboard_blank_lines.txt",
+  "duration_s": 50.0,
+  "picture": "絵は口の開閉だけ。せりふは声用。声は、各行の start_s から mouth_s 秒に、あとから合わせる。",
+  "timing": [
+    {
+      "id": "c01",
+      "role": "retort",
+      "role_ja": "ツッコミ",
+      "start_s": 0.0,
+      "end_s": 2.4,
+      "mouth_s": 2.4,
+      "text": "キー、布団や"
+    },
+    {
+      "id": "c02",
+      "role": "polite",
+      "role_ja": "丁寧",
+      "start_s": 6.8,
+      "end_s": 10.0,
+      "mouth_s": 3.2,
+      "text": "キーの上です"
+    },
+    {
+      "id": "c03",
+      "role": "polite",
+      "role_ja": "丁寧",
+      "start_s": 14.4,
+      "end_s": 17.0,
+      "mouth_s": 2.6,
+      "text": "押してますよ"
+    },
+    {
+      "id": "c04",
+      "role": "retort",
+      "role_ja": "ツッコミ",
+      "start_s": 17.0,
+      "end_s": 19.2,
+      "mouth_s": 2.2,
+      "text": "知らん"
+    },
+    {
+      "id": "c05",
+      "role": "owner",
+      "role_ja": "飼い主",
+      "start_s": 23.6,
+      "end_s": 26.0,
+      "mouth_s": 2.4,
+      "text": "なんか打った？"
+    },
+    {
+      "id": "c06",
+      "role": "guest",
+      "role_ja": "客",
+      "start_s": 26.0,
+      "end_s": 28.8,
+      "mouth_s": 2.8,
+      "text": "僕は通っただけ"
+    },
+    {
+      "id": "c07",
+      "role": "polite",
+      "role_ja": "丁寧",
+      "start_s": 33.2,
+      "end_s": 36.2,
+      "mouth_s": 3.0,
+      "text": "画面、真っ白です"
+    },
+    {
+      "id": "c08",
+      "role": "retort",
+      "role_ja": "ツッコミ",
+      "start_s": 36.2,
+      "end_s": 39.0,
+      "mouth_s": 2.8,
+      "text": "下書きも残らん"
+    },
+    {
+      "id": "c09",
+      "role": "owner",
+      "role_ja": "飼い主",
+      "start_s": 43.4,
+      "end_s": 45.6,
+      "mouth_s": 2.2,
+      "text": "助かった"
+    }
+  ],
+  "tts": {
+    "retort": {
+      "role_ja": "ツッコミ",
+      "voice": "ja-JP-KeitaNeural",
+      "lines": [
+        {
+          "id": "c01",
+          "start_s": 0.0,
+          "mouth_s": 2.4,
+          "text": "キー、布団や"
+        },
+        {
+          "id": "c04",
+          "start_s": 17.0,
+          "mouth_s": 2.2,
+          "text": "知らん"
+        },
+        {
+          "id": "c08",
+          "start_s": 36.2,
+          "mouth_s": 2.8,
+          "text": "下書きも残らん"
+        }
+      ]
+    },
+    "polite": {
+      "role_ja": "丁寧",
+      "voice": "ja-JP-NanamiNeural",
+      "lines": [
+        {
+          "id": "c02",
+          "start_s": 6.8,
+          "mouth_s": 3.2,
+          "text": "キーの上です"
+        },
+        {
+          "id": "c03",
+          "start_s": 14.4,
+          "mouth_s": 2.6,
+          "text": "押してますよ"
+        },
+        {
+          "id": "c07",
+          "start_s": 33.2,
+          "mouth_s": 3.0,
+          "text": "画面、真っ白です"
+        }
+      ]
+    },
+    "owner": {
+      "role_ja": "飼い主",
+      "voice": "gtts:ja",
+      "lines": [
+        {
+          "id": "c05",
+          "start_s": 23.6,
+          "mouth_s": 2.4,
+          "text": "なんか打った？"
+        },
+        {
+          "id": "c09",
+          "start_s": 43.4,
+          "mouth_s": 2.2,
+          "text": "助かった"
+        }
+      ]
+    },
+    "guest": {
+      "role_ja": "客",
+      "voice": "espeak:ja",
+      "lines": [
+        {
+          "id": "c06",
+          "start_s": 26.0,
+          "mouth_s": 2.8,
+          "text": "僕は通っただけ"
+        }
+      ]
+    }
+  },
+  "upload": {
+    "title": "キーボードの上で丸くなって、画面は真っ白",
+    "description": "キーボードの上で丸くなったあと、画面は真っ白のままだった。客は通り過ぎただけだと言う。またキーボードの上に戻る。\n"
+  }
+}

@@ -1,0 +1,158 @@
+{
+  "schema": "affi-h3-ready/v1",
+  "構成": "box_seat",
+  "人": "出さない",
+  "客の動物": "キジトラの短毛",
+  "ツッコミの動物": "グレーのマンチカン",
+  "丁寧の動物": "白いスコティッシュフォールド",
+  "場所": "昼の部屋。床の段ボール。窓の光。",
+  "セリフ": "stories/box_seat_lines.txt",
+  "duration_s": 47.0,
+  "picture": "絵は口の開閉だけ。せりふは声用。声は、各行の start_s から mouth_s 秒に、あとから合わせる。",
+  "timing": [
+    {
+      "id": "c01",
+      "role": "retort",
+      "role_ja": "ツッコミ",
+      "start_s": 0.0,
+      "end_s": 2.6,
+      "mouth_s": 2.6,
+      "text": "中、いるやん"
+    },
+    {
+      "id": "c02",
+      "role": "polite",
+      "role_ja": "丁寧",
+      "start_s": 7.0,
+      "end_s": 10.2,
+      "mouth_s": 3.2,
+      "text": "中で動いてます"
+    },
+    {
+      "id": "c03",
+      "role": "guest",
+      "role_ja": "客",
+      "start_s": 14.6,
+      "end_s": 16.8,
+      "mouth_s": 2.2,
+      "text": "満席"
+    },
+    {
+      "id": "c04",
+      "role": "retort",
+      "role_ja": "ツッコミ",
+      "start_s": 16.8,
+      "end_s": 19.4,
+      "mouth_s": 2.6,
+      "text": "端っこ貸して"
+    },
+    {
+      "id": "c05",
+      "role": "guest",
+      "role_ja": "客",
+      "start_s": 23.8,
+      "end_s": 26.2,
+      "mouth_s": 2.4,
+      "text": "端も席"
+    },
+    {
+      "id": "c06",
+      "role": "polite",
+      "role_ja": "丁寧",
+      "start_s": 30.6,
+      "end_s": 33.0,
+      "mouth_s": 2.4,
+      "text": "屋根です"
+    },
+    {
+      "id": "c07",
+      "role": "retort",
+      "role_ja": "ツッコミ",
+      "start_s": 33.0,
+      "end_s": 35.8,
+      "mouth_s": 2.8,
+      "text": "それ蓋やろ"
+    },
+    {
+      "id": "c08",
+      "role": "guest",
+      "role_ja": "客",
+      "start_s": 40.0,
+      "end_s": 42.6,
+      "mouth_s": 2.6,
+      "text": "雨、漏れてない"
+    }
+  ],
+  "tts": {
+    "retort": {
+      "role_ja": "ツッコミ",
+      "voice": "ja-JP-KeitaNeural",
+      "lines": [
+        {
+          "id": "c01",
+          "start_s": 0.0,
+          "mouth_s": 2.6,
+          "text": "中、いるやん"
+        },
+        {
+          "id": "c04",
+          "start_s": 16.8,
+          "mouth_s": 2.6,
+          "text": "端っこ貸して"
+        },
+        {
+          "id": "c07",
+          "start_s": 33.0,
+          "mouth_s": 2.8,
+          "text": "それ蓋やろ"
+        }
+      ]
+    },
+    "polite": {
+      "role_ja": "丁寧",
+      "voice": "ja-JP-NanamiNeural",
+      "lines": [
+        {
+          "id": "c02",
+          "start_s": 7.0,
+          "mouth_s": 3.2,
+          "text": "中で動いてます"
+        },
+        {
+          "id": "c06",
+          "start_s": 30.6,
+          "mouth_s": 2.4,
+          "text": "屋根です"
+        }
+      ]
+    },
+    "guest": {
+      "role_ja": "客",
+      "voice": "espeak:ja",
+      "lines": [
+        {
+          "id": "c03",
+          "start_s": 14.6,
+          "mouth_s": 2.2,
+          "text": "満席"
+        },
+        {
+          "id": "c05",
+          "start_s": 23.8,
+          "mouth_s": 2.4,
+          "text": "端も席"
+        },
+        {
+          "id": "c08",
+          "start_s": 40.0,
+          "mouth_s": 2.6,
+          "text": "雨、漏れてない"
+        }
+      ]
+    }
+  },
+  "upload": {
+    "title": "空の段ボールは、中が満席だった",
+    "description": "空に見えた段ボールは、中が満席だった。端を空けてもまた塞がり、蓋は屋根になる。ツッコミは横の床に座る。\n"
+  }
+}

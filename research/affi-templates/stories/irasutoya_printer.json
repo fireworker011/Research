@@ -1,0 +1,151 @@
+{
+  "title": "共有プリンタを占拠した相手の資料だけ、裏紙のまま配られた話",
+  "series_character": "プリンタ占拠君",
+  "punchline": "相手の提案書だけ、昨日の裏紙のまま配られた",
+  "closing": "",
+  "scenes": [
+    {
+      "id": 1,
+      "role": "hook",
+      "speaker": "rival",
+      "style_id": 11,
+      "credit": "VOICEVOX:玄野武宏",
+      "text": "終わるまで待て",
+      "telop": "",
+      "bg": "office",
+      "characters": [
+        {
+          "id": "rival_smug",
+          "who": "rival",
+          "label": "プリンタ占拠君"
+        }
+      ],
+      "props": [],
+      "code_props": [],
+      "effect": "zoom",
+      "sfx": "none",
+      "duration_hint": 2.37
+    },
+    {
+      "id": 2,
+      "role": "develop",
+      "speaker": "narrator",
+      "style_id": 2,
+      "credit": "VOICEVOX:四国めたん",
+      "text": "共有プリンタの前に、自分の資料を山積みにした",
+      "telop": "",
+      "bg": "office",
+      "characters": [
+        {
+          "id": "hero_trouble",
+          "who": "hero",
+          "label": ""
+        }
+      ],
+      "props": [],
+      "code_props": [
+        "papers"
+      ],
+      "effect": "none",
+      "sfx": "paper",
+      "duration_hint": 5.53
+    },
+    {
+      "id": 3,
+      "role": "develop",
+      "speaker": "narrator",
+      "style_id": 2,
+      "credit": "VOICEVOX:四国めたん",
+      "text": "裏紙だ",
+      "telop": "",
+      "bg": "card",
+      "characters": [],
+      "props": [],
+      "code_props": [],
+      "effect": "none",
+      "sfx": "whoosh",
+      "duration_hint": 0.97
+    },
+    {
+      "id": 4,
+      "role": "develop",
+      "speaker": "hero",
+      "style_id": 34,
+      "credit": "VOICEVOX:白上虎太郎",
+      "text": "山の下から、自分の分だけ抜いた",
+      "telop": "",
+      "bg": "office",
+      "characters": [
+        {
+          "id": "hero_angry",
+          "who": "hero",
+          "label": ""
+        }
+      ],
+      "props": [],
+      "code_props": [],
+      "effect": "shake",
+      "sfx": "none",
+      "duration_hint": 5.53
+    },
+    {
+      "id": 5,
+      "role": "punch",
+      "speaker": "narrator",
+      "style_id": 2,
+      "credit": "VOICEVOX:四国めたん",
+      "text": "相手の提案書だけ、昨日の裏紙のまま配られた",
+      "telop": "",
+      "bg": "office",
+      "characters": [
+        {
+          "id": "rival_pale",
+          "who": "rival",
+          "label": "プリンタ占拠君"
+        }
+      ],
+      "props": [],
+      "code_props": [],
+      "effect": "zoom",
+      "sfx": "paper",
+      "duration_hint": 11.05
+    },
+    {
+      "id": 6,
+      "role": "credit",
+      "speaker": "narrator",
+      "style_id": 2,
+      "credit": "VOICEVOX:四国めたん",
+      "text": "",
+      "telop": "VOICEVOX:四国めたん\nVOICEVOX:白上虎太郎\nVOICEVOX:玄野武宏\nVOICEVOX:剣崎雌雄",
+      "bg": "credit",
+      "characters": [],
+      "props": [],
+      "effect": "none",
+      "sfx": "none",
+      "duration_hint": 2.2,
+      "series_note": "プリンタ占拠君"
+    }
+  ],
+  "credits": [
+    "VOICEVOX:玄野武宏",
+    "VOICEVOX:四国めたん",
+    "VOICEVOX:白上虎太郎",
+    "VOICEVOX:剣崎雌雄"
+  ],
+  "asset_ids": [
+    "rival_smug",
+    "hero_trouble",
+    "hero_angry",
+    "rival_pale"
+  ],
+  "score": {
+    "最初3秒": 18,
+    "テンポ": 18,
+    "見やすさ": 18,
+    "参考の型との一致": 17,
+    "壊れ": 20,
+    "合計": 91,
+    "メモ": "5ビートとクレジットは ogori と同じ秒。本編のテロップは空。台詞は声用。CTAは無い。"
+  }
+}

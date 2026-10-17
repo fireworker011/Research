@@ -1,0 +1,133 @@
+{
+  "schema": "affi-irasutoya-ready/v1",
+  "hook": "合言葉を聞いてきた相手が、空のフォルダを開いた話",
+  "series_character": "パスワード君",
+  "bullets": [
+    "共有フォルダの合言葉を、昼休みに聞いてきた「パスワード、教えろ」",
+    "中は空",
+    "合言葉は教えて、中身は朝に移した"
+  ],
+  "punchline": "相手が開いた自分の名前のフォルダは、空だった",
+  "closing": "",
+  "duration_s": 27.65,
+  "picture": "絵は口の開閉だけ。本編のテロップは空。声は、各行の start_s から mouth_s 秒に、あとから合わせる。クレジットの2.2秒は名前の表示だけ。",
+  "timing": [
+    {
+      "id": 1,
+      "role": "hook",
+      "speaker": "rival",
+      "start_s": 0.0,
+      "end_s": 2.37,
+      "mouth_s": 2.37,
+      "text": "パスワード、教えろ",
+      "speak": true
+    },
+    {
+      "id": 2,
+      "role": "develop",
+      "speaker": "narrator",
+      "start_s": 2.37,
+      "end_s": 7.9,
+      "mouth_s": 5.53,
+      "text": "共有フォルダの合言葉を、昼休みに聞いてきた",
+      "speak": true
+    },
+    {
+      "id": 3,
+      "role": "develop",
+      "speaker": "narrator",
+      "start_s": 7.9,
+      "end_s": 8.87,
+      "mouth_s": 0.97,
+      "text": "中は空",
+      "speak": true
+    },
+    {
+      "id": 4,
+      "role": "develop",
+      "speaker": "hero",
+      "start_s": 8.87,
+      "end_s": 14.4,
+      "mouth_s": 5.53,
+      "text": "合言葉は教えて、中身は朝に移した",
+      "speak": true
+    },
+    {
+      "id": 5,
+      "role": "punch",
+      "speaker": "narrator",
+      "start_s": 14.4,
+      "end_s": 25.45,
+      "mouth_s": 11.05,
+      "text": "相手が開いた自分の名前のフォルダは、空だった",
+      "speak": true
+    },
+    {
+      "id": 6,
+      "role": "credit",
+      "speaker": "narrator",
+      "start_s": 25.45,
+      "end_s": 27.65,
+      "mouth_s": 0.0,
+      "text": "",
+      "speak": false
+    }
+  ],
+  "tts": {
+    "rival": {
+      "role_ja": "相手",
+      "voice": "VOICEVOX:玄野武宏",
+      "style_id": 11,
+      "lines": [
+        {
+          "id": 1,
+          "start_s": 0.0,
+          "mouth_s": 2.37,
+          "text": "パスワード、教えろ"
+        }
+      ]
+    },
+    "narrator": {
+      "role_ja": "ナレーション",
+      "voice": "VOICEVOX:四国めたん",
+      "style_id": 2,
+      "lines": [
+        {
+          "id": 2,
+          "start_s": 2.37,
+          "mouth_s": 5.53,
+          "text": "共有フォルダの合言葉を、昼休みに聞いてきた"
+        },
+        {
+          "id": 3,
+          "start_s": 7.9,
+          "mouth_s": 0.97,
+          "text": "中は空"
+        },
+        {
+          "id": 5,
+          "start_s": 14.4,
+          "mouth_s": 11.05,
+          "text": "相手が開いた自分の名前のフォルダは、空だった"
+        }
+      ]
+    },
+    "hero": {
+      "role_ja": "主人公",
+      "voice": "VOICEVOX:白上虎太郎",
+      "style_id": 34,
+      "lines": [
+        {
+          "id": 4,
+          "start_s": 8.87,
+          "mouth_s": 5.53,
+          "text": "合言葉は教えて、中身は朝に移した"
+        }
+      ]
+    }
+  },
+  "upload": {
+    "title": "合言葉を聞いてきた相手が、空のフォルダを開いた話",
+    "description": "「パスワード、教えろ」\n共有フォルダの合言葉を、昼休みに聞いてきた。中は空。合言葉は教えて、中身は朝に移した。相手が開いた自分の名前のフォルダは、空だった。\n\nVOICEVOX:四国めたん\nVOICEVOX:白上虎太郎\nVOICEVOX:玄野武宏\nVOICEVOX:剣崎雌雄\n"
+  }
+}

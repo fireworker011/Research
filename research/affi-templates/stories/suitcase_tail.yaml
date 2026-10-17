@@ -1,0 +1,233 @@
+schema: affi-repro-structure/v1
+source_id: suitcase-tail-vent
+pattern: junjun_ranran
+duration_s: 45.400
+canvas: "1080x1920"
+fps: 30
+file_in_repo: false
+cuts_s:
+  - 2.400
+  - 5.600
+  - 10.000
+  - 12.200
+  - 14.800
+  - 19.200
+  - 21.800
+  - 24.200
+  - 28.600
+  - 31.600
+  - 33.800
+  - 38.200
+  - 41.000
+silences_s: []
+measure:
+  cuts: せりふのショットの長さは、その台詞の口パク秒と同じ。動作のカットは絵の長さ。声はあとからこの秒に合わせる。
+  silences: この入力では測っていない。
+  captions: せりふは stories/suitcase_tail_lines.txt。絵のプロンプトには入れない。本編に字幕は焼かない。台詞は声用。
+  music: 曲も声も、口の動きのあとに合わせる。ファイルは指定しない。H3 には作らせない。
+  caption_y: 本編には出さない。
+change_only:
+  - person
+  - animals
+  - lines
+  - place
+slots:
+  person: 入力
+  animals:
+    guest: 入力
+    retort: 入力
+    polite: 入力
+  place: 入力
+narration: 独立した語りは無い。声はせりふ。
+registers:
+  guest: 短い相槌。キジトラの短毛。
+  retort: 方言のツッコミ。低い口調。
+  polite: 丁寧語。
+  owner: 短い相槌。話の中心にしない。
+  indoor_pair: この話では使わない。
+subtitle:
+  font: 白ゴシック
+  edge: 細い影
+  lines: 1
+  box: false
+  place: 中央やや下
+  content: 本編には焼かない。台詞は声用。
+watermark:
+  places: 上と中段
+  text: 自分のアカウント名
+punch:
+  - 開いた荷物に入る
+  - しっぽが外に出る
+  - 通気だと言う
+  - 横に降りて座る
+shots:
+  - id: s01
+    start_s: 0.000
+    end_s: 2.400
+    place_part: suitcase
+    on_screen: [retort, polite, guest]
+    camera: 低い位置から荷物へ寄る。
+    picture: ツッコミが開いた荷物の縁に前足を掛ける。ツッコミの口が開閉する。丁寧と客の口は閉じている。昼の室内光。布のざらつき。文字は無い。
+  - id: s02
+    start_s: 2.400
+    end_s: 5.600
+    place_part: suitcase
+    on_screen: [retort, polite, guest]
+    camera: 中の布へ寄る。
+    picture: 丁寧が荷物の中の服を見る。丁寧の口が開閉する。ツッコミと客の口は閉じている。昼の室内光。布のしわ。文字は無い。
+  - id: s03
+    start_s: 5.600
+    end_s: 10.000
+    place_part: suitcase
+    on_screen: [retort, polite, guest]
+    camera: 横から荷物を見る。
+    picture: ツッコミが荷物の中に一歩入る。全員の口は閉じている。昼の室内光。布のざらつき。文字は無い。
+  - id: s04
+    start_s: 10.000
+    end_s: 12.200
+    place_part: suitcase
+    on_screen: [retort, polite, guest, owner]
+    camera: 肩越しに口へ寄る。
+    picture: 人が肩越しに荷物を見る。人の口が開閉する。ツッコミと丁寧と客の口は閉じている。昼の室内光。部屋着の布。文字は無い。
+  - id: s05
+    start_s: 12.200
+    end_s: 14.800
+    place_part: suitcase
+    on_screen: [retort, polite, guest]
+    camera: ツッコミの顔へ寄る。
+    picture: ツッコミが荷物の中で顔を出す。ツッコミの口が開閉する。丁寧と客の口は閉じている。昼の室内光。短い毛の質感。文字は無い。
+  - id: s06
+    start_s: 14.800
+    end_s: 19.200
+    place_part: suitcase
+    on_screen: [retort, polite, guest, owner]
+    camera: 手元へ寄る。
+    picture: 人の手元がファスナーを半分まで上げる。全員の口は閉じている。昼の室内光。金属の冷たい面。文字は無い。
+  - id: s07
+    start_s: 19.200
+    end_s: 21.800
+    place_part: suitcase
+    on_screen: [retort, polite, guest]
+    camera: しっぽへ寄る。
+    picture: 客がはみ出したしっぽを見る。客の口が開閉する。ツッコミと丁寧の口は閉じている。昼の室内光。短い毛の質感。文字は無い。
+  - id: s08
+    start_s: 21.800
+    end_s: 24.200
+    place_part: suitcase
+    on_screen: [retort, polite, guest]
+    camera: しっぽへ寄る。
+    picture: ツッコミが中でしっぽだけ外に残す。ツッコミの口が開閉する。丁寧と客の口は閉じている。昼の室内光。短い毛の質感。文字は無い。
+  - id: s09
+    start_s: 24.200
+    end_s: 28.600
+    place_part: suitcase
+    on_screen: [retort, polite, guest]
+    camera: 金具へ寄る。
+    picture: 丁寧が止まったファスナーを前足で一回つつく。全員の口は閉じている。昼の室内光。金属の冷たい面。文字は無い。
+  - id: s10
+    start_s: 28.600
+    end_s: 31.600
+    place_part: suitcase
+    on_screen: [retort, polite, guest]
+    camera: 丁寧の顔へ寄る。
+    picture: 丁寧が金具を見る。丁寧の口が開閉する。ツッコミと客の口は閉じている。昼の室内光。金属の冷たい面。文字は無い。
+  - id: s11
+    start_s: 31.600
+    end_s: 33.800
+    place_part: suitcase
+    on_screen: [retort, polite, guest, owner]
+    camera: 肩越しに口へ寄る。
+    picture: 人が後ろ姿のまま手を引く。人の口が開閉する。ツッコミと丁寧と客の口は閉じている。昼の室内光。部屋着の布。文字は無い。
+  - id: s12
+    start_s: 33.800
+    end_s: 38.200
+    place_part: floor
+    on_screen: [retort, polite, guest]
+    camera: 降りる足を横から見る。
+    picture: ツッコミが荷物から床へ降りる。全員の口は閉じている。昼の室内光。床の木目。文字は無い。
+  - id: s13
+    start_s: 38.200
+    end_s: 41.000
+    place_part: floor
+    on_screen: [retort, polite, guest]
+    camera: ツッコミの横から寄る。
+    picture: ツッコミが荷物の横に座る。ツッコミの口が開閉する。丁寧と客の口は閉じている。昼の室内光。短い毛の質感。文字は無い。
+  - id: s14
+    start_s: 41.000
+    end_s: 45.400
+    place_part: floor
+    on_screen: [retort, polite, guest]
+    camera: 少し引いて荷物と三匹を見る。
+    picture: 開いた荷物の横に三匹が座る。全員の口は閉じている。昼の室内光。布のざらつき。文字は無い。
+captions:
+  - id: c01
+    shot: s01
+    role: retort
+    source_line: e-01
+    mouth_s: 2.400
+    seen_s: [0.200]
+    line: 入力
+  - id: c02
+    shot: s02
+    role: polite
+    source_line: e-02
+    mouth_s: 3.200
+    seen_s: [2.600]
+    line: 入力
+  - id: c03
+    shot: s04
+    role: owner
+    source_line: e-03
+    mouth_s: 2.200
+    seen_s: [10.200]
+    line: 入力
+  - id: c04
+    shot: s05
+    role: retort
+    source_line: e-04
+    mouth_s: 2.600
+    seen_s: [12.400]
+    line: 入力
+  - id: c05
+    shot: s07
+    role: guest
+    source_line: e-05
+    mouth_s: 2.600
+    seen_s: [19.400]
+    line: 入力
+  - id: c06
+    shot: s08
+    role: retort
+    source_line: e-06
+    mouth_s: 2.400
+    seen_s: [22.000]
+    line: 入力
+  - id: c07
+    shot: s10
+    role: polite
+    source_line: e-07
+    mouth_s: 3.000
+    seen_s: [28.800]
+    line: 入力
+  - id: c08
+    shot: s11
+    role: owner
+    source_line: e-08
+    mouth_s: 2.200
+    seen_s: [31.800]
+    line: 入力
+  - id: c09
+    shot: s13
+    role: retort
+    source_line: e-09
+    mouth_s: 2.800
+    seen_s: [38.400]
+    line: 入力
+score:
+  最初3秒: 18
+  テンポ: 18
+  見やすさ: 16
+  参考の型との一致: 18
+  壊れ: 20
+  合計: 90
+  メモ: 口パク秒を先に固定。声と曲のファイルは指定しない。本編に字幕とCTAは無い。
