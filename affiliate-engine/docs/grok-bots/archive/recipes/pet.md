@@ -74,7 +74,7 @@ A small dog sits still near a food bowl, then a cat startles at a fridge-door so
 ```
 
 ---
----
+
 宛先: ジャンル_ペット
 from: manager
 run: production
@@ -145,8 +145,11 @@ A cat walks into a late-afternoon living room, sits, looks at the camera, looks 
 詳しくはプロフィールのリンク（PR）
 #PR
 ```
+
 ---
+
 ## 後で使うレシピ（今は生成するな）
+
 宛先: ジャンル_ペット
 from: manager
 run: parked
@@ -205,7 +208,7 @@ An empty Japanese living room, a dog bed in a sun patch, a dog walks in and look
 ```
 
 ---
----
+
 宛先: ジャンル_ペット
 from: manager
 run: parked
@@ -264,7 +267,7 @@ A notebook and pen on a wooden table, a dog sleeping in the background, soft lig
 ```
 
 ---
----
+
 宛先: ジャンル_ペット
 from: manager
 run: parked

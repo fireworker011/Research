@@ -59,7 +59,7 @@ A notebook and a calculator on a mint-green table, morning light. No money, no r
 ```
 
 ---
----
+
 宛先: ジャンル_節約
 from: manager
 run: ready
@@ -117,7 +117,7 @@ A simple phone face-down next to a notebook. No carrier logos, no screen UI.
 ```
 
 ---
----
+
 宛先: ジャンル_節約
 from: manager
 run: ready

@@ -60,7 +60,7 @@ A small compass on a dark teal desk, a closed notebook. No people, no office tow
 ```
 
 ---
----
+
 宛先: ジャンル_転職
 from: manager
 run: ready
@@ -119,7 +119,7 @@ Two plain folders and a pencil on a desk. No logos, no readable names.
 ```
 
 ---
----
+
 宛先: ジャンル_転職
 from: manager
 run: ready

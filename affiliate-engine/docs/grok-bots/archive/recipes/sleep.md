@@ -60,7 +60,7 @@ A pillow and a crescent-moon lamp glow in a deep navy room. No people, no phones
 ```
 
 ---
----
+
 宛先: ジャンル_睡眠
 from: manager
 run: ready
@@ -119,7 +119,7 @@ An empty made bed, pale sheet, navy wall, soft night light. No brand tags.
 ```
 
 ---
----
+
 宛先: ジャンル_睡眠
 from: manager
 run: ready

@@ -2,11 +2,13 @@
 
 対象は `affiliate-engine/docs/grok-bots/` の md と txt。
 リプライ、リプ、巡回、いいね、フォロー、DM、ペルソナ、禁止、するな、やるな、量産、1日1本、2本目、メンション、に当たる行を、編集前と編集後で並べた。
-印は unchanged、moved、deduped だけ。changed は無い。before と after の文言は同じ。
+比較は `53e9e208` と、`genre-video-gen.js --write-agents` のあと。
+印は unchanged、moved、deduped だけ。changed は 0。before と after の文言は同じ。
 
 - unchanged: 358
 - moved: 87
 - deduped: 213
+- changed: 0
 - 対象行: 658
 
 ## 判断しなかったもの（文言は変えていない）
@@ -19,7 +21,7 @@
 - `wake/*.txt` は `PHONE.md` の貼り付け文と同じだが、`genre-video-gen.js` の self-test が `wake/pet.txt` を読む。移していない。
 - `research/knowledge/` はこのブランチに無い。
 - いいね数の実測（research のログ、TikTok の表）はルールの言い換えをしていない。archive に移したログの行は moved。残したファイルの行は unchanged。
-- `node src/genre-video-gen.js --self-test` と `--write-agents` は `agents/*.md` を JSON から書き直す。この短縮のあとに走らせると、待つレシピの本文と `ジャンル_*.md` の複製が戻る。スクリプトは変えていない。
+- `node src/genre-video-gen.js --write-agents` と `--self-test` は、待つレシピの本文を `archive/recipes/` に書き、`ジャンル_*.md` は正本へのリンクだけを書く。契約、wake、PHONE、台帳の文言は変えていない。上の5つの矛盾は `CONFLICTS.md` に残し、どちらが上かは決めていない。
 
 ## 行
 

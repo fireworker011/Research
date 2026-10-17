@@ -60,7 +60,7 @@ A kitchen counter, a plain bento box from above, chopsticks, no brand printing r
 ```
 
 ---
----
+
 宛先: ジャンル_筋トレ
 from: manager
 run: ready

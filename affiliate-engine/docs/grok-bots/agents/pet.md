@@ -269,8 +269,6 @@ A calico cat on a sunlit wooden floor ignores a distant voice, then ears snap to
 #PR
 ```
 
----
-
 ## 待つレシピ
 
 status が「今の1本」ではないレシピの本文（テロップ表、IMAGINE_THROW、テロップ／読み上げ、YouTube説明文）は [archive/recipes/pet.md](../archive/recipes/pet.md) に移した。文言は移す前と同じ。id と status はここにも残す。
@@ -316,6 +314,7 @@ post: false
 - imagine_clips: 3 × 5秒
 
 ## 後で使うレシピ（今は生成するな）
+
 宛先: ジャンル_ペット
 from: manager
 run: parked

@@ -60,7 +60,7 @@ A closed laptop and a plain notebook on a small desk, navy wall, coffee cup. No 
 ```
 
 ---
----
+
 宛先: ジャンル_副業
 from: manager
 run: ready
@@ -120,7 +120,7 @@ A notebook with a simple checklist of three blank lines, pen beside it, desk lam
 ```
 
 ---
----
+
 宛先: ジャンル_副業
 from: manager
 run: ready
@@ -179,7 +179,7 @@ An empty desk, a closed laptop, a small plant, morning light. No screens on, no 
 ```
 
 ---
----
+
 宛先: ジャンル_副業
 from: manager
 run: ready
