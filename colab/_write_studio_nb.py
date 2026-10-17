@@ -84,6 +84,9 @@ HERO_SHEET = ""  #@param {type:"string"}
 VIDEO = ""  #@param {type:"string"}
 FIRST = ""  #@param {type:"string"}
 LAST = ""  #@param {type:"string"}
+#@markdown **longform_chunk だけ。総尺とチャンク秒。チャンクは 5–8。runtime=comfy のときだけ Continuum を custom_nodes に足す。**
+TOTAL = "10"  #@param {type:"string"}
+CHUNK = "5"  #@param ["5", "6", "7", "8"]
 #@markdown **two_pass のときだけ。B の Video 1 は A の mp4。**
 PASS_A = ""  #@param __PASS_CHOICES__
 PASS_B = ""  #@param __PASS_CHOICES__
@@ -123,7 +126,8 @@ os.environ["H3_STUDIO_RUNTIME"] = RUNTIME
 os.environ["H3_STUDIO_HIGH_MEM"] = "1" if HIGH_MEM else "0"
 os.environ["H3_STUDIO_FINISH"] = "1" if FINISH else "0"
 os.environ["H3_STUDIO_TURBO"] = "1" if TURBO else "0"
-os.environ["H3_STUDIO_DURATION"] = DURATION
+os.environ["H3_STUDIO_DURATION"] = TOTAL if JOB == "longform_chunk" else DURATION
+os.environ["H3_STUDIO_CHUNK_SECONDS"] = CHUNK
 os.environ["H3_STUDIO_FAST_SECONDS"] = FAST_SECONDS
 os.environ["H3_STUDIO_WITH_ACTION"] = "1" if WITH_ACTION else "0"
 os.environ["H3_STUDIO_WITH_COMBAT"] = "1" if WITH_COMBAT else "0"
@@ -177,6 +181,7 @@ runtime が api で Combat / Swap / real を選ぶと止まる。
 `affi_template` は既存のバズ型台本を指す。台本は書き換えない。
 Combat の格闘と Swap は Turbo を切る。本体は Comfy High-Mem。
 Weapon / GunFu / Continuity は無い。orbit の LoRA ファイル名は未確定。アダルト用ノートはこのブランチに無い。
+`longform_chunk` は Comfy だけ。`runtime=comfy` のプランに `git clone https://github.com/ukr8b3g-cmyk/ComfyUI-H3-Continuum.git` を custom_nodes へ書く。追加の pip は無い。api では止まる。
 生成ノートは `h3-runner/minimax_h3_still.ipynb`。
 
 下の2つ目のコードセルは `text_scene` を7本書く。公式 Hailuo の T2VA。LoRA なし。Combat も charswap も切る。各本6秒、16:9、768P、24fps、1ショット。ポスターは静止画。顔固定はこの7本に載せない。生成ボタンは押さない。
