@@ -1,0 +1,50 @@
+{
+  "id": "sfw_preview",
+  "adults_only": true,
+  "min_age": 21,
+  "nsfw": false,
+  "modes": ["i2v", "t2v"],
+  "allow_turbo": true,
+  "canvas": {
+    "i2v": { "width": 768, "height": 864, "duration_s": 5.0, "aspect": "8:9" },
+    "t2v": { "width": 576, "height": 1024, "duration_s": 5.0, "aspect": "9:16" }
+  },
+  "stack_plan": {
+    "turbo": { "id": "minimax-h3-turbo-fl2v-4step", "strength": 1.0 },
+    "cinema": { "id": "cinema-dy", "strength": 0.4 }
+  },
+  "sampler": {
+    "sampler_name": "euler",
+    "scheduler": "simple",
+    "steps": 4,
+    "note": "SFW fastest preview. LightX2V 4step 768p 1.0 + cinematic 0.4. Rebake hits on sfw_daily 8step."
+  },
+  "disabled": [
+    "anal-penetration-coachbate",
+    "synth-pussy-h3",
+    "lesbian-cunnilingus-h3",
+    "pussy-spread-h3",
+    "hmnsfw-aio-v25",
+    "hmnsfw-aio-v2",
+    "futa-h3-v51",
+    "penis-lora-h3",
+    "blowjob-h3",
+    "astro-nsfw-h3",
+    "tiddies-realism-slider",
+    "riding-pose-i2v",
+    "facial-cumshot-h3",
+    "thumbinbutt-h3",
+    "final-thrust-h3",
+    "cumouf-h3",
+    "photoreal-h3-still",
+    "astro-cinema-h3",
+    "larry-v4",
+    "minimax-h3-turbo-fl2v-8step",
+    "minimax-h3-turbo-ref2v-4step"
+  ],
+  "scenes": {
+    "i2v": "DY\nFor the target video, at 0.00 seconds into the target video, <Picture 1> (from [Shot 1]) is fully referenced.\n\nsubject_definitions:\n<Subject 1> Adult, clearly over 21, same identity as <Picture 1>.\n\nenvironment: Matching <Picture 1>.\ncamera: Medium shot.\nintegrated_multimodal_description: Quick preview of a live-action everyday moment. Photoreal. Identity locked to <Picture 1>.\noverall_soundscape: Room tone.\nending: (S1) remains an adult over 21.\n\nAll performers are consenting adults 21 years or older.",
+    "t2v": "DY\nVertical 9:16 live-action photorealism, no anime.\n\nsubject_definitions:\n<Subject 1> Adult woman, clearly over 21.\n\nenvironment: Desk, soft daylight.\ncamera: Medium shot.\nintegrated_multimodal_description: Quick preview of an everyday conversation. Photoreal.\noverall_soundscape: Room tone.\nending: (S1) remains an adult over 21.\n\nAll performers are consenting adults 21 years or older."
+  },
+  "negative": "child, teen, loli, shota, syota, underage, minor, cartoon, illustration, nsfw, nude"
+}
