@@ -1495,3 +1495,53 @@ def test_homage_choice_stops_without_the_file_and_keeps_fl2va_weights(tmp_path: 
     assert "percent" not in saved and "cer" not in saved
 
 
+CAT_DUO = (
+    "box_seat",
+    "sun_stripe",
+    "sock_pair",
+    "fridge_lamp",
+    "rain_towel",
+    "remote_keep",
+    "soil_paw",
+    "laundry_nest",
+    "night_round",
+    "cushion_vote",
+)
+
+
+def test_cat_duo_sheets_reach_commands_before_bake(tmp_path: Path) -> None:
+    ready = (ROOT / "stories" / "READY.md").read_text(encoding="utf-8")
+    sheet = next(src for src in bake.reference_notebook()["cells"] if "#@title この1本" in "".join(src["source"]))
+    menu = "".join(sheet["source"])
+    for name in CAT_DUO:
+        assert name in menu
+        block = ready.split(f"## {name}\n")[1].split("\n## ")[0]
+        place = next(line.split(" = ", 1)[1] for line in block.splitlines() if line.startswith("場所 = "))
+        title = block.split("題\n\n```\n", 1)[1].split("\n```", 1)[0]
+        assert title
+        shown = bake.run_choice(
+            "構成のまま1本",
+            sheet_person="出さない",
+            sheet_animals={"guest": "出さない", "retort": "グレーのマンチカン", "polite": "白いスコティッシュフォールド"},
+            sheet_place=place,
+            sheet_lines="",
+            sheet_pack=name,
+            out_dir=tmp_path / name,
+        )
+        assert "status=ready" in shown
+        assert "焼かない" not in shown
+        job = json.loads((tmp_path / name / "sheet" / "job.json").read_text(encoding="utf-8"))
+        assert 45 <= job["duration_s"] <= 60
+        assert job["posts"] is False
+        voices = {row["role"]: row["voice"] for row in job["performance"]["captions"]["rows"] if row["burn"]}
+        assert voices["retort"] == "ja-JP-KeitaNeural"
+        assert voices["polite"] == "ja-JP-NanamiNeural"
+        assert "guest" not in voices and "owner" not in voices
+        blob = "\n".join(clip["prompt"] for clip in job["clips"])
+        lines = (ROOT / "stories" / f"{name}_lines.txt").read_text(encoding="utf-8")
+        for line in lines.splitlines():
+            assert line.split(" ", 1)[1] not in blob
+        assert "口が開閉" in blob
+        assert "<d>" not in blob
+
+

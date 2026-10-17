@@ -1,0 +1,268 @@
+schema: affi-repro-structure/v1
+source_id: sun-stripe-morning
+pattern: junjun_ranran
+duration_s: 46.614
+canvas: "1080x1920"
+fps: 30
+file_in_repo: false
+cuts_s:
+  - 2.623
+  - 5.969
+  - 8.969
+  - 11.592
+  - 14.751
+  - 17.751
+  - 20.158
+  - 23.504
+  - 26.559
+  - 29.531
+  - 32.154
+  - 35.5
+  - 38.555
+  - 41.714
+silences_s: []
+measure:
+  cuts: せりふの秒は見積もり。pet_sheet と paw_stamp で測ってある同じ役の秒から、ツッコミは 0.495+0.216×字数、丁寧は 0.889+0.187×字数。短い文は 1.872 秒を下回らない。ショットは見積もりに 0.4 秒を足した。動作のカットは 3 秒。声はこの場では録っていない。口の絵のあとから重ねる。
+  silences: この入力では測っていない。
+  captions: せりふは stories/sun_stripe_lines.txt。絵のプロンプトには入れない。
+  music: 曲は仕上げ。H3 には作らせない。
+  caption_y: 仕様の「下から約30%」を使う。
+change_only:
+  - person
+  - animals
+  - lines
+  - place
+slots:
+  person: 入力
+  animals:
+    guest: 入力
+    retort: 入力
+    polite: 入力
+  place: 入力
+narration: 独立した語りは無い。声はせりふ。
+registers:
+  guest: この話には出さない。
+  retort: 方言のツッコミ。低い口調。
+  polite: 丁寧語。
+  owner: この話には出さない。
+  indoor_pair: この話では使わない。
+voices:
+  guest: espeak:ja
+  retort: ja-JP-KeitaNeural
+  polite: ja-JP-NanamiNeural
+  owner: gtts:ja
+subtitle:
+  font: 白ゴシック
+  edge: 細い影
+  lines: 1
+  box: false
+  place: 中央やや下
+  content: その場のせりふ。差し替えた文を出す。
+watermark:
+  places: 上と中段
+  text: 自分のアカウント名
+punch:
+  - 朝の光の帯を先に取り、布を開けたあとは尻尾だけが日向になる
+shots:
+  - id: s01
+    start_s: 0
+    end_s: 2.623
+    place_part: room
+    on_screen: [retort, polite]
+    camera: 床の光の帯へ寄る。
+    picture: ツッコミが細い光の帯に前足を置き、口が開閉する。丁寧は後ろで口を閉じている。
+  - id: s02
+    start_s: 2.623
+    end_s: 5.969
+    place_part: room
+    on_screen: [polite, retort]
+    camera: 窓の布へ少し振る。
+    picture: 丁寧が窓の布の端を持って口が開閉する。ツッコミの口は閉じている。
+  - id: s03
+    start_s: 5.969
+    end_s: 8.969
+    place_part: room
+    on_screen: [retort, polite]
+    camera: 布の端を横から見る。
+    picture: 丁寧が窓の布を少し開ける。全員の口は閉じている。
+  - id: s04
+    start_s: 8.969
+    end_s: 11.592
+    place_part: room
+    on_screen: [retort, polite]
+    camera: 床の光へ寄る。
+    picture: ツッコミが細くなった光を見て口が開閉する。丁寧の口は閉じている。
+  - id: s05
+    start_s: 11.592
+    end_s: 14.751
+    place_part: room
+    on_screen: [polite, retort]
+    camera: 尻尾へ寄る。
+    picture: 丁寧がツッコミの尻尾を見て口が開閉する。光は尻尾にだけ当たる。ツッコミの口は閉じている。
+  - id: s06
+    start_s: 14.751
+    end_s: 17.751
+    place_part: room
+    on_screen: [retort, polite]
+    camera: 尻尾と光を横から見る。
+    picture: 光がツッコミの尻尾にだけ当たる。全員の口は閉じている。
+  - id: s07
+    start_s: 17.751
+    end_s: 20.158
+    place_part: room
+    on_screen: [retort, polite]
+    camera: ツッコミの顔へ寄る。
+    picture: ツッコミが自分の尻尾を見て口が開閉する。丁寧の口は閉じている。
+  - id: s08
+    start_s: 20.158
+    end_s: 23.504
+    place_part: room
+    on_screen: [polite, retort]
+    camera: 丁寧の顔へ寄る。
+    picture: 丁寧が窓の方を見て口が開閉する。ツッコミの口は閉じている。
+  - id: s09
+    start_s: 23.504
+    end_s: 26.559
+    place_part: room
+    on_screen: [retort, polite]
+    camera: 光の帯と顔。
+    picture: ツッコミが光の帯の端に座って口が開閉する。丁寧の口は閉じている。
+  - id: s10
+    start_s: 26.559
+    end_s: 29.531
+    place_part: room
+    on_screen: [polite, retort]
+    camera: 丁寧の顔へ寄る。
+    picture: 丁寧が光の帯の端に座りながら口が開閉する。ツッコミの口は閉じている。
+  - id: s11
+    start_s: 29.531
+    end_s: 32.154
+    place_part: room
+    on_screen: [retort, polite]
+    camera: 2匹の間を見る。
+    picture: ツッコミが空いた端を見て口が開閉する。丁寧の口は閉じている。
+  - id: s12
+    start_s: 32.154
+    end_s: 35.5
+    place_part: room
+    on_screen: [polite, retort]
+    camera: 窓と床を一緒に見る。
+    picture: 丁寧が窓と床の光を見て口が開閉する。ツッコミの口は閉じている。
+  - id: s13
+    start_s: 35.5
+    end_s: 38.555
+    place_part: room
+    on_screen: [retort, polite]
+    camera: 尻尾へ寄る。
+    picture: ツッコミが自分の尻尾を見て口が開閉する。丁寧の口は閉じている。
+  - id: s14
+    start_s: 38.555
+    end_s: 41.714
+    place_part: room
+    on_screen: [polite, retort]
+    camera: 丁寧の顔へ寄る。
+    picture: 丁寧が光の端を見て口が開閉する。ツッコミの口は閉じている。
+  - id: s15
+    start_s: 41.714
+    end_s: 46.614
+    place_part: room
+    on_screen: [retort, polite]
+    camera: 少し引いて2匹を見る。
+    picture: 2匹が光の帯の端に並んで座る。全員の口は閉じている。
+captions:
+  - id: c01
+    shot: s01
+    role: retort
+    source_line: e-01
+    speak_s: 2.223
+    seen_s:
+      - 0.2
+    line: 入力
+  - id: c02
+    shot: s02
+    role: polite
+    source_line: e-02
+    speak_s: 2.946
+    seen_s:
+      - 2.823
+    line: 入力
+  - id: c03
+    shot: s04
+    role: retort
+    source_line: e-03
+    speak_s: 2.223
+    seen_s:
+      - 9.169
+    line: 入力
+  - id: c04
+    shot: s05
+    role: polite
+    source_line: e-04
+    speak_s: 2.759
+    seen_s:
+      - 11.792
+    line: 入力
+  - id: c05
+    shot: s07
+    role: retort
+    source_line: e-05
+    speak_s: 2.007
+    seen_s:
+      - 17.951
+    line: 入力
+  - id: c06
+    shot: s08
+    role: polite
+    source_line: e-06
+    speak_s: 2.946
+    seen_s:
+      - 20.358
+    line: 入力
+  - id: c07
+    shot: s09
+    role: retort
+    source_line: e-07
+    speak_s: 2.655
+    seen_s:
+      - 23.704
+    line: 入力
+  - id: c08
+    shot: s10
+    role: polite
+    source_line: e-08
+    speak_s: 2.572
+    seen_s:
+      - 26.759
+    line: 入力
+  - id: c09
+    shot: s11
+    role: retort
+    source_line: e-09
+    speak_s: 2.223
+    seen_s:
+      - 29.731
+    line: 入力
+  - id: c10
+    shot: s12
+    role: polite
+    source_line: e-10
+    speak_s: 2.946
+    seen_s:
+      - 32.354
+    line: 入力
+  - id: c11
+    shot: s13
+    role: retort
+    source_line: e-11
+    speak_s: 2.655
+    seen_s:
+      - 35.7
+    line: 入力
+  - id: c12
+    shot: s14
+    role: polite
+    source_line: e-12
+    speak_s: 2.759
+    seen_s:
+      - 38.755
+    line: 入力

@@ -1,0 +1,260 @@
+schema: affi-repro-structure/v1
+source_id: sock-pair-room
+pattern: junjun_ranran
+duration_s: 46.067
+canvas: "1080x1920"
+fps: 30
+file_in_repo: false
+cuts_s:
+  - 2.839
+  - 6.372
+  - 9.372
+  - 12.859
+  - 15.859
+  - 18.831
+  - 21.238
+  - 24.238
+  - 27.584
+  - 30.639
+  - 33.985
+  - 37.04
+  - 40.095
+  - 43.067
+silences_s: []
+measure:
+  cuts: せりふの秒は見積もり。pet_sheet と paw_stamp で測ってある同じ役の秒から、ツッコミは 0.495+0.216×字数、丁寧は 0.889+0.187×字数。短い文は 1.872 秒を下回らない。ショットは見積もりに 0.4 秒を足した。動作のカットは 3 秒。声はこの場では録っていない。口の絵のあとから重ねる。
+  silences: この入力では測っていない。
+  captions: せりふは stories/sock_pair_lines.txt。絵のプロンプトには入れない。
+  music: 曲は仕上げ。H3 には作らせない。
+  caption_y: 仕様の「下から約30%」を使う。
+change_only:
+  - person
+  - animals
+  - lines
+  - place
+slots:
+  person: 入力
+  animals:
+    guest: 入力
+    retort: 入力
+    polite: 入力
+  place: 入力
+narration: 独立した語りは無い。声はせりふ。
+registers:
+  guest: この話には出さない。
+  retort: 方言のツッコミ。低い口調。
+  polite: 丁寧語。
+  owner: この話には出さない。
+  indoor_pair: この話では使わない。
+voices:
+  guest: espeak:ja
+  retort: ja-JP-KeitaNeural
+  polite: ja-JP-NanamiNeural
+  owner: gtts:ja
+subtitle:
+  font: 白ゴシック
+  edge: 細い影
+  lines: 1
+  box: false
+  place: 中央やや下
+  content: その場のせりふ。差し替えた文を出す。
+watermark:
+  places: 上と中段
+  text: 自分のアカウント名
+punch:
+  - 片方の靴下を連行して揃え、その上に座って保護と言う
+shots:
+  - id: s01
+    start_s: 0
+    end_s: 2.839
+    place_part: room
+    on_screen: [retort, polite]
+    camera: 床の靴下へ寄る。
+    picture: ツッコミが床の片方の靴下を見て口が開閉する。丁寧は後ろで口を閉じている。
+  - id: s02
+    start_s: 2.839
+    end_s: 6.372
+    place_part: room
+    on_screen: [polite, retort]
+    camera: 奥のかごへ振る。
+    picture: 丁寧が奥のかごを見て口が開閉する。ツッコミの口は閉じている。
+  - id: s03
+    start_s: 6.372
+    end_s: 9.372
+    place_part: room
+    on_screen: [retort, polite]
+    camera: かごの中を少し見る。
+    picture: 丁寧がかごをのぞく。全員の口は閉じている。
+  - id: s04
+    start_s: 9.372
+    end_s: 12.859
+    place_part: room
+    on_screen: [retort, polite]
+    camera: ツッコミの顔へ寄る。
+    picture: ツッコミがかごの方を向いて口が開閉する。丁寧の口は閉じている。
+  - id: s05
+    start_s: 12.859
+    end_s: 15.859
+    place_part: room
+    on_screen: [retort, polite]
+    camera: 低い位置から追う。
+    picture: ツッコミが靴下をくわえて歩く。口はくわえたまま喋らない。丁寧の口は閉じている。
+  - id: s06
+    start_s: 15.859
+    end_s: 18.831
+    place_part: room
+    on_screen: [polite, retort]
+    camera: 並んだ2本へ寄る。
+    picture: 丁寧が並んだ2本の靴下を見て口が開閉する。ツッコミの口は閉じている。
+  - id: s07
+    start_s: 18.831
+    end_s: 21.238
+    place_part: room
+    on_screen: [retort, polite]
+    camera: ツッコミの顔へ寄る。
+    picture: ツッコミが2本の横で口が開閉する。丁寧の口は閉じている。
+  - id: s08
+    start_s: 21.238
+    end_s: 24.238
+    place_part: room
+    on_screen: [retort, polite]
+    camera: 上から2本を見る。
+    picture: ツッコミが2本の靴下の上に座る。全員の口は閉じている。
+  - id: s09
+    start_s: 24.238
+    end_s: 27.584
+    place_part: room
+    on_screen: [polite, retort]
+    camera: 座っている前足へ寄る。
+    picture: 丁寧が靴下の上の前足を見て口が開閉する。ツッコミの口は閉じている。
+  - id: s10
+    start_s: 27.584
+    end_s: 30.639
+    place_part: room
+    on_screen: [retort, polite]
+    camera: ツッコミの顔へ寄る。
+    picture: ツッコミが座ったまま口が開閉する。丁寧の口は閉じている。
+  - id: s11
+    start_s: 30.639
+    end_s: 33.985
+    place_part: room
+    on_screen: [polite, retort]
+    camera: かごへ少し振る。
+    picture: 丁寧が空いたかごを見て口が開閉する。ツッコミの口は閉じている。
+  - id: s12
+    start_s: 33.985
+    end_s: 37.04
+    place_part: room
+    on_screen: [retort, polite]
+    camera: 2本と顔。
+    picture: ツッコミが揃った2本を見て口が開閉する。丁寧の口は閉じている。
+  - id: s13
+    start_s: 37.04
+    end_s: 40.095
+    place_part: room
+    on_screen: [retort, polite]
+    camera: ツッコミの顔へ寄る。
+    picture: ツッコミが座ったまま口が開閉する。丁寧の口は閉じている。
+  - id: s14
+    start_s: 40.095
+    end_s: 43.067
+    place_part: room
+    on_screen: [polite, retort]
+    camera: 丁寧の顔へ寄る。
+    picture: 丁寧が2本を見て口が開閉する。ツッコミの口は閉じている。
+  - id: s15
+    start_s: 43.067
+    end_s: 46.067
+    place_part: room
+    on_screen: [retort, polite]
+    camera: 少し引いて2匹を見る。
+    picture: 2匹が揃った靴下の横にいる。ツッコミはまだ上に座っている。全員の口は閉じている。
+captions:
+  - id: c01
+    shot: s01
+    role: retort
+    source_line: e-01
+    speak_s: 2.439
+    seen_s:
+      - 0.2
+    line: 入力
+  - id: c02
+    shot: s02
+    role: polite
+    source_line: e-02
+    speak_s: 3.133
+    seen_s:
+      - 3.039
+    line: 入力
+  - id: c03
+    shot: s04
+    role: retort
+    source_line: e-03
+    speak_s: 3.087
+    seen_s:
+      - 9.572
+    line: 入力
+  - id: c04
+    shot: s06
+    role: polite
+    source_line: e-04
+    speak_s: 2.572
+    seen_s:
+      - 16.059
+    line: 入力
+  - id: c05
+    shot: s07
+    role: retort
+    source_line: e-05
+    speak_s: 2.007
+    seen_s:
+      - 19.031
+    line: 入力
+  - id: c06
+    shot: s09
+    role: polite
+    source_line: e-06
+    speak_s: 2.946
+    seen_s:
+      - 24.438
+    line: 入力
+  - id: c07
+    shot: s10
+    role: retort
+    source_line: e-07
+    speak_s: 2.655
+    seen_s:
+      - 27.784
+    line: 入力
+  - id: c08
+    shot: s11
+    role: polite
+    source_line: e-08
+    speak_s: 2.946
+    seen_s:
+      - 30.839
+    line: 入力
+  - id: c09
+    shot: s12
+    role: retort
+    source_line: e-09
+    speak_s: 2.655
+    seen_s:
+      - 34.185
+    line: 入力
+  - id: c10
+    shot: s13
+    role: retort
+    source_line: e-10
+    speak_s: 2.655
+    seen_s:
+      - 37.24
+    line: 入力
+  - id: c11
+    shot: s14
+    role: polite
+    source_line: e-11
+    speak_s: 2.572
+    seen_s:
+      - 40.295
+    line: 入力
