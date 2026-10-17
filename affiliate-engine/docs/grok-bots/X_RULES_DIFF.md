@@ -2,12 +2,12 @@
 
 対象は `affiliate-engine/docs/grok-bots/` の md と txt。
 リプライ、リプ、巡回、いいね、フォロー、DM、ペルソナ、禁止、するな、やるな、量産、1日1本、2本目、メンション、に当たる行を、編集前と編集後で並べた。
-印は unchanged、moved、deduped だけ。changed は無い。文言は同じ。
+印は unchanged、moved、deduped だけ。changed は無い。before と after の文言は同じ。
 
 - unchanged: 358
-- moved: 78
-- deduped: 0
-- 対象行: 436
+- moved: 87
+- deduped: 213
+- 対象行: 658
 
 ## 判断しなかったもの（文言は変えていない）
 
@@ -16,9 +16,10 @@
 - `research/2026-10-17-research70.md` は、量産回避の根拠として「1日2本、時間を空ける」と書いている。ジャンル体は「1日1本」。両方残した。
 - `FETCH.md` と各エージェントの raw URL は `cursor/video-channel-playbook-e013` を指している。今の作業ブランチは `cursor/grok-bot-research-2026-08-26`。ボットが開く先なので、URL は変えていない。
 - 台本の「リプで教えてください」「コメントで教えてください」は、運用ルールか台本かを分けず、待つレシピの本文ごと `archive/recipes/` へ移した。文言は同じ。
-- `wake/*.txt` は `PHONE.md` の貼り付け文と同じだが、`genre-video-gen.js` の self-test が `wake/pet.txt` を読む。移していない。self-test は agents を生成し直すので、この短縮のあとに走らせていない。
+- `wake/*.txt` は `PHONE.md` の貼り付け文と同じだが、`genre-video-gen.js` の self-test が `wake/pet.txt` を読む。移していない。
 - `research/knowledge/` はこのブランチに無い。
 - いいね数の実測（research のログ、TikTok の表）はルールの言い換えをしていない。archive に移したログの行は moved。残したファイルの行は unchanged。
+- `node src/genre-video-gen.js --self-test` と `--write-agents` は `agents/*.md` を JSON から書き直す。この短縮のあとに走らせると、待つレシピの本文と `ジャンル_*.md` の複製が戻る。スクリプトは変えていない。
 
 ## 行
 
@@ -1055,6 +1056,894 @@
   - after: エージェントを調べるとき、見るのは担当の返信速度と求人の出し方、という話をよく見ます。登録した体験は書きません。比較の観点だけプロフィールに置いてあります。
 
 - `unchanged` `agents/tenshoku.md:312` agents/tenshoku.md
+  - before: 条件を全部満たすまで、このレシピで動画を作るな。IMAGINE_THROW は条件クリア時だけ Grok Imagine に投げろ。文を足すな。投稿するな。
+  - after: 条件を全部満たすまで、このレシピで動画を作るな。IMAGINE_THROW は条件クリア時だけ Grok Imagine に投げろ。文を足すな。投稿するな。
+
+- `deduped` `agents/ジャンル_ペット.md:23` kept at agents/pet.md
+  - before: 実験3本は1本ずつ。after_experiment は出すな。投稿するな。型は visual_question と aruaru3 だけ。
+  - after: 実験3本は1本ずつ。after_experiment は出すな。投稿するな。型は visual_question と aruaru3 だけ。
+
+- `deduped` `agents/ジャンル_ペット.md:27` kept at agents/pet.md
+  - before: 量産するな。1日1本が上限。2本目以降は今日やるな。
+  - after: 量産するな。1日1本が上限。2本目以降は今日やるな。
+
+- `deduped` `agents/ジャンル_ペット.md:39` kept at agents/pet.md
+  - before: 調べられないチャンネルを成功例にするな。動画・台本はコピーするな。量産するな。
+  - after: 調べられないチャンネルを成功例にするな。動画・台本はコピーするな。量産するな。
+
+- `deduped` `agents/ジャンル_ペット.md:43` kept at agents/pet.md
+  - before: - 投稿・予約・固定コメント・いいね・フォロー・DM をするな
+  - after: - 投稿・予約・固定コメント・いいね・フォロー・DM をするな
+
+- `deduped` `agents/ジャンル_ペット.md:47` kept at agents/pet.md
+  - before: - 体験談を捏造するな（比較して選んだ／実際に使った、は人間承認）
+  - after: - 体験談を捏造するな（比較して選んだ／実際に使った、は人間承認）
+
+- `deduped` `agents/ジャンル_ペット.md:48` kept at agents/pet.md
+  - before: - 数字を発明するな
+  - after: - 数字を発明するな
+
+- `deduped` `agents/ジャンル_ペット.md:51` kept at agents/pet.md
+  - before: - 他ボットに直接メンションするな
+  - after: - 他ボットに直接メンションするな
+
+- `deduped` `agents/ジャンル_ペット.md:54` kept at agents/pet.md
+  - before: - 型 id を新造するな。6つの型から選べ
+  - after: - 型 id を新造するな。6つの型から選べ
+
+- `deduped` `agents/ジャンル_ペット.md:58` kept at agents/pet.md
+  - before: - 1日1本を超えるな
+  - after: - 1日1本を超えるな
+
+- `deduped` `agents/ジャンル_ペット.md:60` kept at agents/pet.md
+  - before: ペルソナ: 犬と暮らす飼い主。あたたかい、心配性の飼い主に寄り添う、安全側に倒す。迷ったら病院へ。
+  - after: ペルソナ: 犬と暮らす飼い主。あたたかい、心配性の飼い主に寄り添う、安全側に倒す。迷ったら病院へ。
+
+- `deduped` `agents/ジャンル_ペット.md:80` kept at agents/pet.md
+  - before: - テロップ／読み上げと同一。アドリブ禁止
+  - after: - テロップ／読み上げと同一。アドリブ禁止
+
+- `deduped` `agents/ジャンル_ペット.md:81` kept at agents/pet.md
+  - before: - 無音ヘッドのあと本文開始。アドリブ禁止
+  - after: - 無音ヘッドのあと本文開始。アドリブ禁止
+
+- `deduped` `agents/ジャンル_ペット.md:88` kept at agents/pet.md
+  - before: - カット: フレーズ境界のみ。0.2秒以内のクロスフェード可。ジャンプカット禁止
+  - after: - カット: フレーズ境界のみ。0.2秒以内のクロスフェード可。ジャンプカット禁止
+
+- `deduped` `agents/ジャンル_ペット.md:89` kept at agents/pet.md
+  - before: - プッシュイン: 通しで最大5%。急なズーム禁止
+  - after: - プッシュイン: 通しで最大5%。急なズーム禁止
+
+- `deduped` `agents/ジャンル_ペット.md:96` kept at agents/pet.md
+  - before: 投稿したら必ずやれ。動画は作るな。数字は発明するな。不明は「不明」。
+  - after: 投稿したら必ずやれ。動画は作るな。数字は発明するな。不明は「不明」。
+
+- `deduped` `agents/ジャンル_ペット.md:97` kept at agents/pet.md
+  - before: KPIの判定は `video-judge.js` / `output/video/TODAY.md`。insightするな。ジャンル転換するな。
+  - after: KPIの判定は `video-judge.js` / `output/video/TODAY.md`。insightするな。ジャンル転換するな。
+
+- `deduped` `agents/ジャンル_ペット.md:110` kept at agents/pet.md
+  - before: | A8クリック | 同上。推測するな |
+  - after: | A8クリック | 同上。推測するな |
+
+- `deduped` `agents/ジャンル_ペット.md:139` kept at agents/pet.md
+  - before: 6. `output` に保存。mp4 を Git にコミットするな
+  - after: 6. `output` に保存。mp4 を Git にコミットするな
+
+- `deduped` `agents/ジャンル_ペット.md:153` kept at agents/pet.md
+  - before: 禁止: 商品デモを冒頭に置く / ビフォーアフターの体調 / 子ども顔
+  - after: 禁止: 商品デモを冒頭に置く / ビフォーアフターの体調 / 子ども顔
+
+- `deduped` `agents/ジャンル_ペット.md:219` kept at agents/pet.md
+  - before: 条件を全部満たすまで、このレシピで動画を作るな。IMAGINE_THROW は条件クリア時だけ Grok Imagine に投げろ。文を足すな。投稿するな。
+  - after: 条件を全部満たすまで、このレシピで動画を作るな。IMAGINE_THROW は条件クリア時だけ Grok Imagine に投げろ。文を足すな。投稿するな。
+
+- `deduped` `agents/ジャンル_ペット.md:279` kept at agents/pet.md
+  - before: 条件を全部満たすまで、このレシピで動画を作るな。IMAGINE_THROW は条件クリア時だけ Grok Imagine に投げろ。文を足すな。投稿するな。
+  - after: 条件を全部満たすまで、このレシピで動画を作るな。IMAGINE_THROW は条件クリア時だけ Grok Imagine に投げろ。文を足すな。投稿するな。
+
+- `moved` `agents/ジャンル_ペット.md:298` agents/ジャンル_ペット.md → archive/recipes/pet.md
+  - before: | 0.5–3.0 | 本文 | うちの子だけかと思ったら意外と『 / あるある』らしい行動、リプで教え |
+  - after: | 0.5–3.0 | 本文 | うちの子だけかと思ったら意外と『 / あるある』らしい行動、リプで教え |
+
+- `moved` `agents/ジャンル_ペット.md:320` agents/ジャンル_ペット.md → archive/recipes/pet.md
+  - before: うちの子だけかと思ったら意外と『あるある』らしい行動、リプで教えてください。
+  - after: うちの子だけかと思ったら意外と『あるある』らしい行動、リプで教えてください。
+
+- `moved` `agents/ジャンル_ペット.md:333` agents/ジャンル_ペット.md → archive/recipes/pet.md
+  - before: うちの子だけかと思ったら意外と『あるある』らしい行動、リプで教えてください。
+  - after: うちの子だけかと思ったら意外と『あるある』らしい行動、リプで教えてください。
+
+- `deduped` `agents/ジャンル_ペット.md:352` kept at agents/pet.md
+  - before: 条件を全部満たすまで、このレシピで動画を作るな。IMAGINE_THROW は条件クリア時だけ Grok Imagine に投げろ。文を足すな。投稿するな。
+  - after: 条件を全部満たすまで、このレシピで動画を作るな。IMAGINE_THROW は条件クリア時だけ Grok Imagine に投げろ。文を足すな。投稿するな。
+
+- `deduped` `agents/ジャンル_ペット.md:419` kept at agents/pet.md
+  - before: ## 後で使うレシピ（今は生成するな）
+  - after: ## 後で使うレシピ（今は生成するな）
+
+- `deduped` `agents/ジャンル_ペット.md:426` kept at agents/pet.md
+  - before: 条件を全部満たすまで、このレシピで動画を作るな。IMAGINE_THROW は条件クリア時だけ Grok Imagine に投げろ。文を足すな。投稿するな。
+  - after: 条件を全部満たすまで、このレシピで動画を作るな。IMAGINE_THROW は条件クリア時だけ Grok Imagine に投げろ。文を足すな。投稿するな。
+
+- `deduped` `agents/ジャンル_ペット.md:485` kept at agents/pet.md
+  - before: 条件を全部満たすまで、このレシピで動画を作るな。IMAGINE_THROW は条件クリア時だけ Grok Imagine に投げろ。文を足すな。投稿するな。
+  - after: 条件を全部満たすまで、このレシピで動画を作るな。IMAGINE_THROW は条件クリア時だけ Grok Imagine に投げろ。文を足すな。投稿するな。
+
+- `deduped` `agents/ジャンル_ペット.md:544` kept at agents/pet.md
+  - before: 条件を全部満たすまで、このレシピで動画を作るな。IMAGINE_THROW は条件クリア時だけ Grok Imagine に投げろ。文を足すな。投稿するな。
+  - after: 条件を全部満たすまで、このレシピで動画を作るな。IMAGINE_THROW は条件クリア時だけ Grok Imagine に投げろ。文を足すな。投稿するな。
+
+- `deduped` `agents/ジャンル_副業.md:23` kept at agents/sidejob.md
+  - before: チャンネル未開設なら動画を作るな。準備レシピの量産禁止。投稿するな。
+  - after: チャンネル未開設なら動画を作るな。準備レシピの量産禁止。投稿するな。
+
+- `deduped` `agents/ジャンル_副業.md:27` kept at agents/sidejob.md
+  - before: 量産するな。1日1本が上限。2本目以降は今日やるな。
+  - after: 量産するな。1日1本が上限。2本目以降は今日やるな。
+
+- `deduped` `agents/ジャンル_副業.md:37` kept at agents/sidejob.md
+  - before: 台帳メモ: チャンネル未開設。準備レシピを量産するな
+  - after: 台帳メモ: チャンネル未開設。準備レシピを量産するな
+
+- `deduped` `agents/ジャンル_副業.md:39` kept at agents/sidejob.md
+  - before: 調べられないチャンネルを成功例にするな。動画・台本はコピーするな。量産するな。
+  - after: 調べられないチャンネルを成功例にするな。動画・台本はコピーするな。量産するな。
+
+- `deduped` `agents/ジャンル_副業.md:43` kept at agents/sidejob.md
+  - before: - 投稿・予約・固定コメント・いいね・フォロー・DM をするな
+  - after: - 投稿・予約・固定コメント・いいね・フォロー・DM をするな
+
+- `deduped` `agents/ジャンル_副業.md:47` kept at agents/sidejob.md
+  - before: - 体験談を捏造するな（比較して選んだ／実際に使った、は人間承認）
+  - after: - 体験談を捏造するな（比較して選んだ／実際に使った、は人間承認）
+
+- `deduped` `agents/ジャンル_副業.md:48` kept at agents/sidejob.md
+  - before: - 数字を発明するな
+  - after: - 数字を発明するな
+
+- `deduped` `agents/ジャンル_副業.md:51` kept at agents/sidejob.md
+  - before: - 他ボットに直接メンションするな
+  - after: - 他ボットに直接メンションするな
+
+- `deduped` `agents/ジャンル_副業.md:54` kept at agents/sidejob.md
+  - before: - 型 id を新造するな。6つの型から選べ
+  - after: - 型 id を新造するな。6つの型から選べ
+
+- `deduped` `agents/ジャンル_副業.md:58` kept at agents/sidejob.md
+  - before: - 1日1本を超えるな
+  - after: - 1日1本を超えるな
+
+- `deduped` `agents/ジャンル_副業.md:60` kept at agents/sidejob.md
+  - before: ペルソナ: 数字に慎重で誠実な30代会社員男性。盛らない、断定しない、失敗談に寛容。
+  - after: ペルソナ: 数字に慎重で誠実な30代会社員男性。盛らない、断定しない、失敗談に寛容。
+
+- `deduped` `agents/ジャンル_副業.md:80` kept at agents/sidejob.md
+  - before: - テロップ／読み上げと同一。アドリブ禁止
+  - after: - テロップ／読み上げと同一。アドリブ禁止
+
+- `deduped` `agents/ジャンル_副業.md:81` kept at agents/sidejob.md
+  - before: - 無音ヘッドのあと本文開始。アドリブ禁止
+  - after: - 無音ヘッドのあと本文開始。アドリブ禁止
+
+- `deduped` `agents/ジャンル_副業.md:88` kept at agents/sidejob.md
+  - before: - カット: フレーズ境界のみ。0.2秒以内のクロスフェード可。ジャンプカット禁止
+  - after: - カット: フレーズ境界のみ。0.2秒以内のクロスフェード可。ジャンプカット禁止
+
+- `deduped` `agents/ジャンル_副業.md:89` kept at agents/sidejob.md
+  - before: - プッシュイン: 通しで最大5%。急なズーム禁止
+  - after: - プッシュイン: 通しで最大5%。急なズーム禁止
+
+- `deduped` `agents/ジャンル_副業.md:96` kept at agents/sidejob.md
+  - before: 投稿したら必ずやれ。動画は作るな。数字は発明するな。不明は「不明」。
+  - after: 投稿したら必ずやれ。動画は作るな。数字は発明するな。不明は「不明」。
+
+- `deduped` `agents/ジャンル_副業.md:97` kept at agents/sidejob.md
+  - before: KPIの判定は `video-judge.js` / `output/video/TODAY.md`。insightするな。ジャンル転換するな。
+  - after: KPIの判定は `video-judge.js` / `output/video/TODAY.md`。insightするな。ジャンル転換するな。
+
+- `deduped` `agents/ジャンル_副業.md:110` kept at agents/sidejob.md
+  - before: | A8クリック | 同上。推測するな |
+  - after: | A8クリック | 同上。推測するな |
+
+- `deduped` `agents/ジャンル_副業.md:139` kept at agents/sidejob.md
+  - before: 6. `output` に保存。mp4 を Git にコミットするな
+  - after: 6. `output` に保存。mp4 を Git にコミットするな
+
+- `deduped` `agents/ジャンル_副業.md:152` kept at agents/sidejob.md
+  - before: 禁止: 誰でも月○万 / 札束 / FXの売買指示
+  - after: 禁止: 誰でも月○万 / 札束 / FXの売買指示
+
+- `deduped` `agents/ジャンル_副業.md:180` kept at agents/sidejob.md
+  - before: [禁止トピック]は扱いません。[代わりの範囲]。メモはプロフィールへ。
+  - after: [禁止トピック]は扱いません。[代わりの範囲]。メモはプロフィールへ。
+
+- `deduped` `agents/ジャンル_副業.md:191` kept at agents/sidejob.md
+  - before: - 0-3 『XとYは別』を先に出す。煽りの『今すぐ』は禁止
+  - after: - 0-3 『XとYは別』を先に出す。煽りの『今すぐ』は禁止
+
+- `deduped` `agents/ジャンル_副業.md:211` kept at agents/sidejob.md
+  - before: 条件を全部満たすまで、このレシピで動画を作るな。IMAGINE_THROW は条件クリア時だけ Grok Imagine に投げろ。文を足すな。投稿するな。
+  - after: 条件を全部満たすまで、このレシピで動画を作るな。IMAGINE_THROW は条件クリア時だけ Grok Imagine に投げろ。文を足すな。投稿するな。
+
+- `deduped` `agents/ジャンル_副業.md:270` kept at agents/sidejob.md
+  - before: 条件を全部満たすまで、このレシピで動画を作るな。IMAGINE_THROW は条件クリア時だけ Grok Imagine に投げろ。文を足すな。投稿するな。
+  - after: 条件を全部満たすまで、このレシピで動画を作るな。IMAGINE_THROW は条件クリア時だけ Grok Imagine に投げろ。文を足すな。投稿するな。
+
+- `deduped` `agents/ジャンル_副業.md:330` kept at agents/sidejob.md
+  - before: 条件を全部満たすまで、このレシピで動画を作るな。IMAGINE_THROW は条件クリア時だけ Grok Imagine に投げろ。文を足すな。投稿するな。
+  - after: 条件を全部満たすまで、このレシピで動画を作るな。IMAGINE_THROW は条件クリア時だけ Grok Imagine に投げろ。文を足すな。投稿するな。
+
+- `deduped` `agents/ジャンル_副業.md:389` kept at agents/sidejob.md
+  - before: 条件を全部満たすまで、このレシピで動画を作るな。IMAGINE_THROW は条件クリア時だけ Grok Imagine に投げろ。文を足すな。投稿するな。
+  - after: 条件を全部満たすまで、このレシピで動画を作るな。IMAGINE_THROW は条件クリア時だけ Grok Imagine に投げろ。文を足すな。投稿するな。
+
+- `deduped` `agents/ジャンル_婚活.md:23` kept at agents/konkatsu.md
+  - before: チャンネル未開設なら動画を作るな。準備レシピの量産禁止。投稿するな。
+  - after: チャンネル未開設なら動画を作るな。準備レシピの量産禁止。投稿するな。
+
+- `deduped` `agents/ジャンル_婚活.md:27` kept at agents/konkatsu.md
+  - before: 量産するな。1日1本が上限。2本目以降は今日やるな。
+  - after: 量産するな。1日1本が上限。2本目以降は今日やるな。
+
+- `deduped` `agents/ジャンル_婚活.md:37` kept at agents/konkatsu.md
+  - before: 台帳メモ: チャンネル未開設。準備レシピを量産するな
+  - after: 台帳メモ: チャンネル未開設。準備レシピを量産するな
+
+- `deduped` `agents/ジャンル_婚活.md:39` kept at agents/konkatsu.md
+  - before: 調べられないチャンネルを成功例にするな。動画・台本はコピーするな。量産するな。
+  - after: 調べられないチャンネルを成功例にするな。動画・台本はコピーするな。量産するな。
+
+- `deduped` `agents/ジャンル_婚活.md:43` kept at agents/konkatsu.md
+  - before: - 投稿・予約・固定コメント・いいね・フォロー・DM をするな
+  - after: - 投稿・予約・固定コメント・いいね・フォロー・DM をするな
+
+- `deduped` `agents/ジャンル_婚活.md:47` kept at agents/konkatsu.md
+  - before: - 体験談を捏造するな（比較して選んだ／実際に使った、は人間承認）
+  - after: - 体験談を捏造するな（比較して選んだ／実際に使った、は人間承認）
+
+- `deduped` `agents/ジャンル_婚活.md:48` kept at agents/konkatsu.md
+  - before: - 数字を発明するな
+  - after: - 数字を発明するな
+
+- `deduped` `agents/ジャンル_婚活.md:51` kept at agents/konkatsu.md
+  - before: - 他ボットに直接メンションするな
+  - after: - 他ボットに直接メンションするな
+
+- `deduped` `agents/ジャンル_婚活.md:54` kept at agents/konkatsu.md
+  - before: - 型 id を新造するな。6つの型から選べ
+  - after: - 型 id を新造するな。6つの型から選べ
+
+- `deduped` `agents/ジャンル_婚活.md:58` kept at agents/konkatsu.md
+  - before: - 1日1本を超えるな
+  - after: - 1日1本を超えるな
+
+- `deduped` `agents/ジャンル_婚活.md:60` kept at agents/konkatsu.md
+  - before: ペルソナ: 婚活情報を整理して発信する30代女性。共感ファースト、押し付けない、絵文字は控えめ。
+  - after: ペルソナ: 婚活情報を整理して発信する30代女性。共感ファースト、押し付けない、絵文字は控えめ。
+
+- `deduped` `agents/ジャンル_婚活.md:80` kept at agents/konkatsu.md
+  - before: - テロップ／読み上げと同一。アドリブ禁止
+  - after: - テロップ／読み上げと同一。アドリブ禁止
+
+- `deduped` `agents/ジャンル_婚活.md:81` kept at agents/konkatsu.md
+  - before: - 無音ヘッドのあと本文開始。アドリブ禁止
+  - after: - 無音ヘッドのあと本文開始。アドリブ禁止
+
+- `deduped` `agents/ジャンル_婚活.md:88` kept at agents/konkatsu.md
+  - before: - カット: フレーズ境界のみ。0.2秒以内のクロスフェード可。ジャンプカット禁止
+  - after: - カット: フレーズ境界のみ。0.2秒以内のクロスフェード可。ジャンプカット禁止
+
+- `deduped` `agents/ジャンル_婚活.md:89` kept at agents/konkatsu.md
+  - before: - プッシュイン: 通しで最大5%。急なズーム禁止
+  - after: - プッシュイン: 通しで最大5%。急なズーム禁止
+
+- `deduped` `agents/ジャンル_婚活.md:96` kept at agents/konkatsu.md
+  - before: 投稿したら必ずやれ。動画は作るな。数字は発明するな。不明は「不明」。
+  - after: 投稿したら必ずやれ。動画は作るな。数字は発明するな。不明は「不明」。
+
+- `deduped` `agents/ジャンル_婚活.md:97` kept at agents/konkatsu.md
+  - before: KPIの判定は `video-judge.js` / `output/video/TODAY.md`。insightするな。ジャンル転換するな。
+  - after: KPIの判定は `video-judge.js` / `output/video/TODAY.md`。insightするな。ジャンル転換するな。
+
+- `deduped` `agents/ジャンル_婚活.md:110` kept at agents/konkatsu.md
+  - before: | A8クリック | 同上。推測するな |
+  - after: | A8クリック | 同上。推測するな |
+
+- `deduped` `agents/ジャンル_婚活.md:139` kept at agents/konkatsu.md
+  - before: 6. `output` に保存。mp4 を Git にコミットするな
+  - after: 6. `output` に保存。mp4 を Git にコミットするな
+
+- `deduped` `agents/ジャンル_婚活.md:152` kept at agents/konkatsu.md
+  - before: 禁止: 偽カップル顔 / 成婚体験の捏造 / 出会い系ワード
+  - after: 禁止: 偽カップル顔 / 成婚体験の捏造 / 出会い系ワード
+
+- `deduped` `agents/ジャンル_婚活.md:157` kept at agents/konkatsu.md
+  - before: - 0-3 『XとYは別』を先に出す。煽りの『今すぐ』は禁止
+  - after: - 0-3 『XとYは別』を先に出す。煽りの『今すぐ』は禁止
+
+- `deduped` `agents/ジャンル_婚活.md:194` kept at agents/konkatsu.md
+  - before: 条件を全部満たすまで、このレシピで動画を作るな。IMAGINE_THROW は条件クリア時だけ Grok Imagine に投げろ。文を足すな。投稿するな。
+  - after: 条件を全部満たすまで、このレシピで動画を作るな。IMAGINE_THROW は条件クリア時だけ Grok Imagine に投げろ。文を足すな。投稿するな。
+
+- `moved` `agents/ジャンル_婚活.md:213` agents/ジャンル_婚活.md → archive/recipes/konkatsu.md
+  - before: | 0.5–4.7 | 本文 | マッチングアプリ、返信が仕事みた / いになって疲れた、という声をよく |
+  - after: | 0.5–4.7 | 本文 | マッチングアプリ、返信が仕事みた / いになって疲れた、という声をよく |
+
+- `moved` `agents/ジャンル_婚活.md:233` agents/ジャンル_婚活.md → archive/recipes/konkatsu.md
+  - before: マッチングアプリ、返信が仕事みたいになって疲れた、という声をよく見ます。続ける／休む／別の形を調べる、の三択で整理すると楽になる人が多いらしい。あなたは今どれに近いですか？
+  - after: マッチングアプリ、返信が仕事みたいになって疲れた、という声をよく見ます。続ける／休む／別の形を調べる、の三択で整理すると楽になる人が多いらしい。あなたは今どれに近いですか？
+
+- `moved` `agents/ジャンル_婚活.md:240` agents/ジャンル_婚活.md → archive/recipes/konkatsu.md
+  - before: マッチングアプリ、返信が仕事みたいになって疲れた、という声をよく見ます。続ける／休む／別の形を調べる、の三択で整理すると楽になる人が多いらしい。あなたは今どれに近いですか？
+  - after: マッチングアプリ、返信が仕事みたいになって疲れた、という声をよく見ます。続ける／休む／別の形を調べる、の三択で整理すると楽になる人が多いらしい。あなたは今どれに近いですか？
+
+- `deduped` `agents/ジャンル_婚活.md:253` kept at agents/konkatsu.md
+  - before: 条件を全部満たすまで、このレシピで動画を作るな。IMAGINE_THROW は条件クリア時だけ Grok Imagine に投げろ。文を足すな。投稿するな。
+  - after: 条件を全部満たすまで、このレシピで動画を作るな。IMAGINE_THROW は条件クリア時だけ Grok Imagine に投げろ。文を足すな。投稿するな。
+
+- `deduped` `agents/ジャンル_教育.md:23` kept at agents/education.md
+  - before: チャンネル未開設なら動画を作るな。準備レシピの量産禁止。投稿するな。
+  - after: チャンネル未開設なら動画を作るな。準備レシピの量産禁止。投稿するな。
+
+- `deduped` `agents/ジャンル_教育.md:27` kept at agents/education.md
+  - before: 量産するな。1日1本が上限。2本目以降は今日やるな。
+  - after: 量産するな。1日1本が上限。2本目以降は今日やるな。
+
+- `deduped` `agents/ジャンル_教育.md:37` kept at agents/education.md
+  - before: 台帳メモ: チャンネル未開設。準備レシピを量産するな
+  - after: 台帳メモ: チャンネル未開設。準備レシピを量産するな
+
+- `deduped` `agents/ジャンル_教育.md:39` kept at agents/education.md
+  - before: 調べられないチャンネルを成功例にするな。動画・台本はコピーするな。量産するな。
+  - after: 調べられないチャンネルを成功例にするな。動画・台本はコピーするな。量産するな。
+
+- `deduped` `agents/ジャンル_教育.md:43` kept at agents/education.md
+  - before: - 投稿・予約・固定コメント・いいね・フォロー・DM をするな
+  - after: - 投稿・予約・固定コメント・いいね・フォロー・DM をするな
+
+- `deduped` `agents/ジャンル_教育.md:47` kept at agents/education.md
+  - before: - 体験談を捏造するな（比較して選んだ／実際に使った、は人間承認）
+  - after: - 体験談を捏造するな（比較して選んだ／実際に使った、は人間承認）
+
+- `deduped` `agents/ジャンル_教育.md:48` kept at agents/education.md
+  - before: - 数字を発明するな
+  - after: - 数字を発明するな
+
+- `deduped` `agents/ジャンル_教育.md:51` kept at agents/education.md
+  - before: - 他ボットに直接メンションするな
+  - after: - 他ボットに直接メンションするな
+
+- `deduped` `agents/ジャンル_教育.md:54` kept at agents/education.md
+  - before: - 型 id を新造するな。6つの型から選べ
+  - after: - 型 id を新造するな。6つの型から選べ
+
+- `deduped` `agents/ジャンル_教育.md:58` kept at agents/education.md
+  - before: - 1日1本を超えるな
+  - after: - 1日1本を超えるな
+
+- `deduped` `agents/ジャンル_教育.md:60` kept at agents/education.md
+  - before: ペルソナ: 小学生の子を持つ保護者。丁寧、焦らせない、家庭ごとの事情を尊重。
+  - after: ペルソナ: 小学生の子を持つ保護者。丁寧、焦らせない、家庭ごとの事情を尊重。
+
+- `deduped` `agents/ジャンル_教育.md:80` kept at agents/education.md
+  - before: - テロップ／読み上げと同一。アドリブ禁止
+  - after: - テロップ／読み上げと同一。アドリブ禁止
+
+- `deduped` `agents/ジャンル_教育.md:81` kept at agents/education.md
+  - before: - 無音ヘッドのあと本文開始。アドリブ禁止
+  - after: - 無音ヘッドのあと本文開始。アドリブ禁止
+
+- `deduped` `agents/ジャンル_教育.md:88` kept at agents/education.md
+  - before: - カット: フレーズ境界のみ。0.2秒以内のクロスフェード可。ジャンプカット禁止
+  - after: - カット: フレーズ境界のみ。0.2秒以内のクロスフェード可。ジャンプカット禁止
+
+- `deduped` `agents/ジャンル_教育.md:89` kept at agents/education.md
+  - before: - プッシュイン: 通しで最大5%。急なズーム禁止
+  - after: - プッシュイン: 通しで最大5%。急なズーム禁止
+
+- `deduped` `agents/ジャンル_教育.md:96` kept at agents/education.md
+  - before: 投稿したら必ずやれ。動画は作るな。数字は発明するな。不明は「不明」。
+  - after: 投稿したら必ずやれ。動画は作るな。数字は発明するな。不明は「不明」。
+
+- `deduped` `agents/ジャンル_教育.md:97` kept at agents/education.md
+  - before: KPIの判定は `video-judge.js` / `output/video/TODAY.md`。insightするな。ジャンル転換するな。
+  - after: KPIの判定は `video-judge.js` / `output/video/TODAY.md`。insightするな。ジャンル転換するな。
+
+- `deduped` `agents/ジャンル_教育.md:110` kept at agents/education.md
+  - before: | A8クリック | 同上。推測するな |
+  - after: | A8クリック | 同上。推測するな |
+
+- `deduped` `agents/ジャンル_教育.md:139` kept at agents/education.md
+  - before: 6. `output` に保存。mp4 を Git にコミットするな
+  - after: 6. `output` に保存。mp4 を Git にコミットするな
+
+- `deduped` `agents/ジャンル_教育.md:152` kept at agents/education.md
+  - before: 禁止: 子どもの顔 / 通わないと遅れる煽り
+  - after: 禁止: 子どもの顔 / 通わないと遅れる煽り
+
+- `deduped` `agents/ジャンル_教育.md:177` kept at agents/education.md
+  - before: 条件を全部満たすまで、このレシピで動画を作るな。IMAGINE_THROW は条件クリア時だけ Grok Imagine に投げろ。文を足すな。投稿するな。
+  - after: 条件を全部満たすまで、このレシピで動画を作るな。IMAGINE_THROW は条件クリア時だけ Grok Imagine に投げろ。文を足すな。投稿するな。
+
+- `deduped` `agents/ジャンル_睡眠.md:23` kept at agents/sleep.md
+  - before: チャンネル未開設なら動画を作るな。準備レシピの量産禁止。投稿するな。
+  - after: チャンネル未開設なら動画を作るな。準備レシピの量産禁止。投稿するな。
+
+- `deduped` `agents/ジャンル_睡眠.md:27` kept at agents/sleep.md
+  - before: 量産するな。1日1本が上限。2本目以降は今日やるな。
+  - after: 量産するな。1日1本が上限。2本目以降は今日やるな。
+
+- `deduped` `agents/ジャンル_睡眠.md:37` kept at agents/sleep.md
+  - before: 台帳メモ: チャンネル未開設。準備レシピを量産するな
+  - after: 台帳メモ: チャンネル未開設。準備レシピを量産するな
+
+- `deduped` `agents/ジャンル_睡眠.md:39` kept at agents/sleep.md
+  - before: 調べられないチャンネルを成功例にするな。動画・台本はコピーするな。量産するな。
+  - after: 調べられないチャンネルを成功例にするな。動画・台本はコピーするな。量産するな。
+
+- `deduped` `agents/ジャンル_睡眠.md:43` kept at agents/sleep.md
+  - before: - 投稿・予約・固定コメント・いいね・フォロー・DM をするな
+  - after: - 投稿・予約・固定コメント・いいね・フォロー・DM をするな
+
+- `deduped` `agents/ジャンル_睡眠.md:47` kept at agents/sleep.md
+  - before: - 体験談を捏造するな（比較して選んだ／実際に使った、は人間承認）
+  - after: - 体験談を捏造するな（比較して選んだ／実際に使った、は人間承認）
+
+- `deduped` `agents/ジャンル_睡眠.md:48` kept at agents/sleep.md
+  - before: - 数字を発明するな
+  - after: - 数字を発明するな
+
+- `deduped` `agents/ジャンル_睡眠.md:51` kept at agents/sleep.md
+  - before: - 他ボットに直接メンションするな
+  - after: - 他ボットに直接メンションするな
+
+- `deduped` `agents/ジャンル_睡眠.md:54` kept at agents/sleep.md
+  - before: - 型 id を新造するな。6つの型から選べ
+  - after: - 型 id を新造するな。6つの型から選べ
+
+- `deduped` `agents/ジャンル_睡眠.md:58` kept at agents/sleep.md
+  - before: - 1日1本を超えるな
+  - after: - 1日1本を超えるな
+
+- `deduped` `agents/ジャンル_睡眠.md:60` kept at agents/sleep.md
+  - before: ペルソナ: 眠りを整えることに詳しい30代。落ち着いた夜のトーン、頑張らせない、断定しない。
+  - after: ペルソナ: 眠りを整えることに詳しい30代。落ち着いた夜のトーン、頑張らせない、断定しない。
+
+- `deduped` `agents/ジャンル_睡眠.md:80` kept at agents/sleep.md
+  - before: - テロップ／読み上げと同一。アドリブ禁止
+  - after: - テロップ／読み上げと同一。アドリブ禁止
+
+- `deduped` `agents/ジャンル_睡眠.md:81` kept at agents/sleep.md
+  - before: - 無音ヘッドのあと本文開始。アドリブ禁止
+  - after: - 無音ヘッドのあと本文開始。アドリブ禁止
+
+- `deduped` `agents/ジャンル_睡眠.md:88` kept at agents/sleep.md
+  - before: - カット: フレーズ境界のみ。0.2秒以内のクロスフェード可。ジャンプカット禁止
+  - after: - カット: フレーズ境界のみ。0.2秒以内のクロスフェード可。ジャンプカット禁止
+
+- `deduped` `agents/ジャンル_睡眠.md:89` kept at agents/sleep.md
+  - before: - プッシュイン: 通しで最大5%。急なズーム禁止
+  - after: - プッシュイン: 通しで最大5%。急なズーム禁止
+
+- `deduped` `agents/ジャンル_睡眠.md:96` kept at agents/sleep.md
+  - before: 投稿したら必ずやれ。動画は作るな。数字は発明するな。不明は「不明」。
+  - after: 投稿したら必ずやれ。動画は作るな。数字は発明するな。不明は「不明」。
+
+- `deduped` `agents/ジャンル_睡眠.md:97` kept at agents/sleep.md
+  - before: KPIの判定は `video-judge.js` / `output/video/TODAY.md`。insightするな。ジャンル転換するな。
+  - after: KPIの判定は `video-judge.js` / `output/video/TODAY.md`。insightするな。ジャンル転換するな。
+
+- `deduped` `agents/ジャンル_睡眠.md:110` kept at agents/sleep.md
+  - before: | A8クリック | 同上。推測するな |
+  - after: | A8クリック | 同上。推測するな |
+
+- `deduped` `agents/ジャンル_睡眠.md:139` kept at agents/sleep.md
+  - before: 6. `output` に保存。mp4 を Git にコミットするな
+  - after: 6. `output` に保存。mp4 を Git にコミットするな
+
+- `deduped` `agents/ジャンル_睡眠.md:152` kept at agents/sleep.md
+  - before: 禁止: 必ず眠れる / 医療断定 / 人物の不眠演技
+  - after: 禁止: 必ず眠れる / 医療断定 / 人物の不眠演技
+
+- `deduped` `agents/ジャンル_睡眠.md:157` kept at agents/sleep.md
+  - before: - 0-3 『XとYは別』を先に出す。煽りの『今すぐ』は禁止
+  - after: - 0-3 『XとYは別』を先に出す。煽りの『今すぐ』は禁止
+
+- `deduped` `agents/ジャンル_睡眠.md:211` kept at agents/sleep.md
+  - before: 条件を全部満たすまで、このレシピで動画を作るな。IMAGINE_THROW は条件クリア時だけ Grok Imagine に投げろ。文を足すな。投稿するな。
+  - after: 条件を全部満たすまで、このレシピで動画を作るな。IMAGINE_THROW は条件クリア時だけ Grok Imagine に投げろ。文を足すな。投稿するな。
+
+- `deduped` `agents/ジャンル_睡眠.md:270` kept at agents/sleep.md
+  - before: 条件を全部満たすまで、このレシピで動画を作るな。IMAGINE_THROW は条件クリア時だけ Grok Imagine に投げろ。文を足すな。投稿するな。
+  - after: 条件を全部満たすまで、このレシピで動画を作るな。IMAGINE_THROW は条件クリア時だけ Grok Imagine に投げろ。文を足すな。投稿するな。
+
+- `deduped` `agents/ジャンル_睡眠.md:329` kept at agents/sleep.md
+  - before: 条件を全部満たすまで、このレシピで動画を作るな。IMAGINE_THROW は条件クリア時だけ Grok Imagine に投げろ。文を足すな。投稿するな。
+  - after: 条件を全部満たすまで、このレシピで動画を作るな。IMAGINE_THROW は条件クリア時だけ Grok Imagine に投げろ。文を足すな。投稿するな。
+
+- `deduped` `agents/ジャンル_筋トレ.md:23` kept at agents/bodymake.md
+  - before: チャンネル未開設なら動画を作るな。準備レシピの量産禁止。投稿するな。
+  - after: チャンネル未開設なら動画を作るな。準備レシピの量産禁止。投稿するな。
+
+- `deduped` `agents/ジャンル_筋トレ.md:27` kept at agents/bodymake.md
+  - before: 量産するな。1日1本が上限。2本目以降は今日やるな。
+  - after: 量産するな。1日1本が上限。2本目以降は今日やるな。
+
+- `deduped` `agents/ジャンル_筋トレ.md:37` kept at agents/bodymake.md
+  - before: 台帳メモ: チャンネル未開設。準備レシピを量産するな
+  - after: 台帳メモ: チャンネル未開設。準備レシピを量産するな
+
+- `deduped` `agents/ジャンル_筋トレ.md:39` kept at agents/bodymake.md
+  - before: 調べられないチャンネルを成功例にするな。動画・台本はコピーするな。量産するな。
+  - after: 調べられないチャンネルを成功例にするな。動画・台本はコピーするな。量産するな。
+
+- `deduped` `agents/ジャンル_筋トレ.md:43` kept at agents/bodymake.md
+  - before: - 投稿・予約・固定コメント・いいね・フォロー・DM をするな
+  - after: - 投稿・予約・固定コメント・いいね・フォロー・DM をするな
+
+- `deduped` `agents/ジャンル_筋トレ.md:47` kept at agents/bodymake.md
+  - before: - 体験談を捏造するな（比較して選んだ／実際に使った、は人間承認）
+  - after: - 体験談を捏造するな（比較して選んだ／実際に使った、は人間承認）
+
+- `deduped` `agents/ジャンル_筋トレ.md:48` kept at agents/bodymake.md
+  - before: - 数字を発明するな
+  - after: - 数字を発明するな
+
+- `deduped` `agents/ジャンル_筋トレ.md:51` kept at agents/bodymake.md
+  - before: - 他ボットに直接メンションするな
+  - after: - 他ボットに直接メンションするな
+
+- `deduped` `agents/ジャンル_筋トレ.md:54` kept at agents/bodymake.md
+  - before: - 型 id を新造するな。6つの型から選べ
+  - after: - 型 id を新造するな。6つの型から選べ
+
+- `deduped` `agents/ジャンル_筋トレ.md:58` kept at agents/bodymake.md
+  - before: - 1日1本を超えるな
+  - after: - 1日1本を超えるな
+
+- `deduped` `agents/ジャンル_筋トレ.md:60` kept at agents/bodymake.md
+  - before: ペルソナ: 週2×30分だけジムに行くデスクワーカー。軽妙、ストイックさを求めない。
+  - after: ペルソナ: 週2×30分だけジムに行くデスクワーカー。軽妙、ストイックさを求めない。
+
+- `deduped` `agents/ジャンル_筋トレ.md:80` kept at agents/bodymake.md
+  - before: - テロップ／読み上げと同一。アドリブ禁止
+  - after: - テロップ／読み上げと同一。アドリブ禁止
+
+- `deduped` `agents/ジャンル_筋トレ.md:81` kept at agents/bodymake.md
+  - before: - 無音ヘッドのあと本文開始。アドリブ禁止
+  - after: - 無音ヘッドのあと本文開始。アドリブ禁止
+
+- `deduped` `agents/ジャンル_筋トレ.md:88` kept at agents/bodymake.md
+  - before: - カット: フレーズ境界のみ。0.2秒以内のクロスフェード可。ジャンプカット禁止
+  - after: - カット: フレーズ境界のみ。0.2秒以内のクロスフェード可。ジャンプカット禁止
+
+- `deduped` `agents/ジャンル_筋トレ.md:89` kept at agents/bodymake.md
+  - before: - プッシュイン: 通しで最大5%。急なズーム禁止
+  - after: - プッシュイン: 通しで最大5%。急なズーム禁止
+
+- `deduped` `agents/ジャンル_筋トレ.md:96` kept at agents/bodymake.md
+  - before: 投稿したら必ずやれ。動画は作るな。数字は発明するな。不明は「不明」。
+  - after: 投稿したら必ずやれ。動画は作るな。数字は発明するな。不明は「不明」。
+
+- `deduped` `agents/ジャンル_筋トレ.md:97` kept at agents/bodymake.md
+  - before: KPIの判定は `video-judge.js` / `output/video/TODAY.md`。insightするな。ジャンル転換するな。
+  - after: KPIの判定は `video-judge.js` / `output/video/TODAY.md`。insightするな。ジャンル転換するな。
+
+- `deduped` `agents/ジャンル_筋トレ.md:110` kept at agents/bodymake.md
+  - before: | A8クリック | 同上。推測するな |
+  - after: | A8クリック | 同上。推測するな |
+
+- `deduped` `agents/ジャンル_筋トレ.md:139` kept at agents/bodymake.md
+  - before: 6. `output` に保存。mp4 を Git にコミットするな
+  - after: 6. `output` に保存。mp4 を Git にコミットするな
+
+- `deduped` `agents/ジャンル_筋トレ.md:152` kept at agents/bodymake.md
+  - before: 禁止: 筋肉がつく断定 / ボディビルダー誇張
+  - after: 禁止: 筋肉がつく断定 / ボディビルダー誇張
+
+- `deduped` `agents/ジャンル_筋トレ.md:157` kept at agents/bodymake.md
+  - before: - 0-3 『XとYは別』を先に出す。煽りの『今すぐ』は禁止
+  - after: - 0-3 『XとYは別』を先に出す。煽りの『今すぐ』は禁止
+
+- `deduped` `agents/ジャンル_筋トレ.md:180` kept at agents/bodymake.md
+  - before: [禁止トピック]は扱いません。[代わりの範囲]。メモはプロフィールへ。
+  - after: [禁止トピック]は扱いません。[代わりの範囲]。メモはプロフィールへ。
+
+- `deduped` `agents/ジャンル_筋トレ.md:194` kept at agents/bodymake.md
+  - before: 条件を全部満たすまで、このレシピで動画を作るな。IMAGINE_THROW は条件クリア時だけ Grok Imagine に投げろ。文を足すな。投稿するな。
+  - after: 条件を全部満たすまで、このレシピで動画を作るな。IMAGINE_THROW は条件クリア時だけ Grok Imagine に投げろ。文を足すな。投稿するな。
+
+- `deduped` `agents/ジャンル_筋トレ.md:253` kept at agents/bodymake.md
+  - before: 条件を全部満たすまで、このレシピで動画を作るな。IMAGINE_THROW は条件クリア時だけ Grok Imagine に投げろ。文を足すな。投稿するな。
+  - after: 条件を全部満たすまで、このレシピで動画を作るな。IMAGINE_THROW は条件クリア時だけ Grok Imagine に投げろ。文を足すな。投稿するな。
+
+- `deduped` `agents/ジャンル_節約.md:23` kept at agents/setsuyaku.md
+  - before: チャンネル未開設なら動画を作るな。準備レシピの量産禁止。投稿するな。
+  - after: チャンネル未開設なら動画を作るな。準備レシピの量産禁止。投稿するな。
+
+- `deduped` `agents/ジャンル_節約.md:27` kept at agents/setsuyaku.md
+  - before: 量産するな。1日1本が上限。2本目以降は今日やるな。
+  - after: 量産するな。1日1本が上限。2本目以降は今日やるな。
+
+- `deduped` `agents/ジャンル_節約.md:37` kept at agents/setsuyaku.md
+  - before: 台帳メモ: チャンネル未開設。準備レシピを量産するな
+  - after: 台帳メモ: チャンネル未開設。準備レシピを量産するな
+
+- `deduped` `agents/ジャンル_節約.md:39` kept at agents/setsuyaku.md
+  - before: 調べられないチャンネルを成功例にするな。動画・台本はコピーするな。量産するな。
+  - after: 調べられないチャンネルを成功例にするな。動画・台本はコピーするな。量産するな。
+
+- `deduped` `agents/ジャンル_節約.md:43` kept at agents/setsuyaku.md
+  - before: - 投稿・予約・固定コメント・いいね・フォロー・DM をするな
+  - after: - 投稿・予約・固定コメント・いいね・フォロー・DM をするな
+
+- `deduped` `agents/ジャンル_節約.md:47` kept at agents/setsuyaku.md
+  - before: - 体験談を捏造するな（比較して選んだ／実際に使った、は人間承認）
+  - after: - 体験談を捏造するな（比較して選んだ／実際に使った、は人間承認）
+
+- `deduped` `agents/ジャンル_節約.md:48` kept at agents/setsuyaku.md
+  - before: - 数字を発明するな
+  - after: - 数字を発明するな
+
+- `deduped` `agents/ジャンル_節約.md:51` kept at agents/setsuyaku.md
+  - before: - 他ボットに直接メンションするな
+  - after: - 他ボットに直接メンションするな
+
+- `deduped` `agents/ジャンル_節約.md:54` kept at agents/setsuyaku.md
+  - before: - 型 id を新造するな。6つの型から選べ
+  - after: - 型 id を新造するな。6つの型から選べ
+
+- `deduped` `agents/ジャンル_節約.md:58` kept at agents/setsuyaku.md
+  - before: - 1日1本を超えるな
+  - after: - 1日1本を超えるな
+
+- `deduped` `agents/ジャンル_節約.md:60` kept at agents/setsuyaku.md
+  - before: ペルソナ: 我慢する節約をやめた30代。実利主義だが説教しない、仕組み好き。
+  - after: ペルソナ: 我慢する節約をやめた30代。実利主義だが説教しない、仕組み好き。
+
+- `deduped` `agents/ジャンル_節約.md:80` kept at agents/setsuyaku.md
+  - before: - テロップ／読み上げと同一。アドリブ禁止
+  - after: - テロップ／読み上げと同一。アドリブ禁止
+
+- `deduped` `agents/ジャンル_節約.md:81` kept at agents/setsuyaku.md
+  - before: - 無音ヘッドのあと本文開始。アドリブ禁止
+  - after: - 無音ヘッドのあと本文開始。アドリブ禁止
+
+- `deduped` `agents/ジャンル_節約.md:88` kept at agents/setsuyaku.md
+  - before: - カット: フレーズ境界のみ。0.2秒以内のクロスフェード可。ジャンプカット禁止
+  - after: - カット: フレーズ境界のみ。0.2秒以内のクロスフェード可。ジャンプカット禁止
+
+- `deduped` `agents/ジャンル_節約.md:89` kept at agents/setsuyaku.md
+  - before: - プッシュイン: 通しで最大5%。急なズーム禁止
+  - after: - プッシュイン: 通しで最大5%。急なズーム禁止
+
+- `deduped` `agents/ジャンル_節約.md:96` kept at agents/setsuyaku.md
+  - before: 投稿したら必ずやれ。動画は作るな。数字は発明するな。不明は「不明」。
+  - after: 投稿したら必ずやれ。動画は作るな。数字は発明するな。不明は「不明」。
+
+- `deduped` `agents/ジャンル_節約.md:97` kept at agents/setsuyaku.md
+  - before: KPIの判定は `video-judge.js` / `output/video/TODAY.md`。insightするな。ジャンル転換するな。
+  - after: KPIの判定は `video-judge.js` / `output/video/TODAY.md`。insightするな。ジャンル転換するな。
+
+- `deduped` `agents/ジャンル_節約.md:110` kept at agents/setsuyaku.md
+  - before: | A8クリック | 同上。推測するな |
+  - after: | A8クリック | 同上。推測するな |
+
+- `deduped` `agents/ジャンル_節約.md:139` kept at agents/setsuyaku.md
+  - before: 6. `output` に保存。mp4 を Git にコミットするな
+  - after: 6. `output` に保存。mp4 を Git にコミットするな
+
+- `deduped` `agents/ジャンル_節約.md:152` kept at agents/setsuyaku.md
+  - before: 禁止: 札束 / 必ず貯まる
+  - after: 禁止: 札束 / 必ず貯まる
+
+- `deduped` `agents/ジャンル_節約.md:157` kept at agents/setsuyaku.md
+  - before: - 0-3 『XとYは別』を先に出す。煽りの『今すぐ』は禁止
+  - after: - 0-3 『XとYは別』を先に出す。煽りの『今すぐ』は禁止
+
+- `deduped` `agents/ジャンル_節約.md:194` kept at agents/setsuyaku.md
+  - before: 条件を全部満たすまで、このレシピで動画を作るな。IMAGINE_THROW は条件クリア時だけ Grok Imagine に投げろ。文を足すな。投稿するな。
+  - after: 条件を全部満たすまで、このレシピで動画を作るな。IMAGINE_THROW は条件クリア時だけ Grok Imagine に投げろ。文を足すな。投稿するな。
+
+- `deduped` `agents/ジャンル_節約.md:252` kept at agents/setsuyaku.md
+  - before: 条件を全部満たすまで、このレシピで動画を作るな。IMAGINE_THROW は条件クリア時だけ Grok Imagine に投げろ。文を足すな。投稿するな。
+  - after: 条件を全部満たすまで、このレシピで動画を作るな。IMAGINE_THROW は条件クリア時だけ Grok Imagine に投げろ。文を足すな。投稿するな。
+
+- `deduped` `agents/ジャンル_節約.md:310` kept at agents/setsuyaku.md
+  - before: 条件を全部満たすまで、このレシピで動画を作るな。IMAGINE_THROW は条件クリア時だけ Grok Imagine に投げろ。文を足すな。投稿するな。
+  - after: 条件を全部満たすまで、このレシピで動画を作るな。IMAGINE_THROW は条件クリア時だけ Grok Imagine に投げろ。文を足すな。投稿するな。
+
+- `deduped` `agents/ジャンル_美容.md:23` kept at agents/beauty.md
+  - before: チャンネル未開設なら動画を作るな。準備レシピの量産禁止。投稿するな。
+  - after: チャンネル未開設なら動画を作るな。準備レシピの量産禁止。投稿するな。
+
+- `deduped` `agents/ジャンル_美容.md:27` kept at agents/beauty.md
+  - before: 量産するな。1日1本が上限。2本目以降は今日やるな。
+  - after: 量産するな。1日1本が上限。2本目以降は今日やるな。
+
+- `deduped` `agents/ジャンル_美容.md:37` kept at agents/beauty.md
+  - before: 台帳メモ: チャンネル未開設。準備レシピを量産するな
+  - after: 台帳メモ: チャンネル未開設。準備レシピを量産するな
+
+- `deduped` `agents/ジャンル_美容.md:39` kept at agents/beauty.md
+  - before: 調べられないチャンネルを成功例にするな。動画・台本はコピーするな。量産するな。
+  - after: 調べられないチャンネルを成功例にするな。動画・台本はコピーするな。量産するな。
+
+- `deduped` `agents/ジャンル_美容.md:43` kept at agents/beauty.md
+  - before: - 投稿・予約・固定コメント・いいね・フォロー・DM をするな
+  - after: - 投稿・予約・固定コメント・いいね・フォロー・DM をするな
+
+- `deduped` `agents/ジャンル_美容.md:47` kept at agents/beauty.md
+  - before: - 体験談を捏造するな（比較して選んだ／実際に使った、は人間承認）
+  - after: - 体験談を捏造するな（比較して選んだ／実際に使った、は人間承認）
+
+- `deduped` `agents/ジャンル_美容.md:48` kept at agents/beauty.md
+  - before: - 数字を発明するな
+  - after: - 数字を発明するな
+
+- `deduped` `agents/ジャンル_美容.md:51` kept at agents/beauty.md
+  - before: - 他ボットに直接メンションするな
+  - after: - 他ボットに直接メンションするな
+
+- `deduped` `agents/ジャンル_美容.md:54` kept at agents/beauty.md
+  - before: - 型 id を新造するな。6つの型から選べ
+  - after: - 型 id を新造するな。6つの型から選べ
+
+- `deduped` `agents/ジャンル_美容.md:58` kept at agents/beauty.md
+  - before: - 1日1本を超えるな
+  - after: - 1日1本を超えるな
+
+- `deduped` `agents/ジャンル_美容.md:60` kept at agents/beauty.md
+  - before: ペルソナ: 仕事と家のことで手一杯な30代後半女性。ゆるい、やさしい、頑張らせない。
+  - after: ペルソナ: 仕事と家のことで手一杯な30代後半女性。ゆるい、やさしい、頑張らせない。
+
+- `deduped` `agents/ジャンル_美容.md:80` kept at agents/beauty.md
+  - before: - テロップ／読み上げと同一。アドリブ禁止
+  - after: - テロップ／読み上げと同一。アドリブ禁止
+
+- `deduped` `agents/ジャンル_美容.md:81` kept at agents/beauty.md
+  - before: - 無音ヘッドのあと本文開始。アドリブ禁止
+  - after: - 無音ヘッドのあと本文開始。アドリブ禁止
+
+- `deduped` `agents/ジャンル_美容.md:88` kept at agents/beauty.md
+  - before: - カット: フレーズ境界のみ。0.2秒以内のクロスフェード可。ジャンプカット禁止
+  - after: - カット: フレーズ境界のみ。0.2秒以内のクロスフェード可。ジャンプカット禁止
+
+- `deduped` `agents/ジャンル_美容.md:89` kept at agents/beauty.md
+  - before: - プッシュイン: 通しで最大5%。急なズーム禁止
+  - after: - プッシュイン: 通しで最大5%。急なズーム禁止
+
+- `deduped` `agents/ジャンル_美容.md:96` kept at agents/beauty.md
+  - before: 投稿したら必ずやれ。動画は作るな。数字は発明するな。不明は「不明」。
+  - after: 投稿したら必ずやれ。動画は作るな。数字は発明するな。不明は「不明」。
+
+- `deduped` `agents/ジャンル_美容.md:97` kept at agents/beauty.md
+  - before: KPIの判定は `video-judge.js` / `output/video/TODAY.md`。insightするな。ジャンル転換するな。
+  - after: KPIの判定は `video-judge.js` / `output/video/TODAY.md`。insightするな。ジャンル転換するな。
+
+- `deduped` `agents/ジャンル_美容.md:110` kept at agents/beauty.md
+  - before: | A8クリック | 同上。推測するな |
+  - after: | A8クリック | 同上。推測するな |
+
+- `deduped` `agents/ジャンル_美容.md:139` kept at agents/beauty.md
+  - before: 6. `output` に保存。mp4 を Git にコミットするな
+  - after: 6. `output` に保存。mp4 を Git にコミットするな
+
+- `deduped` `agents/ジャンル_美容.md:152` kept at agents/beauty.md
+  - before: 禁止: 肌のビフォーアフター / シミが消える / ロゴボトル
+  - after: 禁止: 肌のビフォーアフター / シミが消える / ロゴボトル
+
+- `deduped` `agents/ジャンル_美容.md:177` kept at agents/beauty.md
+  - before: 条件を全部満たすまで、このレシピで動画を作るな。IMAGINE_THROW は条件クリア時だけ Grok Imagine に投げろ。文を足すな。投稿するな。
+  - after: 条件を全部満たすまで、このレシピで動画を作るな。IMAGINE_THROW は条件クリア時だけ Grok Imagine に投げろ。文を足すな。投稿するな。
+
+- `deduped` `agents/ジャンル_転職.md:23` kept at agents/tenshoku.md
+  - before: チャンネル未開設なら動画を作るな。準備レシピの量産禁止。投稿するな。
+  - after: チャンネル未開設なら動画を作るな。準備レシピの量産禁止。投稿するな。
+
+- `deduped` `agents/ジャンル_転職.md:27` kept at agents/tenshoku.md
+  - before: 量産するな。1日1本が上限。2本目以降は今日やるな。
+  - after: 量産するな。1日1本が上限。2本目以降は今日やるな。
+
+- `deduped` `agents/ジャンル_転職.md:37` kept at agents/tenshoku.md
+  - before: 台帳メモ: チャンネル未開設。準備レシピを量産するな
+  - after: 台帳メモ: チャンネル未開設。準備レシピを量産するな
+
+- `deduped` `agents/ジャンル_転職.md:39` kept at agents/tenshoku.md
+  - before: 調べられないチャンネルを成功例にするな。動画・台本はコピーするな。量産するな。
+  - after: 調べられないチャンネルを成功例にするな。動画・台本はコピーするな。量産するな。
+
+- `deduped` `agents/ジャンル_転職.md:43` kept at agents/tenshoku.md
+  - before: - 投稿・予約・固定コメント・いいね・フォロー・DM をするな
+  - after: - 投稿・予約・固定コメント・いいね・フォロー・DM をするな
+
+- `deduped` `agents/ジャンル_転職.md:47` kept at agents/tenshoku.md
+  - before: - 体験談を捏造するな（比較して選んだ／実際に使った、は人間承認）
+  - after: - 体験談を捏造するな（比較して選んだ／実際に使った、は人間承認）
+
+- `deduped` `agents/ジャンル_転職.md:48` kept at agents/tenshoku.md
+  - before: - 数字を発明するな
+  - after: - 数字を発明するな
+
+- `deduped` `agents/ジャンル_転職.md:51` kept at agents/tenshoku.md
+  - before: - 他ボットに直接メンションするな
+  - after: - 他ボットに直接メンションするな
+
+- `deduped` `agents/ジャンル_転職.md:54` kept at agents/tenshoku.md
+  - before: - 型 id を新造するな。6つの型から選べ
+  - after: - 型 id を新造するな。6つの型から選べ
+
+- `deduped` `agents/ジャンル_転職.md:58` kept at agents/tenshoku.md
+  - before: - 1日1本を超えるな
+  - after: - 1日1本を超えるな
+
+- `deduped` `agents/ジャンル_転職.md:60` kept at agents/tenshoku.md
+  - before: ペルソナ: 転職を煽らないキャリア整理役。冷静、データ好き、『残る選択』も尊重。
+  - after: ペルソナ: 転職を煽らないキャリア整理役。冷静、データ好き、『残る選択』も尊重。
+
+- `deduped` `agents/ジャンル_転職.md:80` kept at agents/tenshoku.md
+  - before: - テロップ／読み上げと同一。アドリブ禁止
+  - after: - テロップ／読み上げと同一。アドリブ禁止
+
+- `deduped` `agents/ジャンル_転職.md:81` kept at agents/tenshoku.md
+  - before: - 無音ヘッドのあと本文開始。アドリブ禁止
+  - after: - 無音ヘッドのあと本文開始。アドリブ禁止
+
+- `deduped` `agents/ジャンル_転職.md:88` kept at agents/tenshoku.md
+  - before: - カット: フレーズ境界のみ。0.2秒以内のクロスフェード可。ジャンプカット禁止
+  - after: - カット: フレーズ境界のみ。0.2秒以内のクロスフェード可。ジャンプカット禁止
+
+- `deduped` `agents/ジャンル_転職.md:89` kept at agents/tenshoku.md
+  - before: - プッシュイン: 通しで最大5%。急なズーム禁止
+  - after: - プッシュイン: 通しで最大5%。急なズーム禁止
+
+- `deduped` `agents/ジャンル_転職.md:96` kept at agents/tenshoku.md
+  - before: 投稿したら必ずやれ。動画は作るな。数字は発明するな。不明は「不明」。
+  - after: 投稿したら必ずやれ。動画は作るな。数字は発明するな。不明は「不明」。
+
+- `deduped` `agents/ジャンル_転職.md:97` kept at agents/tenshoku.md
+  - before: KPIの判定は `video-judge.js` / `output/video/TODAY.md`。insightするな。ジャンル転換するな。
+  - after: KPIの判定は `video-judge.js` / `output/video/TODAY.md`。insightするな。ジャンル転換するな。
+
+- `deduped` `agents/ジャンル_転職.md:110` kept at agents/tenshoku.md
+  - before: | A8クリック | 同上。推測するな |
+  - after: | A8クリック | 同上。推測するな |
+
+- `deduped` `agents/ジャンル_転職.md:139` kept at agents/tenshoku.md
+  - before: 6. `output` に保存。mp4 を Git にコミットするな
+  - after: 6. `output` に保存。mp4 を Git にコミットするな
+
+- `deduped` `agents/ジャンル_転職.md:152` kept at agents/tenshoku.md
+  - before: 禁止: 今すぐ辞めろ / 偽の退職劇
+  - after: 禁止: 今すぐ辞めろ / 偽の退職劇
+
+- `deduped` `agents/ジャンル_転職.md:157` kept at agents/tenshoku.md
+  - before: - 0-3 『XとYは別』を先に出す。煽りの『今すぐ』は禁止
+  - after: - 0-3 『XとYは別』を先に出す。煽りの『今すぐ』は禁止
+
+- `deduped` `agents/ジャンル_転職.md:194` kept at agents/tenshoku.md
+  - before: 条件を全部満たすまで、このレシピで動画を作るな。IMAGINE_THROW は条件クリア時だけ Grok Imagine に投げろ。文を足すな。投稿するな。
+  - after: 条件を全部満たすまで、このレシピで動画を作るな。IMAGINE_THROW は条件クリア時だけ Grok Imagine に投げろ。文を足すな。投稿するな。
+
+- `deduped` `agents/ジャンル_転職.md:253` kept at agents/tenshoku.md
+  - before: 条件を全部満たすまで、このレシピで動画を作るな。IMAGINE_THROW は条件クリア時だけ Grok Imagine に投げろ。文を足すな。投稿するな。
+  - after: 条件を全部満たすまで、このレシピで動画を作るな。IMAGINE_THROW は条件クリア時だけ Grok Imagine に投げろ。文を足すな。投稿するな。
+
+- `moved` `agents/ジャンル_転職.md:272` agents/ジャンル_転職.md → archive/recipes/tenshoku.md
+  - before: | 0.5–4.7 | 本文 | エージェントを調べるとき、見るの / は担当の返信速度と求人の出し方、 |
+  - after: | 0.5–4.7 | 本文 | エージェントを調べるとき、見るの / は担当の返信速度と求人の出し方、 |
+
+- `moved` `agents/ジャンル_転職.md:292` agents/ジャンル_転職.md → archive/recipes/tenshoku.md
+  - before: エージェントを調べるとき、見るのは担当の返信速度と求人の出し方、という話をよく見ます。登録した体験は書きません。比較の観点だけプロフィールに置いてあります。
+  - after: エージェントを調べるとき、見るのは担当の返信速度と求人の出し方、という話をよく見ます。登録した体験は書きません。比較の観点だけプロフィールに置いてあります。
+
+- `moved` `agents/ジャンル_転職.md:299` agents/ジャンル_転職.md → archive/recipes/tenshoku.md
+  - before: エージェントを調べるとき、見るのは担当の返信速度と求人の出し方、という話をよく見ます。登録した体験は書きません。比較の観点だけプロフィールに置いてあります。
+  - after: エージェントを調べるとき、見るのは担当の返信速度と求人の出し方、という話をよく見ます。登録した体験は書きません。比較の観点だけプロフィールに置いてあります。
+
+- `deduped` `agents/ジャンル_転職.md:312` kept at agents/tenshoku.md
   - before: 条件を全部満たすまで、このレシピで動画を作るな。IMAGINE_THROW は条件クリア時だけ Grok Imagine に投げろ。文を足すな。投稿するな。
   - after: 条件を全部満たすまで、このレシピで動画を作るな。IMAGINE_THROW は条件クリア時だけ Grok Imagine に投げろ。文を足すな。投稿するな。
 
