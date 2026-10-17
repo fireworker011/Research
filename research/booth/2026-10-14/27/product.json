@@ -1,0 +1,76 @@
+{
+  "work_no": 27,
+  "date": "2026-10-14",
+  "title_short": "水だけ置いて、手で数えます…閉店後のバーで、32歳の店主が聞いてから丁寧に導いてくれる",
+  "title_dlsite_fanza": "【手コキ×ささやき／本番なし】水だけ置いて、手で数えます～バーの店主(32歳)が、閉店後に「いいですか」と聞いてから丁寧に導いてくれる～【合成音声】",
+  "price_jpy": 990,
+  "price_tax_excluded_jpy_calc": 900,
+  "price_note": "税込990円は、2026-10-12 05:24 UTC に見えた RJ01717564 の表示価格。定価は1,320円。総再生時間57分21秒。7日間・販売数順4位。期間販売数1,458。この作品の販売本数は測っていない。税抜900円は990を1.1で割った計算。割引は作っていない。",
+  "price_sources": [
+    {
+      "rj": "RJ01717564",
+      "seen": "表示990円/定価1,320円",
+      "where": "7日間・販売数順4位。期間販売数1,458。総再生時間57分21秒。ファイルはWAV。",
+      "url": "https://www.dlsite.com/maniax/work/=/product_id/RJ01717564.html"
+    }
+  ],
+  "publish": false,
+  "booth_listing": true,
+  "dlsite_exclusive": false,
+  "stores_planned": ["DLsite", "BOOTH"],
+  "original": true,
+  "all_characters_adult": true,
+  "real_people": false,
+  "penetration": false,
+  "heroine": {
+    "name": "柊真帆",
+    "reading": "ひいらぎ まほ",
+    "age": 32,
+    "job": "バーの店主。この店8年目の成人"
+  },
+  "listener": "閉店後に残った常連の成人。台本では年齢を下に置かない。社会人",
+  "voice": {
+    "engine": "COEIROINK",
+    "speaker": "アンジーさん",
+    "style_normal": "のーまる。トラック1のささやき指示より前",
+    "style_whisper": "ささやき。指示以降と後日談",
+    "style_unused": "セクシーは使わない",
+    "not_used": ["VOICEVOX"]
+  },
+  "booth": {
+    "category": "ボイス",
+    "adult": true,
+    "tags": ["ASMR", "ASMR男性向け", "ASMR音声", "音声作品", "手コキ", "言葉責め", "ささやき", "お姉さん", "本番なし"]
+  },
+  "dlsite": {
+    "age": "R-18",
+    "ai_option": "AI一部利用",
+    "ai_option_note": "表紙を画像生成AIにする場合。声は市販のCOEIROINK。フラグを付けた方が売れる、とは2026-10-12の取得には書いていない。",
+    "genres": ["手コキ", "言葉責め", "ささやき", "お姉さん", "本番なし", "ラブラブ/あまあま", "淫語", "ASMR"]
+  },
+  "planned_tracks": [
+    {"file": "part01", "title": "閉店と、今日の範囲", "planned_minutes": 6, "measured_seconds": 213.634785},
+    {"file": "part02", "title": "水と、服の上", "planned_minutes": 8, "measured_seconds": 324.163016},
+    {"file": "part03", "title": "聞いてから、手を添える", "planned_minutes": 8, "measured_seconds": 341.632834},
+    {"file": "part04", "title": "いちから、ゆっくり", "planned_minutes": 12, "measured_seconds": 606.278095},
+    {"file": "part05", "title": "リズムを変えて、最後まで", "planned_minutes": 12, "measured_seconds": 540.439977},
+    {"file": "part06", "title": "拭いて、締めの水", "planned_minutes": 6, "measured_seconds": 170.321451}
+  ],
+  "bonus": {"file": "bonus", "title": "翌日の仕込み前", "planned_minutes": 4, "measured_seconds": 85.516553, "sexual": false},
+  "planned_minutes_note": "planned_minutes は企画の長さです。本編の実測は 2196.470158 秒、時計は 36:36 です。ファイルごとの秒は audio-measure.md です。",
+  "export_plan": {
+    "wav": ["part01.wav", "part02.wav", "part03.wav", "part04.wav", "part05.wav", "part06.wav", "bonus.wav", "sample.wav"],
+    "mp3": ["part01.mp3", "part02.mp3", "part03.mp3", "part04.mp3", "part05.mp3", "part06.mp3", "bonus.mp3", "sample.mp3"]
+  },
+  "audio_measure": {
+    "target_lufs": -16.0,
+    "main_seconds": 2196.470158,
+    "main_clock": "36:36",
+    "sample_seconds": 118.566848,
+    "sample_clock": "1:59",
+    "bonus_seconds": 85.516553,
+    "bonus_clock": "1:26",
+    "source": "2026-10-14 の ffprobe と ebur128。I と TP は audio-measure.md。"
+  },
+  "audio_generated": true
+}
