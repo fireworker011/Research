@@ -57,6 +57,7 @@ JOBS = (
     "text_scene",
     "join",
     "affi_template",
+    "longform_chunk",
 )
 SWAP_JOBS = frozenset({"swap_character", "swap_face", "swap_outfit"})
 VIDEO_SINK_JOBS = frozenset({"swap_character", "swap_face", "swap_outfit", "real"})
@@ -116,7 +117,16 @@ JOB_HELP = {
     "text_scene": "シーン。T2VA。LoRA なし。場所は Hero の place。空欄は書かない。",
     "join": "6秒と9秒を切って足す。15秒以上。1本の15秒生成はしない。",
     "affi_template": "バズ型の既存台本を指す。台本は書き換えない。生成しない。",
+    "longform_chunk": "Comfy のみ。H3 Continuum Sampler。5–8秒チャンクを latent continuity でつなぎ、Assemble で mp4 を1本。",
 }
+
+CONTINUUM_CLONE = "git clone https://github.com/ukr8b3g-cmyk/ComfyUI-H3-Continuum.git"
+CONTINUUM_SAMPLER = "H3ContinuumSamplerV39"
+CONTINUUM_ASSEMBLE = "H3ContinuumAssemble"
+CHUNK_MIN_S = 5.0
+CHUNK_MAX_S = 8.0
+CHUNK_MAX_COUNT = 16
+LONGFORM_API_MSG = "runtime=api では longform_chunk を止める。H3 Continuum Sampler は Comfy だけ。"
 
 LOOK_KEYS = ("hair", "color", "race", "age", "height", "weight", "clothes", "place")
 LOOK_LABELS = (
@@ -152,6 +162,7 @@ REQUEST_KEYS = frozenset(
         "with_combat",
         "template",
         "parts",
+        "chunk_seconds",
     }
 )
 REFUSED_NOW = {
@@ -274,6 +285,7 @@ class StudioRequest:
     with_combat: bool = False
     template: str = ""
     parts: tuple[float, ...] = ()
+    chunk_seconds: float = 5.0
 
 
 def request_from(raw: Mapping[str, Any]) -> StudioRequest:
@@ -320,6 +332,7 @@ def request_from(raw: Mapping[str, Any]) -> StudioRequest:
         with_combat=_as_bool(raw.get("with_combat", False), default=False),
         template=str(raw.get("template") or "").strip(),
         parts=_parts_for(job, raw.get("parts")),
+        chunk_seconds=_chunk_seconds_for(job, raw.get("chunk_seconds")),
     )
 
 
@@ -361,6 +374,9 @@ def request_from_env(environ: Mapping[str, str] | None = None) -> StudioRequest:
     }
     if job == "join":
         mapping["parts"] = env.get("H3_STUDIO_PARTS") or ""
+    if job == "longform_chunk":
+        mapping["duration"] = env.get("H3_STUDIO_DURATION") or ""
+        mapping["chunk_seconds"] = env.get("H3_STUDIO_CHUNK_SECONDS") or "5"
     if job == "two_pass":
         pass_a = str(env.get("H3_STUDIO_PASS_A") or "").strip()
         pass_b = str(env.get("H3_STUDIO_PASS_B") or "").strip()
@@ -397,6 +413,8 @@ def build_plan(req: StudioRequest) -> dict[str, Any]:
         return _build_join(req)
     if req.job == "affi_template":
         return _build_template(req)
+    if req.job == "longform_chunk":
+        return _build_longform(req)
     raise StudioError(f"ジョブが違う: {req.job}")
 
 
@@ -1002,7 +1020,22 @@ def _lora(key: str, strength: float) -> dict[str, Any]:
     return {"key": key, "file": LORA_FILES[key], "strength": strength}
 
 
+def comfy_custom_nodes(runtime: str) -> list[dict[str, Any]]:
+    """Continuum is a Comfy custom node. API plans do not clone it. No extra pip."""
+    if runtime != "comfy":
+        return []
+    return [
+        {
+            "cwd": "custom_nodes",
+            "clone": CONTINUUM_CLONE,
+            "pip": [],
+        }
+    ]
+
+
 def _gate(req: StudioRequest) -> None:
+    if req.runtime == "api" and req.job == "longform_chunk":
+        raise StudioError(LONGFORM_API_MSG)
     if req.runtime == "api" and req.job in API_STOP_JOBS:
         raise StudioError(API_MSG)
     if req.job in HIGH_MEM_JOBS and not req.high_mem:
@@ -1173,7 +1206,105 @@ def _as_bool(value: Any, *, default: bool) -> bool:
     raise StudioError("真偽が読めない")
 
 
+def _chunk_seconds_for(job: str, value: Any) -> float:
+    if job != "longform_chunk":
+        if value not in (None, "", [], ()):
+            raise StudioError("chunk_seconds は longform_chunk だけ")
+        return CHUNK_MIN_S
+    if value is None or value == "":
+        return CHUNK_MIN_S
+    try:
+        seconds = float(value)
+    except (TypeError, ValueError) as exc:
+        raise StudioError("チャンクは 5–8 秒") from exc
+    if seconds < CHUNK_MIN_S or seconds > CHUNK_MAX_S:
+        raise StudioError("チャンクは 5–8 秒")
+    return seconds
+
+
+def longform_chunk_seconds(total_s: float, chunk_s: float) -> tuple[float, ...]:
+    """Equal chunks inside 5–8 seconds. Prefer the requested chunk length."""
+    total = int(round(float(total_s) * 1000))
+    chunk = int(round(float(chunk_s) * 1000))
+    if chunk < 5000 or chunk > 8000:
+        raise StudioError("チャンクは 5–8 秒")
+    if total < 5000:
+        raise StudioError("総尺は 5 秒以上")
+    best: tuple[int, int] | None = None
+    for count in range(1, CHUNK_MAX_COUNT + 1):
+        if total % count:
+            continue
+        size = total // count
+        if size < 5000 or size > 8000:
+            continue
+        if best is None or abs(size - chunk) < abs(best[0] - chunk):
+            best = (size, count)
+    if best is None:
+        raise StudioError("総尺を 5–8 秒の等しいチャンクに分けられない")
+    size, count = best
+    return tuple(size / 1000 for _ in range(count))
+
+
+def _longform_inputs(req: StudioRequest) -> dict[str, str]:
+    """Pass only the stills that were given, under Continuum's input names."""
+    inputs: dict[str, str] = {}
+    if req.first_still:
+        inputs["first_frame"] = req.first_still
+    if req.last_still:
+        inputs["last_frame"] = req.last_still
+    if req.hero_sheet:
+        inputs["reference_images"] = req.hero_sheet
+    return inputs
+
+
+def _build_longform(req: StudioRequest) -> dict[str, Any]:
+    if not req.action.strip():
+        raise StudioError("longform_chunk は英語の action が要る")
+    parts = longform_chunk_seconds(req.duration, req.chunk_seconds)
+    action, dialogue = _speech(req)
+    body = _sentences("[Shot 1] Live-action.", _look_clause(req.hero, req.enemy), action, dialogue)
+    prompt = "\n\n".join(
+        [
+            f"integrated_multimodal_description: {body}",
+            SOUND,
+            MUSIC,
+        ]
+    ) + "\n"
+    plan = _leaf(
+        req,
+        task="t2va",
+        prompt=prompt,
+        loras=(),
+        trigger="",
+        turbo=False,
+        notes=[
+            "H3 Continuum Sampler。チャンクは latent continuity。最後に Assemble で mp4 を1本。",
+            "生成は人間。",
+        ],
+        inputs=_longform_inputs(req),
+    )
+    plan["sampler"] = CONTINUUM_SAMPLER
+    plan["assemble"] = CONTINUUM_ASSEMBLE
+    plan["continuity"] = "latent"
+    plan["prompt_format"] = "Fixed"
+    plan["chunk_seconds"] = parts[0]
+    plan["chunks"] = [{"index": index, "seconds": seconds} for index, seconds in enumerate(parts, start=1)]
+    plan["custom_nodes"] = comfy_custom_nodes(req.runtime)
+    plan["output"] = "mp4"
+    return plan
+
+
 def _duration_for(job: str, value: Any) -> float:
+    if job == "longform_chunk":
+        if value is None or value == "":
+            raise StudioError("longform_chunk は総尺が要る")
+        try:
+            seconds = float(value)
+        except (TypeError, ValueError) as exc:
+            raise StudioError("総尺は 5 秒以上") from exc
+        if seconds < CHUNK_MIN_S:
+            raise StudioError("総尺は 5 秒以上")
+        return seconds
     if job == "fast_motion":
         if value is None or value == "":
             return 6.0

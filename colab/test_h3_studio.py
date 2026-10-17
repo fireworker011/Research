@@ -374,6 +374,54 @@ def test_seven_text_scenes_are_official_t2va_without_lora():
     assert code == 0
 
 
+def test_longform_chunk_is_comfy_only_and_uses_continuum():
+    with pytest.raises(studio.StudioError, match="longform_chunk"):
+        plan("longform_chunk", runtime="api", duration=10)
+    assert studio.comfy_custom_nodes("api") == []
+    nodes = studio.comfy_custom_nodes("comfy")
+    assert nodes == [
+        {
+            "cwd": "custom_nodes",
+            "clone": "git clone https://github.com/ukr8b3g-cmyk/ComfyUI-H3-Continuum.git",
+            "pip": [],
+        }
+    ]
+    built = plan("longform_chunk", duration=20, chunk_seconds=5)
+    assert built["sampler"] == "H3ContinuumSamplerV39"
+    assert built["assemble"] == "H3ContinuumAssemble"
+    assert built["continuity"] == "latent"
+    assert built["output"] == "mp4"
+    assert built["generate"] is False
+    assert built["loras"] == []
+    assert [row["seconds"] for row in built["chunks"]] == [5.0, 5.0, 5.0, 5.0]
+    assert built["custom_nodes"] == nodes
+    assert "first_frame" not in built["inputs"]
+    assert "last_frame" not in built["inputs"]
+    assert "reference_images" not in built["inputs"]
+    stills = plan(
+        "longform_chunk",
+        duration=10,
+        chunk_seconds=5,
+        first_still="open.png",
+        last_still="end.png",
+        hero_sheet="face.png",
+    )
+    assert stills["inputs"] == {
+        "first_frame": "open.png",
+        "last_frame": "end.png",
+        "reference_images": "face.png",
+    }
+    with pytest.raises(studio.StudioError, match="5–8"):
+        plan("longform_chunk", duration=20, chunk_seconds=9)
+    with pytest.raises(studio.StudioError, match="等しいチャンク"):
+        plan("longform_chunk", duration=9, chunk_seconds=5)
+    with pytest.raises(studio.StudioError, match="chunk_seconds"):
+        plan("text_scene", chunk_seconds=5)
+    combat = plan("combat_motion", first_still="a.png", last_still="b.png")
+    assert "custom_nodes" not in combat
+    assert "H3Continuum" not in combat["prompt"]
+
+
 def test_notebook_does_not_fetch_the_ward():
     nb = make_nb()
     blob = json.dumps(nb, ensure_ascii=False)
