@@ -12,13 +12,13 @@ PC接続は不要。ファイルをチャットに貼らなくてよい。この
 
 `affiliate-engine/docs/grok-bots/agents/konkatsu.md`
 
-https://raw.githubusercontent.com/fireworker011/Research/cursor/video-channel-playbook-e013/affiliate-engine/docs/grok-bots/agents/konkatsu.md
+https://raw.githubusercontent.com/fireworker011/Research/cursor/grok-bot-research-2026-08-26/affiliate-engine/docs/grok-bots/agents/konkatsu.md
 
 2. 台帳（投稿とチェック）:
 
 `affiliate-engine/docs/grok-bots/ledger/konkatsu.md`
 
-https://raw.githubusercontent.com/fireworker011/Research/cursor/video-channel-playbook-e013/affiliate-engine/docs/grok-bots/ledger/konkatsu.md
+https://raw.githubusercontent.com/fireworker011/Research/cursor/grok-bot-research-2026-08-26/affiliate-engine/docs/grok-bots/ledger/konkatsu.md
 
 チャンネル未開設なら動画を作るな。準備レシピの量産禁止。投稿するな。
 

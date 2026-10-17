@@ -17,7 +17,7 @@ changed は 0。approved は、投稿本数だけを人間の決定どおり置�
 - CTA は「本編にCTAは入れない。最後の2秒だけ「詳しくはプロフィールのリンク（PR）」を1回、同じ位置に出す。」に揃えた。PR表記は残した。
 - `COMMON.md` の「予約投稿」と、各 agents の「予約」と、wake の「予約するな」は、そのまま。
 - `archive/recipes/pet.md` の「リプで教えてください」と「コメントで教えてください」は、そのまま。
-- raw URL は、マージ後に `cursor/grok-bot-research-2026-08-26` で HTTP 200 を確認するまで `cursor/video-channel-playbook-e013` のまま。
+- raw URL は、マージ後の HTTP 200 を確認して `cursor/grok-bot-research-2026-08-26` に替えた。リプの行は動かしていない。
 - `wake/*.txt` は移していない。
 - `research/knowledge/` はこのブランチに無い。
 - いいね数の実測は言い換えていない。

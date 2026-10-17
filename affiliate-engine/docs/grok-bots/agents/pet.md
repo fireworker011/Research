@@ -12,13 +12,13 @@ PC接続は不要。ファイルをチャットに貼らなくてよい。この
 
 `affiliate-engine/docs/grok-bots/agents/pet.md`
 
-https://raw.githubusercontent.com/fireworker011/Research/cursor/video-channel-playbook-e013/affiliate-engine/docs/grok-bots/agents/pet.md
+https://raw.githubusercontent.com/fireworker011/Research/cursor/grok-bot-research-2026-08-26/affiliate-engine/docs/grok-bots/agents/pet.md
 
 2. 台帳（投稿とチェック）:
 
 `affiliate-engine/docs/grok-bots/ledger/pet.md`
 
-https://raw.githubusercontent.com/fireworker011/Research/cursor/video-channel-playbook-e013/affiliate-engine/docs/grok-bots/ledger/pet.md
+https://raw.githubusercontent.com/fireworker011/Research/cursor/grok-bot-research-2026-08-26/affiliate-engine/docs/grok-bots/ledger/pet.md
 
 実験3本は1本ずつ。after_experiment は出すな。投稿するな。型は visual_question と aruaru3 だけ。
 

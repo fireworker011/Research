@@ -27,9 +27,9 @@ id: （レシピid）
 
 今すぐ次の2つのURLを開け。開いた本文の全文に従え。このチャットの過去ログより、今開いた本文が上。
 
-https://raw.githubusercontent.com/fireworker011/Research/cursor/video-channel-playbook-e013/affiliate-engine/docs/grok-bots/agents/pet.md
+https://raw.githubusercontent.com/fireworker011/Research/cursor/grok-bot-research-2026-08-26/affiliate-engine/docs/grok-bots/agents/pet.md
 
-https://raw.githubusercontent.com/fireworker011/Research/cursor/video-channel-playbook-e013/affiliate-engine/docs/grok-bots/ledger/pet.md
+https://raw.githubusercontent.com/fireworker011/Research/cursor/grok-bot-research-2026-08-26/affiliate-engine/docs/grok-bots/ledger/pet.md
 
 前回開いた全文と一字一句同じなら「変更なし。スルー」とだけ返せ。動画を作るな。
 
@@ -52,9 +52,9 @@ https://raw.githubusercontent.com/fireworker011/Research/cursor/video-channel-pl
 
 今すぐ次の2つのURLを開け。開いた本文の全文に従え。このチャットの過去ログより、今開いた本文が上。
 
-https://raw.githubusercontent.com/fireworker011/Research/cursor/video-channel-playbook-e013/affiliate-engine/docs/grok-bots/agents/konkatsu.md
+https://raw.githubusercontent.com/fireworker011/Research/cursor/grok-bot-research-2026-08-26/affiliate-engine/docs/grok-bots/agents/konkatsu.md
 
-https://raw.githubusercontent.com/fireworker011/Research/cursor/video-channel-playbook-e013/affiliate-engine/docs/grok-bots/ledger/konkatsu.md
+https://raw.githubusercontent.com/fireworker011/Research/cursor/grok-bot-research-2026-08-26/affiliate-engine/docs/grok-bots/ledger/konkatsu.md
 
 前回開いた全文と一字一句同じなら「変更なし。スルー」とだけ返せ。動画を作るな。
 
@@ -77,9 +77,9 @@ https://raw.githubusercontent.com/fireworker011/Research/cursor/video-channel-pl
 
 今すぐ次の2つのURLを開け。開いた本文の全文に従え。このチャットの過去ログより、今開いた本文が上。
 
-https://raw.githubusercontent.com/fireworker011/Research/cursor/video-channel-playbook-e013/affiliate-engine/docs/grok-bots/agents/sidejob.md
+https://raw.githubusercontent.com/fireworker011/Research/cursor/grok-bot-research-2026-08-26/affiliate-engine/docs/grok-bots/agents/sidejob.md
 
-https://raw.githubusercontent.com/fireworker011/Research/cursor/video-channel-playbook-e013/affiliate-engine/docs/grok-bots/ledger/sidejob.md
+https://raw.githubusercontent.com/fireworker011/Research/cursor/grok-bot-research-2026-08-26/affiliate-engine/docs/grok-bots/ledger/sidejob.md
 
 前回開いた全文と一字一句同じなら「変更なし。スルー」とだけ返せ。動画を作るな。
 
@@ -102,9 +102,9 @@ https://raw.githubusercontent.com/fireworker011/Research/cursor/video-channel-pl
 
 今すぐ次の2つのURLを開け。開いた本文の全文に従え。このチャットの過去ログより、今開いた本文が上。
 
-https://raw.githubusercontent.com/fireworker011/Research/cursor/video-channel-playbook-e013/affiliate-engine/docs/grok-bots/agents/beauty.md
+https://raw.githubusercontent.com/fireworker011/Research/cursor/grok-bot-research-2026-08-26/affiliate-engine/docs/grok-bots/agents/beauty.md
 
-https://raw.githubusercontent.com/fireworker011/Research/cursor/video-channel-playbook-e013/affiliate-engine/docs/grok-bots/ledger/beauty.md
+https://raw.githubusercontent.com/fireworker011/Research/cursor/grok-bot-research-2026-08-26/affiliate-engine/docs/grok-bots/ledger/beauty.md
 
 前回開いた全文と一字一句同じなら「変更なし。スルー」とだけ返せ。動画を作るな。
 
@@ -127,9 +127,9 @@ https://raw.githubusercontent.com/fireworker011/Research/cursor/video-channel-pl
 
 今すぐ次の2つのURLを開け。開いた本文の全文に従え。このチャットの過去ログより、今開いた本文が上。
 
-https://raw.githubusercontent.com/fireworker011/Research/cursor/video-channel-playbook-e013/affiliate-engine/docs/grok-bots/agents/bodymake.md
+https://raw.githubusercontent.com/fireworker011/Research/cursor/grok-bot-research-2026-08-26/affiliate-engine/docs/grok-bots/agents/bodymake.md
 
-https://raw.githubusercontent.com/fireworker011/Research/cursor/video-channel-playbook-e013/affiliate-engine/docs/grok-bots/ledger/bodymake.md
+https://raw.githubusercontent.com/fireworker011/Research/cursor/grok-bot-research-2026-08-26/affiliate-engine/docs/grok-bots/ledger/bodymake.md
 
 前回開いた全文と一字一句同じなら「変更なし。スルー」とだけ返せ。動画を作るな。
 
@@ -152,9 +152,9 @@ https://raw.githubusercontent.com/fireworker011/Research/cursor/video-channel-pl
 
 今すぐ次の2つのURLを開け。開いた本文の全文に従え。このチャットの過去ログより、今開いた本文が上。
 
-https://raw.githubusercontent.com/fireworker011/Research/cursor/video-channel-playbook-e013/affiliate-engine/docs/grok-bots/agents/education.md
+https://raw.githubusercontent.com/fireworker011/Research/cursor/grok-bot-research-2026-08-26/affiliate-engine/docs/grok-bots/agents/education.md
 
-https://raw.githubusercontent.com/fireworker011/Research/cursor/video-channel-playbook-e013/affiliate-engine/docs/grok-bots/ledger/education.md
+https://raw.githubusercontent.com/fireworker011/Research/cursor/grok-bot-research-2026-08-26/affiliate-engine/docs/grok-bots/ledger/education.md
 
 前回開いた全文と一字一句同じなら「変更なし。スルー」とだけ返せ。動画を作るな。
 
@@ -177,9 +177,9 @@ https://raw.githubusercontent.com/fireworker011/Research/cursor/video-channel-pl
 
 今すぐ次の2つのURLを開け。開いた本文の全文に従え。このチャットの過去ログより、今開いた本文が上。
 
-https://raw.githubusercontent.com/fireworker011/Research/cursor/video-channel-playbook-e013/affiliate-engine/docs/grok-bots/agents/setsuyaku.md
+https://raw.githubusercontent.com/fireworker011/Research/cursor/grok-bot-research-2026-08-26/affiliate-engine/docs/grok-bots/agents/setsuyaku.md
 
-https://raw.githubusercontent.com/fireworker011/Research/cursor/video-channel-playbook-e013/affiliate-engine/docs/grok-bots/ledger/setsuyaku.md
+https://raw.githubusercontent.com/fireworker011/Research/cursor/grok-bot-research-2026-08-26/affiliate-engine/docs/grok-bots/ledger/setsuyaku.md
 
 前回開いた全文と一字一句同じなら「変更なし。スルー」とだけ返せ。動画を作るな。
 
@@ -202,9 +202,9 @@ https://raw.githubusercontent.com/fireworker011/Research/cursor/video-channel-pl
 
 今すぐ次の2つのURLを開け。開いた本文の全文に従え。このチャットの過去ログより、今開いた本文が上。
 
-https://raw.githubusercontent.com/fireworker011/Research/cursor/video-channel-playbook-e013/affiliate-engine/docs/grok-bots/agents/tenshoku.md
+https://raw.githubusercontent.com/fireworker011/Research/cursor/grok-bot-research-2026-08-26/affiliate-engine/docs/grok-bots/agents/tenshoku.md
 
-https://raw.githubusercontent.com/fireworker011/Research/cursor/video-channel-playbook-e013/affiliate-engine/docs/grok-bots/ledger/tenshoku.md
+https://raw.githubusercontent.com/fireworker011/Research/cursor/grok-bot-research-2026-08-26/affiliate-engine/docs/grok-bots/ledger/tenshoku.md
 
 前回開いた全文と一字一句同じなら「変更なし。スルー」とだけ返せ。動画を作るな。
 
@@ -227,9 +227,9 @@ https://raw.githubusercontent.com/fireworker011/Research/cursor/video-channel-pl
 
 今すぐ次の2つのURLを開け。開いた本文の全文に従え。このチャットの過去ログより、今開いた本文が上。
 
-https://raw.githubusercontent.com/fireworker011/Research/cursor/video-channel-playbook-e013/affiliate-engine/docs/grok-bots/agents/sleep.md
+https://raw.githubusercontent.com/fireworker011/Research/cursor/grok-bot-research-2026-08-26/affiliate-engine/docs/grok-bots/agents/sleep.md
 
-https://raw.githubusercontent.com/fireworker011/Research/cursor/video-channel-playbook-e013/affiliate-engine/docs/grok-bots/ledger/sleep.md
+https://raw.githubusercontent.com/fireworker011/Research/cursor/grok-bot-research-2026-08-26/affiliate-engine/docs/grok-bots/ledger/sleep.md
 
 前回開いた全文と一字一句同じなら「変更なし。スルー」とだけ返せ。動画を作るな。
 

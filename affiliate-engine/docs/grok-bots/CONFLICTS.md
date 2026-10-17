@@ -35,14 +35,14 @@
 - `PHONE.md` と `wake/*.txt`。起動時に1回貼る。
   - 「投稿するな。予約するな。いいね・フォロー・DMするな。URLを動画の本文・説明・コメントに書くな。」
 
-## 4. raw URL のブランチ — マージ後に確認
+## 4. raw URL のブランチ — 決定済み
 
-ボットが開く URL は、まだ `cursor/video-channel-playbook-e013`。`cursor/grok-bot-research-2026-08-26` にマージしたあと、同じパスが HTTP 200 で開くときだけ差し替える。開かなければ、このブランチ名のままにする。
+マージ後、`cursor/grok-bot-research-2026-08-26` の raw URL が HTTP 200 だったので、FETCH と各 raw URL をこのブランチに替えた。
 
 - `FETCH.md`
-  - 「参照ブランチ: `cursor/video-channel-playbook-e013`（マージ後は作業ブランチに合わせる。環境変数 GROK_BOT_REF）」
+  - 「参照ブランチ: `cursor/grok-bot-research-2026-08-26`（マージ後は作業ブランチに合わせる。環境変数 GROK_BOT_REF）」
 - `agents/<id>.md`、`agents/ジャンル_*.md`、`wake/*.txt`、`PHONE.md` の raw URL。例:
-  - 「https://raw.githubusercontent.com/fireworker011/Research/cursor/video-channel-playbook-e013/affiliate-engine/docs/grok-bots/agents/pet.md」
+  - 「https://raw.githubusercontent.com/fireworker011/Research/cursor/grok-bot-research-2026-08-26/affiliate-engine/docs/grok-bots/agents/pet.md」
 
 ## 5. リプで教えて と コメントで教えて — そのまま
 

@@ -28,7 +28,7 @@ const LEDGER_DIR = path.join(ROOT, 'docs', 'grok-bots', 'ledger');
 const RECIPE_ARCHIVE_DIR = path.join(ROOT, 'docs', 'grok-bots', 'archive', 'recipes');
 const PACKET_OUT = path.join(OUTPUT_DIR, 'video', 'packets');
 const GITHUB_REPO = process.env.GITHUB_REPOSITORY || 'fireworker011/Research';
-const GITHUB_REF = process.env.GROK_BOT_REF || 'cursor/video-channel-playbook-e013';
+const GITHUB_REF = process.env.GROK_BOT_REF || 'cursor/grok-bot-research-2026-08-26';
 const POST_CAP = '1チャンネル1日2本まで。2本目は時間を空け、内容を変える。';
 const CTA_RULE = '本編にCTAは入れない。最後の2秒だけ「詳しくはプロフィールのリンク（PR）」を1回、同じ位置に出す。';
 
