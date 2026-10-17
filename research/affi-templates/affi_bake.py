@@ -810,8 +810,52 @@ def commands_want_chain(text: str) -> bool:
     return affi_av.CHAIN_FILENAME in str(text or "")
 
 
+def _find_chain_drive_file(roots: Sequence[Path] | None = None) -> Path | None:
+    """The uploaded slider. My Drive root, one folder down, or the file id mount."""
+    name = affi_av.CHAIN_FILENAME
+    file_id = affi_av.CHAIN_DRIVE_ID
+    if roots is None:
+        roots = (
+            Path("/content/drive/MyDrive"),
+            Path("/content/drive/MyDrive/h3-weights/loras"),
+            Path("/content/drive/.shortcut-targets-by-id") / file_id,
+        )
+    for root in roots:
+        if root.is_file():
+            return root
+        if not root.is_dir():
+            continue
+        direct = root / name
+        if direct.is_file():
+            return direct
+        try:
+            children = list(root.iterdir())
+        except OSError:
+            continue
+        for child in children:
+            if child.is_dir():
+                hit = child / name
+                if hit.is_file():
+                    return hit
+    return None
+
+
+def chain_lora_from_drive(dest: Path, roots: Sequence[Path] | None = None) -> bool:
+    """Copy the Drive upload onto dest. True when dest already has bytes."""
+    if dest.is_file() and dest.stat().st_size > 0:
+        return True
+    found = _find_chain_drive_file(roots)
+    if found is None:
+        return False
+    dest.parent.mkdir(parents=True, exist_ok=True)
+    if found.resolve() != dest.resolve():
+        shutil.copy2(found, dest)
+        print(f"ドライブから置いた: {found.name} → {dest}")
+    return dest.is_file() and dest.stat().st_size > 0
+
+
 def prepare_chain_lora(dest_dir: str | Path) -> Path:
-    """Download the 百裂拳 slider. Skip a file that is already there.
+    """Use the Drive upload. Download from Civitai only when that file is missing.
 
     The runner is cloned on Colab after this module loads, so the download
     helper is imported here.
@@ -823,14 +867,15 @@ def prepare_chain_lora(dest_dir: str | Path) -> Path:
     folder = Path(dest_dir)
     folder.mkdir(parents=True, exist_ok=True)
     dest = folder / affi_av.CHAIN_FILENAME
-    token = (os.environ.get("CIVITAI_TOKEN") or "").strip()
-    _download_civitai(
-        affi_av.CHAIN_VERSION,
-        dest,
-        affi_av.CHAIN_LABEL,
-        token,
-        urllib.request.urlopen,
-    )
+    if not chain_lora_from_drive(dest):
+        token = (os.environ.get("CIVITAI_TOKEN") or "").strip()
+        _download_civitai(
+            affi_av.CHAIN_VERSION,
+            dest,
+            affi_av.CHAIN_LABEL,
+            token,
+            urllib.request.urlopen,
+        )
     inspect_lora_file(dest)
     return dest
 
