@@ -19,7 +19,7 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from pathlib import Path
 
-from h3_runner.loras import LoraSpec
+from h3_runner.loras import REPAIR_FILENAME, TURBO_FILENAME, LoraSpec
 from h3_runner.official import (
     AUDIO_FLOW_SHIFT,
     CANVAS_MULTIPLE,
@@ -68,7 +68,7 @@ def _fit_proxy(task: str) -> float:
         return float(latent * spatial_tokens(REF2VA_FIT_HEIGHT, REF2VA_FIT_WIDTH))
     # FL2VA uses the transformer partition and stretches the still onto the canvas.
     # It does not encode a 2048-short-edge reference, so it shares the T2VA budget.
-    if task in ("t2va", "fl2va"):
+    if task in ("t2va", "fl2va", "i2va"):
         height, width = resolve_canvas_size(16, 9)
         latent = video_latent_num_frames(REF2VA_FIT_FRAMES)
         return float(latent * spatial_tokens(height, width) * T2VA_EXAMPLE_SLACK)
@@ -160,6 +160,10 @@ class ClipJob:
     out_path: Path
     trim_s: float | None = None
     video_shift: float = DEFAULT_VIDEO_SHIFT
+    video_path: Path | None = None
+    audio_path: Path | None = None
+    video_start_s: float | None = None
+    video_end_s: float | None = None
 
     def canvases(self) -> list[tuple[int, int, int]]:
         """``(height, width, short_edge)`` largest first. ``short_edge`` 0 means width/height were explicit."""
@@ -180,8 +184,12 @@ class ClipJob:
             short_edge=short_edge,
             seed=self.seed,
             steps=self.steps,
-            image_uri=image_uri if self.task in ("fl2va", "ref2va") else None,
+            image_uri=image_uri if self.task in ("fl2va", "i2va", "ref2va") else None,
             flow_shift=self.video_shift,
+            video_uri=self.video_path.resolve().as_uri() if self.task == "ref2va" and self.video_path else None,
+            audio_uri=self.audio_path.resolve().as_uri() if self.task == "ref2va" and self.audio_path else None,
+            video_start_s=self.video_start_s if self.task == "ref2va" else None,
+            video_end_s=self.video_end_s if self.task == "ref2va" else None,
         )
 
 
@@ -233,6 +241,10 @@ def _clip(
     num_frames: int | None = None,
     trim_s: float | None = None,
     video_shift: float = DEFAULT_VIDEO_SHIFT,
+    video_path: Path | None = None,
+    audio_path: Path | None = None,
+    video_start_s: float | None = None,
+    video_end_s: float | None = None,
 ) -> ClipJob:
     if num_frames is None:
         raw = frames_for_seconds(requested_s)
@@ -269,6 +281,10 @@ def _clip(
         out_path=out_path,
         trim_s=trim_s,
         video_shift=float(video_shift),
+        video_path=video_path,
+        audio_path=audio_path,
+        video_start_s=video_start_s,
+        video_end_s=video_end_s,
     )
 
 
@@ -387,6 +403,7 @@ def orbis01_plan(
         notes.append(hardware_note(vram_gb))
     applied = _apply_loras(notes, mode, loras)
     if force_one_shot:
+        _reject_fl2v_lora_on_ref("ref2va", loras)
         raw = frames_for_seconds(15)
         frames = largest_legal_frames(raw)
         assert frames is not None
@@ -485,6 +502,40 @@ def orbis01_plan(
     )
 
 
+def _reject_fl2v_lora_on_ref(task: str, loras: list[LoraSpec] | None) -> None:
+    """FL2V Turbo and Motion Repair were trained for transformer, not transformer_ref."""
+    if task != "ref2va":
+        return
+    names = {TURBO_FILENAME, REPAIR_FILENAME}
+    found = [item.path.name for item in (loras or []) if item.path.name in names]
+    if found:
+        raise ValueError("FL2VA の LoRA は ref2va に載せない: " + ", ".join(found))
+
+
+def _check_reference_media(
+    task: str,
+    image_path: Path | None,
+    video_path: Path | None,
+    audio_path: Path | None,
+    video_start_s: float | None,
+    video_end_s: float | None,
+) -> None:
+    if task != "ref2va" and (video_path is not None or audio_path is not None):
+        raise ValueError(f"{task} に参照動画は渡さない。ref2va を使う。")
+    if task in ("fl2va", "i2va") and image_path is None:
+        raise ValueError(f"{task} には --image が要る")
+    if task == "ref2va" and image_path is None and video_path is None:
+        raise ValueError("ref2va には --video か --image が要る")
+    if task == "t2va" and image_path is not None:
+        raise ValueError("t2va に参照画像は渡さない")
+    if video_path is None and (video_start_s is not None or video_end_s is not None):
+        raise ValueError("参照動画が無い")
+    if (video_start_s is None) != (video_end_s is None):
+        raise ValueError("--video-start と --video-end は両方要る")
+    if video_start_s is not None and video_end_s is not None and float(video_end_s) <= float(video_start_s):
+        raise ValueError("参照動画の範囲が無い")
+
+
 def single_plan(
     *,
     task: str,
@@ -507,11 +558,17 @@ def single_plan(
     split_image: Path | None = None,
     video_shift: float = DEFAULT_VIDEO_SHIFT,
     loras: list[LoraSpec] | None = None,
+    video_path: Path | None = None,
+    audio_path: Path | None = None,
+    video_start_s: float | None = None,
+    video_end_s: float | None = None,
 ) -> Plan:
     if task not in TASKS:
-        raise ValueError(f"task must be t2va, fl2va, or ref2va, got {task!r}")
+        raise ValueError(f"task must be t2va, fl2va, i2va, or ref2va, got {task!r}")
     if not README_MIN_DURATION_S <= duration_s <= README_MAX_DURATION_S:
         raise ValueError(f"duration は {README_MIN_DURATION_S:g}〜{README_MAX_DURATION_S:g}")
+    _reject_fl2v_lora_on_ref(task, loras)
+    _check_reference_media(task, image_path, video_path, audio_path, video_start_s, video_end_s)
     notes = [f"モデル: {MODEL_ID}。"]
     blocked = check_machine(vram_gb, host_ram_gb, offload)
     mode = offload_mode(host_ram_gb, offload) if blocked is None else "int8"
@@ -520,10 +577,11 @@ def single_plan(
     applied = _apply_loras(notes, mode, loras)
     raw = frames_for_seconds(duration_s)
     legal = diffusers_accepts(raw)
-    if task in ("ref2va", "fl2va") and image_path is None:
-        raise ValueError(f"{task} には --image が要る")
-    if task == "t2va" and image_path is not None:
-        raise ValueError("t2va に参照画像は渡さない")
+    if task == "ref2va" and video_path is not None:
+        span = ""
+        if video_start_s is not None and video_end_s is not None:
+            span = f" {float(video_start_s):g}–{float(video_end_s):g}s"
+        notes.append(f"参照動画: {video_path}{span}。カメラ、カット、声、曲はこのファイル。FL2VA の LoRA は載せない。")
     use_split = (
         not force
         and task == "ref2va"
@@ -564,6 +622,10 @@ def single_plan(
                 height=height,
                 trim_s=9.0,
                 video_shift=video_shift,
+                video_path=video_path,
+                audio_path=audio_path,
+                video_start_s=video_start_s,
+                video_end_s=video_end_s,
             ),
         ]
         return Plan(
@@ -590,6 +652,8 @@ def single_plan(
         notes.append(f"force: {frames} フレーム ({frames / FPS:.3f}秒) に縮める。")
     if task == "fl2va":
         notes.append("FL2VA の静止画は image= の最初のコマ。references には渡さない。")
+    if task == "i2va":
+        notes.append("I2VA の静止画は image= の最初のコマ。最後のコマは渡さない。プロンプトは手入力。")
     job = _clip(
         task=task,
         prompt_path=prompt_path,
@@ -605,6 +669,10 @@ def single_plan(
         num_frames=frames,
         trim_s=None,
         video_shift=video_shift,
+        video_path=video_path if task == "ref2va" else None,
+        audio_path=audio_path if task == "ref2va" else None,
+        video_start_s=video_start_s if task == "ref2va" else None,
+        video_end_s=video_end_s if task == "ref2va" else None,
     )
     if task == "ref2va" and job.short_edges[0] == 352:
         notes.append(ref_canvas_note(vram_gb))

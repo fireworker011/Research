@@ -1,0 +1,436 @@
+schema: affi-repro-structure/v1
+source_id: "7692378853490167046"
+pattern: junjun_ranran
+duration_s: 71.552
+canvas: "1080x1920"
+fps: 30
+file_in_repo: false
+cuts_s:
+  - 1.333
+  - 6.067
+  - 13.233
+  - 14.667
+  - 20.5
+  - 22.5
+  - 24.567
+  - 29.133
+  - 40.1
+  - 44.133
+  - 47.1
+  - 48.5
+  - 50.267
+  - 55.233
+  - 62.0
+  - 66.067
+  - 67.7
+  - 69.8
+  - 71.067
+silences_s:
+  - [7.137, 7.588]
+  - [13.283, 13.578]
+measure:
+  cuts: scdet threshold 10。19か所。
+  silences: silencedetect -35dB、0.25秒以上。2か所。
+  captions: 指定時刻のフレームで読んだ文。発話の頭と尻は測っていない。
+  music: 未測定。楽器名は書かない。
+  caption_y: 未測定。仕様の「下から約30%」を使う。
+change_only:
+  - person
+  - animals
+  - lines
+  - place
+slots:
+  person: 入力
+  animals:
+    guest: 入力
+    retort: 入力
+    polite: 入力
+  place: 入力
+narration: 独立した語りは無い。声はせりふ。口調だけ固定する。
+registers:
+  guest: 短い悪口。外から入る。
+  retort: 方言のツッコミ。低い口調。
+  polite: 丁寧語。
+  owner: 短い相槌。話の中心にしない。
+  indoor_pair: どちらが言ったかは測っていない。
+subtitle:
+  font: 白ゴシック
+  edge: 細い影
+  lines: 1
+  box: false
+  place: 中央やや下
+  content: その場のせりふ。差し替えた文を出す。
+watermark:
+  places: 上と中段
+  text: 自分のアカウント名
+punch:
+  - 言い合いが続く
+  - 仕切りは閉まったまま、声が小さくなる
+  - 同じ脅しの文が戻る
+  - 飼い主が、もう一度開けようとする
+  - ツッコミ役が、開けるなと言う
+  - 客が中へ入る
+  - 黒で切れる
+shots:
+  - id: s01
+    start_s: 0.0
+    end_s: 1.333
+    place_part: outside
+    on_screen: [guest]
+    camera: 寄り。低い。動きは少ない。
+    picture: 客が画面に向かう。屋外。空。口が開いている。
+    source_seen: 黒い鳥の寄り。青空。
+  - id: s02
+    start_s: 1.333
+    end_s: 6.067
+    place_part: inside_glass
+    on_screen: [retort, polite, guest]
+    camera: 室内の床の高さ。窓の光。
+    picture: 室内の動物2匹を後ろから見る。客は外に小さくいる。片方の動物が立ち上がる。
+    source_seen: 白い長毛と、太った白黒。窓の外に鳥。
+  - id: s03
+    start_s: 6.067
+    end_s: 13.233
+    place_part: inside_glass
+    on_screen: [polite, retort]
+    camera: 横顔。ガラス越し。動きは少ない。
+    picture: 動物2匹の横顔。丁寧役が手前。
+    source_seen: 白い長毛が手前。キジ白が奥。
+  - id: s04
+    start_s: 13.233
+    end_s: 14.667
+    place_part: outside
+    on_screen: [guest]
+    camera: 立ち姿。手すり。奥に建物。
+    picture: 客が手すりにいる。口が開いている。
+    source_seen: 鳥が手すり。街が見える。
+  - id: s05
+    start_s: 14.667
+    end_s: 20.5
+    place_part: inside_glass
+    on_screen: [polite, retort]
+    camera: 横顔。ガラス越し。s03と同じ向き。
+    picture: 動物2匹の横顔。丁寧役が手前。
+    source_seen: s03と同じ並び。
+  - id: s06
+    start_s: 20.5
+    end_s: 22.5
+    place_part: outside
+    on_screen: [guest]
+    camera: 立ち姿。手すり。羽が少し開く。
+    picture: 客が手すりにいる。
+    source_seen: 鳥。羽が少し開く。
+  - id: s07
+    start_s: 22.5
+    end_s: 24.567
+    place_part: inside_glass
+    on_screen: [polite]
+    camera: 寄り。網目越し。
+    picture: 丁寧役の顔。仕切りの網目ごし。
+    source_seen: 白い長毛を網目越し。
+  - id: s08
+    start_s: 24.567
+    end_s: 29.133
+    place_part: outside
+    on_screen: [guest]
+    camera: 下から見上げる。動きは少ない。
+    picture: 客を下から見る。口が上を向く。
+    source_seen: 鳥を下から。
+  - id: s09
+    start_s: 29.133
+    end_s: 40.1
+    place_part: inside_room
+    on_screen: [guest, retort, polite, owner]
+    camera: 引き。室内。仕切り越し。
+    picture: 飼い主が小さい袋を持つ。客は端。ツッコミ役が後ろ脚で立ち、あとで座る。丁寧役は座っている。
+    source_seen: ベージュの服の人が黄色い袋。鳥は左端。
+    note: 30.6秒は座り引き。32秒から37秒は立ち寄り。38.8秒は座りに戻る。scdet はこの中を切っていない。境の秒は測っていない。
+  - id: s10
+    start_s: 40.1
+    end_s: 44.133
+    place_part: inside_glass
+    on_screen: [polite, retort, guest, owner]
+    camera: 背中。外の手すりが見える。
+    picture: 動物2匹の背中。客は外の手すり。飼い主は端。植物がある。画面文字は無い。
+    source_seen: 2匹の背中。手すりに鳥。植木。
+  - id: s11
+    start_s: 44.133
+    end_s: 47.1
+    place_part: inside_glass
+    on_screen: [retort, polite, guest, owner]
+    camera: 正面。2匹が並んで座る。
+    picture: 動物2匹が正面を向いて座る。客は端。飼い主の脚。声が小さくなる。
+    source_seen: 2匹が座って正面。鳥は左端。
+  - id: s12
+    start_s: 47.1
+    end_s: 48.5
+    place_part: outside
+    on_screen: [guest]
+    camera: 寄り。屋外。
+    picture: 客の寄り。
+    source_seen: 鳥の寄り。空。
+  - id: s13
+    start_s: 48.5
+    end_s: 50.267
+    place_part: inside_glass
+    on_screen: [polite]
+    camera: 寄り。座っている。
+    picture: 丁寧役が座って正面。
+    source_seen: 白い長毛が座る。
+  - id: s14
+    start_s: 50.267
+    end_s: 55.233
+    place_part: inside_glass
+    on_screen: [retort]
+    camera: 寄り。上を見る。
+    picture: ツッコミ役が座って上を見る。画面文字は無い。
+    source_seen: キジ白が上を見る。
+  - id: s15
+    start_s: 55.233
+    end_s: 62.0
+    place_part: inside_glass
+    on_screen: [polite, retort, guest, owner]
+    camera: 背中。s10と同じ向き。
+    picture: 動物2匹の背中。客は外の手すり。飼い主の腕。
+    source_seen: 2匹の背中。手すりに鳥。
+  - id: s16
+    start_s: 62.0
+    end_s: 66.067
+    place_part: inside_room
+    on_screen: [retort, polite, owner]
+    camera: 仕切り越し。引き。
+    picture: ツッコミ役が後ろ脚で立つ。丁寧役が隣に座る。飼い主は仕切りの向こうで袋を持つ。
+    source_seen: キジ白が立つ。白い長毛が座る。人が袋。
+  - id: s17
+    start_s: 66.067
+    end_s: 67.7
+    place_part: outside
+    on_screen: [guest]
+    camera: 寄り。屋外。
+    picture: 客の寄り。口が開いている。
+    source_seen: 鳥の寄り。
+  - id: s18
+    start_s: 67.7
+    end_s: 69.8
+    place_part: inside_room
+    on_screen: [owner]
+    camera: 顔の寄り。
+    picture: 飼い主の顔。小さい袋を持つ。
+    source_seen: 人の顔。ベージュの服。黄色い袋。
+  - id: s19
+    start_s: 69.8
+    end_s: 71.067
+    place_part: screen
+    on_screen: [guest, retort, polite, owner]
+    camera: 仕切りが開く。客が中へ入る。
+    picture: 仕切りが開く。客が入る。動物2匹が身を引く。
+    source_seen: 鳥が飛び込む。2匹が下がる。
+  - id: s20
+    start_s: 71.067
+    end_s: 71.552
+    place_part: black
+    on_screen: []
+    camera: 黒で切れる。
+    picture: 黒画面。せりふは無い。
+    source_seen: 黒。
+    note: 71.15秒と71.35秒のフレームは黒。
+captions:
+  - id: c01
+    shot: s01
+    role: guest
+    source_line: おい、そこのデブ
+    seen_s: [0.0]
+    line: 入力
+  - id: c02
+    shot: s02
+    role: retort
+    source_line: デブちゃうわ
+    seen_s: [4.0]
+    line: 入力
+  - id: c03
+    shot: s02
+    role: retort
+    source_line: 貫禄や
+    seen_s: [5.4, 5.9, 6.0]
+    line: 入力
+  - id: c04
+    shot: s03
+    role: polite
+    source_line: デブですけど
+    seen_s: [6.15, 6.4, 6.8]
+    line: 入力
+  - id: c05
+    shot: s03
+    role: polite
+    source_line: あなたに言われる
+    seen_s: [8.3]
+    line: 入力
+  - id: c06
+    shot: s03
+    role: polite
+    source_line: 筋合いはありません
+    seen_s: [9.6]
+    line: 入力
+  - id: c07
+    shot: s03
+    role: retort
+    source_line: お前どっちの味方やねん
+    seen_s: [11.8]
+    line: 入力
+  - id: c08
+    shot: s04
+    role: guest
+    source_line: すっこんでろ、モップ
+    seen_s: [13.5]
+    line: 入力
+  - id: c09
+    shot: s05
+    role: polite
+    source_line: 毎朝ブラッシングしてます
+    seen_s: [15.2]
+    line: 入力
+  - id: c10
+    shot: s05
+    role: polite
+    source_line: ゴミあさってる方とは違います
+    seen_s: [17.4]
+    line: 入力
+  - id: c11
+    shot: s05
+    role: retort
+    source_line: せや
+    seen_s: [18.6]
+    line: 入力
+  - id: c12
+    shot: s05
+    role: retort
+    source_line: ゴミ捨て場のネットも
+    seen_s: [19.6]
+    line: 入力
+  - id: c13
+    shot: s05
+    role: retort
+    source_line: 破られへんくせに
+    seen_s: [20.0]
+    line: 入力
+  - id: c14
+    shot: s06
+    role: guest
+    source_line: 破れるっつーの
+    seen_s: [21.2]
+    line: 入力
+  - id: c15
+    shot: s06
+    role: guest
+    source_line: 先週も破ったっつーの
+    seen_s: [22.2]
+    line: 入力
+  - id: c16
+    shot: s07
+    role: polite
+    source_line: 網戸も網ですけど
+    seen_s: [23.4]
+    line: 入力
+  - id: c17
+    shot: s08
+    role: guest
+    source_line: 人んちのは破らねえ
+    seen_s: [26.2]
+    line: 入力
+  - id: c18
+    shot: s08
+    role: guest
+    source_line: 主義なんだよ
+    seen_s: [27.4]
+    line: 入力
+  - id: c19
+    shot: s08
+    role: guest
+    source_line: お前らが出てこいよ
+    seen_s: [28.7, 29.05]
+    line: 入力
+  - id: c20
+    shot: s09
+    role: retort
+    source_line: この網戸さえなかったらなあ
+    seen_s: [32.0, 33.0, 34.0]
+    line: 入力
+  - id: c21
+    shot: s09
+    role: owner
+    source_line: 開けたげる
+    seen_s: [35.0]
+    line: 入力
+  - id: c22
+    shot: s09
+    role: retort
+    source_line: お前なんか一発で
+    seen_s: [36.2, 36.8, 37.2]
+    line: 入力
+  - id: c23
+    shot: s09
+    role: owner
+    source_line: 開けたげる
+    seen_s: [38.2]
+    line: 入力
+  - id: c24
+    shot: s11
+    role: indoor_pair
+    source_line: どうも
+    seen_s: [46.0]
+    line: 入力
+  - id: c25
+    shot: s12
+    role: guest
+    source_line: どうも
+    seen_s: [48.0]
+    line: 入力
+  - id: c26
+    shot: s13
+    role: polite
+    source_line: こんにちは
+    seen_s: [49.0]
+    line: 入力
+  - id: c27
+    shot: s15
+    role: retort
+    source_line: この網戸さえなかったらなあ
+    seen_s: [61.4, 61.9]
+    line: 入力
+  - id: c28
+    shot: s16
+    role: retort
+    source_line: リンちゃんが
+    function: 飼い主を名前で呼ぶ
+    seen_s: [62.6]
+    line: 入力
+  - id: c29
+    shot: s16
+    role: retort
+    source_line: 閉めてもうたからなあ
+    seen_s: [63.2, 63.8, 64.1]
+    line: 入力
+  - id: c30
+    shot: s16
+    role: polite
+    source_line: 命拾いしましたね
+    seen_s: [64.8, 65.0]
+    line: 入力
+  - id: c31
+    shot: s17
+    role: guest
+    source_line: こっちのセリフだ
+    seen_s: [67.6]
+    line: 入力
+  - id: c32
+    shot: s18
+    role: owner
+    source_line: もっかい開けよっか
+    seen_s: [69.5]
+    line: 入力
+  - id: c33
+    shot: s19
+    role: retort
+    source_line: 開けんな
+    seen_s: [69.9, 70.4]
+    line: 入力

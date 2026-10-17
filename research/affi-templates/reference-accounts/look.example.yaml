@@ -1,0 +1,6 @@
+schema: affi-look-selection/v1
+note: 空欄の項目は looks.yaml の既定。既定は元アカウントと違う見た目。人物は成人のみ。
+ref_image: ""
+animal_species: rabbit
+place_room: kitchen
+speech: polite

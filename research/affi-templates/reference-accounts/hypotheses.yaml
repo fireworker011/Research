@@ -1,0 +1,176 @@
+schema: affi-hypothesis/v1
+source: reference-accounts/source/hypotheses.md
+rules: 1回に変えるのは1要素。投稿後72時間の値で比べる。数字は手入力。
+items:
+  - id: H1-1
+    handle: the.care.logic
+    comparison: ab
+    change_key: opening
+    title: 冒頭の文字の表紙
+    a_label: 題字の表紙あり
+    b_label: キャラの感情アップから開始
+    a_value: 0秒に題字の1枚絵を置く。その後は引き。
+    b_value: 表紙は無し。1体の感情アップから始める。表紙はTikTokのカバーにだけ付ける。
+    metrics:
+      - {name: two_sec_hold_pct, rule: higher_by_points, threshold: 10}
+      - {name: views, rule: median_ratio, threshold: 1.5}
+    min_n_each: 5
+  - id: H1-2
+    handle: the.care.logic
+    comparison: ab
+    change_key: cast
+    title: 主役の人数
+    a_label: 1体の感情アップ
+    b_label: 人間とキャラの2体
+    a_value: 画面は感情の強いキャラ1体。
+    b_value: 人間とキャラが2人並ぶ。感情は弱い。
+    metrics:
+      - {name: views, rule: median_ratio, threshold: 1.5}
+      - {name: shares, rule: present, threshold: null}
+      - {name: saves, rule: present, threshold: null}
+    min_n_each: 5
+    note: シェア率1.1〜4.7%、保存率1.6%以上は仕様の目標。自動の倍率判定は再生だけ。
+  - id: H1-3
+    handle: the.care.logic
+    comparison: ab
+    change_key: caption
+    title: キャプションの悩み文
+    a_label: 悩み文とタグ
+    b_label: タグのみ
+    a_value: キャプションの先頭に悩みを1文書く。
+    b_value: ハッシュタグだけ。
+    metrics:
+      - {name: views, rule: median_ratio, threshold: 1.5}
+    min_n_each: 5
+    note: 140万回はタグのみだったので、効果は小さい可能性あり。
+  - id: H2-1
+    handle: nuts0629
+    comparison: ab
+    change_key: audio
+    title: しゃべる要素
+    a_label: 犬のせりふあり
+    b_label: 曲だけ
+    a_value: 同じ犬、同じ衣装、8〜10秒。質問と返事の声がある。
+    b_value: 同じ犬、同じ衣装、8〜10秒。曲だけでせりふなし。
+    metrics:
+      - {name: two_sec_hold_pct, rule: higher_by_points, threshold: 0}
+      - {name: views, rule: median_ratio, threshold: 2}
+    min_n_each: 5
+    note: 2秒視聴率は高い方を見る。勝ちの倍率は再生の2倍。
+  - id: H2-2
+    handle: nuts0629
+    comparison: ab
+    change_key: song
+    title: 曲の知名度
+    a_label: 有名な曲と曲名タグ
+    b_label: 一般的なダンス音源
+    a_value: 日本で知られている曲。キャプションに曲名タグ。曲そのものは自分で用意する。
+    b_value: 一般的なダンス音源。曲名タグなし。
+    metrics:
+      - {name: views, rule: median_ratio, threshold: 1.5}
+    min_n_each: 5
+  - id: H2-3
+    handle: nuts0629
+    comparison: before_after
+    change_key: cadence
+    title: 投稿頻度
+    a_label: 毎日1本
+    b_label: 週2本
+    a_value: 同じ型で毎日1本。
+    b_value: 同じ型で週2本。中身の型は変えない。
+    metrics:
+      - {name: views, rule: present, threshold: null}
+      - {name: follower_gain, rule: present, threshold: null}
+    min_n_each: 1
+    note: A/Bではない。期間の前後比較。参考程度。
+  - id: H3-1
+    handle: junjun_ranran
+    comparison: ab
+    change_key: first_line
+    title: 最初のセリフ
+    a_label: 対立の一言
+    b_label: 状況説明
+    a_value: 最初の一言は対立。黒画面にしない。
+    b_value: 最初の一言は状況説明。
+    metrics:
+      - {name: two_sec_hold_pct, rule: higher_by_points, threshold: 10}
+      - {name: views, rule: median_ratio, threshold: 1.5}
+    min_n_each: 5
+  - id: H3-2
+    handle: junjun_ranran
+    comparison: ab
+    change_key: duration
+    title: 尺
+    a_label: 約45秒・1場面
+    b_label: 約120秒・複数場面
+    a_value: 約45秒。室内の1場面で終わる。
+    b_value: 約120秒。場面をまたぐ。
+    metrics:
+      - {name: views, rule: median_ratio, threshold: 1.5}
+    min_n_each: 4
+    note: 完走率と平均視聴時間の割合は手で見る。自動判定は再生中央値だけ。
+  - id: H3-3
+    handle: junjun_ranran
+    comparison: ab
+    change_key: speech_style
+    title: 口調
+    a_label: 関西弁と丁寧語
+    b_label: 両方標準語
+    a_value: ツッコミは関西弁、もう1匹は丁寧語。口調は固定。
+    b_value: 両方標準語。中身の話は同じ。
+    metrics:
+      - {name: saves, rule: present, threshold: null}
+      - {name: shares, rule: present, threshold: null}
+    min_n_each: 4
+    note: 保存率0.5%以上は仕様の目標。自動の倍率は置いていない。
+  - id: H4-1
+    handle: yako.shiawasekon
+    comparison: ab
+    change_key: ending
+    title: 教訓とCTA
+    a_label: 教訓ナレとCTAカードあり
+    b_label: なし。誘導はプロフィールのみ
+    a_value: 最後の10〜20秒に教訓のナレーションと黒カード。
+    b_value: 教訓もCTAカードも無し。誘導はプロフィールだけ。
+    metrics:
+      - {name: views, rule: median_ratio, threshold: 1.5}
+      - {name: diagnosis_signups, rule: present, threshold: null}
+    min_n_each: 5
+    note: 再生が落ちても診断申込が増えるなら「あり」が勝ちの場合がある。診断は手で見る。
+  - id: H4-2
+    handle: yako.shiawasekon
+    comparison: ab
+    change_key: title_band
+    title: 題帯の文言
+    a_label: 関係が変わる瞬間を予告
+    b_label: 結末のセリフそのまま
+    a_value: 題帯は結末を予告する型。
+    b_value: 題帯は最後のセリフをそのまま書く。
+    metrics:
+      - {name: two_sec_hold_pct, rule: higher_by_points, threshold: 0}
+      - {name: avg_watch_sec, rule: present, threshold: null}
+      - {name: views, rule: median_ratio, threshold: 1.5}
+    min_n_each: 5
+  - id: H4-3
+    handle: yako.shiawasekon
+    comparison: ab
+    change_key: format
+    title: ドラマ型か説明短編か
+    a_label: 会話ドラマ
+    b_label: あるある説明短編
+    a_value: 会話だけで進むドラマ。
+    b_value: あるあるを説明する短編。会話劇にしない。
+    metrics:
+      - {name: views, rule: median_ratio, threshold: 1.5}
+      - {name: follower_gain, rule: present, threshold: null}
+    min_n_each: 5
+feasibility:
+  - id: F1
+    title: 日本語の口パク台詞
+    ask: 参照画像の人物が、入力した日本語の1文を口を動かして言う10秒が作れるか。
+  - id: F2
+    title: 毎回同じ顔
+    ask: 同じ参照画像で、場所だけ変えた2本の顔が同じに見えるか。
+  - id: F3
+    title: ダンスの動き
+    ask: 衣装を着た同じ動物が、曲に合わせて全身で踊る10秒が作れるか。元はKling。Grok Imagineで足りるかは未確認。

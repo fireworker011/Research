@@ -63,7 +63,12 @@ ROOT_FILES = ("modular_model_index.json", "model_index.json")
 EXTRA_DIRS = ("scheduler", "audio_scheduler")
 
 SHARED = ["text_encoder", "vae", "audio_vae", "tokenizer", "processor"]
-DENOISER = {"t2va": "transformer", "fl2va": "transformer", "ref2va": "transformer_ref"}
+DENOISER = {
+    "t2va": "transformer",
+    "fl2va": "transformer",
+    "i2va": "transformer",
+    "ref2va": "transformer_ref",
+}
 FORBIDDEN = ("FL2VA", "Ref2VA")
 
 
@@ -157,6 +162,32 @@ def disk_anchor(path: Path) -> Path:
 def is_colab_drive(path: Path) -> bool:
     """True for ``/content/drive/...``. statvfs there is the VM disk, not Drive quota."""
     return Path(path).parts[:3] == ("/", "content", "drive")
+
+
+def local_encode_path(out_path: Path) -> Path:
+    """Where PyAV should mux the mp4.
+
+    ``av.open`` seeks while it writes the moov atom. The Colab Drive mount
+    accepts a small JSON write and fails that mux, which leaves
+    ``*.request.json`` and no mp4. Encode on the VM disk, then copy.
+    """
+    out_path = Path(out_path)
+    if not is_colab_drive(out_path):
+        return out_path
+    root = Path("/content/h3-mp4") if Path("/content").is_dir() else Path(tempfile.gettempdir()) / "h3-mp4"
+    parts = out_path.parts
+    if "MyDrive" in parts:
+        tail = parts[parts.index("MyDrive") + 1 :]
+    else:
+        tail = parts[3:]
+    if not tail:
+        tail = (out_path.name,)
+    return root.joinpath(*tail)
+
+
+def failure_text(stage: str, exc: BaseException) -> str:
+    """One line for the cell and for ``*.error.txt``. ``request.json`` is not this."""
+    return f"{stage}で止めた。{type(exc).__name__}: {exc}"
 
 
 def staging_dir() -> Path:

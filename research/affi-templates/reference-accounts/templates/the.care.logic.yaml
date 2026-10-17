@@ -1,0 +1,87 @@
+schema: affi-repro-template/v1
+handle: the.care.logic
+genre: 美容スキンケア
+platform: TikTok
+source: reference-accounts/source/spec_the.care.logic.md
+reproduce: 型だけ。元動画のキャラと台詞はコピーしない。
+canvas: "720x1280"
+duration_s: 30
+duration_note: "30秒前後。40秒版もある。カットは10.0秒・20.0秒が多い。"
+characters:
+  - id: mascot
+    role: 擬人化した材料・臓器・害虫の3Dキャラ。1体が感情を担う。
+    look: ピクサー風。大きな目、つるっとした質感、やわらかい光。具体の形はテーマで決める。
+    voice: 高めの声。推定。主に200〜330Hz。怪物役の前半だけ低い声の回がある（推定）。
+    certainty: 推定
+  - id: human
+    role: 人間キャラ。伸びた型では出さない。停滞した型では2人並び。
+    look: 現地の衣装。顔は毎回同じ参照画像。元動画の顔は使わない。
+    voice: 不明
+    certainty: 推定
+timeline:
+  - id: cover
+    start_s: 0
+    end_s: 0.07
+    optional: true
+    picture: 題字の1枚絵。伸びた2本には無い。最新3本だけ。
+    speech: なし
+    camera: 固定
+    on_screen_text: 題字。言語は入力。元のミャンマー語題はコピーしない。
+    certainty: 仕様どおり（最新3本のみ）
+  - id: problem
+    start_s: 0
+    end_s: 10
+    picture: 1体のキャラの感情アップ。泣く・怒る・悩む。文字なし。
+    speech: 悩みを感情で見せる。具体の台詞は入力。ミャンマー語の中身は不明。
+    camera: ほぼ固定。ゆっくり寄る程度。
+    certainty: 推定（画は仕様。台詞の中身は不明）
+  - id: action
+    start_s: 10
+    end_s: 20
+    picture: 対処。材料を扱う、手でなでる、簡単な図。テーマで中身を変える。
+    speech: 対処の説明。具体は入力。
+    camera: ほぼ固定。寄りを足すこともある。
+    certainty: 推定
+  - id: result
+    start_s: 20
+    end_s: 30
+    picture: 結果。笑顔。締めのカードは無い。
+    speech: 結果の一言。具体は入力。
+    camera: ほぼ固定。
+    certainty: 仕様どおり（5本とも最後はキャラの笑顔）
+subtitle:
+  enabled: false
+  note: 5本とも字幕なし。
+logo:
+  place: 右上
+  style: 小さめの白文字。常時。文言は自分の名前。元のロゴはコピーしない。
+  certainty: 仕様どおり
+title_band:
+  enabled: false
+  note: 題字の表紙は伸びた型では使わない。
+audio:
+  voice: キャラのせりふが続く。人の声かAI音声かは不明。
+  bgm: 不明
+  sfx: 不明
+  sound_name: original sound
+  certainty: 推定（ピッチは仕様。分離は不明）
+hashtags:
+  stalled_pattern: ["#tiktokmyanmar", "#fyp", "#viral", "#creatorsearchinsights"]
+  hit_period_note: 6〜7月は悩み文つきキャプションが多かった。140万回はタグのみ。
+  certainty: 仕様どおり
+cta:
+  in_video: なし
+  in_caption: なし
+  profile: 不明（既存メモはAI制作・広告受付。この5本の検証はしていない）
+cuts:
+  typical: "10.0秒と20.0秒"
+  shot_count: "30秒で2〜3カット。平均7.5〜9.4秒。材料を見せる回だけ短い寄りが増える。"
+edit:
+  - 10秒の生成を3本つなぐ
+  - 字幕は焼かない
+  - 右上ロゴだけ足す
+unknowns:
+  - ミャンマー語の台詞の中身
+  - BGMと効果音
+  - 人の声かAI音声か
+  - 生成ツール（透かしは見えない。確定できない）
