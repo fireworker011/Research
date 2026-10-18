@@ -19,6 +19,10 @@
 - テスト: `python3 -m pytest colab/test_h3_episode.py -q`
 - このファイル: `minimaxh3/episodes/hospital-exit-adult/HANDOFF.md`。仕様が変わったら、ここを同じコミットで更新する
 
+## いま（2026-10-18）ランタイム
+
+エピソードノートは、動画が描き終わったらランタイムを切る。重みの取得だけと、失敗したときは切らない。
+
 ## いま（2026-10-17）キス v0.2
 
 `kiss` を v0.2 の主ファイルに差し替えた。ファイル `cxy_kiss_lora_h3_v02_step1200.safetensors`。Civitai 2842199、version 3410507、fileId 3302584。強度は 0.5 のまま。トリガー語は無い。画像用 `cxy_kiss_image_v02` と step1000 は使わない。作者は、舌の硬さが少し良くなったがまだ残るベータ、と書いている。動作の本文は変えていない。

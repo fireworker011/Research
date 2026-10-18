@@ -147,7 +147,6 @@ os.environ["H3_EPISODE_SCENES"] = ",".join(
     f"{name}={choice}"
     for name, choice in (("miki", SCENE_MIKI), ("rei", SCENE_REI), ("kana", SCENE_KANA), ("shino", SCENE_SHINO))
 )
-os.environ["H3_KEEP_RUNTIME"] = "1"
 os.environ["H3_EPISODE_START"] = str(START or "").strip()
 os.environ["H3_EPISODE_FRESH"] = "1" if FRESH else "0"
 os.environ["H3_HELPER_BRANCH"] = BRANCH
@@ -201,6 +200,7 @@ slug = canonical_episode(EPISODE) or EPISODE
 os.environ["H3_EPISODE"] = slug
 Path(DRIVE_ROOT, "episodes", slug).mkdir(parents=True, exist_ok=True)
 from h3_episode_colab_main import main
+from h3_i2v_runtime import maybe_unassign
 
 rc = main()
 print("episode exit", rc)
@@ -209,7 +209,10 @@ if rc:
 if os.environ.get("H3_WEIGHTS_ONLY") == "1":
     print("取得だけ終わりました。ランタイムを A100 にして、もう一度 Run all すると動画を描きます。")
 else:
-    print("成功。完成動画は Drive episodes/" + slug + "/final/ にあります。ランタイムはそのままです。赤い例外は出ません。")
+    print("成功。完成動画は Drive episodes/" + slug + "/final/ にあります。ランタイムを切ります。赤い例外は出ません。")
+    os.environ["H3_UNASSIGN_RUNTIME"] = "1"
+    os.environ.pop("H3_KEEP_RUNTIME", None)
+    maybe_unassign()
 '''
 
 MD = f"""# MiniMax H3 エピソード一発（選んで Run all）
@@ -218,7 +221,7 @@ MD = f"""# MiniMax H3 エピソード一発（選んで Run all）
 
 **コードセルは1本。迷ったらドロップダウンはそのままで Run all。** Drive `minimax-h3-comfyui/episodes/<slug>/` に
 `episode.json` とスチールが無ければ GitHub から取ってくる。全ビートを1つのランタイムで描き、
-HUD・タイトル・免責エンドカードを載せて `final/<slug>-<日時>.mp4`（と `latest.mp4`）を書く。終わってもランタイムは切らない。
+HUD・タイトル・免責エンドカードを載せて `final/<slug>-<日時>.mp4`（と `latest.mp4`）を書く。動画が描き終わったらランタイムを切る。重みの取得だけと、失敗したときは切らない。
 
 ## 話 + 上から 11 つ + 病棟の追加（迷ったらそのまま）
 
@@ -290,7 +293,7 @@ HUD・タイトル・免責エンドカードを載せて `final/<slug>-<日時>
 - 投稿しない。アフィURL禁止。他のネタは `minimaxh3/episodes/_template` を複製して EPISODE を変える
 - 話のドロップダウンで霞東あさ / 病棟出口 / 番台を選ぶ（スラッグは `kasumi-late-desk-adult` / `hospital-exit-adult` / `bandai-district-short`）。霞東は Colab 4 オフが行為ルート（Combat なし）。オン＋ハイメモリは戦いルートで 06 と 10 に Combat。病棟修正版は `BRANCH=cursor/h3-hospital-ward-34e4`。霞東本体 `kasumi-late-desk` は PR #141。このノートの Run all で本体 Drive を上書きするな
 - 番台ショートは 25 秒・ミッション失敗で落ちる版。`bandai-district/raw/` の暖簾・自転車・軽トラをそのまま使い、新しく描くのは理容室の 1 本だけ
-- 成功時は `episode exit 0` のあと「成功。」と出る。ランタイムは切らない。`SystemExit: 0` の赤い枠は出さない
+- 成功時は `episode exit 0` のあと「成功。」と出て、ランタイムを切る。重みの取得だけと、失敗したときは切らない。`SystemExit: 0` の赤い枠は出さない
 
 セッション名 `{SESSION}`。GPU は A100。手順は `minimaxh3/episodes/README.md`。
 """

@@ -453,8 +453,10 @@ def test_notebook_is_one_cell_and_isolated():
     assert "if rc:" in src
     assert 'raise SystemExit(rc)' in src
     assert src.index("if rc:") < src.index("raise SystemExit(rc)")
-    assert 'os.environ["H3_KEEP_RUNTIME"] = "1"' in src
-    assert "ランタイムはそのまま" in src
+    assert 'os.environ["H3_KEEP_RUNTIME"] = "1"' not in src
+    assert "ランタイムを切ります" in src
+    assert "maybe_unassign()" in src
+    assert src.index("raise SystemExit(rc)") < src.index("取得だけ終わりました") < src.index("maybe_unassign()")
     main_src = (ROOT / "colab" / "h3_episode_colab_main.py").read_text(encoding="utf-8")
     assert "maybe_unassign" not in main_src
     assert "runtime.unassign" not in main_src
