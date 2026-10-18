@@ -63,6 +63,7 @@ def test_lora_registry_is_one_file_per_key():
 def test_helpers_are_the_studio_pair():
     assert studio.STUDIO_HELPERS == (
         "colab/h3_sfw.py",
+        "colab/h3_live_remake.py",
         "colab/h3_studio.py",
         "colab/h3_studio_colab_main.py",
     )

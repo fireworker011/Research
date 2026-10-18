@@ -43,6 +43,47 @@ print(GENERATE_MSG)
 '''
 
 
+MEASURE_CELL = r'''#@title live_remake：元動画を測ってシートの骨組みを書く（生成はしない）
+#@markdown 元動画の秒、大きさ、fps、音、カットを測る。役の静止画と範囲の文は「入力」のまま残る。
+SOURCE = ""  #@param {type:"string"}
+MAX_SPAN = "8"  #@param ["8", "6", "10", "12", "14.375"]
+THRESHOLD = "0.35"  #@param ["0.35", "0.25", "0.45"]
+MIN_SHOT = "0.5"  #@param ["0.5", "0.3", "1.0"]
+BRANCH = "__BRANCH__"  #@param {type:"string"}
+
+import json, sys, urllib.request
+from pathlib import Path
+
+RAW = f"https://raw.githubusercontent.com/__REPO__/{BRANCH}"
+for rel in ("colab/h3_sfw.py", "colab/h3_live_remake.py"):
+    dest = Path("/content") / Path(rel).name
+    urllib.request.urlretrieve(f"{RAW}/{rel}", dest)
+    if not dest.is_file() or dest.stat().st_size < 50:
+        raise SystemExit(f"helper missing: {rel}")
+sys.path.insert(0, "/content")
+from h3_live_remake import GENERATE_MSG, measure
+
+if not SOURCE:
+    raise SystemExit("SOURCE に元動画の場所を書く")
+sheet = measure(SOURCE, threshold=float(THRESHOLD), min_shot_s=float(MIN_SHOT), max_span_s=float(MAX_SPAN))
+dest = Path("remake-sheet.json")
+try:
+    from google.colab import drive
+    drive.mount("/content/drive")
+    dest = Path("/content/drive/MyDrive/minimax-h3-comfyui/studio/remake-sheet.json")
+    dest.parent.mkdir(parents=True, exist_ok=True)
+except ImportError:
+    print("Colab の外。シートは remake-sheet.json に書く。")
+dest.write_text(json.dumps(sheet, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+print("WROTE", dest)
+print(sheet["cuts_from"])
+for span in sheet["spans"]:
+    print(f"範囲 {span['index']}: {span['start_s']}–{span['end_s']}秒 ショット{span['shots']}" + ("（ショットの中で割った）" if span["split_inside_shot"] else ""))
+print("cast に役の静止画、各範囲に cast と文を入れてから、上のセルで JOB=live_remake、REMAKE_SHEET にこのパス。")
+print(GENERATE_MSG)
+'''
+
+
 def colab_url(path: str) -> str:
     return f"https://colab.research.google.com/github/{REPO}/blob/{BRANCH}/{path}"
 
@@ -87,6 +128,8 @@ LAST = ""  #@param {type:"string"}
 #@markdown **longform_chunk だけ。総尺とチャンク秒。チャンクは 5–8。runtime=comfy のときだけ Continuum を custom_nodes に足す。**
 TOTAL = "10"  #@param {type:"string"}
 CHUNK = "5"  #@param ["5", "6", "7", "8"]
+#@markdown **live_remake だけ。下の「元動画を測る」が書いたシートに、役の静止画と範囲の文を入れたもの。**
+REMAKE_SHEET = ""  #@param {type:"string"}
 #@markdown **two_pass のときだけ。B の Video 1 は A の mp4。**
 PASS_A = ""  #@param __PASS_CHOICES__
 PASS_B = ""  #@param __PASS_CHOICES__
@@ -128,6 +171,7 @@ os.environ["H3_STUDIO_FINISH"] = "1" if FINISH else "0"
 os.environ["H3_STUDIO_TURBO"] = "1" if TURBO else "0"
 os.environ["H3_STUDIO_DURATION"] = TOTAL if JOB == "longform_chunk" else DURATION
 os.environ["H3_STUDIO_CHUNK_SECONDS"] = CHUNK
+os.environ["H3_STUDIO_REMAKE_SHEET"] = REMAKE_SHEET
 os.environ["H3_STUDIO_FAST_SECONDS"] = FAST_SECONDS
 os.environ["H3_STUDIO_WITH_ACTION"] = "1" if WITH_ACTION else "0"
 os.environ["H3_STUDIO_WITH_COMBAT"] = "1" if WITH_COMBAT else "0"
@@ -182,6 +226,7 @@ runtime が api で Combat / Swap / real を選ぶと止まる。
 Combat の格闘と Swap は Turbo を切る。本体は Comfy High-Mem。
 Weapon / GunFu / Continuity は無い。orbit の LoRA ファイル名は未確定。アダルト用ノートはこのブランチに無い。
 `longform_chunk` は Comfy だけ。`runtime=comfy` のプランに `git clone https://github.com/ukr8b3g-cmyk/ComfyUI-H3-Continuum.git` を custom_nodes へ書く。追加の pip は無い。api では止まる。
+`live_remake` は Comfy だけ。一番下のセルで元動画を測り、シートに役の静止画と範囲ごとの文を入れる。範囲の文は Grok Build の `video-to-h3-prompt` の出力から貼る。静止画が顔と衣装、元動画が秒とカメラ。範囲ごとに Ref2VA + anime2real 1.0。足りない静止画や文があると止まる。手順は `artifacts/LIVE-REMAKE-H3.md`。
 生成ノートは `h3-runner/minimax_h3_still.ipynb`。
 
 下の2つ目のコードセルは `text_scene` を7本書く。公式 Hailuo の T2VA。LoRA なし。Combat も charswap も切る。各本6秒、16:9、768P、24fps、1ショット。ポスターは静止画。顔固定はこの7本に載せない。生成ボタンは押さない。
@@ -198,6 +243,7 @@ def make_nb() -> dict:
         .replace("__JOB_CHOICES__", json.dumps(list(JOBS)))
         .replace("__PASS_CHOICES__", json.dumps([""] + list(JOBS)))
     )
+    measure = MEASURE_CELL.replace("__BRANCH__", BRANCH).replace("__REPO__", REPO)
     return {
         "nbformat": 4,
         "nbformat_minor": 5,
@@ -226,16 +272,24 @@ def make_nb() -> dict:
                 "outputs": [],
                 "source": [line + "\n" for line in SCENES_CELL.strip("\n").split("\n")],
             },
+            {
+                "cell_type": "code",
+                "metadata": {"id": "studio_remake_measure"},
+                "execution_count": None,
+                "outputs": [],
+                "source": [line + "\n" for line in measure.strip("\n").split("\n")],
+            },
         ],
     }
 
 
 def mirror_engine() -> None:
-    src = ROOT / "colab" / "h3_studio.py"
-    dest = ROOT / "minimaxh3" / "h3_studio.py"
-    dest.parent.mkdir(parents=True, exist_ok=True)
-    dest.write_bytes(src.read_bytes())
-    print("mirrored", dest)
+    for name in ("h3_studio.py", "h3_live_remake.py"):
+        src = ROOT / "colab" / name
+        dest = ROOT / "minimaxh3" / name
+        dest.parent.mkdir(parents=True, exist_ok=True)
+        dest.write_bytes(src.read_bytes())
+        print("mirrored", dest)
 
 
 def main() -> None:

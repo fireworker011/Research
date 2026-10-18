@@ -20,6 +20,7 @@ Env:
   H3_STUDIO_FINISH     1 puts the combat finish trigger on the prompt
   H3_STUDIO_DURATION   4 to 5 seconds (default 5). fast_motion uses H3_STUDIO_FAST_SECONDS (6 or 9). longform_chunk uses this as the total seconds
   H3_STUDIO_CHUNK_SECONDS  longform_chunk only. 5 to 8, default 5
+  H3_STUDIO_REMAKE_SHEET   live_remake only. Sheet JSON from h3_live_remake.py measure, filled by a human
   H3_STUDIO_FAST_SECONDS  6 or 9 for fast_motion
   H3_STUDIO_WITH_ACTION   1 adds Motion Repair V2 at 0.6 on fast_motion
   H3_STUDIO_WITH_COMBAT   1 adds combat at 0.7 on fast_motion (no fight trigger)

@@ -51,6 +51,7 @@ LoRA は1キー1ファイル。スピードは LightX2V の Turbo 8step（強さ
 | `orbit360` | FL2VA | なし | 同じ絵を首尾。他 LoRA は積まない |
 | `two_pass` | A のあと B | パスごとに 1 系統 | B の Video 1 = `pass-a.mp4`。B は swap か real |
 | `text_scene` | T2VA | なし | 文章だけ |
+| `live_remake` | Comfy の Ref2VA を範囲ごと | anime2real 1.0 | 元動画を測ったシート。静止画が顔と衣装、元動画が秒とカメラ。足りない静止画と文があると止まる。api は止める。手順は `artifacts/LIVE-REMAKE-H3.md` |
 | `longform_chunk` | Comfy の H3 Continuum Sampler | なし | 英語 action 1本、総尺、チャンク秒（既定5、範囲5–8）。等しいチャンクを latent continuity でつなぎ、Assemble で mp4 を1本。参照画像は `reference_images`、首尾は `first_frame` / `last_frame`。`runtime=comfy` のときだけ `custom_nodes` に `git clone https://github.com/ukr8b3g-cmyk/ComfyUI-H3-Continuum.git`。pip は足さない。api は止める |
 
 既定の1本は 5 秒（受け付けるのは 4 秒以上 5 秒以下）、`768x1344`（768P、9:16）、24fps。Combat と Swap で Turbo をオンにしてもプランではオフになる。
