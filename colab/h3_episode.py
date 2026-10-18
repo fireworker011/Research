@@ -257,8 +257,9 @@ LORA_FILES = {
     "mast": "H3_masturbate_orgasm_v1.4.safetensors",
     # H3 facial. Strength 1.0; lower falls back to a paint-bucket shot. Trigger CUMSH0T.
     "cumshot": "epic_cumshots-MiniMaxH3-ALPHA-CUMSH0T.safetensors",
-    # Experimental H3 kiss. Author: I2V is weak; keep strength at 0.5. No trigger word.
-    "kiss": "cxy_kiss_lora_h3_v01_step1750.safetensors",
+    # Cxy kiss v0.2 beta. Primary video file is step1200. No trigger word. Strength stays 0.5.
+    # The image LoRA and step1000 are other files. Author: tongue motion is still limited.
+    "kiss": "cxy_kiss_lora_h3_v02_step1200.safetensors",
     # az420 Side Riding Cowgirl MiniMaxH3 2. Side-view riding insertion. Do not stack with AIO.
     "sideride": "cowgirl-side-2-mh3-e50-az420.safetensors",
     # H3 penis helper. Trigger PENISLORA. Creampie stacks use 0.45.
@@ -339,7 +340,7 @@ LORA_URLS = {
     "futatf": "https://civitai.com/api/download/models/3212000?fileId=3093723",
     "mast": "https://civitai.com/api/download/models/3311155?fileId=3196458",
     "cumshot": "https://civitai.com/api/download/models/3202064?fileId=3083352",
-    "kiss": "https://civitai.com/api/download/models/3208556?fileId=3090649",
+    "kiss": "https://civitai.com/api/download/models/3410507?fileId=3302584",
     "sideride": "https://civitai.com/api/download/models/3327446?fileId=3213328",
     "penis": "https://civitai.com/api/download/models/3277703?fileId=3161784",
     "synth": "https://civitai.com/api/download/models/3204862?fileId=3086301",

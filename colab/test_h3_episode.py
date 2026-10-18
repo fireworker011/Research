@@ -964,8 +964,11 @@ def test_kasumi_adult_combat_off_is_sex_route_not_fights():
     assert "3212000" in LORA_URLS["futatf"]
     assert LORA_FILES["mast"].startswith("H3_masturbate")
     assert LORA_FILES["cumshot"].startswith("epic_cumshots")
+    assert LORA_FILES["kiss"] == "cxy_kiss_lora_h3_v02_step1200.safetensors"
+    assert "3410507" in LORA_URLS["kiss"]
+    assert "fileId=3302584" in LORA_URLS["kiss"]
+    assert "3208556" not in LORA_URLS["kiss"]
     assert LORA_STRENGTHS["kiss"] == 0.5
-    assert "3208556" in LORA_URLS["kiss"]
     assert LORA_FILES["sideride"] == "cowgirl-side-2-mh3-e50-az420.safetensors"
     assert "3327446" in LORA_URLS["sideride"]
     assert LORA_STRENGTHS["sideride"] == 0.8
