@@ -4,6 +4,8 @@
 # The last frame may be held for at most 1.5 seconds. It is not padded up to an L band.
 # The voice is sped up only when it does not fit. The picture is not recut to the voice.
 # BGM follows STYLE.md (B1 is silence). --bgm replaces that bed. Amplitude 0.15.
+# When narration is added, the Imagine clip's own voice is discarded (bed becomes silence).
+# Do not duck or mix that voice under the narration.
 # A no-BGM file is always written. Captions are not burned in. Text is on thumb.png.
 # Style QA is style_matrix.py: at most 2 shared axes with the previous video,
 # at most 3 with any of the last 5, never an exact match. See STYLE-VARIATION.md.
@@ -220,6 +222,12 @@ voice = meta["voice"]
 print(json.dumps(fit_voice(float(sys.argv[2]), float(sys.argv[3]), voice["window_start_sec"], voice["window_end_sec"])))
 PY
 )
+    # Imagine clips already contain a voice. Leaving that bed at volume 1.0
+    # and laying narration on top speaks twice. Drop the source bed whenever
+    # narration is added. BGM, when present, stays at amplitude 0.15.
+    ffmpeg -y -nostdin -loglevel error -f lavfi -i "anullsrc=r=48000:cl=stereo" \
+      -t "$picture_sec" -ar 48000 -ac 2 "$work/bed-silent.wav"
+    mv "$work/bed-silent.wav" "$work/bed.wav"
   fi
 
   local stem
