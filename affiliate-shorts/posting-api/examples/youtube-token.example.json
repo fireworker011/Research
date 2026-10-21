@@ -1,0 +1,8 @@
+{
+  "refresh_token": "",
+  "scope": "https://www.googleapis.com/auth/youtube.upload https://www.googleapis.com/auth/youtube.readonly",
+  "channel_id": "",
+  "channel_title": "",
+  "custom_url": "",
+  "note": "実体は tokens/youtube/<key>.json。auth_youtube.py が書く。コミットしない。"
+}

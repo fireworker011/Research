@@ -1,0 +1,1 @@
+# Python 3.11 or newer. The scripts use the standard library only.

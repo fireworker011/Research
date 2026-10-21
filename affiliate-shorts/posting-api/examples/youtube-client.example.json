@@ -1,0 +1,7 @@
+{
+  "installed": {
+    "client_id": "",
+    "client_secret": "",
+    "note": "Googleが落としたJSONを secrets/youtube-client.json に置く。このexampleへ本物は書かない。"
+  }
+}

@@ -1,0 +1,90 @@
+[
+  {
+    "platform": "youtube",
+    "key": "pet_story_select",
+    "title": "pet_story_select",
+    "handle": "pet_story_select",
+    "login_label": "fireworker01",
+    "note": "表示名がハンドルと違う場合、許可後に表示された名前へ title を直す。"
+  },
+  {
+    "platform": "youtube",
+    "key": "yoru_neko_camera",
+    "title": "よるのねこカメラ日記",
+    "handle": "",
+    "login_label": "fireworker06",
+    "note": ""
+  },
+  {
+    "platform": "youtube",
+    "key": "sonae_30",
+    "title": "30秒そなえ帳",
+    "handle": "",
+    "login_label": "fireworker04",
+    "note": ""
+  },
+  {
+    "platform": "youtube",
+    "key": "yoru_no_tana",
+    "title": "よるの棚",
+    "handle": "夜の棚",
+    "login_label": "",
+    "note": "依頼文にGoogleアカウントの目印が無い。どのアカウントで許可したかは手元に控える。このファイルへメールアドレスは書かない。"
+  },
+  {
+    "platform": "youtube",
+    "key": "nemuri_no_tana",
+    "title": "ねむりの棚",
+    "handle": "",
+    "login_label": "fireworker011",
+    "note": ""
+  },
+  {
+    "platform": "tiktok",
+    "key": "yoru_no_tana",
+    "title": "夜の棚",
+    "handle": "",
+    "login_label": "fireworker013",
+    "note": "title はTikTokの表示名と一致させる。"
+  },
+  {
+    "platform": "tiktok",
+    "key": "uchi_no_fukuro",
+    "title": "うちの袋",
+    "handle": "",
+    "login_label": "fireworker04",
+    "note": "YouTubeの30秒そなえ帳と同じ目印。許可はTikTok側で別に取る。"
+  },
+  {
+    "platform": "tiktok",
+    "key": "pet_chiisana_monogatari",
+    "title": "ペットと暮らす小さな物語り",
+    "handle": "",
+    "login_label": "okadatakeshi510",
+    "note": ""
+  },
+  {
+    "platform": "tiktok",
+    "key": "yua",
+    "title": "ゆあ",
+    "handle": "",
+    "login_label": "fireworker012",
+    "note": ""
+  },
+  {
+    "platform": "tiktok",
+    "key": "moto_konkatsu_miki",
+    "title": "元婚活難民ミキ",
+    "handle": "",
+    "login_label": "fireworker01",
+    "note": "YouTubeのpet_story_selectと同じ目印。許可はTikTok側で別に取る。"
+  },
+  {
+    "platform": "tiktok",
+    "key": "kane_memo",
+    "title": "金メモ",
+    "handle": "",
+    "login_label": "fireworker02",
+    "note": ""
+  }
+]
