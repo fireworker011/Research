@@ -4,7 +4,9 @@
 # レーン: chrome / edge / none。各レーン同時1本。ジョブmd先頭20行の lane で指定（無ければ none）
 # 03:30以降は新規開始しない。04:00に、このスクリプトが記録したPIDだけ止める。
 # Windowsはシャットダウンしない。電源断のコマンドは置かない。
-# grok の起動引数: --prompt-file <job> --always-approve --background-wait-timeout
+# grok の起動引数: --prompt-file <job> --always-approve --background-wait-timeout 3600
+# -DryRun はファイルも状態も変えず、プロセスも起動しない。
+# out\<拡張子を除いたジョブ名>\REPORT.md が出たら、記録したPIDだけ止める。stdout.txt は報告とみなさない。
 [CmdletBinding()]
 param(
     [string]$Root = 'C:\Users\hp\Documents\grokbuild',
@@ -85,7 +87,11 @@ function New-NightMutex {
 function Write-NightLog {
     param([Parameter(Mandatory = $true)][string]$Message)
     $line = '{0} {1}' -f (Get-NightNow).ToString('yyyy-MM-dd HH:mm:ss'), $Message
-    if ($script:Log) {
+    if ($null -eq $script:NightLog) {
+        $script:NightLog = New-Object System.Collections.ArrayList
+    }
+    [void]$script:NightLog.Add($line)
+    if ((-not $script:DryRun) -and $script:Log) {
         Add-Content -LiteralPath $script:Log -Value $line -Encoding UTF8
     }
     Write-Host $line
@@ -94,7 +100,27 @@ function Write-NightLog {
 function Get-GrokArgumentLine {
     param([Parameter(Mandatory = $true)][string]$JobPath)
     $quoted = $JobPath.Replace('"', '\"')
-    return "--prompt-file `"$quoted`" --always-approve --background-wait-timeout"
+    return "--prompt-file `"$quoted`" --always-approve --background-wait-timeout 3600"
+}
+
+function Test-NightJobRunning {
+    param([Parameter(Mandatory = $true)][string]$Name)
+    if ($null -eq $script:Running) {
+        return $false
+    }
+    foreach ($lane in @($script:Running.Keys)) {
+        $entry = $script:Running[$lane]
+        if ([string]$entry.job -eq $Name) {
+            return $true
+        }
+    }
+    return $false
+}
+
+function Get-JobReportPath {
+    param([Parameter(Mandatory = $true)][string]$JobName)
+    $folder = [IO.Path]::GetFileNameWithoutExtension($JobName)
+    return (Join-Path (Join-Path $script:Out $folder) 'REPORT.md')
 }
 
 function Get-JobMeta {
@@ -143,6 +169,12 @@ function Get-NextReadyJob {
             if ($file.Name -like 'TEMPLATE*') {
                 continue
             }
+            if (($null -ne $script:Settled) -and $script:Settled.ContainsKey($file.Name)) {
+                continue
+            }
+            if (Test-NightJobRunning -Name $file.Name) {
+                continue
+            }
             $meta = Get-JobMeta -Path $file.FullName
             if ($meta.lane -ne $Lane) {
                 continue
@@ -152,8 +184,8 @@ function Get-NextReadyJob {
                 if (-not $required) {
                     continue
                 }
-                $inDone = Test-Path -LiteralPath (Join-Path $script:Done $required)
-                $inReview = Test-Path -LiteralPath (Join-Path $script:Rev $required)
+                $inDone = (($null -ne $script:VirtualDone) -and $script:VirtualDone.ContainsKey($required)) -or (Test-Path -LiteralPath (Join-Path $script:Done $required))
+                $inReview = (($null -ne $script:VirtualReview) -and $script:VirtualReview.ContainsKey($required)) -or (Test-Path -LiteralPath (Join-Path $script:Rev $required))
                 if ((-not $inDone) -and (-not $inReview)) {
                     $ready = $false
                     break
@@ -202,6 +234,9 @@ function Read-NightState {
 }
 
 function Save-NightState {
+    if ($script:DryRun) {
+        return
+    }
     $items = New-Object System.Collections.ArrayList
     foreach ($lane in @($script:Running.Keys)) {
         $entry = $script:Running[$lane]
@@ -245,22 +280,26 @@ function Stop-HeldProcess {
         [Parameter(Mandatory = $true)][string]$Why
     )
     $procId = [int]$Entry.pid
-    if (-not $script:DryRun) {
+    if ($script:DryRun) {
+        Write-NightLog "停止 [$Why] PID=$procId $($Entry.job)"
+        Write-NightLog "taskkill.exe /PID $procId /T /F"
+        Write-NightLog "DRYRUN のため taskkill しない"
+        return
+    }
+    $proc = $null
+    try {
+        $proc = Get-Process -Id $procId -ErrorAction Stop
+    }
+    catch {
         $proc = $null
-        try {
-            $proc = Get-Process -Id $procId -ErrorAction Stop
-        }
-        catch {
-            $proc = $null
-        }
-        if ($null -eq $proc) {
-            Write-NightLog "PID $procId は既にいない ($Why)"
-            return
-        }
-        if ($Entry.name -and ($proc.ProcessName -ne [string]$Entry.name)) {
-            Write-NightLog "PID $procId は $($proc.ProcessName) のため止めない（記録は $($Entry.name)）"
-            return
-        }
+    }
+    if ($null -eq $proc) {
+        Write-NightLog "PID $procId は既にいない ($Why)"
+        return
+    }
+    if ($Entry.name -and ($proc.ProcessName -ne [string]$Entry.name)) {
+        Write-NightLog "PID $procId は $($proc.ProcessName) のため止めない（記録は $($Entry.name)）"
+        return
     }
     Write-NightLog "停止 [$Why] PID=$procId $($Entry.job)"
     Write-NightLog "taskkill.exe /PID $procId /T /F"
@@ -316,13 +355,19 @@ function Stop-SavedNightProcess {
         if (-not $jobName) {
             $jobName = "pid-$procId"
         }
+        if ($script:DryRun) {
+            Write-NightLog "DRYRUN のため PID $procId は止めない"
+            continue
+        }
         Write-NightLog "停止 [$Why] PID=$procId $jobName"
         Write-NightLog "taskkill.exe /PID $procId /T /F"
         $script:KilledAny = $true
         Invoke-TaskKill -ProcessId $procId
         Add-NightResult -Job $jobName -Status 'failed' -Note "記録したPID $procId を停止 ($Why)"
     }
-    Save-NightState
+    if (-not $script:DryRun) {
+        Save-NightState
+    }
 }
 
 function Complete-NightJob {
@@ -360,7 +405,23 @@ function Complete-NightJob {
         $dest = $script:Fail
         $status = 'failed'
     }
-    if (Test-Path -LiteralPath $Entry.path) {
+    if ($null -eq $script:Settled) {
+        $script:Settled = @{}
+    }
+    if ($null -eq $script:VirtualDone) {
+        $script:VirtualDone = @{}
+    }
+    if ($null -eq $script:VirtualReview) {
+        $script:VirtualReview = @{}
+    }
+    $script:Settled[$name] = $status
+    if ($status -eq 'done') {
+        $script:VirtualDone[$name] = $true
+    }
+    elseif ($status -eq 'needs-review') {
+        $script:VirtualReview[$name] = $true
+    }
+    if ((-not $script:DryRun) -and (Test-Path -LiteralPath $Entry.path)) {
         Move-Item -LiteralPath $Entry.path -Destination (Join-Path $dest $name) -Force
     }
     $minutes = [int]((Get-NightNow) - [datetime]$Entry.start).TotalMinutes
@@ -369,24 +430,55 @@ function Complete-NightJob {
     Write-NightLog "終了 [$Lane] $name → $status（コード=$Code, ${minutes}分）$crash $Note"
 }
 
+function New-DryRunChild {
+    if ($script:onStart) {
+        & $script:onStart
+    }
+    $seq = 0
+    if ($null -ne $script:DryRunSeq) {
+        $seq = [int]$script:DryRunSeq
+    }
+    $script:DryRunSeq = $seq + 1
+    $exited = $true
+    if (Get-Variable -Name mockExited -Scope Script -ErrorAction SilentlyContinue) {
+        $exited = [bool]$script:mockExited
+    }
+    $code = 0
+    if (Get-Variable -Name mockExit -Scope Script -ErrorAction SilentlyContinue) {
+        if ($null -ne $script:mockExit) {
+            $code = $script:mockExit
+        }
+    }
+    return [pscustomobject]@{
+        Id        = (5000 + $seq)
+        HasExited = $exited
+        ExitCode  = $code
+    }
+}
+
 function Start-QueuedJob {
     param(
         [Parameter(Mandatory = $true)]$Next,
         [Parameter(Mandatory = $true)][string]$Lane,
         [Parameter(Mandatory = $true)][datetime]$Now
     )
-    $dst = Join-Path $script:Run $Next.file.Name
-    Move-Item -LiteralPath $Next.file.FullName -Destination $dst -Force
-    $jobOut = Join-Path $script:Out ([IO.Path]::GetFileNameWithoutExtension($Next.file.Name))
-    New-Item -ItemType Directory -Force -Path $jobOut | Out-Null
-    $argumentLine = Get-GrokArgumentLine -JobPath $dst
-    Write-NightLog "起動コマンド: $($script:Grok) $argumentLine"
-    try {
-        if ($script:DryRun) {
-            $child = Start-Process -FilePath $script:DryRunExe -ArgumentList '-NoProfile -Command exit 0' -WorkingDirectory $script:Root -WindowStyle Hidden -PassThru -ErrorAction Stop
-            $image = 'powershell'
-        }
-        else {
+    $jobName = $Next.file.Name
+    $child = $null
+    $image = 'grok'
+    if ($script:DryRun) {
+        $dst = $Next.file.FullName
+        $argumentLine = Get-GrokArgumentLine -JobPath $dst
+        Write-NightLog "起動コマンド: $($script:Grok) $argumentLine"
+        $child = New-DryRunChild
+    }
+    else {
+        $dst = Join-Path $script:Run $jobName
+        Move-Item -LiteralPath $Next.file.FullName -Destination $dst -Force
+        $jobOut = Join-Path $script:Out ([IO.Path]::GetFileNameWithoutExtension($jobName))
+        New-Item -ItemType Directory -Force -Path $jobOut | Out-Null
+        $argumentLine = Get-GrokArgumentLine -JobPath $dst
+        Write-NightLog "起動コマンド: $($script:Grok) $argumentLine"
+        try {
             $stdout = Join-Path $jobOut 'stdout.txt'
             $stderr = Join-Path $jobOut 'stderr.txt'
             foreach ($path in @($stdout, $stderr)) {
@@ -395,41 +487,50 @@ function Start-QueuedJob {
                 }
             }
             $child = Start-Process -FilePath $script:Grok -ArgumentList $argumentLine -WorkingDirectory $script:Root -WindowStyle Hidden -PassThru -RedirectStandardOutput $stdout -RedirectStandardError $stderr -ErrorAction Stop
-            $image = 'grok'
         }
-    }
-    catch {
-        Write-NightLog "起動失敗 $($Next.file.Name): $($_.Exception.Message)"
-        if (Test-Path -LiteralPath $dst) {
-            Move-Item -LiteralPath $dst -Destination (Join-Path $script:Fail $Next.file.Name) -Force
+        catch {
+            Write-NightLog "起動失敗 ${jobName}: $($_.Exception.Message)"
+            if (Test-Path -LiteralPath $dst) {
+                Move-Item -LiteralPath $dst -Destination (Join-Path $script:Fail $jobName) -Force
+            }
+            Add-NightResult -Job $jobName -Status 'failed' -Note "起動失敗: $($_.Exception.Message)"
+            return
         }
-        Add-NightResult -Job $Next.file.Name -Status 'failed' -Note "起動失敗: $($_.Exception.Message)"
-        return
     }
     if ($null -eq $child) {
-        Write-NightLog "起動失敗 $($Next.file.Name): プロセスを取得できない"
-        if (Test-Path -LiteralPath $dst) {
-            Move-Item -LiteralPath $dst -Destination (Join-Path $script:Fail $Next.file.Name) -Force
+        Write-NightLog "起動失敗 ${jobName}: プロセスを取得できない"
+        if ((-not $script:DryRun) -and (Test-Path -LiteralPath $dst)) {
+            Move-Item -LiteralPath $dst -Destination (Join-Path $script:Fail $jobName) -Force
         }
-        Add-NightResult -Job $Next.file.Name -Status 'failed' -Note '起動失敗: プロセスを取得できない'
+        Add-NightResult -Job $jobName -Status 'failed' -Note '起動失敗: プロセスを取得できない'
         return
     }
     $script:Running[$Lane] = @{
         proc  = $child
         pid   = [int]$child.Id
         name  = $image
-        job   = $Next.file.Name
+        job   = $jobName
         path  = $dst
         start = $Now
         meta  = $Next.meta
     }
-    Write-NightLog "開始 [$Lane] $($Next.prio)/$($Next.file.Name) PID=$($child.Id)"
+    Write-NightLog "開始 [$Lane] $($Next.prio)/$jobName PID=$($child.Id)"
     Save-NightState
 }
 
 function Restore-InterruptedJob {
+    if (-not (Test-Path -LiteralPath $script:Run)) {
+        return
+    }
     $left = @(Get-ChildItem -LiteralPath $script:Run -Filter *.md -ErrorAction SilentlyContinue)
     foreach ($file in $left) {
+        if ($null -eq $file) {
+            continue
+        }
+        if ($script:DryRun) {
+            Write-NightLog "DRYRUN 前回中断は動かさない: $($file.Name)"
+            continue
+        }
         Move-Item -LiteralPath $file.FullName -Destination (Join-Path $script:Fail $file.Name) -Force
         Write-NightLog "前回中断のジョブを失敗扱い: $($file.Name)（PC停止/クラッシュの可能性）"
         Add-NightResult -Job $file.Name -Status 'failed' -Note '前回の夜に途中で止まった（PC停止・クラッシュの可能性）'
@@ -439,10 +540,19 @@ function Restore-InterruptedJob {
 function Get-RemainingJob {
     foreach ($prio in @('1-video', '2-cg', '3-sakura')) {
         $dir = Join-Path $script:Queue $prio
+        if (-not (Test-Path -LiteralPath $dir)) {
+            continue
+        }
         $files = @(Get-ChildItem -LiteralPath $dir -Filter *.md -ErrorAction SilentlyContinue |
                 Where-Object { $_.Name -notlike 'TEMPLATE*' } |
                 Sort-Object Name)
         foreach ($file in $files) {
+            if ($null -eq $file) {
+                continue
+            }
+            if (($null -ne $script:Settled) -and $script:Settled.ContainsKey($file.Name)) {
+                continue
+            }
             Write-Output "$prio/$($file.Name)"
         }
     }
@@ -495,7 +605,10 @@ function Write-NightSummary {
         }
     }
     $text = ($md.ToArray() -join "`r`n")
-    Set-Content -LiteralPath $script:Summary -Value $text -Encoding UTF8
+    $script:LastSummary = $text
+    if (-not $script:DryRun) {
+        Set-Content -LiteralPath $script:Summary -Value $text -Encoding UTF8
+    }
     Write-NightLog "まとめ書き出し: $($script:Summary)"
 }
 
@@ -518,6 +631,9 @@ function Initialize-NightPath {
         (Join-Path $script:Queue '2-cg'),
         (Join-Path $script:Queue '3-sakura')
     )
+    if ($script:DryRun) {
+        return
+    }
     foreach ($dir in $dirs) {
         New-Item -ItemType Directory -Force -Path $dir | Out-Null
     }
@@ -545,12 +661,12 @@ function Invoke-NightRunner {
     $script:KilledAny = $false
     $script:Results = New-Object System.Collections.ArrayList
     $script:Running = @{}
-    if ($env:SystemRoot) {
-        $script:DryRunExe = Join-Path $env:SystemRoot 'System32\WindowsPowerShell\v1.0\powershell.exe'
-    }
-    else {
-        $script:DryRunExe = 'powershell.exe'
-    }
+    $script:NightLog = New-Object System.Collections.ArrayList
+    $script:DryRunSeq = 0
+    $script:Settled = @{}
+    $script:VirtualDone = @{}
+    $script:VirtualReview = @{}
+    $script:LastSummary = ''
 
     $mutex = $null
     $acquired = $false
@@ -588,7 +704,7 @@ function Invoke-NightRunner {
         $script:Log = Join-Path $script:Out "night-runner-$($script:Stamp).log"
         $script:Summary = Join-Path $script:Out "night-summary-$($script:Stamp).md"
         $script:State = Join-Path $script:Out "night-state-$($script:Stamp).json"
-        if (-not (Test-Path -LiteralPath $script:State)) {
+        if ((-not $script:DryRun) -and (-not (Test-Path -LiteralPath $script:State))) {
             Set-Content -LiteralPath $script:State -Value '[]' -Encoding UTF8
         }
 
@@ -628,6 +744,27 @@ function Invoke-NightRunner {
                 $script:Running.Remove($lane)
             }
             if ($finished.Count -gt 0) {
+                Save-NightState
+            }
+
+            $reported = New-Object System.Collections.ArrayList
+            foreach ($lane in @($script:Running.Keys)) {
+                $entry = $script:Running[$lane]
+                if ($entry.proc.HasExited) {
+                    continue
+                }
+                $report = Get-JobReportPath -JobName ([string]$entry.job)
+                if (Test-Path -LiteralPath $report) {
+                    Write-NightLog "報告ファイルが出たので停止 $report"
+                    Stop-HeldProcess -Entry $entry -Why '報告ファイル'
+                    Complete-NightJob -Lane $lane -Entry $entry -Code 0 -Note ''
+                    [void]$reported.Add($lane)
+                }
+            }
+            foreach ($lane in @($reported.ToArray())) {
+                $script:Running.Remove($lane)
+            }
+            if ($reported.Count -gt 0) {
                 Save-NightState
             }
 

@@ -20,8 +20,10 @@
 - 窓の判定を JST（Windows は `Tokyo Standard Time`）に固定した。
 - 04:00 ちょうどや、時間外にスクリプトが起動したときは、状態ファイルに残った PID だけを見る。プロセス名が記録と違い、または開始時刻が2分以上ずれていれば止めていない（PID の再利用）。
 - `Stop-Computer` / `Restart-Computer` / `shutdown.exe` は使わない。タスクの実行時間上限は 8時間30分（20:00 起点で 04:30）で、切れるのはタスクのプロセスだけ。
-- grok の引数は1本の文字列。`grok.exe --prompt-file "<job>" --always-approve --background-wait-timeout`。PS 5.1 の `Start-Process -ArgumentList` 配列は、空白を含むパスを壊す。
-- `-DryRun` は grok.exe を起動しない。キューの移動と、上と同じ引数のログだけ行う。代替プロセスは `powershell.exe -NoProfile -Command exit 0`。
+- grok の引数は1本の文字列。`grok.exe --prompt-file "<job>" --always-approve --background-wait-timeout 3600`。値を空にすると grok.exe はエラーで落ちる。PS 5.1 の `Start-Process -ArgumentList` 配列は、空白を含むパスを壊す。
+- `-DryRun` は grok.exe を起動しない。ファイルの移動、ログ、まとめ、状態 JSON も書かない。画面に出す順番と引数だけが試運転。
+- `.ps1` は UTF-8 BOM がちょうど1つ。2つあると PowerShell 5.1 がパースできない。
+- `out\<拡張子を除いたジョブ名>\REPORT.md` が出て、まだ grok が生きていれば、その PID だけ `taskkill.exe /PID /T /F` で止める。`stdout.txt` は報告とみなさない。
 - 状態 JSON は 0件でも1件でも配列。起動に失敗したジョブは `_failed` へ戻す。
 - `install-task.ps1` は、タイムゾーンが東京でなければ登録しない。`-Grok` をタスク引数へ渡せる。ユーザーは `ドメイン\hp`（ドメインが空ならコンピュータ名）。
 
@@ -32,7 +34,7 @@
 3. セリフを `C:\Users\hp\Documents\grokbuild\lines\` に置く: kane-07〜10.md、nemuri-03〜05.md（すべて「台本係 確定」済み）。
 4. `grok.exe` に PATH が通っているか確認。無ければ `.\install-task.ps1 -Grok "C:\...\grok.exe"`。
 5. PC のタイムゾーンを東京（JST）にする。管理者 PowerShell で `.\install-task.ps1` を1回。電源オプションで「スリープ解除タイマーの許可」を有効に。
-6. 試運転は 20:00〜04:00 JST の間に `.\night-runner.ps1 -DryRun -PollSec 1`。時間外は新規開始せず終了する。`-NowProvider` はテスト用。実キューに対して昼に使うと、ジョブファイルが `_running` に動く。
+6. 試運転は `.\night-runner.ps1 -DryRun -PollSec 1`。時間外は新規開始せず終了する。`-DryRun` は昼夜を問わずファイルも状態も変えない。`-NowProvider` はテスト用。
 
 ## ジョブmdの書き方（先頭20行に）
 
@@ -47,7 +49,7 @@ requires: 22-queueB-kane-09.md
 - `lane` が無い、または chrome / edge / none 以外なら none。
 - `review: true` の成功は `_needs-review`。`false` なら `_done`。
 - `requires` は、そのファイルが `_done` か `_needs-review` に入るまで待つ。
-- 起動コマンド: `grok.exe --prompt-file <job> --always-approve --background-wait-timeout`（非表示。stdout/stderr は `out\<ジョブ名>\`）。
+- 起動コマンド: `grok.exe --prompt-file <job> --always-approve --background-wait-timeout 3600`（非表示。stdout/stderr は `out\<拡張子を除いたジョブ名>\`）。同じフォルダの `REPORT.md` が出たら、そのジョブの PID だけ止める。
 
 ジョブ本文の禁止事項と報告先は `ops/skills/pc-handoff/SKILL.md`。
 

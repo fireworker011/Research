@@ -42,10 +42,10 @@ requires: 22-queueB-kane-09.md
 
 成果と途中経過は `out\` に書く。夜のランナー配下なら `C:\Users\hp\Documents\grokbuild\out\<このファイル名>\REPORT.md`。人の操作が要る画面は、同じフォルダに `BLOCKED.png` を置いて終了する。ログインが切れていても、パスワードは打たない。
 
-起動はランナーが行う。コマンドは次の形だけ。
+起動はランナーが行う。コマンドは次の形だけ。`--background-wait-timeout` に値がないと grok.exe はエラーで落ちる。
 
 ```
-grok.exe --prompt-file <ジョブmdのフルパス> --always-approve --background-wait-timeout
+grok.exe --prompt-file <ジョブmdのフルパス> --always-approve --background-wait-timeout 3600
 ```
 
 ## 渡す前
