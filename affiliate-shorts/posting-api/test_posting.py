@@ -13,6 +13,7 @@ from http.server import BaseHTTPRequestHandler, HTTPServer
 from io import StringIO
 from pathlib import Path
 
+import auth_youtube
 import fetch_stats
 import posting_lib as lib
 import upload_tiktok
@@ -34,6 +35,8 @@ class RulesTest(unittest.TestCase):
                 "sonae_30",
                 "yoru_no_tana",
                 "nemuri_no_tana",
+                "pet_kurasu_monogatari",
+                "fireworker012_reserved",
             ],
         )
         self.assertEqual(
@@ -47,12 +50,31 @@ class RulesTest(unittest.TestCase):
                 "kane_memo",
             ],
         )
-        self.assertEqual(
-            next(row for row in rows if row["platform"] == "youtube" and row["key"] == "yoru_no_tana")[
-                "login_label"
-            ],
-            "",
+        yoru = next(row for row in rows if row["platform"] == "youtube" and row["key"] == "yoru_no_tana")
+        self.assertEqual(yoru["login_label"], "")
+        self.assertEqual(yoru["status"], "hold")
+        self.assertNotIn("client_secret_dir", yoru)
+        dirs = {
+            "pet_story_select": "C:/Users/hp/Downloads/youtube/fireworker01",
+            "yoru_neko_camera": "C:/Users/hp/Downloads/youtube/fireworker06",
+            "sonae_30": "C:/Users/hp/Downloads/youtube/fireworker04",
+            "nemuri_no_tana": "C:/Users/hp/Downloads/youtube/fireworker011",
+            "pet_kurasu_monogatari": "C:/Users/hp/Downloads/youtube/naomichi235",
+            "fireworker012_reserved": "C:/Users/hp/Downloads/youtube/fireworker012",
+        }
+        for key, folder in dirs.items():
+            row = next(item for item in rows if item["platform"] == "youtube" and item["key"] == key)
+            self.assertEqual(row["client_secret_dir"], folder)
+        reserved = next(
+            row for row in rows if row["platform"] == "youtube" and row["key"] == "fireworker012_reserved"
         )
+        self.assertEqual(reserved["status"], "reserved")
+        self.assertEqual(reserved["title"], "")
+        pet = next(row for row in rows if row["platform"] == "youtube" and row["key"] == "pet_kurasu_monogatari")
+        self.assertEqual(pet["title"], "ペットと暮らす小さな物語")
+        self.assertEqual(pet["login_label"], "naomichi235")
+        yua = next(row for row in rows if row["platform"] == "tiktok" and row["key"] == "yua")
+        self.assertEqual(yua["login_label"], "fireworker012")
 
     def test_disclosure_and_affiliate_url(self) -> None:
         lib.assert_disclosure(f"本文。{lib.A8_DISCLOSURE}", True)
@@ -151,6 +173,79 @@ class RulesTest(unittest.TestCase):
         self.assertNotIn("rft-secret", message)
         self.assertIn("invalid_grant", message)
 
+    def test_find_client_secret_accepts_parenthesized_name(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            folder = Path(directory)
+            secret = folder / "client_secret_123(1).json"
+            secret.write_text("{}", encoding="utf-8")
+            self.assertEqual(lib.find_client_secret(folder), secret)
+
+    def test_find_client_secret_rejects_zero_or_two(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            folder = Path(directory)
+            with self.assertRaises(lib.ValidationError) as empty:
+                lib.find_client_secret(folder)
+            self.assertIn("該当: なし", str(empty.exception))
+            (folder / "client_secret_a.json").write_text("{}", encoding="utf-8")
+            (folder / "client_secret_b.json").write_text("{}", encoding="utf-8")
+            with self.assertRaises(lib.ValidationError) as both:
+                lib.find_client_secret(folder)
+            message = str(both.exception)
+            self.assertIn("client_secret_a.json", message)
+            self.assertIn("client_secret_b.json", message)
+
+    def test_hold_and_reserved_channels_refuse_credentials(self) -> None:
+        hold = {"key": "yoru_no_tana", "title": "よるの棚", "status": "hold"}
+        with self.assertRaises(lib.ValidationError) as held:
+            lib.google_credentials(ROOT, "yoru_no_tana", "", channel=hold)
+        self.assertIn("アカウント未定のため保留", str(held.exception))
+        reserved = {"key": "fireworker012_reserved", "title": "", "status": "reserved"}
+        with self.assertRaises(lib.ValidationError) as waiting:
+            lib.resolve_youtube_client(ROOT, reserved)
+        self.assertIn("チャンネル名が未定", str(waiting.exception))
+
+    def test_token_defaults_beside_client_secret_outside_the_repo(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            folder = Path(directory)
+            secret = folder / "client_secret_abc(1).json"
+            secret.write_text(
+                json.dumps({"installed": {"client_id": "cid", "client_secret": "sec"}}),
+                encoding="utf-8",
+            )
+            token = folder / "token.json"
+            token.write_text(json.dumps({"refresh_token": "rft"}), encoding="utf-8")
+            channel = {
+                "key": "pet_story_select",
+                "title": "pet_story_select",
+                "status": "active",
+                "client_secret_dir": str(folder),
+            }
+            creds = lib.google_credentials(ROOT, "pet_story_select", "", channel=channel)
+            self.assertEqual(creds["client_path"], secret)
+            self.assertEqual(creds["token_path"], token)
+            self.assertEqual(creds["client_id"], "cid")
+            self.assertEqual(creds["refresh_token"], "rft")
+            self.assertEqual(
+                lib.default_youtube_token_path(ROOT, "pet_story_select", secret),
+                token,
+            )
+        inside = ROOT / "not-a-secret" / "client_secret_example.json"
+        self.assertEqual(
+            lib.default_youtube_token_path(ROOT, "pet_story_select", inside),
+            ROOT / "tokens" / "youtube" / "pet_story_select.json",
+        )
+
+    def test_auth_hold_channel_stops_before_the_browser(self) -> None:
+        buffer = StringIO()
+        with redirect_stderr(buffer):
+            code = auth_youtube.main(["--channel", "yoru_no_tana", "--no-browser"])
+        self.assertEqual(code, 2)
+        self.assertIn("アカウント未定のため保留", buffer.getvalue())
+        with redirect_stderr(buffer):
+            reserved = auth_youtube.main(["--channel", "fireworker012_reserved", "--no-browser"])
+        self.assertEqual(reserved, 2)
+        self.assertIn("チャンネル名が未定", buffer.getvalue())
+
     def test_google_download_shape(self) -> None:
         client_id, secret = lib.google_client_fields(
             {"installed": {"client_id": "id.apps.googleusercontent.com", "client_secret": "sec"}}
@@ -182,7 +277,7 @@ class RulesTest(unittest.TestCase):
 
     def test_gitignore_covers_secrets(self) -> None:
         text = (ROOT / ".gitignore").read_text(encoding="utf-8")
-        for needle in ("secrets/", "tokens/", "posted.csv", "stats.csv", ".env"):
+        for needle in ("secrets/", "tokens/", "posted.csv", "stats.csv", ".env", "client_secret", "token.json"):
             self.assertIn(needle, text)
 
     def test_resumable_put_accepts_308_without_following_it(self) -> None:

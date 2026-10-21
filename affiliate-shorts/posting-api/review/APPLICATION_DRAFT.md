@@ -37,7 +37,7 @@ URL: [公開URL]
 
 デモ用パスワードは空欄。ログイン付きの公開デモが無いので、画面録画を Other Supporting Materials に置く。録画は、同意画面、スコープ、非公開アップロード、YouTube Studio でその動画を開くところ、Googleアカウントのアクセス権のページまで。
 
-プロジェクトは1つ。メソッドは `channels.list`、`videos.insert`、`videos.list`。Analytics を有効にしたときだけ YouTube Analytics の `reports.query`。
+Googleアカウントごとにプロジェクトと OAuth クライアントが1つ。監査フォームは、出すならそのAPIクライアントごとに出す。メソッドは `channels.list`、`videos.insert`、`videos.list`。Analytics を有効にしたときだけ YouTube Analytics の `reports.query`。
 
 既定の `videos.insert` 1日100回で足りるあいだは、枠の増加を求めない。増加が必要になったときに同じフォームで本数を書く。
 

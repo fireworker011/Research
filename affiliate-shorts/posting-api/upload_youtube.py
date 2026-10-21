@@ -32,6 +32,8 @@ def parser() -> argparse.ArgumentParser:
     tool.add_argument("--a8", action="store_true", help="説明にアフィリエイト開示が必須")
     tool.add_argument("--no-notify", action="store_true")
     tool.add_argument("--publish", action="store_true", help="これを付けたときだけ投稿する")
+    tool.add_argument("--client-file", default="", help="client_secret のJSONファイル")
+    tool.add_argument("--client-dir", default="", help="このフォルダ内の client_secret_*.json を1つだけ使う")
     tool.add_argument("--token-file", default="")
     tool.add_argument("--allow-duplicate", action="store_true")
     tool.add_argument("--channels-file", default="")
@@ -106,7 +108,14 @@ def run(args: argparse.Namespace) -> int:
     posted = root / "posted.csv"
     if not args.allow_duplicate and lib.already_posted(posted, "youtube", args.channel, digest):
         raise lib.ValidationError("同じファイルは既に posted.csv にあります。やり直すなら --allow-duplicate。")
-    creds = lib.google_credentials(root, args.channel, args.token_file)
+    creds = lib.google_credentials(
+        root,
+        args.channel,
+        args.token_file,
+        channel=channel,
+        client_file=args.client_file,
+        client_dir=args.client_dir,
+    )
     access = lib.google_access_token(creds)
     channel_id, actual_title, custom_url = lib.youtube_mine(access)
     lib.require_channel_match(channel, actual_title, custom_url)

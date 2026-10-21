@@ -375,6 +375,100 @@ def google_client_fields(data: dict) -> tuple[str, str]:
     return str(block.get("client_id") or ""), str(block.get("client_secret") or "")
 
 
+def assert_youtube_channel_ready(channel: dict) -> None:
+    status = str(channel.get("status") or "active")
+    if status in {"", "active"}:
+        return
+    if status == "hold":
+        title = str(channel.get("title") or channel.get("key") or "")
+        raise ValidationError(f"{title} はアカウント未定のため保留です。許可も投稿もしません。")
+    if status == "reserved":
+        key = str(channel.get("key") or "")
+        raise ValidationError(f"{key} はチャンネル名が未定のため、まだ許可しません。")
+    raise ValidationError(f"チャンネルの status が不明です: {status}")
+
+
+def find_client_secret(directory: Path) -> Path:
+    if not directory.is_dir():
+        raise ValidationError(f"client_secret のフォルダがありません: {directory}")
+    matches = sorted(path for path in directory.glob("client_secret_*.json") if path.is_file())
+    if len(matches) == 1:
+        return matches[0]
+    shown = ", ".join(path.name for path in matches) if matches else "なし"
+    extra = ""
+    if not matches:
+        names = sorted(path.name for path in directory.glob("*.json") if path.is_file())
+        if names:
+            extra = " フォルダ内のJSON: " + ", ".join(names)
+    raise ValidationError(
+        f"{directory} には client_secret_*.json を1つだけ置きます。該当: {shown}.{extra}"
+    )
+
+
+def path_inside_repo(path: Path, root: Path) -> bool:
+    repo = git_root(root)
+    if repo is None:
+        return False
+    resolved = path.resolve()
+    repo_resolved = repo.resolve()
+    return resolved == repo_resolved or repo_resolved in resolved.parents
+
+
+def default_youtube_token_path(root: Path, channel_key: str, client_path: Path) -> Path:
+    if path_inside_repo(client_path, root):
+        return root / "tokens" / "youtube" / f"{channel_key}.json"
+    return client_path.parent / "token.json"
+
+
+def resolve_youtube_client(
+    root: Path,
+    channel: dict,
+    client_file: str = "",
+    client_dir: str = "",
+) -> tuple[Path | None, str, str]:
+    assert_youtube_channel_ready(channel)
+    path: Path | None = None
+    if client_file:
+        path = Path(client_file)
+        if not path.is_file():
+            raise ValidationError(f"client_secret がありません: {path}")
+    elif client_dir:
+        path = find_client_secret(Path(client_dir))
+    elif str(channel.get("client_secret") or "").strip():
+        path = Path(str(channel["client_secret"]))
+        if not path.is_file():
+            raise ValidationError(f"client_secret がありません: {path}")
+    elif str(channel.get("client_secret_dir") or "").strip():
+        path = find_client_secret(Path(str(channel["client_secret_dir"])))
+    else:
+        legacy = root / "secrets" / "youtube-client.json"
+        if legacy.is_file():
+            path = legacy
+    client_id = ""
+    client_secret = ""
+    if path is not None:
+        client_id, client_secret = google_client_fields(read_json(path))
+    client_id = client_id or os.environ.get("YOUTUBE_CLIENT_ID", "")
+    client_secret = client_secret or os.environ.get("YOUTUBE_CLIENT_SECRET", "")
+    return path, client_id, client_secret
+
+
+def youtube_token_path(
+    root: Path,
+    channel_key: str,
+    token_file: str,
+    client_path: Path | None,
+) -> Path:
+    if token_file:
+        return Path(token_file)
+    repo_token = root / "tokens" / "youtube" / f"{channel_key}.json"
+    if client_path is not None and not path_inside_repo(client_path, root):
+        beside = client_path.parent / "token.json"
+        if beside.is_file() or not repo_token.is_file():
+            return beside
+    return repo_token
+
+
 def git_root(start: Path) -> Path | None:
     for candidate in [start, *start.parents]:
         if (candidate / ".git").exists():
@@ -408,15 +502,24 @@ def _env_or_file(file_value: str, env_value: str) -> str:
     return file_value or env_value
 
 
-def google_credentials(root: Path, channel_key: str, token_file: str) -> dict:
-    client_path = root / "secrets" / "youtube-client.json"
-    client_id = os.environ.get("YOUTUBE_CLIENT_ID", "")
-    client_secret = os.environ.get("YOUTUBE_CLIENT_SECRET", "")
-    if client_path.is_file():
-        found_id, found_secret = google_client_fields(read_json(client_path))
-        client_id = _env_or_file(found_id, client_id)
-        client_secret = _env_or_file(found_secret, client_secret)
-    token_path = Path(token_file) if token_file else root / "tokens" / "youtube" / f"{channel_key}.json"
+def google_credentials(
+    root: Path,
+    channel_key: str,
+    token_file: str,
+    *,
+    channel: dict | None = None,
+    client_file: str = "",
+    client_dir: str = "",
+) -> dict:
+    if channel is None:
+        channel = find_channel(load_channels(root / "channels.json"), "youtube", channel_key)
+    client_path, client_id, client_secret = resolve_youtube_client(
+        root,
+        channel,
+        client_file,
+        client_dir,
+    )
+    token_path = youtube_token_path(root, channel_key, token_file, client_path)
     saved: dict = {}
     refresh = ""
     if token_path.is_file():
@@ -424,15 +527,19 @@ def google_credentials(root: Path, channel_key: str, token_file: str) -> dict:
         refresh = str(saved.get("refresh_token") or "")
     refresh = _env_or_file(refresh, os.environ.get("YOUTUBE_REFRESH_TOKEN", ""))
     if not client_id or not client_secret or not refresh:
+        folder = client_dir or str(channel.get("client_secret_dir") or "")
+        place = folder or "channels.json の client_secret_dir"
         raise ValidationError(
             "YouTubeのクライアントとrefresh tokenがありません。"
-            "SETUP_YOUTUBE.md のあと、secrets/youtube-client.json と tokens/youtube/<key>.json に置きます。"
+            f" client_secret は {place} の client_secret_*.json。"
+            f" トークンは同じフォルダの token.json か tokens/youtube/{channel_key}.json。"
         )
     return {
         "client_id": client_id,
         "client_secret": client_secret,
         "refresh_token": refresh,
         "token_path": token_path,
+        "client_path": client_path,
         "saved": saved,
     }
 
@@ -947,9 +1054,10 @@ def wait_for_oauth_callback(port: int, timeout: int) -> dict[str, list[str]]:
     return server.result  # type: ignore[attr-defined]
 
 
-def open_authorization(url: str) -> None:
+def open_authorization(url: str, *, browser: bool = True) -> None:
     print(url)
-    webbrowser.open(url)
+    if browser:
+        webbrowser.open(url)
 
 
 def pkce_pair() -> tuple[str, str]:

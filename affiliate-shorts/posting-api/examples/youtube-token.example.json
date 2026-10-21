@@ -4,5 +4,5 @@
   "channel_id": "",
   "channel_title": "",
   "custom_url": "",
-  "note": "実体は tokens/youtube/<key>.json。auth_youtube.py が書く。コミットしない。"
+  "note": "実体は client_secret と同じフォルダの token.json。または tokens/youtube/<key>.json。auth_youtube.py が書く。コミットしない。"
 }

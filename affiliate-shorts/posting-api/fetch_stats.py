@@ -25,6 +25,8 @@ def parser() -> argparse.ArgumentParser:
     tool.add_argument("--analytics", action="store_true", help="YouTube Analyticsの期間内再生数")
     tool.add_argument("--start-date", default="")
     tool.add_argument("--end-date", default="")
+    tool.add_argument("--client-file", default="", help="YouTubeを1チャンネルだけ取るときの client_secret")
+    tool.add_argument("--client-dir", default="", help="YouTubeを1チャンネルだけ取るときの client_secret フォルダ")
     tool.add_argument("--token-file", default="")
     return tool
 
@@ -86,6 +88,9 @@ def run(args: argparse.Namespace) -> int:
         if video_id not in grouped[(platform, channel)]:
             grouped[(platform, channel)].append(video_id)
 
+    youtube_channels = [channel for platform, channel in grouped if platform == "youtube"]
+    if (args.client_file or args.client_dir) and len(youtube_channels) != 1:
+        raise lib.ValidationError("--client-file と --client-dir は、YouTubeを1チャンネルに絞ったときだけ使います。")
     out = root / "stats.csv"
     for (platform, channel), video_ids in grouped.items():
         if platform == "youtube":
@@ -114,7 +119,15 @@ def write_youtube(
     video_ids: list[str],
     args: argparse.Namespace,
 ) -> None:
-    creds = lib.google_credentials(root, channel, args.token_file)
+    row = lib.find_channel(lib.load_channels(root / "channels.json"), "youtube", channel)
+    creds = lib.google_credentials(
+        root,
+        channel,
+        args.token_file,
+        channel=row,
+        client_file=args.client_file,
+        client_dir=args.client_dir,
+    )
     access = lib.google_access_token(creds)
     scope = str((creds.get("saved") or {}).get("scope") or "")
     if args.analytics and lib.YOUTUBE_ANALYTICS_SCOPE not in scope.split():
