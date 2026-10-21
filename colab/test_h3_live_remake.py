@@ -98,6 +98,9 @@ def test_filled_sheet_is_one_ref2va_per_span_with_pictures_in_order():
     assert plan["status"] == "ready", plan["blocked"]
     assert plan["job"] == "live_remake" and plan["task"] == "ref2va"
     assert (plan["width"], plan["height"], plan["fps"]) == (1344, 768, 24)
+    assert plan["model"]["file"] == "fasth3_omniref_8step_pruned_int8_convrot.safetensors"
+    assert plan["model"]["steps"] == 8 and plan["model"]["guidance"] == 1.0
+    assert plan["model"]["video_shift"] == 12.0 and plan["model"]["audio_shift"] == 3.0
     assert plan["loras"] == [{"key": "anime2real", "file": "Anime2Realsim__H3.safetensors", "strength": 1.0}]
     assert plan["generate"] is False and plan["publish"] is False
     first = plan["spans"][0]

@@ -13,7 +13,8 @@
 | 元動画の fps と大きさが H3 と違う | 範囲ごとに 24fps、768P の画面に整形し、最後のコマで要求の長さまで伸ばす。つなぎで測ったフレームに切り戻す | `conform_argv`、`join_argv` |
 | 途中で姿が変わる役、場所、小道具の静止画が要る | シートで役ごとに `stills` を形（form）別に持ち、範囲ごとに使う形を指す。場所は `place_still`、小道具は `P1` など。足りないと止まる | `cast`、`place_still`、`props` |
 | 範囲ごとの動きとカメラの文 | Grok Build の `video-to-h3-prompt`（MIT）が書く。ここは英語か、ラベルが静止画と合うか、`<Video 1>` 以外が無いかだけを見る | `.cursor/skills/video-to-h3-prompt/` |
-| 元の絵の線が実写に残る | 動画は秒、位置、カメラだけ。静止画が顔と衣装。文に実写の固定文を前置きし、見た目は書かない。LoRA は anime2real 1.0 を単独で載せる | `_prompt`、`LIVE_ACTION_LOCK` |
+| 元の絵の線が実写に残る | 動画は秒、位置、カメラだけ。静止画が顔と衣装。文に実写の固定文を前置きし、見た目は書かない。本体は FastH3 Omni の 8 step INT8。LoRA は anime2real 1.0 を単独で載せる | `_prompt`、`OMNI_FILE` |
+| 公式の Ref2VA は遅い | 公開の速度比較は FastH3 V2 の文だけ（640x640）。Omni の画質はここで測っていない。live_remake は 8 step の Omni を使う | `model` |
 | anime2real の取得元 | 未登録。Civitai の検索では H3 用が見つからなかった。マイドライブの `h3-weights/loras` に置く | `WEIGHT_NOTE` |
 | 静止画が複数 | h3-runner の `--image` は1枚。Comfy の `MiniMaxH3ReferenceToVideo` は `ref_images.ref_image_N` に複数を取る。だから Comfy だけ。`runtime=api` は止める | `_gate` |
 | 15秒を超える連続ショット | 等分すると、つなぎ目で動きが段になることがある。連続を取るなら `longform_chunk`（H3 Continuum）。参照画像の当て方は `write-h3-v39-reference-prompts`（MIT） | `.cursor/skills/write-h3-v39-reference-prompts/` |

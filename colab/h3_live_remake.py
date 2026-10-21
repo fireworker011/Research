@@ -60,6 +60,14 @@ VIDEO_ROLE = (
 )
 DEFAULT_SOUND = "Physical sound follows the visible action. No added music."
 GENERATE_MSG = "生成は人間。このプランはコマンドと文までで、Comfy の生成ボタンは押さない。"
+# FastH3 Omni is the 8-step Comfy Ref2VA weight. The published speed comparison is
+# FastH3 V2 text-only at 640x640, not this model with stills and a source video.
+OMNI_REPO = "FastVideo/FastH3-Omni-Comfy"
+OMNI_FILE = "fasth3_omniref_8step_pruned_int8_convrot.safetensors"
+OMNI_STEPS = 8
+OMNI_GUIDANCE = 1.0
+OMNI_VIDEO_SHIFT = 12.0
+OMNI_AUDIO_SHIFT = 3.0
 WEIGHT_NOTE = (
     "anime2real の取得元はこのリポジトリに登録していない。"
     f"マイドライブの h3-weights/loras に {LORA_FILES['anime2real']} を置く。"
@@ -477,6 +485,8 @@ def build_remake_plan(sheet: Mapping[str, Any], *, runtime: str = "comfy") -> di
         f"出力は {size[0]}x{size[1]}、{FPS}fps。補間はしない。",
         "範囲ごとに Ref2VA を1本。参照の動画は最後のコマで要求の長さまで伸ばし、つなぎで測った長さに切る。",
         "静止画が顔と衣装、動画が秒と位置とカメラ。文は見た目を書かない。",
+        f"本体は {OMNI_FILE}。steps {OMNI_STEPS}、guidance {OMNI_GUIDANCE:g}、video shift {OMNI_VIDEO_SHIFT:g}、audio shift {OMNI_AUDIO_SHIFT:g}。",
+        "速度の公開比較は FastH3 V2 の文だけ、640x640。この Omni の画質はここで測っていない。",
         WEIGHT_NOTE,
         GENERATE_MSG,
     ]
@@ -498,9 +508,10 @@ def build_remake_plan(sheet: Mapping[str, Any], *, runtime: str = "comfy") -> di
         "width": size[0],
         "height": size[1],
         "resolution": RESOLUTION,
+        "model": {"repo": OMNI_REPO, "file": OMNI_FILE, "steps": OMNI_STEPS, "guidance": OMNI_GUIDANCE, "video_shift": OMNI_VIDEO_SHIFT, "audio_shift": OMNI_AUDIO_SHIFT},
         "loras": [lora],
         "trigger": "",
-        "sampler_id": "live_remake:anime2real",
+        "sampler_id": "live_remake:fasth3-omni+anime2real",
         "look": "",
         "prompt": "",
         "inputs": {"video": str(source["path"])},
