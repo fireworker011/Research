@@ -37,3 +37,7 @@ AI と美容・メイク・コスメ・美女・和装が同じタイトルで�
 - 90 日の外のメイクチャレンジ https://www.youtube.com/shorts/TsEPFDVoWw0 （公開 2023-05-25、尺 11 秒、再生 1,500,000 はショートタブの表示）
 - TOWA https://www.youtube.com/shorts/I22YpO_14DM
 - 表 `research/account-study-2026-10/genre-サクラ.md`
+
+## 2026-10-21
+
+インサイト CSV の最新16本（09-17〜10-21）では、再生は9月 354〜470、10/04〜10/12 は 372〜483、10/14〜10/19 は 175〜282。リーチも同じ段差（10/12 が 296、10/14 が 97）。シェアは16本とも 0。上の `video_view_count` 65〜115 は別欄なので、この再生と引き算しない。詳細は `research/sakura-ig/2026-10-21-views-diagnosis.md`。
