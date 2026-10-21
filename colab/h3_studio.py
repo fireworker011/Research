@@ -20,6 +20,7 @@ from dataclasses import dataclass, field, replace
 from pathlib import Path
 from typing import Any, Mapping
 
+from h3_live_remake import RemakeError, build_remake_plan, load_sheet
 from h3_sfw import (
     ACTION_STRENGTH,
     ANIME2REAL_STRENGTH,
@@ -58,6 +59,7 @@ JOBS = (
     "join",
     "affi_template",
     "longform_chunk",
+    "live_remake",
 )
 SWAP_JOBS = frozenset({"swap_character", "swap_face", "swap_outfit"})
 VIDEO_SINK_JOBS = frozenset({"swap_character", "swap_face", "swap_outfit", "real"})
@@ -101,6 +103,7 @@ TEXT_SCENE_ASPECT = "16:9"
 
 STUDIO_HELPERS = (
     "colab/h3_sfw.py",
+    "colab/h3_live_remake.py",
     "colab/h3_studio.py",
     "colab/h3_studio_colab_main.py",
 )
@@ -118,7 +121,10 @@ JOB_HELP = {
     "join": "6秒と9秒を切って足す。15秒以上。1本の15秒生成はしない。",
     "affi_template": "バズ型の既存台本を指す。台本は書き換えない。生成しない。",
     "longform_chunk": "Comfy のみ。H3 Continuum Sampler。5–8秒チャンクを latent continuity でつなぎ、Assemble で mp4 を1本。",
+    "live_remake": "Comfy のみ。元動画を測ったシートから、範囲ごとに Ref2VA + anime2real 1.0。静止画が顔と衣装、動画が秒とカメラ。つないで mp4 を1本。",
 }
+LIVE_REMAKE_API_MSG = "runtime=api では live_remake を止める。複数の静止画と LoRA は公式 API では読めない。"
+LIVE_REMAKE_HIGH_MEM_MSG = "live_remake は Comfy High-Mem。High-Mem がオフなら止める。"
 
 CONTINUUM_CLONE = "git clone https://github.com/ukr8b3g-cmyk/ComfyUI-H3-Continuum.git"
 CONTINUUM_SAMPLER = "H3ContinuumSamplerV39"
@@ -163,6 +169,7 @@ REQUEST_KEYS = frozenset(
         "template",
         "parts",
         "chunk_seconds",
+        "remake_sheet",
     }
 )
 REFUSED_NOW = {
@@ -286,6 +293,7 @@ class StudioRequest:
     template: str = ""
     parts: tuple[float, ...] = ()
     chunk_seconds: float = 5.0
+    remake_sheet: str = ""
 
 
 def request_from(raw: Mapping[str, Any]) -> StudioRequest:
@@ -333,6 +341,7 @@ def request_from(raw: Mapping[str, Any]) -> StudioRequest:
         template=str(raw.get("template") or "").strip(),
         parts=_parts_for(job, raw.get("parts")),
         chunk_seconds=_chunk_seconds_for(job, raw.get("chunk_seconds")),
+        remake_sheet=_remake_sheet_for(job, raw.get("remake_sheet")),
     )
 
 
@@ -377,6 +386,8 @@ def request_from_env(environ: Mapping[str, str] | None = None) -> StudioRequest:
     if job == "longform_chunk":
         mapping["duration"] = env.get("H3_STUDIO_DURATION") or ""
         mapping["chunk_seconds"] = env.get("H3_STUDIO_CHUNK_SECONDS") or "5"
+    if job == "live_remake":
+        mapping["remake_sheet"] = env.get("H3_STUDIO_REMAKE_SHEET") or ""
     if job == "two_pass":
         pass_a = str(env.get("H3_STUDIO_PASS_A") or "").strip()
         pass_b = str(env.get("H3_STUDIO_PASS_B") or "").strip()
@@ -415,6 +426,8 @@ def build_plan(req: StudioRequest) -> dict[str, Any]:
         return _build_template(req)
     if req.job == "longform_chunk":
         return _build_longform(req)
+    if req.job == "live_remake":
+        return _build_live_remake(req)
     raise StudioError(f"ジョブが違う: {req.job}")
 
 
@@ -437,6 +450,8 @@ def prompts_of(plan: Mapping[str, Any]) -> list[str]:
         for child in plan.get("passes") or []:
             found.extend(prompts_of(child))
         return found
+    if plan.get("job") == "live_remake":
+        return [str(span["prompt"]) for span in plan.get("spans") or [] if span.get("prompt")]
     text = str(plan.get("prompt") or "")
     return [text] if text else []
 
@@ -1036,6 +1051,11 @@ def comfy_custom_nodes(runtime: str) -> list[dict[str, Any]]:
 def _gate(req: StudioRequest) -> None:
     if req.runtime == "api" and req.job == "longform_chunk":
         raise StudioError(LONGFORM_API_MSG)
+    if req.job == "live_remake":
+        if req.runtime == "api":
+            raise StudioError(LIVE_REMAKE_API_MSG)
+        if not req.high_mem:
+            raise StudioError(LIVE_REMAKE_HIGH_MEM_MSG)
     if req.runtime == "api" and req.job in API_STOP_JOBS:
         raise StudioError(API_MSG)
     if req.job in HIGH_MEM_JOBS and not req.high_mem:
@@ -1043,7 +1063,7 @@ def _gate(req: StudioRequest) -> None:
 
 
 def _scan_request(req: StudioRequest) -> None:
-    blobs = [req.action, req.dialogue, req.hero_sheet, req.video, req.first_still, req.last_still, req.job]
+    blobs = [req.action, req.dialogue, req.hero_sheet, req.video, req.first_still, req.last_still, req.job, req.remake_sheet]
     for sheet in (req.hero, req.enemy):
         for key in LOOK_KEYS:
             blobs.append(getattr(sheet, key))
@@ -1204,6 +1224,28 @@ def _as_bool(value: Any, *, default: bool) -> bool:
     if text in {"0", "false", "no", "off", ""}:
         return False if text else default
     raise StudioError("真偽が読めない")
+
+
+def _remake_sheet_for(job: str, value: Any) -> str:
+    text = str(value or "").strip()
+    if job != "live_remake":
+        if text:
+            raise StudioError("remake_sheet は live_remake だけ")
+        return ""
+    return text
+
+
+def _build_live_remake(req: StudioRequest) -> dict[str, Any]:
+    if not req.remake_sheet:
+        raise StudioError("live_remake はシートが要る。先に h3_live_remake.py measure で骨組みを書く")
+    try:
+        plan = build_remake_plan(load_sheet(req.remake_sheet), runtime=req.runtime)
+    except (RemakeError, OSError, json.JSONDecodeError) as exc:
+        raise StudioError(str(exc)) from exc
+    assert_loras_exclusive({item["key"] for item in plan["loras"]})
+    for prompt in prompts_of(plan):
+        _assert_prompt(prompt)
+    return plan
 
 
 def _chunk_seconds_for(job: str, value: Any) -> float:
