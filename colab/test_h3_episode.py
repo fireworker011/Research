@@ -1915,7 +1915,17 @@ def test_hospital_invite_pose_and_toilet_and_skip():
     kiss_in = next(b for b in stand["beats"] if b["id"] == "03-kiss-in")
     assert "grey wall" in kiss_stand["action"].lower()
     assert "moves the hips forward once" in kiss_in["action"].lower()
+    assert "travels into the anus" in kiss_in["action"].lower()
+    assert "uses the anus only" in kiss_in["action"].lower()
+    assert "into the pussy" not in kiss_in["action"].lower()
     assert "center of the frame" in kiss_stand["camera"].lower()
+    kiss_peak = next(b for b in stand["beats"] if b["id"] == "03-kiss-peak")
+    assert "into the pussy" not in kiss_peak["action"].lower()
+    assert "inside the anus" in (kiss_peak.get("trigger") or "").lower()
+    assert "female character" not in (kiss_peak.get("trigger") or "").lower()
+    wall_prompt = build_beat_prompt(stand, kiss_in, trigger=merge_trigger("", kiss_in)).lower()
+    assert wall_prompt.startswith("the shaft travels into the anus")
+    assert "travels into the pussy" not in wall_prompt
     fours = prepare_episode(raw, story_override="誘う", invite_pose_override="四つん這い股広げ")
     for bid in ("03-kiss", "06-doggy", "09-join", "12-exit"):
         beat = next(b for b in fours["beats"] if b["id"] == bid)
@@ -1933,6 +1943,16 @@ def test_hospital_invite_pose_and_toilet_and_skip():
         assert "doggy" not in extra_keys(beat)
         assert extra_lora_entries(inn)[0] == ("siderear", 0.8)
         assert "travels into the anus" in inn["action"].lower()
+        assert "uses the anus only" in inn["action"].lower()
+        assert "into the pussy" not in inn["action"].lower()
+        peak = next(b for b in fours["beats"] if b["id"] == f"{bid}-peak")
+        assert "into the pussy" not in peak["action"].lower()
+        assert "inside the anus" in (peak.get("trigger") or "").lower()
+        assert "female character" not in (peak.get("trigger") or "").lower()
+        assert "her penis" not in (peak.get("trigger") or "").lower()
+        inn_prompt = build_beat_prompt(fours, inn, trigger=merge_trigger("", inn)).lower()
+        assert inn_prompt.startswith("the shaft travels into the anus")
+        assert "travels into the pussy" not in inn_prompt
         assert "moves the hips back once" in close["action"].lower()
         assert "hips stay back" in close["action"].lower()
     assert "open wide to the left and right" in next(b for b in fours["beats"] if b["id"] == "06-doggy")["action"].lower()
@@ -2988,6 +3008,10 @@ def test_hospital_shino_stays_35cm_and_horn_prefix_beats_stay():
     assert "35cm" in handoff
     assert "肛門" in SCENE_ACTION_MODES["invite_stand"]["when_ja"]
     assert "膣" not in SCENE_ACTION_MODES["invite_stand"]["when_ja"]
+    assert "肛門" in SCENE_ACTION_MODES["invite_all_fours"]["when_ja"]
+    assert "肛門" in INVITE_POSE_MODES["all_fours"]["when_ja"]
+    assert "膣" not in INVITE_POSE_MODES["all_fours"]["when_ja"]
+    assert "肛門" in TSUNO_MODES["accept_stand"]["when_ja"]
     assert "抱きながら肛門" in TSUNO_MODES["invite_stand"]["when_ja"]
     assert "壁で胸を掴んで" in TSUNO_MODES["anal_back"]["when_ja"]
 

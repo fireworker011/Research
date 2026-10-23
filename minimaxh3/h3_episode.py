@@ -4983,6 +4983,26 @@ _FOURS_PISTON = (
     "After the shaft reaches the BASE, the hips move FORWARD and BACK in short presses for the rest of the take. "
     "Each forward press meets the buttocks. The glans stays inside the anus. The shaft stays buried to the root."
 )
+_OLD_PENIS_CLIMAX = (
+    "This video depicts part of sexual intercourse climax, the female character performs powerful, "
+    "intense thrusts with her penis inside her partner and cums inside of her"
+)
+_ANAL_CLIMAX = (
+    "This video depicts part of sexual intercourse climax. "
+    "The adult who holds the shaft keeps it inside the anus and cums inside the anus. "
+    "The hairless pussy stays a closed slit under the anus. "
+    "The same two adults stay in the frame."
+)
+_ANAL_ENTRY_LEAD = (
+    "The shaft travels into the anus. The hairless pussy stays a closed slit under the anus."
+)
+_ANAL_PRESS_LEAD = (
+    "The glans stays pressed on the closed anus. The shaft stays outside. "
+    "The hairless pussy stays a closed slit under the anus."
+)
+_ANAL_ONLY = (
+    " The shaft uses the anus only. The hairless pussy stays a closed slit under the anus."
+)
 _SHAFT_HEADING_RE = re.compile(
     r"([A-Za-z]+)'s chest, hips, and knees (?:turn to )?face LEFT, the same direction Aya's chest faces\. "
     r"\1's side faces the camera, the same as Aya's side\. "
@@ -5076,11 +5096,57 @@ def _glans_remnant_due(bid: str, action: str) -> bool:
     return left and outside and ("semen" in low or "white goo" in low)
 
 
+def _rear_anal_pose(action: str) -> bool:
+    """All-fours and wall rear. The closed slit stays visible. The shaft uses the anus."""
+    low = action.lower()
+    if "between the open thighs" not in low and "between the calves" not in low:
+        return False
+    if "into the pussy" in low or "inside the pussy" in low:
+        return False
+    return "anus" in low
+
+
+def _rear_anal_seated(action: str) -> bool:
+    low = action.lower()
+    if not _rear_anal_pose(action) or "leaves the anus" in low:
+        return False
+    return any(
+        phrase in low
+        for phrase in ("into the anus", "inside the anus", "in the anus", "buried in the anus")
+    )
+
+
+def _lock_rear_anal(action: str, trigger: str) -> tuple[str, str]:
+    """Lead the prompt with the anus. The old climax line names a penis and no hole."""
+    if not _rear_anal_pose(action):
+        return action, trigger
+    seated = _rear_anal_seated(action)
+    if seated and "uses the anus only" not in action.lower():
+        action = action.rstrip(".") + "." + _ANAL_ONLY
+    low = action.lower()
+    if _OLD_PENIS_CLIMAX in trigger:
+        trigger = trigger.replace(_OLD_PENIS_CLIMAX, _ANAL_CLIMAX)
+    elif seated and "anus" not in trigger.lower():
+        if "cums inside" in trigger.lower():
+            trigger = _ANAL_CLIMAX + ("\n" + trigger if trigger.strip() else "")
+        elif not trigger.strip():
+            trigger = _ANAL_ENTRY_LEAD
+    elif (
+        not trigger.strip()
+        and "pressed on the closed anus" in low
+        and "in the anus" not in low
+        and "into the anus" not in low
+    ):
+        trigger = _ANAL_PRESS_LEAD
+    return action, trigger
+
+
 def apply_pose_notes(ep: dict[str, Any]) -> dict[str, Any]:
     """October pose notes. Stored LoRA cards stay.
 
     All-fours entry keeps short presses after the shaft seats. The shaft adult yaws a little
     toward the right so the feet match Aya. After withdrawal the pelvis freezes.
+    All-fours and wall rear keep the shaft in the anus. The prompt lead says so.
     """
     if str(ep.get("slug") or "") != "hospital-exit-adult":
         return ep
@@ -5137,6 +5203,9 @@ def apply_pose_notes(ep: dict[str, Any]) -> dict[str, Any]:
             )
         if _glans_remnant_due(bid, action):
             action = action.rstrip(".") + "." + _GLANS_REMNANT
+        action, trig = _lock_rear_anal(action, str(beat.get("trigger") or ""))
+        if trig != str(beat.get("trigger") or ""):
+            beat["trigger"] = trig
         beat["action"] = re.sub(r" {2,}", " ", action).strip()
     return ep
 

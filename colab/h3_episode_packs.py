@@ -379,8 +379,8 @@ INVITE_POSE_MODES: dict[str, dict[str, Any]] = {
     "all_fours": {
         "label_ja": "四つん這い",
         "choice_ja": "四つん這い股広げ（迷ったらこれ）",
-        "when_ja": "四つん這いで誘う。挿入根元→パコ中出し→歩きの3本",
-        "hint_ja": "迷ったらこれ。あやが四つん這いで股を広げる。終わりはあや一人歩き",
+        "when_ja": "四つん這いで誘う。肛門へ一度入れて根元、短い前後で中。歩きまで",
+        "hint_ja": "迷ったらこれ。胸と頬は床。股は開く。竿は肛門。マンコは下の閉じた割れ目。終わりはあや一人歩き",
         "recommend": True,
     },
     "m_open": {
@@ -645,8 +645,8 @@ TSUNO_MODES: dict[str, dict[str, Any]] = {
     "accept_stand": {
         "label_ja": "受け入れる立ちバック",
         "choice_ja": "角・受け入れる立ちバック",
-        "when_ja": "壁に手をついて立ちバックだけ。終わりは相手が消えてあや一人歩き",
-        "hint_ja": "あやが壁に手。24cm灰色の竿。立ちバックのみ",
+        "when_ja": "壁に手をついて立ちバックだけ。竿は肛門。終わりは相手が消えてあや一人歩き",
+        "hint_ja": "あやが壁に手。24cm灰色の竿。肛門。立ちバックのみ",
     },
     "invite_stand": {
         "label_ja": "誘う立ちバック",
@@ -1259,7 +1259,7 @@ SCENE_ACTION_MODES: dict[str, dict[str, Any]] = {
     "invite_all_fours": {
         "label_ja": "誘う・四つん這い",
         "choice_ja": "□誘う・四つん這い股広げ",
-        "when_ja": "この人を四つん這いで誘う",
+        "when_ja": "この人を四つん這いの肛門で誘う",
         "story": "invite",
         "pose": "all_fours",
     },
