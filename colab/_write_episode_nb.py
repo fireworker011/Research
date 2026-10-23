@@ -38,6 +38,52 @@ __CONNECT_HELP__
 CONNECT = __CONNECT_DEFAULT__  #@param __CONNECT_CHOICES__
 __CAMERA_HELP__
 CAMERA = __CAMERA_DEFAULT__  #@param __CAMERA_CHOICES__
+__DISTANCE_HELP__
+CAMERA_DISTANCE = __DISTANCE_DEFAULT__  #@param __DISTANCE_CHOICES__
+__PLACE_HELP__
+PLACE = __PLACE_DEFAULT__  #@param __PLACE_CHOICES__
+__TIME_HELP__
+TIME_OF_DAY = __TIME_DEFAULT__  #@param __TIME_CHOICES__
+__WEATHER_HELP__
+WEATHER = __WEATHER_DEFAULT__  #@param __WEATHER_CHOICES__
+__DIRT_HELP__
+DIRT = __DIRT_DEFAULT__  #@param __DIRT_CHOICES__
+__LOOK_HELP__
+AYA_LOOK = __LOOK_DEFAULT__  #@param __LOOK_CHOICES__
+#@markdown **あやの容姿。各欄の初期値は今のまま。国の見た目より、ここで選んだ欄が優先。**
+__AYA_HAIR_HELP__
+AYA_HAIR = __AYA_HAIR_DEFAULT__  #@param __AYA_HAIR_CHOICES__
+__AYA_COLOR_HELP__
+AYA_HAIR_COLOR = __AYA_COLOR_DEFAULT__  #@param __AYA_COLOR_CHOICES__
+__AYA_FACE_HELP__
+AYA_FACE = __AYA_FACE_DEFAULT__  #@param __AYA_FACE_CHOICES__
+__AYA_BUST_HELP__
+AYA_BUST = __AYA_BUST_DEFAULT__  #@param __AYA_BUST_CHOICES__
+__AYA_BUTT_HELP__
+AYA_BUTT = __AYA_BUTT_DEFAULT__  #@param __AYA_BUTT_CHOICES__
+__AYA_BUILD_HELP__
+AYA_BUILD = __AYA_BUILD_DEFAULT__  #@param __AYA_BUILD_CHOICES__
+__AYA_HEIGHT_HELP__
+AYA_HEIGHT = __AYA_HEIGHT_DEFAULT__  #@param __AYA_HEIGHT_CHOICES__
+__AYA_DIRT_HELP__
+AYA_DIRT = __AYA_DIRT_DEFAULT__  #@param __AYA_DIRT_CHOICES__
+__AYA_SWEAT_HELP__
+AYA_SWEAT = __AYA_SWEAT_DEFAULT__  #@param __AYA_SWEAT_CHOICES__
+__AYA_CLOTHES_HELP__
+AYA_CLOTHES = __AYA_CLOTHES_DEFAULT__  #@param __AYA_CLOTHES_CHOICES__
+__AYA_SHAFT_HELP__
+AYA_SHAFT = __AYA_SHAFT_DEFAULT__  #@param __AYA_SHAFT_CHOICES__
+__ENEMY_KIND_HELP__
+ENEMY_KIND = __ENEMY_KIND_DEFAULT__  #@param __ENEMY_KIND_CHOICES__
+__ENEMY_LOOK_HELP__
+LOOK_MIKI = __LOOK_MIKI_DEFAULT__  #@param __LOOK_CHOICES__
+LOOK_REI = __LOOK_REI_DEFAULT__  #@param __LOOK_CHOICES__
+LOOK_KANA = __LOOK_KANA_DEFAULT__  #@param __LOOK_CHOICES__
+LOOK_SHINO = __LOOK_SHINO_DEFAULT__  #@param __LOOK_CHOICES__
+LOOK_GIN = __LOOK_GIN_DEFAULT__  #@param __LOOK_CHOICES__
+LOOK_TSUNO = __LOOK_TSUNO_DEFAULT__  #@param __LOOK_CHOICES__
+#@markdown **シード** — 空なら台本の 42。数字を書くとその回だけ絵が変わる。
+SEED = "42"  #@param {type:"string"}
 __PRESET_HELP__
 PRESET = __PRESET_DEFAULT__  #@param __PRESET_CHOICES__
 __COMBAT_HELP__
@@ -69,17 +115,13 @@ DOG = __DOG_DEFAULT__  #@param __DOG_CHOICES__
 __SPECIES_HELP__
 SPECIES = __SPECIES_DEFAULT__  #@param __SPECIES_CHOICES__
 #@markdown ---
-#@markdown **あやの容姿。空なら今のまま。英語。髪型を書くと髪色は使わない。竿は今のまま / あり / なし。**
-AYA_HAIR = ""  #@param {type:"string"}
-AYA_HAIR_COLOR = ""  #@param {type:"string"}
-AYA_FACE = ""  #@param {type:"string"}
-AYA_DIRT = ""  #@param {type:"string"}
-AYA_SWEAT = ""  #@param {type:"string"}
-AYA_CLOTHES = ""  #@param {type:"string"}
-AYA_SHAFT = "今のまま"  #@param ["今のまま", "あり", "なし"]
-#@markdown **敵の容姿。空なら今のまま。1行に1人。** `miki; hair=a short blonde bob; clothes=a torn white shirt; shaft=今のまま`
-#@markdown id は miki / rei / kana / shino / gin / tsuno / dog / slime / anthro。key は hair color face dirt sweat clothes shaft。
-ENEMY_LOOK = ""  #@param {type:"string"}
+#@markdown **その他の自由記入。** その人の見た目が「その他」のときだけ使う。`hair=...; face=...`
+FREE_MIKI = ""  #@param {type:"string"}
+FREE_REI = ""  #@param {type:"string"}
+FREE_KANA = ""  #@param {type:"string"}
+FREE_SHINO = ""  #@param {type:"string"}
+FREE_GIN = ""  #@param {type:"string"}
+FREE_TSUNO = ""  #@param {type:"string"}
 #@markdown **登場（病棟）。外すとその人のシーンを飛ばす。4人とも外すと止まる。霞東は無視。**
 APPEAR_MIKI = True  #@param {type:"boolean"}
 APPEAR_REI = True  #@param {type:"boolean"}
@@ -116,6 +158,27 @@ os.environ["H3_COMFY_DIR"] = COMFY_DIR
 os.environ["H3_EPISODE"] = EPISODE
 os.environ["H3_EPISODE_PRESET"] = PRESET
 os.environ["H3_EPISODE_CAMERA"] = CAMERA
+os.environ["H3_EPISODE_CAMERA_DISTANCE"] = CAMERA_DISTANCE
+os.environ["H3_EPISODE_PLACE"] = PLACE
+os.environ["H3_EPISODE_TIME"] = TIME_OF_DAY
+os.environ["H3_EPISODE_WEATHER"] = WEATHER
+os.environ["H3_EPISODE_DIRT"] = DIRT
+os.environ["H3_EPISODE_AYA_LOOK"] = AYA_LOOK
+os.environ["H3_EPISODE_ENEMY_KIND"] = ENEMY_KIND
+os.environ["H3_EPISODE_ENEMY_LOOKS"] = ",".join(
+    f"{cid}={choice}"
+    for cid, choice in (
+        ("miki", LOOK_MIKI),
+        ("rei", LOOK_REI),
+        ("kana", LOOK_KANA),
+        ("shino", LOOK_SHINO),
+        ("gin", LOOK_GIN),
+        ("tsuno", LOOK_TSUNO),
+    )
+)
+_seed = str(SEED or "").strip()
+if _seed:
+    os.environ["H3_EPISODE_SEED"] = _seed
 os.environ["H3_EPISODE_CONNECT"] = CONNECT
 os.environ["H3_EPISODE_END_CONNECT"] = "follow"
 os.environ["H3_EPISODE_COMBAT"] = COMBAT
@@ -135,11 +198,26 @@ os.environ["H3_EPISODE_SPECIES"] = SPECIES
 os.environ["H3_EPISODE_AYA_HAIR"] = str(AYA_HAIR or "").strip()
 os.environ["H3_EPISODE_AYA_COLOR"] = str(AYA_HAIR_COLOR or "").strip()
 os.environ["H3_EPISODE_AYA_FACE"] = str(AYA_FACE or "").strip()
+os.environ["H3_EPISODE_AYA_BUST"] = str(AYA_BUST or "").strip()
+os.environ["H3_EPISODE_AYA_BUTT"] = str(AYA_BUTT or "").strip()
+os.environ["H3_EPISODE_AYA_BUILD"] = str(AYA_BUILD or "").strip()
+os.environ["H3_EPISODE_AYA_HEIGHT"] = str(AYA_HEIGHT or "").strip()
 os.environ["H3_EPISODE_AYA_DIRT"] = str(AYA_DIRT or "").strip()
 os.environ["H3_EPISODE_AYA_SWEAT"] = str(AYA_SWEAT or "").strip()
 os.environ["H3_EPISODE_AYA_CLOTHES"] = str(AYA_CLOTHES or "").strip()
 os.environ["H3_EPISODE_AYA_SHAFT"] = str(AYA_SHAFT or "").strip()
-os.environ["H3_EPISODE_ENEMY_LOOK"] = str(ENEMY_LOOK or "").strip()
+os.environ["H3_EPISODE_ENEMY_LOOK"] = "\n".join(
+    f"{cid}; {text}"
+    for cid, choice, text in (
+        ("miki", LOOK_MIKI, FREE_MIKI),
+        ("rei", LOOK_REI, FREE_REI),
+        ("kana", LOOK_KANA, FREE_KANA),
+        ("shino", LOOK_SHINO, FREE_SHINO),
+        ("gin", LOOK_GIN, FREE_GIN),
+        ("tsuno", LOOK_TSUNO, FREE_TSUNO),
+    )
+    if choice == "その他" and str(text or "").strip()
+)
 os.environ["H3_EPISODE_APPEAR"] = ",".join(
     name for name, on in (("miki", APPEAR_MIKI), ("rei", APPEAR_REI), ("kana", APPEAR_KANA), ("shino", APPEAR_SHINO)) if on
 ) or "none"
@@ -219,7 +297,7 @@ MD = f"""# MiniMax H3 エピソード一発（選んで Run all）
 
 [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)]({colab_url(FILE)})
 
-**コードセルは1本。開いた欄のまま Run all。** 開いたときの選択は病棟出口、前の最終フレームから続ける、スピード、誘う、トイレ触手、灰色は最初から膝曲げ、角は横になって挿入。シーンはみき四つん這い、れい後ろアナル、かな壁立ち、しのM字。迷ったらこれの印は、台本をそのまま出す行に残す。BRANCH はこの枝。開いたままのセルは古い欄を保持する。 Drive `minimax-h3-comfyui/episodes/<slug>/` に
+**コードセルは1本。開いた欄のまま Run all。** 開いたときの選択は病棟出口、前の最終フレームから続ける、スピード、誘う、トイレ触手、灰色は最初から膝曲げ、角は横になって挿入、汚泥の干潟、昼、晴れ、人間。顔はみき中東、れい韓国、かな日本、しの南アジア、ぎん北欧、角東南アジア。シーンはみき四つん這い、れい後ろアナル、かな壁立ち、しのM字。迷ったらこれの印は、台本をそのまま出す行に残す。BRANCH はこの枝。開いたままのセルは古い欄を保持する。 Drive `minimax-h3-comfyui/episodes/<slug>/` に
 `episode.json` とスチールが無ければ GitHub から取ってくる。全ビートを1つのランタイムで描き、
 HUD・タイトル・免責エンドカードを載せて `final/<slug>-<日時>.mp4`（と `latest.mp4`）を書く。動画が描き終わったらランタイムを切る。重みの取得だけと、失敗したときは切らない。
 
@@ -273,7 +351,9 @@ HUD・タイトル・免責エンドカードを載せて `final/<slug>-<日時>
 
 {form_readme("species")}
 
-**容姿** — 空なら今の見た目のまま。あやは髪型、髪色、顔、肌の汚れ、汗、服装、竿。敵は1行に1人。英語だけ。`no` `never` `not` `without` `blood` は書かない。
+**場所** — 病棟なら名詞はそのまま。他は通路・壁・床・トイレの個室・出口だけ替わる。角の個室は部屋を出さず、寝床はその場所の地面。開いたときは汚泥の干潟、昼、晴れ。
+
+**容姿** — あやの各欄と敵の顔。今のままは台本。国を選ぶと髪と顔。角の一つの目と角、しのの長身、竿の長さは国では変えない。その他のときだけ自由記入。英語だけ。`no` `never` `not` `without` `blood` は書かない。
 
 登場チェックを外すと、その感染者のシーンを飛ばす（みき / れい / かな / しの）。**4人とも外すと作る場面が無くなって止まる。最低1人は残す。**
 
@@ -313,6 +393,67 @@ def make_nb() -> dict:
         .replace("__CAMERA_HELP__", form_markdown("camera", "2. カメラ"))
         .replace("__CAMERA_DEFAULT__", json.dumps(form_initial("camera"), ensure_ascii=False))
         .replace("__CAMERA_CHOICES__", json.dumps(ui_choices("camera"), ensure_ascii=False))
+        .replace("__DISTANCE_HELP__", form_markdown("camera_distance", "カメラの距離 — 口と顔射は今の距離のまま"))
+        .replace("__DISTANCE_DEFAULT__", json.dumps(form_initial("camera_distance"), ensure_ascii=False))
+        .replace("__DISTANCE_CHOICES__", json.dumps(ui_choices("camera_distance"), ensure_ascii=False))
+        .replace("__PLACE_HELP__", form_markdown("place", "場所 — 病棟なら名詞はそのまま。他は通路・壁・床・トイレの個室・出口だけ替わる。角の個室は部屋を出さず、寝床はその場所の地面"))
+        .replace("__PLACE_DEFAULT__", json.dumps(form_initial("place"), ensure_ascii=False))
+        .replace("__PLACE_CHOICES__", json.dumps(ui_choices("place"), ensure_ascii=False))
+        .replace("__TIME_HELP__", form_markdown("time", "時間帯 — 光だけ。夜は文を足さない"))
+        .replace("__TIME_DEFAULT__", json.dumps(form_initial("time"), ensure_ascii=False))
+        .replace("__TIME_CHOICES__", json.dumps(ui_choices("time"), ensure_ascii=False))
+        .replace("__WEATHER_HELP__", form_markdown("weather", "天候 — 床の濡れと光だけ"))
+        .replace("__WEATHER_DEFAULT__", json.dumps(form_initial("weather"), ensure_ascii=False))
+        .replace("__WEATHER_CHOICES__", json.dumps(ui_choices("weather"), ensure_ascii=False))
+        .replace("__DIRT_HELP__", form_markdown("dirt", "あやの汚れ — 傷や敵の腐りは残す"))
+        .replace("__DIRT_DEFAULT__", json.dumps(form_initial("dirt"), ensure_ascii=False))
+        .replace("__DIRT_CHOICES__", json.dumps(ui_choices("dirt"), ensure_ascii=False))
+        .replace("__LOOK_HELP__", form_markdown("look", "あやの国の見た目 — 今のままは下の各欄。国を選ぶと髪と顔。各欄を選ぶとその欄が優先"))
+        .replace("__AYA_HAIR_HELP__", form_markdown("aya_hair", "あやの髪型"))
+        .replace("__AYA_HAIR_DEFAULT__", json.dumps(form_initial("aya_hair"), ensure_ascii=False))
+        .replace("__AYA_HAIR_CHOICES__", json.dumps(ui_choices("aya_hair"), ensure_ascii=False))
+        .replace("__AYA_COLOR_HELP__", form_markdown("aya_color", "あやの髪色"))
+        .replace("__AYA_COLOR_DEFAULT__", json.dumps(form_initial("aya_color"), ensure_ascii=False))
+        .replace("__AYA_COLOR_CHOICES__", json.dumps(ui_choices("aya_color"), ensure_ascii=False))
+        .replace("__AYA_FACE_HELP__", form_markdown("aya_face", "あやの顔"))
+        .replace("__AYA_FACE_DEFAULT__", json.dumps(form_initial("aya_face"), ensure_ascii=False))
+        .replace("__AYA_FACE_CHOICES__", json.dumps(ui_choices("aya_face"), ensure_ascii=False))
+        .replace("__AYA_BUST_HELP__", form_markdown("aya_bust", "あやのバスト"))
+        .replace("__AYA_BUST_DEFAULT__", json.dumps(form_initial("aya_bust"), ensure_ascii=False))
+        .replace("__AYA_BUST_CHOICES__", json.dumps(ui_choices("aya_bust"), ensure_ascii=False))
+        .replace("__AYA_BUTT_HELP__", form_markdown("aya_butt", "あやのお尻"))
+        .replace("__AYA_BUTT_DEFAULT__", json.dumps(form_initial("aya_butt"), ensure_ascii=False))
+        .replace("__AYA_BUTT_CHOICES__", json.dumps(ui_choices("aya_butt"), ensure_ascii=False))
+        .replace("__AYA_BUILD_HELP__", form_markdown("aya_build", "あやの身体の細さ"))
+        .replace("__AYA_BUILD_DEFAULT__", json.dumps(form_initial("aya_build"), ensure_ascii=False))
+        .replace("__AYA_BUILD_CHOICES__", json.dumps(ui_choices("aya_build"), ensure_ascii=False))
+        .replace("__AYA_HEIGHT_HELP__", form_markdown("aya_height", "あやの身長 — しのの長身は変えない"))
+        .replace("__AYA_HEIGHT_DEFAULT__", json.dumps(form_initial("aya_height"), ensure_ascii=False))
+        .replace("__AYA_HEIGHT_CHOICES__", json.dumps(ui_choices("aya_height"), ensure_ascii=False))
+        .replace("__AYA_DIRT_HELP__", form_markdown("aya_dirt", "あやの汚れの種類 — 今のままは上の場所の汚れ"))
+        .replace("__AYA_DIRT_DEFAULT__", json.dumps(form_initial("aya_dirt"), ensure_ascii=False))
+        .replace("__AYA_DIRT_CHOICES__", json.dumps(ui_choices("aya_dirt"), ensure_ascii=False))
+        .replace("__AYA_SWEAT_HELP__", form_markdown("aya_sweat", "あやの汗"))
+        .replace("__AYA_SWEAT_DEFAULT__", json.dumps(form_initial("aya_sweat"), ensure_ascii=False))
+        .replace("__AYA_SWEAT_CHOICES__", json.dumps(ui_choices("aya_sweat"), ensure_ascii=False))
+        .replace("__AYA_CLOTHES_HELP__", form_markdown("aya_clothes", "あやの服"))
+        .replace("__AYA_CLOTHES_DEFAULT__", json.dumps(form_initial("aya_clothes"), ensure_ascii=False))
+        .replace("__AYA_CLOTHES_CHOICES__", json.dumps(ui_choices("aya_clothes"), ensure_ascii=False))
+        .replace("__AYA_SHAFT_HELP__", form_markdown("aya_shaft", "あやの竿 — 長さは 24cm のまま"))
+        .replace("__AYA_SHAFT_DEFAULT__", json.dumps(form_initial("aya_shaft"), ensure_ascii=False))
+        .replace("__AYA_SHAFT_CHOICES__", json.dumps(ui_choices("aya_shaft"), ensure_ascii=False))
+        .replace("__LOOK_DEFAULT__", json.dumps(form_initial("look"), ensure_ascii=False))
+        .replace("__LOOK_MIKI_DEFAULT__", json.dumps(form_initial("look_miki"), ensure_ascii=False))
+        .replace("__LOOK_REI_DEFAULT__", json.dumps(form_initial("look_rei"), ensure_ascii=False))
+        .replace("__LOOK_KANA_DEFAULT__", json.dumps(form_initial("look_kana"), ensure_ascii=False))
+        .replace("__LOOK_SHINO_DEFAULT__", json.dumps(form_initial("look_shino"), ensure_ascii=False))
+        .replace("__LOOK_GIN_DEFAULT__", json.dumps(form_initial("look_gin"), ensure_ascii=False))
+        .replace("__LOOK_TSUNO_DEFAULT__", json.dumps(form_initial("look_tsuno"), ensure_ascii=False))
+        .replace("__LOOK_CHOICES__", json.dumps(ui_choices("look"), ensure_ascii=False))
+        .replace("__ENEMY_KIND_HELP__", form_markdown("enemy_kind", "敵の種類 — ゾンビは今の感染姿"))
+        .replace("__ENEMY_KIND_DEFAULT__", json.dumps(form_initial("enemy_kind"), ensure_ascii=False))
+        .replace("__ENEMY_KIND_CHOICES__", json.dumps(ui_choices("enemy_kind"), ensure_ascii=False))
+        .replace("__ENEMY_LOOK_HELP__", form_markdown("look", "敵の見た目 — みき、れい、かな、しの、ぎん、角で別々。その他のときだけ自由記入"))
         .replace("__PRESET_HELP__", form_markdown("preset", "3. 画質"))
         .replace("__PRESET_DEFAULT__", json.dumps(form_initial("preset"), ensure_ascii=False))
         .replace("__PRESET_CHOICES__", json.dumps(ui_choices("preset"), ensure_ascii=False))

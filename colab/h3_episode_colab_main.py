@@ -31,9 +31,10 @@ Env:
   H3_EPISODE_REI_KISS off|on（レイ脱出のキス。顔。フェラではない）
   H3_EPISODE_REI_ORAL skip|her|rei（レイ脱出の口。フェラ / クンニ）
   H3_EPISODE_REI_POSE fours|wall|straddle|supine（レイ脱出の体位は動き）
-  H3_EPISODE_AYA_HAIR / _COLOR / _FACE / _DIRT / _SWEAT / _CLOTHES  blank keeps Aya's authored look. English only.
-  H3_EPISODE_AYA_SHAFT  今のまま | あり | なし
-  H3_EPISODE_ENEMY_LOOK  one enemy per line: miki; hair=...; color=...; face=...; dirt=...; sweat=...; clothes=...; shaft=今のまま
+  H3_EPISODE_PLACE / _TIME / _WEATHER / _DIRT / _CAMERA_DISTANCE  ward night with no weather keeps the authored nouns
+  H3_EPISODE_AYA_LOOK / H3_EPISODE_ENEMY_KIND / H3_EPISODE_ENEMY_LOOKS  country looks and human skin. Blank keeps the authored cast
+  H3_EPISODE_AYA_HAIR / _COLOR / _FACE / _BUST / _BUTT / _BUILD / _HEIGHT / _DIRT / _SWEAT / _CLOTHES / _SHAFT
+  H3_EPISODE_ENEMY_LOOK  free text only when that person's look is その他: miki; hair=...; face=...
   H3_EPISODE_FRESH=1  re-render beats that already have raw/<beat>.mp4
   H3_EPISODE_START    beat id to redraw from. Empty starts at the first beat. The beat list is the current form. An id outside that list stops the run.
   H3_DRY_RUN=1        no ComfyUI; synthetic clips through the real HUD/stitch path
@@ -88,6 +89,15 @@ def main() -> int:
             start_at=(os.environ.get("H3_EPISODE_START") or "").strip() or None,
             preset_override=(os.environ.get("H3_EPISODE_PRESET") or "").strip() or None,
             camera_pack_override=(os.environ.get("H3_EPISODE_CAMERA") or "").strip() or None,
+            camera_distance_override=(os.environ.get("H3_EPISODE_CAMERA_DISTANCE") or "").strip() or None,
+            place_override=(os.environ.get("H3_EPISODE_PLACE") or "").strip() or None,
+            time_override=(os.environ.get("H3_EPISODE_TIME") or "").strip() or None,
+            weather_override=(os.environ.get("H3_EPISODE_WEATHER") or "").strip() or None,
+            dirt_override=(os.environ.get("H3_EPISODE_DIRT") or "").strip() or None,
+            seed_override=(os.environ.get("H3_EPISODE_SEED") or "").strip() or None,
+            aya_look_override=(os.environ.get("H3_EPISODE_AYA_LOOK") or "").strip() or None,
+            enemy_kind_override=(os.environ.get("H3_EPISODE_ENEMY_KIND") or "").strip() or None,
+            enemy_looks_override=(os.environ.get("H3_EPISODE_ENEMY_LOOKS") or "").strip() or None,
             connect_override=(os.environ.get("H3_EPISODE_CONNECT") or "").strip() or None,
             end_connect_override=(os.environ.get("H3_EPISODE_END_CONNECT") or "").strip() or None,
             combat_override=(os.environ.get("H3_EPISODE_COMBAT") or "").strip() or None,
@@ -119,6 +129,10 @@ def main() -> int:
                     "hair": os.environ.get("H3_EPISODE_AYA_HAIR") or "",
                     "color": os.environ.get("H3_EPISODE_AYA_COLOR") or "",
                     "face": os.environ.get("H3_EPISODE_AYA_FACE") or "",
+                    "bust": os.environ.get("H3_EPISODE_AYA_BUST") or "",
+                    "butt": os.environ.get("H3_EPISODE_AYA_BUTT") or "",
+                    "build": os.environ.get("H3_EPISODE_AYA_BUILD") or "",
+                    "height": os.environ.get("H3_EPISODE_AYA_HEIGHT") or "",
                     "dirt": os.environ.get("H3_EPISODE_AYA_DIRT") or "",
                     "sweat": os.environ.get("H3_EPISODE_AYA_SWEAT") or "",
                     "clothes": os.environ.get("H3_EPISODE_AYA_CLOTHES") or "",

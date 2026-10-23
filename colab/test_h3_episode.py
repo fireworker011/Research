@@ -398,8 +398,21 @@ def test_notebook_is_one_cell_and_isolated():
     assert "H3_EPISODE_SPECIES" in src
     assert "H3_EPISODE_APPEAR" in src
     assert "H3_EPISODE_AYA_HAIR" in src
-    assert 'AYA_SHAFT = "今のまま"' in src
-    assert 'ENEMY_LOOK = ""' in src
+    assert 'AYA_SHAFT = "今のまま（迷ったらこれ）"' in src
+    assert 'PLACE = "汚泥の干潟"' in src
+    assert 'TIME_OF_DAY = "昼"' in src
+    assert 'WEATHER = "晴れ"' in src
+    assert 'ENEMY_KIND = "人間"' in src
+    assert 'LOOK_MIKI = "中東"' in src
+    assert 'LOOK_REI = "韓国"' in src
+    assert 'LOOK_KANA = "日本"' in src
+    assert 'LOOK_SHINO = "南アジア"' in src
+    assert 'LOOK_GIN = "北欧"' in src
+    assert 'LOOK_TSUNO = "東南アジア"' in src
+    assert 'AYA_LOOK = "今のまま（迷ったらこれ）"' in src
+    assert "H3_EPISODE_PLACE" in src
+    assert "H3_EPISODE_ENEMY_LOOKS" in src
+    assert 'FREE_MIKI = ""' in src
     assert "H3_EPISODE_SCENES" in src
     assert 'SCENE_MIKI = "□誘う・四つん這い股広げ"' in src
     assert 'SCENE_REI = "□誘う・後ろアナル"' in src
@@ -3961,7 +3974,23 @@ def test_form_opens_on_the_ward_exit_invite_run():
     assert form_initial("scene_rei") == "□誘う・後ろアナル"
     assert form_initial("scene_kana") == "□誘う・壁立ちバック"
     assert form_initial("scene_shino") == "□誘う・M字開脚仰向け"
+    assert form_initial("place") == "汚泥の干潟"
+    assert form_initial("time") == "昼"
+    assert form_initial("weather") == "晴れ"
+    assert form_initial("dirt") == ui_default("dirt")
+    assert form_initial("camera_distance") == ui_default("camera_distance")
+    assert form_initial("enemy_kind") == "人間"
+    assert form_initial("look") == ui_default("look")
+    assert form_initial("look_miki") == "中東"
+    assert form_initial("look_rei") == "韓国"
+    assert form_initial("look_kana") == "日本"
+    assert form_initial("look_shino") == "南アジア"
+    assert form_initial("look_gin") == "北欧"
+    assert form_initial("look_tsuno") == "東南アジア"
+    assert form_initial("aya_hair") == "今のまま（迷ったらこれ）"
     assert ui_default("episode") == "霞東フロア あさ（迷ったらこれ）"
+    assert ui_default("place") == "病棟（迷ったらこれ）"
+    assert ui_default("enemy_kind").startswith("ゾンビ")
     assert ui_default("story") == "○受け入れる（生存・完了・迷ったらこれ）"
     assert ui_default("toilet").startswith("トイレに行かない")
     assert ui_default("gin").startswith("灰色・出ない")
@@ -6633,4 +6662,57 @@ def test_hospital_jacko_rear_and_dildo_leave_the_other_routes():
         "04-tsuno-jo-kiss",
         "04-tsuno-jo-walk",
     ]
+
+
+def test_place_and_look_follow_the_form_and_the_ward_stays():
+    raw = load_episode(HOSPITAL_DIR / "episode.json")
+    plain = prepare_episode(raw, story_override="誘う")
+    named = prepare_episode(
+        raw,
+        story_override="誘う",
+        place_override="病棟（迷ったらこれ）",
+        time_override="夜（迷ったらこれ）",
+        weather_override="天候なし（迷ったらこれ）",
+        enemy_kind_override="ゾンビ（迷ったらこれ）",
+    )
+    cover = next(b for b in plain["beats"] if b["id"] == "01-cover")
+    assert build_beat_prompt(plain, cover) == build_beat_prompt(
+        named, next(b for b in named["beats"] if b["id"] == "01-cover")
+    )
+    horn = prepare_episode(raw, tsuno_override="角・病室で横になって挿入")
+    assert "soil bed" in build_beat_prompt(
+        horn, next(b for b in horn["beats"] if b["id"] == "04-tsuno-lie")
+    )
+    mud = prepare_episode(
+        raw,
+        story_override="□誘う（淫欲・失敗）",
+        tsuno_override="角・病室で横になって挿入",
+        place_override="汚泥の干潟",
+        time_override="昼",
+        weather_override="晴れ",
+        enemy_kind_override="人間",
+        enemy_looks_override="miki=中東,rei=韓国,kana=日本,shino=南アジア,gin=北欧,tsuno=東南アジア",
+    )
+    assert validate_episode(mud, root=HOSPITAL_DIR) == []
+    mud_cover = build_beat_prompt(mud, next(b for b in mud["beats"] if b["id"] == "01-cover"))
+    assert "thick sludge" in mud_cover
+    assert "linoleum" not in mud_cover
+    assert "at night" not in mud_cover
+    assert "Daylight" in mud_cover or "day" in mud_cover.lower()
+    lie = build_beat_prompt(mud, next(b for b in mud["beats"] if b["id"] == "04-tsuno-lie"))
+    assert "sickroom" not in lie.lower()
+    assert "soil bed" not in lie
+    assert "thick sludge" in lie
+    assert "one large single eye" in lie
+    assert "Two small dark horns" in lie or "two small dark horns" in lie
+    assert "35cm" in mud["cast"]["shino"]["lock"]
+    assert "24cm" in mud["cast"]["rei"]["lock"]
+    assert "vivid purple" not in mud_cover
+    assert "hollow empty" not in mud_cover
+    assert "olive skin" in mud["cast"]["miki"]["lock"]
+    assert "dark monolid eyes" in mud["cast"]["rei"]["lock"]
+    assert "long straight glossy black hair" in mud["cast"]["rei"]["lock"]
+    bigger = prepare_episode(raw, appearance_override={"aya": {"bust": "大きめ"}})
+    assert "C-cup breasts" not in bigger["cast"]["aya"]["lock"]
+    assert "large full breasts" in bigger["cast"]["aya"]["lock"]
 

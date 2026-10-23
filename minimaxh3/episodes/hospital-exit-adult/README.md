@@ -17,7 +17,7 @@
 ## ワンクリック
 
 1. このブランチが GitHub にあること。inbox には置かない。
-2. Colab は開いたとき話が「病棟出口」（スラッグ `hospital-exit-adult`）、BRANCH は `cursor/h3-lora-cards-d736`。霞東本体に戻すな。
+2. Colab は開いたとき話が「病棟出口」（スラッグ `hospital-exit-adult`）、場所は汚泥の干潟、昼、晴れ、敵は人間、顔はみき中東、れい韓国、かな日本、しの南アジア、ぎん北欧、角東南アジア。BRANCH は `cursor/h3-lora-cards-d736`。霞東本体に戻すな。
 3. 5 番で全体の構成。シーンごとで相手ごとに誘う・受け入れる・回避を上書き。迷ったら全体に従う。6・7・登場は病棟の追加。霞東では無視される。
 4. Drive は `episodes/hospital-exit-adult/` と `models/erotic/` だけ。スチールは上書きしない。
 

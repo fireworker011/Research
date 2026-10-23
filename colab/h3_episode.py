@@ -140,7 +140,25 @@ from h3_episode_packs import (
     TSUNO_MODES,
     TSUNO_OVERLAY_KEYS,
     canonical_camera,
+    canonical_camera_distance,
+    canonical_dirt,
+    canonical_enemy_kind,
+    canonical_look,
+    canonical_place,
+    canonical_time,
+    canonical_weather,
     canonical_dog,
+    AYA_SWEAT_PHRASES,
+    CAMERA_DISTANCE_MODES,
+    DIRT_MODES,
+    ENEMY_KIND_MODES,
+    LOOK_MODES,
+    PLACE_MODES,
+    TIME_MODES,
+    WEATHER_MODES,
+    build_limbs_for,
+    dirt_phrase_for,
+    resolve_aya_part,
     canonical_combat,
     canonical_closeup,
     canonical_messyblow,
@@ -3773,7 +3791,7 @@ def apply_default_loco(ep: dict[str, Any]) -> dict[str, Any]:
 
 
 # Blank appearance fields keep the authored look. A set field replaces that person's clause.
-_APPEARANCE_KEYS = ("hair", "color", "face", "dirt", "sweat", "clothes", "shaft")
+_APPEARANCE_KEYS = ("hair", "color", "face", "bust", "butt", "build", "height", "dirt", "sweat", "clothes", "shaft")
 _SHAFT_KEEP = frozenset({"", "今のまま", "default"})
 _SHAFT_ON_WORDS = frozenset({"あり", "on"})
 _SHAFT_OFF_WORDS = frozenset({"なし", "off"})
@@ -3800,6 +3818,11 @@ _APPEARANCE: dict[str, dict[str, Any]] = {
             "damp dirty bangs stuck to her forehead",
         ),
         "clothes": ("fully nude, no clothes, no gown", "fully nude"),
+        "bust": "C-cup breasts",
+        "build": "slender thin body",
+        "limbs": "narrow waist, thin arms",
+        "butt": "",
+        "height": "",
         "shaft": None,
     },
     "miki": {
@@ -3910,13 +3933,16 @@ def _appearance_text(value: Any, where: str) -> str:
 
 
 def _shaft_mode(value: Any) -> str:
-    raw = str(value or "").strip().lower()
-    if raw in _SHAFT_KEEP:
+    mapped = resolve_aya_part("shaft", str(value or ""))
+    raw = mapped.strip().lower()
+    if raw in _SHAFT_KEEP or mapped == "":
         return ""
-    if raw in _SHAFT_ON_WORDS:
+    if raw in _SHAFT_ON_WORDS or mapped == "on":
         return "on"
-    if raw in _SHAFT_OFF_WORDS:
+    if raw in _SHAFT_OFF_WORDS or mapped == "off":
         return "off"
+    if mapped.startswith("clear futanari, erect 24cm"):
+        return mapped
     raise EpisodeError("appearance shaft must be 今のまま, あり, or なし")
 
 
@@ -3983,7 +4009,10 @@ def parse_appearance(raw: str | dict[str, Any] | None) -> dict[str, dict[str, st
             if mode:
                 aya["shaft"] = mode
         else:
-            cleaned = _appearance_text(aya_raw.get(key) if isinstance(aya_raw, dict) else "", f"aya.{key}")
+            cleaned = _appearance_text(
+                resolve_aya_part(key, aya_raw.get(key) if isinstance(aya_raw, dict) else ""),
+                f"aya.{key}",
+            )
             if cleaned:
                 aya[key] = cleaned
     if aya:
@@ -4017,6 +4046,22 @@ def _paint_color(token: str, color: str) -> str:
     if last.lower() in color.lower():
         return color
     return f"{color} {last}"
+
+
+_HAIR_COLOR_RE = re.compile(
+    r"(?:glossy\s+|messy\s+)?"
+    r"(?:gray-white|dark|black|brown|blonde|silver|red|blue|pink|white|green)"
+    r"(?=\s+(?:wavy\s+|curly\s+)?hair\b)"
+)
+
+
+def _recolor_hair(phrase: str, color: str) -> str:
+    """Paint a chosen color onto the first hair-color word. A phrase with no color word stays as written."""
+    painted = _paint_color("dark hair", color)
+    color_word = painted[: -len(" hair")] if painted.endswith(" hair") else painted
+    if _HAIR_COLOR_RE.search(phrase):
+        return _HAIR_COLOR_RE.sub(color_word, phrase, count=1)
+    return phrase
 
 
 def _phrase_unique(old: str, owner: str) -> bool:
@@ -4121,6 +4166,363 @@ def _append_look(ep: dict[str, Any], owner: str, clause: str) -> None:
             beat["action"] = (action.rstrip() + " " + line).strip()
 
 
+
+def _phrase_unique(old: str, owner: str) -> bool:
+    if not old:
+        return False
+    for cid, spec in _APPEARANCE.items():
+        if cid == owner:
+            continue
+        blob = " ".join(str(spec.get(key) or "") for key in ("hair", "face", "shaft"))
+        for key in ("dirt", "sweat", "clothes"):
+            values = spec.get(key) or ()
+            if isinstance(values, str):
+                blob += " " + values
+            else:
+                blob += " " + " ".join(values)
+        if old in blob:
+            return False
+    return True
+
+
+def _replace_tree(node: Any, old: str, new: str) -> None:
+    if isinstance(node, dict):
+        for key, value in node.items():
+            if key in ("id", "appearance"):
+                continue
+            if isinstance(value, str):
+                if old in value:
+                    node[key] = value.replace(old, new)
+            else:
+                _replace_tree(value, old, new)
+    elif isinstance(node, list):
+        for index, value in enumerate(node):
+            if isinstance(value, str):
+                if old in value:
+                    node[index] = value.replace(old, new)
+            else:
+                _replace_tree(value, old, new)
+
+
+def _map_named_sentences(text: str, name: str, old: str, new: str) -> str:
+    if not old or old not in text:
+        return text
+    parts = re.split(r"(?<=\.)\s+", text)
+    out: list[str] = []
+    for part in parts:
+        if old in part and name in part and (name == "Gin" or "Gin" not in part):
+            out.append(part.replace(old, new))
+        else:
+            out.append(part)
+    return " ".join(out)
+
+
+def _replace_phrase(ep: dict[str, Any], owner: str, old: str, new: str) -> None:
+    if not old or old == new:
+        return
+    spec = _APPEARANCE[owner]
+    name = str(spec["name"])
+    if _phrase_unique(old, owner):
+        _replace_tree(ep, old, new)
+        return
+    row = (ep.get("cast") or {}).get(owner) or {}
+    if isinstance(row.get("lock"), str):
+        row["lock"] = row["lock"].replace(old, new)
+    looks = row.get("looks") if isinstance(row.get("looks"), dict) else {}
+    for key, value in list(looks.items()):
+        if isinstance(value, str):
+            looks[key] = value.replace(old, new)
+    for beat in ep.get("beats") or []:
+        if not isinstance(beat, dict):
+            continue
+        locks = beat.get("cast_lock")
+        if isinstance(locks, dict) and isinstance(locks.get(owner), str):
+            locks[owner] = locks[owner].replace(old, new)
+        for field in ("action", "camera", "place", "environment"):
+            value = beat.get(field)
+            if isinstance(value, str) and old in value:
+                beat[field] = _map_named_sentences(value, name, old, new)
+
+
+def _append_look(ep: dict[str, Any], owner: str, clause: str) -> None:
+    row = (ep.get("cast") or {}).get(owner) or {}
+    lock = str(row.get("lock") or "")
+    if clause not in lock:
+        row["lock"] = (lock.rstrip(" .") + ", " + clause).strip()
+    looks = row.get("looks") if isinstance(row.get("looks"), dict) else {}
+    for key, value in list(looks.items()):
+        if isinstance(value, str) and clause not in value:
+            looks[key] = value.rstrip(" .") + ", " + clause
+    name = str(_APPEARANCE[owner]["name"])
+    line = f"{name}'s look for this shot: {clause}."
+    for beat in ep.get("beats") or []:
+        if not isinstance(beat, dict):
+            continue
+        cast = {str(c) for c in (beat.get("cast") or [])}
+        if owner not in cast:
+            continue
+        locks = beat.get("cast_lock")
+        if isinstance(locks, dict) and isinstance(locks.get(owner), str) and clause not in locks[owner]:
+            locks[owner] = locks[owner].rstrip(" .") + ", " + clause
+        action = str(beat.get("action") or "")
+        if line not in action:
+            beat["action"] = (action.rstrip() + " " + line).strip()
+
+
+_ENEMY_LOOK_IDS = ("miki", "rei", "kana", "shino", "gin", "tsuno")
+_HUMAN_SKIN_SWAPS = (
+    ("vivid purple skin that stays vivid purple from face to hips to groin to the 24cm shaft",
+     "natural skin that stays one tone from face to hips to groin to the 24cm shaft"),
+    ("vivid purple skin that stays vivid purple from face to hips to groin to the 20cm shaft",
+     "natural skin that stays one tone from face to hips to groin to the 20cm shaft"),
+    ("very pale gray-white skin that stays pale gray-white from face to hips to groin to the 35cm shaft",
+     "natural skin that stays one tone from face to hips to groin to the 35cm shaft"),
+    ("ashen gray skin that stays ashen gray", "natural skin that stays one tone"),
+    ("the same vivid purple as the hips and torso not pale-tan flesh", "the same tone as the hips"),
+    ("the same vivid purple as the hips not pale-tan flesh", "the same tone as the hips"),
+    ("open red lacerations and torn gashes across the face, neck, breasts, belly, back, arms, hands, thighs, knees, feet, hips, groin and the 24cm shaft",
+     "intact skin across the face, neck, breasts, belly, back, arms, hands, thighs, knees, feet, hips, groin and the 24cm shaft"),
+    ("the LEFT half of the face including the left eye and left cheek is obviously festering and rotting, wet peeling burned skin with raw red flesh showing, and the LEFT half of the body including the left breast, left arm and left hip is the same obvious wet rotting raw red flesh",
+     "both halves of the face and body stay even"),
+    ("hollow empty dark eye sockets with no eyeballs, visible fangs", "clear adult eyes, a soft mouth"),
+    ("hollow empty dark eye sockets with no eyeballs", "clear adult eyes"),
+    ("sunken hollow dark eye sockets", "clear adult eyes"),
+    ("vacant wide-open tired eyes", "clear adult eyes"),
+    ("vacant wide staring monster eyes", "clear adult eyes"),
+    ("lips pulled back so the gums show", "soft lips"),
+    ("patches of skin peeling off the cheeks, shoulders and thighs with red muscle fiber showing in the peeled patches",
+     "even skin on the cheeks, shoulders and thighs"),
+    ("red muscle fiber showing in the peeled patches", "even skin"),
+    ("wet peeling rotting patches", "smooth skin"),
+    ("long clawed fingers", "slim hands"),
+    ("A still-beautiful adult woman's face whose LEFT half is cracked and decaying: deep dry fissures across the left cheek and left brow, the right half still pretty",
+     "A still-beautiful adult woman's face, both halves even and pretty"),
+    ("thick extra-viscous dark-brown filthy sludge covering her from hair to the 24cm shaft to her feet",
+     "clean skin from hair to the 24cm shaft to her feet"),
+    ("the right half of the face and body stays vivid purple, the left-half rot stays readable through the sludge, open wounds across the torso, hips, groin and the 24cm shaft",
+     "the face and body stay one even tone"),
+    ("visible sweat beads on the intact purple skin between the open gashes", "visible sweat beads on the skin"),
+    ("clinging to the intact purple skin and the hair between the open gashes", "clinging to the skin and the hair"),
+    ("on the intact purple skin between the open gashes", "on the skin"),
+    ("grimy dirty extra-viscous filthy slime covering her whole body including the 20cm shaft", "clean skin"),
+    ("the 35cm shaft is the same pale gray-white as the hips and torso not pale-tan flesh and not purple, gray-white shaft and gray-white glans",
+     "the 35cm shaft is the same tone as the hips, a flushed glans"),
+    ("ashen gray shaft that stays ashen gray not pale-tan flesh, smooth skin and grimy dirty stains on the hips, groin and the 24cm shaft",
+     "a shaft the same tone as the hips"),
+    ("flushed dusky-purple glans", "flushed glans"),
+    ("vivid purple skin that stays vivid purple on the hips, groin and 24cm shaft",
+     "natural skin that stays one tone on the hips, groin and 24cm shaft"),
+    ("vivid purple skin that stays vivid purple on the hips, groin and 20cm shaft",
+     "natural skin that stays one tone on the hips, groin and 20cm shaft"),
+    ("vivid purple on the hips, groin and 24cm shaft", "natural skin on the hips, groin and 24cm shaft"),
+    ("vivid purple on the hips, groin and 20cm shaft", "natural skin on the hips, groin and 20cm shaft"),
+    ("the same pale gray-white as the hips not pale-tan flesh and not purple, gray-white shaft and gray-white glans",
+     "the same tone as the hips, a flushed glans"),
+    ("hollow empty dark eye sockets, visible fangs", "clear adult eyes, a soft mouth"),
+    ("hollow empty dark eye sockets", "clear adult eyes"),
+    ("thick extra-viscous dark-brown filthy sludge", "clean skin"),
+    ("vivid purple,", "natural skin,"),
+    ("purple skin,", "natural skin,"),
+    ("the LEFT half of her face and body stays readable as wet rotting raw red flesh on the left eye, left cheek, left breast, left arm and left hip",
+     "her face and body stay one even tone"),
+    ("grimy dirty extra-viscous filthy slime covering her", "clean skin"),
+    ("grimy dirty extra-viscous filthy slime", "clean skin"),
+    ("Thick extra-viscous dark-brown filthy sludge on Rei's shaft smears inward with each forward thrust",
+     "Rei's shaft stays the same tone as the hips"),
+    ("Thick extra-viscous dark-brown filthy sludge on Rei's shaft smears inward",
+     "Rei's shaft stays the same tone as the hips"),
+    ("thick extra-viscous dark-brown filthy sludge on Rei's shaft smears inward",
+     "Rei's shaft stays the same tone as the hips"),
+    ("Thick extra-viscous dark-brown filthy sludge coats the shaft",
+     "The shaft stays the same tone as the hips"),
+    ("Grimy dirty extra-viscous filthy slime stays on Kana's skin", "Kana's skin stays clean"),
+    ("The LEFT half of Rei's face and body stays wet rotting raw red flesh",
+     "Rei's face and body stay one even tone"),
+    ("the same vivid purple as the hips", "the same tone as the hips"),
+    ("long decaying clawed demon feet, nails black and split, skin peeling on the fingers and toes", "human feet"),
+    ("bare decaying clawed feet", "bare feet"),
+    ("sharp claws on those four fingers", "plain nails on those four fingers"),
+    ("red muscle fiber showing in those peeled patches", "even skin"),
+    ("the intact ashen skin", "the intact skin"),
+    ("grimy dirty stains and smooth skin", "smooth skin"),
+    ("open red lacerations on the vivid purple face", "a natural adult face"),
+    ("open red lacerations across the body", "intact skin across the body"),
+    ("at a stiff dragging shambling gait: knees almost straight, each foot SCRAPES the linoleum then lurches forward, "
+     "arms hang limp a little ahead of the hips, torso leans forward, the short brown bob SWAYS and bounces with every lurch",
+     "at a relaxed walking pace, the short brown bob swaying with each step"),
+    ("Miki shambling RIGHT", "Miki walking RIGHT"),
+    ("Miki a stiff dragging shambling gait", "Miki a relaxed walk"),
+    ("an eerie smile", "a soft smile"),
+    ("gums exposed", "soft lips"),
+    ("peeling skin with red muscle fiber showing in the peeled patches", "even skin"),
+    ("peeling skin with red muscle fiber showing", "even skin"),
+    ("peeling skin with even skin", "even skin"),
+    ("Nude ashen-gray Gin", "Nude Gin"),
+    ("Ashen gray skin stays ashen gray", "Gin's skin stays one even tone"),
+    ("The erect ashen-gray 24cm stays ashen gray", "The erect 24cm stays the same tone as the hips"),
+    ("erect ashen-gray 24cm shaft that stays ashen gray not pale-tan flesh", "erect 24cm shaft the same tone as the hips"),
+    ("erect ashen-gray 24cm", "erect 24cm"),
+    ("ashen gray shaft", "shaft"),
+    ("Ashen gray skin that stays ashen gray", "Natural skin that stays one tone"),
+    ("ashen-gray", ""),
+    ("ashen gray", "natural"),
+    # Beat lines paraphrase the locks, so the lock sentences above miss them.
+    ("dry scratch marks on the skin including the hips, groin and the 20cm shaft",
+     "intact skin on the hips, groin and the 20cm shaft"),
+    ("dry scratch marks on the skin including the hips and the erect 20cm shaft",
+     "intact skin on the hips and the erect 20cm shaft"),
+    ("Grimy dirty extra-viscous filthy slime on Kana's skin smears at the join.",
+     "Kana's skin stays clean at the join."),
+    ("a single red tear line under that eye", "clear skin under that eye"),
+    ("Each hand has exactly four long fingers and no fifth finger, plain nails on those four fingers",
+     "Each hand has five fingers and plain nails"),
+    ("each hand exactly four long fingers with sharp claws", "each hand has five fingers and plain nails"),
+    ("Each hand has exactly four long fingers and no fifth finger", "Each hand has five fingers"),
+    ("Each hand has exactly four long fingers", "Each hand has five fingers"),
+    ("each hand exactly four long fingers", "each hand has five fingers"),
+    ("plain nails on those four fingers", "plain nails"),
+    ("four long fingers", "five fingers"),
+    ("no fifth finger", "five fingers"),
+    ("sharp claws", "plain nails"),
+    ("a long forked reptile tongue that can reach out and lick", "a human tongue"),
+    ("Shino's long forked reptile tongue", "Shino's tongue"),
+    ("a long forked reptile tongue", "a human tongue"),
+    ("Shino's long reptile tongue", "Shino's tongue"),
+    ("The long reptile tongue", "The tongue"),
+    ("The forked tongue", "The tongue"),
+    ("long forked reptile tongue", "human tongue"),
+    ("forked reptile tongue", "human tongue"),
+    ("reptile tongue", "tongue"),
+    ("forked tongue", "tongue"),
+    ("a long wet gray tongue hanging out past the chin", "a human tongue"),
+    ("a long wet gray tongue hanging out", "a human tongue hanging out"),
+    ("the long wet gray tongue", "the long tongue"),
+    ("long arms with hands hanging past mid-thigh, long fingers",
+     "two arms of ordinary length and two ordinary hands"),
+    ("long arms with hands past mid-thigh", "two arms of ordinary length"),
+    ("hands hanging past mid-thigh", "hands at ordinary length"),
+    ("hands past mid-thigh", "hands at ordinary length"),
+    ("long arms, long fingers", "two ordinary arms and ordinary hands"),
+    ("Long arms WRAP", "Both arms WRAP"),
+    ("long arms pull", "two arms pull"),
+    ("long arms", "two arms"),
+    ("Long arms", "Both arms"),
+    ("Long fingers KEEP PULLING", "Both hands KEEP PULLING"),
+    ("Long fingers PULL", "Both hands PULL"),
+    ("Long fingers stay", "Both hands stay"),
+    ("long fingers stay", "both hands stay"),
+    ("long fingers", "ordinary hands"),
+    ("Long fingers", "Both hands"),
+    ("very pale gray-white skin", "natural skin"),
+    ("the same pale gray-white as the hips not pale-tan flesh", "the same tone as the hips"),
+    ("the same pale gray-white as the hips", "the same tone as the hips"),
+    ("stays pale gray-white", "stays the same tone as the hips"),
+    ("pale gray-white", "the same tone as the hips"),
+    ("Gray-white shaft, gray-white glans, the same color as her hips.",
+     "A shaft the same tone as the hips, a flushed glans."),
+    ("flushed dusky-gray glans", "flushed glans"),
+    ("flushed dusky glans", "flushed glans"),
+    ("gray-white glans", "flushed glans"),
+    ("Gray-white glans", "flushed glans"),
+    ("gray-white shaft", "shaft"),
+    ("Gray-white shaft", "shaft"),
+    ("vacant monster eyes", "clear adult eyes"),
+    ("Vacant monster eyes", "Clear adult eyes"),
+    ("Miki keeps vacant eyes", "Miki keeps clear adult eyes"),
+    ("Rei stays seated, uninjured, vacant,", "Rei stays seated, uninjured, clear adult eyes,"),
+    ("Hollow empty dark eye sockets stay on the face.", "Clear adult eyes stay on the face."),
+    ("Open red lacerations and torn gashes stay across the face, neck, breasts, belly, back, arms, hands, thighs, knees, feet, hips, groin and the 24cm shaft.",
+     "Intact skin stays across the face, neck, breasts, belly, back, arms, hands, thighs, knees, feet, hips, groin and the 24cm shaft."),
+)
+
+
+def _parse_enemy_looks(raw: dict[str, str] | str) -> dict[str, str]:
+    """Per-enemy look menu. A string is miki=韓国,rei=今のまま."""
+    pairs: dict[str, str] = {}
+    if isinstance(raw, dict):
+        items = raw.items()
+    else:
+        items = []
+        for part in str(raw).replace("\n", ",").split(","):
+            if not part.strip():
+                continue
+            if "=" not in part:
+                raise EpisodeError(f"enemy look needs id=choice, got {part}")
+            cid, choice = part.split("=", 1)
+            items.append((cid, choice))
+    out: dict[str, str] = {}
+    for cid, choice in items:
+        name = str(cid or "").strip().lower()
+        if name not in _ENEMY_LOOK_IDS:
+            raise EpisodeError(f"unknown enemy look id {cid}")
+        key = canonical_look(str(choice or ""))
+        if not key:
+            raise EpisodeError(f"unknown look for {name}: {choice}")
+        out[name] = key
+    return out
+
+
+def _wire_look_choices(render: dict[str, Any]) -> None:
+    """A country look fills hair and face only when those dropdowns are 今のまま. A set dropdown wins."""
+    app = dict(render.get("appearance") or {})
+    if render.get("aya_look"):
+        aya_look = canonical_look(str(render.get("aya_look") or "")) or "keep"
+        aya = dict(app.get("aya") or {})
+        if aya_look not in ("keep", "other"):
+            spec = LOOK_MODES[aya_look]
+            if not aya.get("hair") and spec.get("hair"):
+                aya["hair"] = spec["hair"]
+            if not aya.get("face") and spec.get("face"):
+                aya["face"] = spec["face"]
+        if aya:
+            app["aya"] = aya
+        else:
+            app.pop("aya", None)
+    per_enemy = render.get("enemy_looks") if isinstance(render.get("enemy_looks"), dict) else {}
+    if per_enemy or render.get("enemy_look"):
+        shared = canonical_look(str(render.get("enemy_look") or "")) if render.get("enemy_look") else ""
+        for cid in _ENEMY_LOOK_IDS:
+            raw_choice = per_enemy.get(cid, shared)
+            if raw_choice in ("", None):
+                continue
+            choice = canonical_look(str(raw_choice)) or "keep"
+            if choice == "keep":
+                app.pop(cid, None)
+            elif choice == "other":
+                if not app.get(cid):
+                    app.pop(cid, None)
+            else:
+                spec = LOOK_MODES[choice]
+                row = dict(app.get(cid) or {})
+                if spec.get("hair"):
+                    row["hair"] = spec["hair"]
+                if cid != "tsuno" and spec.get("face"):
+                    row["face"] = spec["face"]
+                if row:
+                    app[cid] = row
+    if app:
+        render["appearance"] = app
+    elif "appearance" in render:
+        render.pop("appearance", None)
+
+
+def _swap_human_skin(value: Any) -> Any:
+    if isinstance(value, str):
+        out = value
+        for old, new in _HUMAN_SKIN_SWAPS:
+            out = out.replace(old, new)
+        return out
+    if isinstance(value, list):
+        return [_swap_human_skin(item) for item in value]
+    if isinstance(value, dict):
+        return {key: _swap_human_skin(item) for key, item in value.items()}
+    return value
+
+
+def apply_human_skin(ep: dict[str, Any]) -> dict[str, Any]:
+    """Drop infection marks after the act is chosen. Shaft length, height, horns, and the single eye stay."""
+    return _swap_human_skin(ep)
+
 def apply_appearance(ep: dict[str, Any]) -> dict[str, Any]:
     """Rewrite look clauses for set fields. No set field leaves every string as authored."""
     specs = (ep.get("render") or {}).get("appearance") or {}
@@ -4135,10 +4537,13 @@ def apply_appearance(ep: dict[str, Any]) -> dict[str, Any]:
         spec = _APPEARANCE[cid]
         hair = str(spec.get("hair") or "")
         if fields.get("hair"):
+            hair_new = str(fields["hair"])
+            if fields.get("color"):
+                hair_new = _recolor_hair(hair_new, str(fields["color"]))
             if hair:
-                _replace_phrase(out, cid, hair, fields["hair"])
+                _replace_phrase(out, cid, hair, hair_new)
             else:
-                _append_look(out, cid, fields["hair"])
+                _append_look(out, cid, hair_new)
         elif fields.get("color"):
             if not hair or not spec.get("color"):
                 _append_look(out, cid, f"hair color {fields['color']}")
@@ -4151,18 +4556,39 @@ def apply_appearance(ep: dict[str, Any]) -> dict[str, Any]:
                 _replace_phrase(out, cid, face, fields["face"])
             else:
                 _append_look(out, cid, fields["face"])
+        for key in ("bust", "butt", "build", "height"):
+            if not fields.get(key):
+                continue
+            old = str(spec.get(key) or "")
+            new = str(fields[key])
+            if old:
+                _replace_phrase(out, cid, old, new)
+            else:
+                _append_look(out, cid, new)
+            if key == "build":
+                limbs = build_limbs_for(new)
+                old_limbs = str(spec.get("limbs") or "")
+                if limbs and old_limbs:
+                    _replace_phrase(out, cid, old_limbs, limbs)
         if fields.get("sweat"):
             sweat_phrases = spec.get("sweat") or ()
+            replacement = str(fields["sweat"])
+            whole = replacement in AYA_SWEAT_PHRASES
             if sweat_phrases:
                 for phrase in sweat_phrases:
-                    if phrase.startswith("visible sweat beads and thick"):
-                        _replace_phrase(out, cid, phrase, f"{fields['sweat']} and thick extra-viscous sticky grimy brown hospital dirt")
+                    if whole and phrase.startswith("visible sweat beads and thick"):
+                        # The dirt clause continues in the same sentence. Swap only the sweat lead-in.
+                        _replace_phrase(out, cid, "visible sweat beads and ", f"{replacement}, ")
+                    elif whole:
+                        _replace_phrase(out, cid, phrase, replacement)
+                    elif phrase.startswith("visible sweat beads and thick"):
+                        _replace_phrase(out, cid, phrase, f"{replacement} and thick extra-viscous sticky grimy brown hospital dirt")
                     elif phrase.startswith("damp dirty bangs"):
-                        _replace_phrase(out, cid, phrase, fields["sweat"])
+                        _replace_phrase(out, cid, phrase, replacement)
                     else:
-                        _replace_phrase(out, cid, phrase, fields["sweat"])
+                        _replace_phrase(out, cid, phrase, replacement)
             else:
-                _append_look(out, cid, fields["sweat"])
+                _append_look(out, cid, replacement)
         if fields.get("dirt"):
             for phrase in spec.get("dirt") or ():
                 _replace_phrase(out, cid, phrase, fields["dirt"])
@@ -4197,34 +4623,35 @@ def apply_appearance(ep: dict[str, Any]) -> dict[str, Any]:
                         "Both wear the clothes written in the look",
                     )
         shaft = fields.get("shaft") or ""
-        if shaft == "on":
+        grown = _AYA_SHAFT if shaft == "on" else shaft if shaft not in ("", "off") else ""
+        if grown:
             if cid == "aya":
                 _replace_phrase(
                     out,
                     "aya",
                     "female body, tired determined expression",
-                    f"female body, {_AYA_SHAFT}, tired determined expression",
+                    f"female body, {grown}, tired determined expression",
                 )
                 row = (out.get("cast") or {}).get("aya") or {}
-                if isinstance(row.get("lock"), str) and _AYA_SHAFT not in row["lock"] and "female body" in row["lock"]:
-                    row["lock"] = row["lock"].replace("female body", f"female body, {_AYA_SHAFT}", 1)
+                if isinstance(row.get("lock"), str) and grown not in row["lock"] and "female body" in row["lock"]:
+                    row["lock"] = row["lock"].replace("female body", f"female body, {grown}", 1)
                 for beat in out.get("beats") or []:
                     if not isinstance(beat, dict):
                         continue
                     action = str(beat.get("action") or "")
                     # Walks that remove the grown shaft stay removed. The look must not put it back.
                     if "No penis" in action or "The grown shaft is gone" in action:
-                        beat["action"] = action.replace(f", {_AYA_SHAFT}", "")
+                        beat["action"] = action.replace(f", {grown}", "")
                         locks = beat.get("cast_lock") if isinstance(beat.get("cast_lock"), dict) else {}
                         base = str(locks.get("aya") or (out.get("cast") or {}).get("aya", {}).get("lock") or "")
-                        if _AYA_SHAFT in base:
+                        if grown in base:
                             locks = dict(locks)
-                            locks["aya"] = base.replace(f", {_AYA_SHAFT}", "")
+                            locks["aya"] = base.replace(f", {grown}", "")
                             beat["cast_lock"] = locks
                         continue
                     locks = beat.get("cast_lock")
-                    if isinstance(locks, dict) and isinstance(locks.get("aya"), str) and _AYA_SHAFT not in locks["aya"] and "female body" in locks["aya"]:
-                        locks["aya"] = locks["aya"].replace("female body", f"female body, {_AYA_SHAFT}", 1)
+                    if isinstance(locks, dict) and isinstance(locks.get("aya"), str) and grown not in locks["aya"] and "female body" in locks["aya"]:
+                        locks["aya"] = locks["aya"].replace("female body", f"female body, {grown}", 1)
                     for field in ("action", "camera"):
                         value = beat.get(field)
                         if not isinstance(value, str) or "female body" not in value:
@@ -4232,15 +4659,15 @@ def apply_appearance(ep: dict[str, Any]) -> dict[str, Any]:
                         parts = re.split(r"(?<=\.)\s+", value)
                         built: list[str] = []
                         for part in parts:
-                            if "Aya" in part and "Gin" not in part and "female body" in part and _AYA_SHAFT not in part:
-                                built.append(part.replace("female body", f"female body, {_AYA_SHAFT}", 1))
+                            if "Aya" in part and "Gin" not in part and "female body" in part and grown not in part:
+                                built.append(part.replace("female body", f"female body, {grown}", 1))
                             else:
                                 built.append(part)
                         beat[field] = " ".join(built)
             elif spec.get("shaft") == "no penis, never futanari":
-                _replace_phrase(out, cid, "no penis, never futanari", _AYA_SHAFT)
+                _replace_phrase(out, cid, "no penis, never futanari", grown)
             elif not spec.get("shaft"):
-                _append_look(out, cid, _AYA_SHAFT)
+                _append_look(out, cid, grown)
         elif shaft == "off":
             clause = spec.get("shaft")
             if clause and clause != "no penis, never futanari":
@@ -4280,7 +4707,6 @@ def apply_appearance(ep: dict[str, Any]) -> dict[str, Any]:
                                     built.append(part)
                             beat[field] = " ".join(built)
     return out
-
 
 def _missionlg_beat(beat: dict[str, Any]) -> bool:
     """M-shape insert and peak: partner kneels between the open legs. Walks stay off."""
@@ -4358,6 +4784,16 @@ def prepare_episode(
     missionlg_override: str | None = None,
     messyblow_override: str | None = None,
     closeup_override: str | None = None,
+    place_override: str | None = None,
+    time_override: str | None = None,
+    weather_override: str | None = None,
+    dirt_override: str | None = None,
+    camera_distance_override: str | None = None,
+    seed_override: str | int | None = None,
+    aya_look_override: str | None = None,
+    enemy_kind_override: str | None = None,
+    enemy_look_override: str | None = None,
+    enemy_looks_override: dict[str, str] | str | None = None,
 ) -> dict[str, Any]:
     """Apply Colab/CLI overrides, then wire beats for the chosen connect mode."""
     out = copy.deepcopy(ep)
@@ -4419,9 +4855,68 @@ def prepare_episode(
         render["rei_oral"] = canonical_rei_oral(rei_oral_override) or rei_oral_override
     if rei_pose_override not in (None, ""):
         render["rei_pose"] = canonical_rei_pose(rei_pose_override) or rei_pose_override
+    if place_override not in (None, ""):
+        place_key = canonical_place(place_override)
+        if not place_key:
+            raise EpisodeError(f"unknown place {place_override}")
+        render["place"] = place_key
+    if time_override not in (None, ""):
+        time_key = canonical_time(time_override)
+        if not time_key:
+            raise EpisodeError(f"unknown time {time_override}")
+        render["time"] = time_key
+    if weather_override not in (None, ""):
+        weather_key = canonical_weather(weather_override)
+        if not weather_key:
+            raise EpisodeError(f"unknown weather {weather_override}")
+        render["weather"] = weather_key
+    if dirt_override not in (None, ""):
+        dirt_key = canonical_dirt(dirt_override)
+        if not dirt_key:
+            raise EpisodeError(f"unknown dirt {dirt_override}")
+        render["dirt"] = dirt_key
+    if camera_distance_override not in (None, ""):
+        distance_key = canonical_camera_distance(camera_distance_override)
+        if not distance_key:
+            raise EpisodeError(f"unknown camera distance {camera_distance_override}")
+        render["camera_distance"] = distance_key
+    if seed_override not in (None, ""):
+        try:
+            render["seed"] = int(str(seed_override).strip())
+        except ValueError as exc:
+            raise EpisodeError(f"seed must be an integer, got {seed_override}") from exc
+    if aya_look_override not in (None, ""):
+        aya_look = canonical_look(aya_look_override)
+        if not aya_look:
+            raise EpisodeError(f"unknown look {aya_look_override}")
+        render["aya_look"] = aya_look
+    if enemy_kind_override not in (None, ""):
+        enemy_kind = canonical_enemy_kind(enemy_kind_override)
+        if not enemy_kind:
+            raise EpisodeError(f"unknown enemy kind {enemy_kind_override}")
+        render["enemy_kind"] = enemy_kind
+    if enemy_look_override not in (None, ""):
+        enemy_look = canonical_look(enemy_look_override)
+        if not enemy_look:
+            raise EpisodeError(f"unknown enemy look {enemy_look_override}")
+        render["enemy_look"] = enemy_look
+    if enemy_looks_override not in (None, "", {}):
+        render["enemy_looks"] = _parse_enemy_looks(enemy_looks_override)
     appearance = parse_appearance(appearance_override)
     if appearance:
         render["appearance"] = appearance
+    surface_dirt = dirt_phrase_for(
+        canonical_place(str(render.get("place") or "")) or "hospital",
+        canonical_dirt(str(render.get("dirt") or "")) or "place",
+    )
+    if surface_dirt:
+        app = dict(render.get("appearance") or {})
+        aya = dict(app.get("aya") or {})
+        if not str(aya.get("dirt") or "").strip():
+            aya["dirt"] = surface_dirt
+            app["aya"] = aya
+            render["appearance"] = app
+    _wire_look_choices(render)
     _merge_ride_fork(render, bent=ride_bent_override, column=ride_column_override)
     out["render"] = render
     if _has_story_overlays(out):
@@ -4458,6 +4953,8 @@ def prepare_episode(
     out = apply_end_connect(out, end_connect=end_connect_override)
     out = apply_look_triggers(keep_chain_cast(out))
     out = apply_appearance(out)
+    if canonical_enemy_kind(str((out.get("render") or {}).get("enemy_kind") or "")) == "human":
+        out = apply_human_skin(out)
     return apply_card_loras(out)
 
 
@@ -4586,6 +5083,220 @@ def _strip_exit_doorway(text: str) -> str:
     return out
 
 
+def _camera_distance_skips(beat: dict[str, Any]) -> bool:
+    """Oral and facial beats keep their authored face distance."""
+    bid = str(beat.get("id") or "")
+    if beat.get("facial") or bid.endswith("-facial") or bid.endswith("-oral") or bid.endswith("-mouth"):
+        return True
+    keys = {key for key, _strength in extra_lora_entries(beat)}
+    return bool(keys & {"blowjob", "cumfacial", "cumshot"})
+
+
+def _distance_lock(ep: dict[str, Any], beat: dict[str, Any]) -> str:
+    distance = canonical_camera_distance(str((ep.get("render") or {}).get("camera_distance") or "")) or "side"
+    if distance == "side" or _camera_distance_skips(beat):
+        return ""
+    return str((CAMERA_DISTANCE_MODES.get(distance) or {}).get("lock") or "").strip().rstrip(".")
+
+
+def _place_swaps(spec: dict[str, Any]) -> list[tuple[str, str]]:
+    wall = str(spec["wall"])
+    floor = str(spec["floor"])
+    room = str(spec["room"])
+    bed = str(spec["bed"])
+    edge = str(spec["edge"])
+    path = str(spec["path"])
+    junction = str(spec["junction"])
+    light = str(spec["light"])
+    ambience = str(spec["ambience"])
+    fixture = str(spec["fixture"])
+    return [
+        ("edge of the soil bed", edge),
+        ("soil bed", bed),
+        ("far long edge nearest the window", edge),
+        ("far long edge of the mattress", edge),
+        ("cracked stained grey linoleum", floor),
+        ("beige walls", f"{wall}s"),
+        ("fluorescent tubes", light),
+        ("fluorescent tube", light),
+        ("filthy porcelain western toilet", fixture),
+        ("stained white porcelain toilet", fixture),
+        ("porcelain western toilet", fixture),
+        ("porcelain toilet seat", f"{fixture} seat"),
+        ("porcelain toilet", fixture),
+        ("western toilet bowl", f"{fixture} bowl"),
+        ("the porcelain bowl", "the toilet bowl"),
+        ("porcelain seat", "toilet seat"),
+        ("into the tile floor", f"into the {floor}"),
+        ("stained mattress", bed),
+        ("iron single bed", bed),
+        ("iron bed", bed),
+        ("the bed frame", f"the {bed}"),
+        ("bed frame", bed),
+        ("the bed", f"the {bed}"),
+        ("the mattress", f"the {bed}"),
+        ("cracked linoleum", floor),
+        ("grey linoleum", floor),
+        ("filthy western stall", room),
+        ("this same stall", f"this same {room}"),
+        ("toilet stall", room),
+        ("the filthy stall", f"the {room}"),
+        ("the stall", f"the {room}"),
+        ("STALL DOOR", f"{room.upper()} DOOR"),
+        ("grey wall", wall),
+        ("street corner wall", wall),
+        ("corridor wall", wall),
+        ("hospital wall", wall),
+        ("T-junction", junction),
+        ("old hospital corridor", path),
+        ("hospital corridor", path),
+        ("the corridor continues", f"the {path} continues"),
+        ("the corridor", f"the {path}"),
+        ("corridor", path),
+        ("Corridor", path[:1].upper() + path[1:]),
+        ("old hospital basement", room),
+        ("hospital basement", room),
+        ("basement room", room),
+        ("sickroom", room),
+        ("Fluorescent buzz", ambience[:1].upper() + ambience[1:]),
+        ("fluorescent buzz", ambience),
+        ("hospital fluorescent light", light),
+        ("linoleum", floor),
+        ("Linoleum", floor[:1].upper() + floor[1:]),
+        ("mattress", bed),
+        ("fluorescent", light),
+    ]
+
+
+_SURFACE_ENV_RE = re.compile(r"(environment:\n)(.*?)(\n\nintegrated_multimodal_description:\n)", re.S)
+_SURFACE_FIXTURE_WORDS = ("toilet", "bowl", "seat", "tank", "pitcher", "plant-flesh", "squat", "pan", "vine", "sap", "toy")
+_SURFACE_ROOM_WORDS = (
+    "fictional", "no clocks", "readable", "fully nude", "every adult", "plaster", "fluorescent", "dado",
+    "hospital toilet", "hospital stall",
+)
+_SURFACE_ENV_TAIL = (
+    "Every adult in frame is fully nude. Every adult is normal adult human height. Nobody is giant. "
+    "Signs, posters, screens, and badges carry no readable letters. Adults only in frame."
+)
+
+
+def _surface_dirt_noun(spec: dict[str, Any]) -> str:
+    return str((DIRT_MODES.get(str(spec.get("dirt") or "hospital")) or {}).get("noun") or "grimy brown dust")
+
+
+def _surface_decor(spec: dict[str, Any], *, night: bool) -> list[tuple[str, str]]:
+    """Ward decor and grime outside the ward. Regex pairs, applied before the noun swaps."""
+    ambience = str(spec["ambience"])
+    dirt = _surface_dirt_noun(spec)
+    pairs = [
+        (r"\s*,?\s*a purple fluorescent wash", ""),
+        (r"\bflickering broken\s+", ""),
+        (r"\b[Cc]rumbling\s+", ""),
+        (r"\b[Pp]eeling (?=(?:beige |cream )?(?:walls?\b|plaster|paint|street|door|cracked))", ""),
+        (r"\brusted (?=(?:dark |iron |metal )?(?:rails?\b|handrail|sink|single|bed|iron|door|frame|pipe|corridor))", ""),
+        (r"\b[Cc]racked stained\s+", ""),
+        (r"\bwater stains,?\s*", ""),
+        (r"\brubber doors hanging loose,?\s*", ""),
+        (r"\b[Dd]erelict\s+", ""),
+        (r"\bHVAC fading\b", ambience),
+        (r"\bHVAC\b", ambience),
+        (r"\bdistant drip\b", ambience),
+        (r"\bLinoleum scrape\b", "A scrape on the ground"),
+        (r"head would hit the corridor tubes if she stood straight", "taller than a doorframe"),
+        (r"(?:head )?ducked under the tubes", "head ducked low"),
+        (r"\bunder the tubes\b", "low"),
+        (r"Thick extra-viscous sticky grimy brown hospital dirt", dirt[:1].upper() + dirt[1:]),
+        (r"Extra-viscous sticky grimy brown hospital dirt", dirt[:1].upper() + dirt[1:]),
+        (r"Brown hospital dirt", dirt[:1].upper() + dirt[1:]),
+        (r"(?i)thick extra-viscous sticky grimy brown hospital dirt", dirt),
+        (r"(?i)extra-viscous sticky grimy brown hospital dirt", dirt),
+        (r"(?i)grimy brown hospital dirt", dirt),
+        (r"(?i)brown hospital dirt", dirt),
+        (r"(?i)\bhospital dirt\b", dirt),
+        (r"\bthe tiles\b", f"the {spec['floor']}"),
+        (r"\btiles\b", str(spec["floor"])),
+        (r"\bporcelain\s+", ""),
+    ]
+    if not night:
+        pairs += [
+            (r"\ba dark far end\b", "the far end"),
+            (r"\bdark (?=corridor)", ""),
+        ]
+    return pairs
+
+
+def _surface_env(spec: dict[str, Any], original: str) -> str:
+    """Rebuild the environment for this place. Only fixture sentences the act needs survive."""
+    low = original.lower()
+    sentences = [s.strip() for s in re.split(r"(?<=\.)\s+", original) if s.strip()]
+    if "toilet" in low or "squat pan" in low or " stall" in low:
+        kept = [
+            s for s in sentences
+            if any(w in s.lower() for w in _SURFACE_FIXTURE_WORDS)
+            and not any(w in s.lower() for w in _SURFACE_ROOM_WORDS)
+        ]
+        base = str(spec["priv"])
+    elif "sickroom" in low or any(w in low for w in ("mattress", "iron bed", "single bed")):
+        # Tsuno's room stops here. Only the place's own ground remains.
+        kept = []
+        base = str(spec["rest"])
+    else:
+        kept = []
+        base = str(spec["env"])
+    seen: list[str] = []
+    for s in kept:
+        line = s if s.endswith(".") else s + "."
+        if line not in seen:
+            seen.append(line)
+    return " ".join([base.rstrip(".") + "."] + seen + [_SURFACE_ENV_TAIL])
+
+
+def surface_is_ward(ep: dict[str, Any]) -> bool:
+    return (canonical_place(str((ep.get("render") or {}).get("place") or "")) or "hospital") == "hospital"
+
+
+def apply_prompt_surface(ep: dict[str, Any], text: str) -> str:
+    """Hospital night with no weather is unchanged. Elsewhere the act clauses are already chosen."""
+    if str(ep.get("slug") or "") != "hospital-exit-adult":
+        return text
+    render = ep.get("render") or {}
+    place = canonical_place(str(render.get("place") or "")) or "hospital"
+    time_key = canonical_time(str(render.get("time") or "")) or "night"
+    weather = canonical_weather(str(render.get("weather") or "")) or "off"
+    if place == "hospital" and time_key == "night" and weather == "off":
+        return text
+    spec = PLACE_MODES[place]
+    night = time_key == "night"
+    out = text
+    if place != "hospital":
+        found = _SURFACE_ENV_RE.search(out)
+        if found:
+            out = out[: found.start(2)] + _surface_env(spec, found.group(2)) + out[found.end(2):]
+        for pattern, repl in _surface_decor(spec, night=night):
+            out = re.sub(pattern, repl, out)
+        for old, new in _place_swaps(spec):
+            out = out.replace(old, new)
+        out = re.sub(r"\b[Hh]ospital\s+", "", out)
+    if not night:
+        out = re.sub(r"\s+at night\b", "", out)
+    bits: list[str] = []
+    time_spec = TIME_MODES[time_key]
+    if night:
+        if place != "hospital":
+            bits.append(str(time_spec.get("away") or ""))
+    else:
+        bits.append(str(time_spec.get("sentence") or ""))
+    bits.append(str((WEATHER_MODES.get(weather) or {}).get("sentence") or ""))
+    bits = [b for b in bits if b]
+    if bits:
+        needle = "\n\nintegrated_multimodal_description:\n"
+        if needle in out:
+            out = out.replace(needle, " " + " ".join(bits) + needle, 1)
+    out = re.sub(r"[ \t]{2,}", " ", out)
+    out = re.sub(r"\s+([,.])", r"\1", out)
+    return out
+
+
 def camera_line(
     ep: dict[str, Any],
     beat: dict[str, Any],
@@ -4607,6 +5318,9 @@ def camera_line(
     spec = CAMERA_PACKS[key]
     if planted and spec.get("planted_lock"):
         lock = str(spec["planted_lock"]).strip().rstrip(".")
+        distance_lock = _distance_lock(ep, beat)
+        if distance_lock:
+            lock = distance_lock
         if str(beat.get("id") or "") in GIN_STILL_IDS or _nongin_rib_ride(beat):
             # "Nobody walks" and "not a step" get drawn as a walk. Rib seats name their own hold.
             lock = lock.replace("A hip thrust is in place, not a step. ", "")
@@ -4615,6 +5329,9 @@ def camera_line(
             lock = lock.replace("No track, no pan, no scroll. ", "")
     else:
         lock = str(spec["lock"]).strip().rstrip(".")
+        distance_lock = _distance_lock(ep, beat)
+        if distance_lock:
+            lock = distance_lock
     # The exit doorway on a mid-episode walk reads as the mission end, so the next scene cannot continue.
     if not planted and not _is_final_footage_beat(ep, beat):
         lock = _strip_exit_doorway(lock)
@@ -5098,6 +5815,19 @@ def validate_episode(ep: dict[str, Any], *, root: Path | str | None = None) -> l
         raw_flag = str(render.get(flag) or "").strip()
         if raw_flag and canon(raw_flag) not in ("off", "on"):
             errs.append(f"render.{flag} must be off or on")
+    for flag, canon, registry in (
+        ("place", canonical_place, PLACE_MODES),
+        ("time", canonical_time, TIME_MODES),
+        ("weather", canonical_weather, WEATHER_MODES),
+        ("dirt", canonical_dirt, DIRT_MODES),
+        ("camera_distance", canonical_camera_distance, CAMERA_DISTANCE_MODES),
+        ("enemy_kind", canonical_enemy_kind, ENEMY_KIND_MODES),
+        ("aya_look", canonical_look, LOOK_MODES),
+        ("enemy_look", canonical_look, LOOK_MODES),
+    ):
+        raw_flag = str(render.get(flag) or "").strip()
+        if raw_flag and canon(raw_flag) not in registry:
+            errs.append(f"render.{flag} is unknown")
     story = str(render.get("story") or "").strip()
     if story:
         story_key = canonical_story(story)
@@ -5837,7 +6567,7 @@ def build_beat_prompt(
         text = _strip_rib_legacy(text, peak=str(beat.get("id") or "").endswith("-peak"))
         if str(beat.get("id") or "").startswith("03-kiss"):
             text = text.replace("22cm", "24cm")
-    return text
+    return apply_prompt_surface(ep, text)
 
 
 def validate_beat_prompt(prompt: str, *, source: str, never: list[str] | None = None, still_as: str = "first") -> list[str]:
@@ -7400,6 +8130,16 @@ def run_episode(
     missionlg_override: str | None = None,
     messyblow_override: str | None = None,
     closeup_override: str | None = None,
+    place_override: str | None = None,
+    time_override: str | None = None,
+    weather_override: str | None = None,
+    dirt_override: str | None = None,
+    camera_distance_override: str | None = None,
+    seed_override: str | int | None = None,
+    aya_look_override: str | None = None,
+    enemy_kind_override: str | None = None,
+    enemy_look_override: str | None = None,
+    enemy_looks_override: dict[str, str] | str | None = None,
     start_at: str | None = None,
     port: int = PORT,
     object_info: dict[str, Any] | None = None,
@@ -7440,6 +8180,16 @@ def run_episode(
         missionlg_override=missionlg_override,
         messyblow_override=messyblow_override,
         closeup_override=closeup_override,
+        place_override=place_override,
+        time_override=time_override,
+        weather_override=weather_override,
+        dirt_override=dirt_override,
+        camera_distance_override=camera_distance_override,
+        seed_override=seed_override,
+        aya_look_override=aya_look_override,
+        enemy_kind_override=enemy_kind_override,
+        enemy_look_override=enemy_look_override,
+        enemy_looks_override=enemy_looks_override,
     )
     print(
         describe_run(
@@ -7471,6 +8221,7 @@ def run_episode(
             rei_kiss=str((ep.get("render") or {}).get("rei_kiss") or ""),
             rei_oral=str((ep.get("render") or {}).get("rei_oral") or ""),
             rei_pose=str((ep.get("render") or {}).get("rei_pose") or ""),
+            surface=ep.get("render") if isinstance(ep.get("render"), dict) else {},
         )
     )
     errs = preflight(ep, root)
