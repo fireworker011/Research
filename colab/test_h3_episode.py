@@ -1604,7 +1604,7 @@ def test_hospital_exit_adult_invite_fails_from_lust():
     assert ep["render"]["combat"] == "off"
     assert ep["render"]["story"] == "invite"
     assert ep["render"]["invite_pose"] == "all_fours"
-    assert expected_duration(ep) == pytest.approx(193.2, abs=2.0)
+    assert expected_duration(ep) == pytest.approx(268.95, abs=2.0)
     assert ep["beats"][-1]["hud"]["complete"] is False
     assert ep["cards"]["fail"]["reason"] == "淫欲に呑まれた"
     for bid in ("02-ui-miki", "05-ui-rei", "08-ui-kana", "11-ui-shino"):
@@ -1612,9 +1612,13 @@ def test_hospital_exit_adult_invite_fails_from_lust():
         assert ui["menu"]["selected"] == 2
         assert ui["hud"]["hint"] == "□ 誘う"
     doggy = next(b for b in ep["beats"] if b["id"] == "06-doggy")
-    _assert_insertion_direction(doggy["action"], build_beat_prompt(ep, doggy))
+    doggy_in = next(b for b in ep["beats"] if b["id"] == "06-doggy-in")
+    _assert_insertion_direction(doggy_in["action"], build_beat_prompt(ep, doggy_in))
     assert "chest and cheek stay down" in doggy["action"].lower()
+    assert "lowers her chest and cheek" in doggy["action"].lower()
     assert "between the open thighs" in doggy["action"].lower()
+    assert "siderear" not in extra_keys(doggy)
+    assert extra_lora_entries(doggy_in)[0] == ("siderear", 0.8)
     assert "walks right" in action_blob(ep, "06-doggy")
     twelve_blob = action_blob(ep, "12-exit")
     assert "do not cross the threshold" in twelve_blob or "do not slide to the lit doorway" in twelve_blob
@@ -1862,42 +1866,59 @@ def test_hospital_invite_pose_and_toilet_and_skip():
     _assert_hospital_bans(ride)
     stand = prepare_episode(raw, story_override="誘う", invite_pose_override="壁立ちバック")
     assert stand["render"]["invite_pose"] == "stand"
-    stand_in = next(b for b in stand["beats"] if b["id"] == "06-doggy")
-    assert "palms stay on the grey wall" in stand_in["action"].lower()
+    stand_set = next(b for b in stand["beats"] if b["id"] == "06-doggy")
+    stand_in = next(b for b in stand["beats"] if b["id"] == "06-doggy-in")
+    assert "turns to the grey wall in one continuous move" in stand_set["action"].lower()
+    assert "between the calves" in stand_set["action"].lower()
+    assert "siderear" not in extra_keys(stand_set)
+    assert "right palm stay on the grey wall" in stand_in["action"].lower()
     assert "between the calves" in stand_in["action"].lower()
     assert "hold still joined at the base" in stand_in["action"].lower()
     _assert_insertion_direction(stand_in["action"], build_beat_prompt(stand, stand_in))
     assert "pussy" in stand_in["action"].lower()
     for bid, who in (("03-kiss", "miki"), ("06-doggy", "rei"), ("09-join", "kana"), ("12-exit", "shino")):
         beat = next(b for b in stand["beats"] if b["id"] == bid)
+        inn = next(b for b in stand["beats"] if b["id"] == f"{bid}-in")
+        close = next(b for b in stand["beats"] if b["id"] == f"{bid}-close")
         act = beat["action"].lower()
         cam = beat["camera"].lower()
         assert "bends forward" in act or "bent forward" in act, bid
-        assert f"{who} already stands behind aya" in act, bid
         assert "between the calves" in act, bid
         assert "profile side view" in cam, bid
         assert "faces left" in cam, bid
         assert "side-rear" not in cam, bid
         assert "turns the same way" not in act, bid
         assert "turns her whole body" not in act, bid
-        assert extra_lora_entries(beat)[0] == ("siderear", 0.8)
+        assert "siderear" not in extra_keys(beat)
         assert "doggy" not in extra_keys(beat)
+        assert f"{who} already stands on the same centerline" in inn["action"].lower(), bid
+        assert extra_lora_entries(inn)[0] == ("siderear", 0.8)
+        assert "moves the hips back once" in close["action"].lower()
+        assert "hips stay back" in close["action"].lower()
     kiss_stand = next(b for b in stand["beats"] if b["id"] == "03-kiss")
+    kiss_in = next(b for b in stand["beats"] if b["id"] == "03-kiss-in")
     assert "grey wall" in kiss_stand["action"].lower()
-    assert "moves the hips forward once" in kiss_stand["action"].lower()
+    assert "moves the hips forward once" in kiss_in["action"].lower()
     assert "center of the frame" in kiss_stand["camera"].lower()
     fours = prepare_episode(raw, story_override="誘う", invite_pose_override="四つん這い股広げ")
     for bid in ("03-kiss", "06-doggy", "09-join", "12-exit"):
         beat = next(b for b in fours["beats"] if b["id"] == bid)
+        inn = next(b for b in fours["beats"] if b["id"] == f"{bid}-in")
+        close = next(b for b in fours["beats"] if b["id"] == f"{bid}-close")
         act = beat["action"].lower()
         cam = beat["camera"].lower()
         assert "chest and cheek stay down" in act, bid
+        assert "lowers her chest and cheek" in act, bid
         assert "between the open thighs" in act, bid
         assert "profile side view" in cam, bid
         assert "side-rear" not in cam, bid
         assert "turns the same way" not in act, bid
-        assert extra_lora_entries(beat)[0] == ("siderear", 0.8)
+        assert "siderear" not in extra_keys(beat), bid
         assert "doggy" not in extra_keys(beat)
+        assert extra_lora_entries(inn)[0] == ("siderear", 0.8)
+        assert "travels into the anus" in inn["action"].lower()
+        assert "moves the hips back once" in close["action"].lower()
+        assert "hips stay back" in close["action"].lower()
     assert "open wide to the left and right" in next(b for b in fours["beats"] if b["id"] == "06-doggy")["action"].lower()
     assert "erect 20cm" in next(b for b in fours["beats"] if b["id"] == "09-join")["action"].lower()
     nelson_inv = prepare_episode(raw, story_override="誘う", invite_pose_override="フルネルソンアナル")
@@ -1952,7 +1973,7 @@ def test_hospital_invite_pose_and_toilet_and_skip():
     _assert_hospital_bans(stand)
     _assert_hospital_bans(nelson_inv)
     keys = ride["render"]["lora_prefetch"]
-    for key in ("blowjob", "mystic", "futatf", "mast", "cumfacial", "kiss"):
+    for key in ("blowjob", "mystic", "futatf", "mast", "cumshot", "kiss"):
         assert key in keys
     ride_sit = next(b for b in ride["beats"] if b["id"] == "03-kiss-ride")
     assert extra_keys(ride_sit)[:3] == ["mystic", "penis", "synth"]
@@ -2187,9 +2208,10 @@ def test_hospital_review_takes_camera_invite_split_and_clip_length():
     assert seven["trim"]["seconds"] == 8.0
     facial = next(b for b in m_open["beats"] if b["id"] == "09-kana-facial")
     kissb = next(b for b in m_open["beats"] if b["id"] == "09-kana-kiss")
-    assert extra_keys(facial) == ["cumfacial", "penis", "jpnmoans"]
-    assert facial.get("trigger") == "cmst\nPENISLORA\njpnMoans"
-    assert extra_lora_entries(facial)[0] == ("cumfacial", 0.8)
+    assert extra_keys(facial) == ["cumshot", "penis", "jpnmoans"]
+    assert facial.get("trigger") == "CUMSH0T\nPENISLORA\njpnMoans"
+    assert extra_lora_entries(facial)[0] == ("cumshot", 1.0)
+    assert facial.get("facial") is True
     assert facial["trim"]["seconds"] == 10.0
     assert "slow" not in facial["action"].lower()
     assert "white goo" in facial["action"].lower()
@@ -2197,8 +2219,11 @@ def test_hospital_review_takes_camera_invite_split_and_clip_length():
     facial_prompt = build_beat_prompt(m_open, facial)
     kiss_prompt = build_beat_prompt(m_open, kissb)
     assert facial.get("connect") == "cut" and beat_source(facial) == "t2v"
-    assert "the camera holds this one frame" in facial["action"].lower()
-    assert "looks up toward the lens" in facial_prompt.lower()
+    assert "moves in an arc" in facial["camera"].lower()
+    assert "the camera holds this one frame" not in facial["action"].lower()
+    assert "looks up" in facial_prompt.lower()
+    assert "smiles shyly and giggles" in facial["action"].lower()
+    assert "wide full-body" not in facial_prompt.lower()
     assert "white rope" in facial_prompt.lower()
     assert "kana's whole face stays inside the frame" not in facial_prompt.lower()
     assert "both faces stay fully inside the frame" not in facial_prompt.lower()
@@ -2222,7 +2247,7 @@ def test_hospital_review_takes_camera_invite_split_and_clip_length():
     assert goo not in m_open["cast"]["aya"]["lock"].lower()
     assert "white rope" in facial["action"].lower()
     assert "white goo clinging to aya's face and breasts" in facial["action"].lower()
-    assert "semen" not in facial["action"].lower()
+    assert "semen" in facial["action"].lower()
     assert "aya" not in (facial.get("cast_lock") or {})
     assert goo not in build_beat_prompt(m_open, facial).lower()
     assert goo not in build_beat_prompt(m_open, seven).lower()
@@ -2524,7 +2549,7 @@ def test_hospital_finger_pose_and_squat_toilet_modes():
             assert "messyblow" not in keys
             assert "closeup" not in keys
         if pose and "四つん這い" in pose:
-            dog = next(b for b in held["beats"] if b["id"] == "06-doggy")
+            dog = next(b for b in held["beats"] if b["id"] == "06-doggy-in")
             assert "anuspussy" in extra_keys(dog)
             prompt = build_beat_prompt(held, dog, trigger=merge_trigger("", dog))
             assert "zxqanus" in prompt and "zxqvagina" in prompt
@@ -2715,8 +2740,8 @@ def test_card_lora_choices_stay_off_until_the_form_says_on():
         closeup_override="超近距離オン（穴の見える拍）",
     )
     assert close["render"]["closeup"] == "on"
-    dog = next(b for b in close["beats"] if b["id"] == "06-doggy")
-    dog_plain = next(b for b in invite_plain["beats"] if b["id"] == "06-doggy")
+    dog = next(b for b in close["beats"] if b["id"] == "06-doggy-in")
+    dog_plain = next(b for b in invite_plain["beats"] if b["id"] == "06-doggy-in")
     cover = next(b for b in close["beats"] if b["id"] == "01-cover")
     assert "anuspussy" in extra_keys(dog)
     assert ("closeup", 0.5) in extra_lora_entries(dog)
@@ -2899,7 +2924,7 @@ def test_hospital_invite_finale_follows_the_last_partner():
     assert "shino" not in low and "35cm" not in low and "rei" not in low
     assert extra_lora_entries(miki["beats"][-1]) == [("kiss", 0.5)]
     assert "french kiss" in low and "corners of the mouth" in low
-    seat = next(b for b in miki["beats"] if b["id"] == "03-kiss")
+    seat = next(b for b in miki["beats"] if b["id"] == "03-kiss-in")
     peak = next(b for b in miki["beats"] if b["id"] == "03-kiss-peak")
     drop = next(b for b in miki["beats"] if b["id"] == "03-kiss-drop")
     assert "tongue hangs out" in seat["action"].lower()
@@ -3045,7 +3070,7 @@ def test_hospital_gin_tsuno_optional_events():
     assert "keeps licking" in lick["action"].lower()
     assert "grows out of the open mouth" in lick["action"].lower()
     assert "penis growth" not in lick["action"].lower()
-    assert extra_keys(lick) == ["mystic", "cunny", "jpnmoans"]
+    assert extra_keys(lick) == ["kiss", "mystic", "cunny", "jpnmoans"]
     assert lick.get("trigger") == "performing cunnilingus\njpnMoans"
     assert "hairless pussy" in lick["action"].lower()
     assert "24cm" not in lick["action"]
@@ -3087,7 +3112,6 @@ def test_hospital_gin_tsuno_optional_events():
     assert "falls onto her butt toward the right" in lick["action"].lower()
     assert "head lands on the right" in lick["action"].lower()
     assert "toes point left" in lick["action"].lower()
-    assert "hesitant and afraid" in lick["action"].lower()
     assert "ceiling" not in lick["action"].lower()
     assert "wall" not in lick["action"].lower()
     assert "lands on her feet" not in lick["action"].lower()
@@ -3099,8 +3123,10 @@ def test_hospital_gin_tsuno_optional_events():
     assert "falls onto her butt" in lick["action"].lower()
     assert "futanari" not in lick["action"].lower()
     assert "thighs open" in lick["action"].lower()
-    assert "shocked wide-eyed" in lick["action"].lower()
-    assert "french kiss" not in lick["action"].lower()
+    assert "hugs aya hard from behind" in lick["action"].lower()
+    assert "both smiling" in lick["action"].lower()
+    assert "french kiss" in lick["action"].lower()
+    assert "saliva string" in lick["action"].lower()
     assert lick.get("loco") == "planted"
     assert lick.get("cast_lock") and "24cm" not in lick["cast_lock"]["aya"]
     assert "hairless pussy" in lick["cast_lock"]["aya"]
@@ -3331,7 +3357,8 @@ def test_hospital_gin_tsuno_optional_events():
     fuck_in = next(b for b in fuck["beats"] if b["id"] == "04-gin-in")
     assert "behind aya toward the left" in fuck_lick["action"].lower()
     assert "lands on her feet" not in fuck_lick["action"].lower()
-    assert "shocked wide-eyed" in fuck_lick["action"].lower()
+    assert "hugs aya hard from behind" in fuck_lick["action"].lower()
+    assert "french kiss" in fuck_lick["action"].lower()
     assert "already sitting on her butt" in fuck_in["action"].lower()
     assert "rises to her feet once" in fuck_in["action"].lower()
     assert "set the pose together" in fuck_in["action"].lower()
@@ -3343,14 +3370,20 @@ def test_hospital_gin_tsuno_optional_events():
 
     dog = prepare_episode(raw, gin_override="誘う後背")
     dog_lick = next(b for b in dog["beats"] if b["id"] == "04-gin-lick")
+    dog_set = next(b for b in dog["beats"] if b["id"] == "04-gin-set")
     dog_in = next(b for b in dog["beats"] if b["id"] == "04-gin-in")
     assert "behind aya toward the left" in dog_lick["action"].lower()
     assert "lands on her feet" not in dog_lick["action"].lower()
-    assert "aya's chest meets gin's back" in dog_in["action"].lower()
-    assert "already sitting on her butt" in dog_in["action"].lower()
-    assert "drops herself to all fours" in dog_in["action"].lower()
-    assert "rises to her feet once" in dog_in["action"].lower()
-    assert "set the pose together" in dog_in["action"].lower()
+    assert "hugs aya hard from behind" in dog_lick["action"].lower()
+    assert "saliva string" in dog_lick["action"].lower()
+    assert "aya's chest meets gin's back" in dog_set["action"].lower()
+    assert "already sitting on her butt" in dog_set["action"].lower()
+    assert "drops herself to all fours" in dog_set["action"].lower()
+    assert "rises to her feet once" in dog_set["action"].lower()
+    assert "set the pose together" in dog_set["action"].lower()
+    assert "same centerline" in dog_in["action"].lower()
+    assert extra_lora_entries(dog_in)[0] == ("siderear", 0.8)
+    assert "siderear" not in extra_keys(dog_lick)
     assert "can't-hold-back" in action_blob(dog, "04-gin") or "ass toward aya" in action_blob(dog, "04-gin")
 
     stand = prepare_episode(raw, tsuno_override="受け入れる立ちバック")
@@ -3792,7 +3825,7 @@ def test_hospital_clip_failures_are_rewritten():
     walk = next(b for b in invite["beats"] if b["id"] == "03-kiss-walk")
     assert kiss.get("connect") == "t2v"
     assert beat_source(kiss) == "chain"
-    assert "chest and cheek stay down" in kiss["action"].lower()
+    assert "lowers her chest and cheek" in kiss["action"].lower()
     assert kiss.get("loco") == "planted"
     assert peak.get("loco") == "planted"
     assert beat_source(peak) == "chain"
@@ -3801,8 +3834,9 @@ def test_hospital_clip_failures_are_rewritten():
     assert "miki" in (walk.get("fade_cast") or [])
     assert "gone from frame one" not in walk["action"].lower()
     kiss_prompt = build_beat_prompt(invite, kiss)
-    assert PLANTED_CLAUSE in kiss_prompt
-    assert PLANTED_PACE_CLAUSE in kiss_prompt
+    assert "lowers from the opening pose onto the floor" in kiss_prompt.lower()
+    assert PLANTED_CLAUSE not in kiss_prompt
+    assert PLANTED_PACE_CLAUSE not in kiss_prompt
     assert GAMEPLAY_PACE_CLAUSE not in kiss_prompt
     assert "idle breathing" not in kiss_prompt.lower()
     assert "unless the action names running or walking" not in kiss_prompt.lower()
@@ -6173,12 +6207,16 @@ def test_hospital_tsuno_ride_and_stall_are_new_stories():
     assert "lips stay on the shaft" in jacko_oral["action"].lower()
     wait = next(b for b in ride["beats"] if b["id"] == "04-tsuno-wait")
     assert "onto aya's face and tongue" in wait["action"].lower()
-    assert extra_lora_entries(wait)[0] == ("cumfacial", 0.8)
+    assert extra_lora_entries(wait)[0] == ("cumshot", 1.0)
     assert "cmst" not in extra_keys(wait)
     assert "penis" in extra_keys(wait)
-    assert wait.get("trigger", "").startswith("cmst")
-    assert "CUMSH0T" not in wait.get("trigger", "")
+    assert wait.get("facial") is True
+    assert wait.get("trigger", "").startswith("CUMSH0T")
+    assert "CUMSH0T" in wait.get("trigger", "")
     assert "PENISLORA" in wait.get("trigger", "")
+    assert "soil bed" in wait["action"].lower()
+    assert "mattress" not in wait["action"].lower()
+    assert "mattress" not in wait["camera"].lower()
     assert wait.get("connect") == "chain"
     assert beat_source(wait) == "chain"
     seat = next(b for b in ride["beats"] if b["id"] == "04-tsuno-ride")
@@ -6393,7 +6431,8 @@ def test_hospital_wash_gape_oral_wait_overflow_and_dog_lick():
     assert "soles plant" not in jupo["action"].lower()
     assert "soles plant" not in build_beat_prompt(gin, jupo).lower()
     mouth = next(b for b in gin["beats"] if b["id"] == "04-gin-mouth")
-    assert extra_lora_entries(mouth) == [("cumfacial", 0.8), ("mystic", 0.5)]
+    assert extra_lora_entries(mouth) == [("cumshot", 1.0), ("penis", 0.45)]
+    assert mouth.get("facial") is True
     assert "blowjob" not in extra_keys(mouth) and "cumouf" not in extra_keys(mouth)
     assert "onto gin's face and tongue" in mouth["action"].lower()
     assert "onto aya's face" not in mouth["action"].lower()
@@ -6408,7 +6447,7 @@ def test_hospital_wash_gape_oral_wait_overflow_and_dog_lick():
     miki_peak = next(b for b in miki_nel["beats"] if b["id"] == "03-kiss-peak")
     assert "hold still joined at the base" in miki_peak["action"].lower()
     assert "lowers one of" not in miki_peak["action"].lower()
-    assert "slides out of gin's mouth" in mouth["action"].lower()
+    assert "slides off the glans" in mouth["action"].lower()
     mouth_prompt = build_beat_prompt(gin, mouth, trigger=merge_trigger("", mouth))
     assert "onto gin's face and tongue" in mouth_prompt.lower()
     assert "onto aya's face" not in mouth_prompt.lower()
@@ -6459,16 +6498,25 @@ def test_hospital_wash_gape_oral_wait_overflow_and_dog_lick():
 def test_hospital_siderear_keeps_the_join_visible():
     raw = load_episode(HOSPITAL_DIR / "episode.json")
     fours = prepare_episode(raw, story_override="誘う", invite_pose_override="四つん這い")
-    seat = next(b for b in fours["beats"] if b["id"] == "06-doggy")
+    pose = next(b for b in fours["beats"] if b["id"] == "06-doggy")
+    press = next(b for b in fours["beats"] if b["id"] == "06-doggy-press")
+    seat = next(b for b in fours["beats"] if b["id"] == "06-doggy-in")
     peak = next(b for b in fours["beats"] if b["id"] == "06-doggy-peak")
+    close = next(b for b in fours["beats"] if b["id"] == "06-doggy-close")
     walk = next(b for b in fours["beats"] if b["id"] == "06-doggy-walk")
+    assert "siderear" not in extra_keys(pose)
+    assert "siderear" not in extra_keys(press)
     assert extra_lora_entries(seat)[0] == ("siderear", 0.8)
     assert extra_lora_entries(seat)[1] == ("anuspussy", 0.4)
     assert extra_lora_entries(peak)[0] == ("siderear", 0.8)
     assert extra_lora_entries(peak)[1] == ("anuspussy", 0.4)
     assert "travels into the anus" in seat["action"].lower()
-    assert "walks in from the left" in seat["action"].lower()
+    assert "walks in from the left" not in seat["action"].lower()
+    assert "same centerline" in seat["action"].lower()
     assert "right hand" in seat["action"].lower()
+    assert "moves the hips back once" in close["action"].lower()
+    assert "hips stay back" in close["action"].lower()
+    assert "siderear" not in extra_keys(close)
     assert "siderear" not in extra_keys(walk)
     assert "anuspussy" not in extra_keys(walk)
     assert "profile side view" in seat["camera"].lower()
@@ -6478,11 +6526,11 @@ def test_hospital_siderear_keeps_the_join_visible():
     assert "side-rear" not in peak["camera"].lower()
     assert "doggy" not in seat["action"].lower()
     stand = prepare_episode(raw, story_override="誘う", invite_pose_override="立ちバック")
-    wall = next(b for b in stand["beats"] if b["id"] == "03-kiss")
+    wall = next(b for b in stand["beats"] if b["id"] == "03-kiss-in")
     assert extra_lora_entries(wall)[0] == ("siderear", 0.8)
     assert extra_lora_entries(wall)[1] == ("anuspussy", 0.4)
     assert "balls of both feet" in wall["action"].lower()
-    assert "left hand rests flat" in wall["action"].lower()
+    assert "left hand" in wall["action"].lower() and "buttock" in wall["action"].lower()
     assert "travels into the anus" in wall["action"].lower()
     assert "siderear" not in extra_keys(next(b for b in stand["beats"] if b["id"] == "09-kana-facial"))
     m_open = prepare_episode(raw, story_override="誘う", invite_pose_override="M字")

@@ -694,6 +694,46 @@ FACIAL_LENS_HOLD = (
     "The erect shaft stays at the lower edge aimed at that face. "
     "The frame holds Aya's face and the shaft. The adults stay the same size."
 )
+# Close facial follows the receiving face. A feet lock widens it back to a full-body frame.
+FACIAL_CAMERA_LOCK = (
+    "Close third-person camera on the receiving face, the hand on the shaft, and the glans. "
+    "The camera moves in an arc around that face."
+)
+FACIAL_PACE_CLAUSE = (
+    "Playback stays at real-time game speed. Snappy. Motion starts at frame one. "
+    "The pair stays on this same floor spot."
+)
+LOWER_TO_FLOOR_CLAUSE = (
+    "Playback stays at real-time third-person game speed. Snappy. "
+    "The body lowers from the opening pose onto the floor in one continuous move. "
+    "Both feet stay on the floor. The pair stays on this same floor spot. "
+    "Normal adult human height, nobody is giant."
+)
+WALL_SET_CLAUSE = (
+    "Playback stays at real-time third-person game speed. Snappy. "
+    "Aya turns from the opening pose to the grey wall in one continuous move and settles into the pose there. "
+    "The pair stays on this same floor spot. The camera holds. "
+    "Normal adult human height, nobody is giant."
+)
+HIPS_BACK_ONCE_CLAUSE = (
+    "Playback stays at real-time third-person game speed. Snappy. "
+    "The hips travel backward once at the opening of the shot and then stay still on that mark. "
+    "The shaft stays outside after that backward travel. "
+    "The hands stay where they are. The feet stay on the floor. "
+    "The pair stays on this same floor spot. The camera holds. "
+    "Normal adult human height, nobody is giant."
+)
+GIN_LICK_PACE_CLAUSE = (
+    "Playback stays at real-time third-person game speed. Snappy. Motion starts at frame one. "
+    "One continuous take. Gin hugs Aya from behind, they turn face to face for the kiss, "
+    "then Aya returns to the sitting pose. "
+    "The camera distance stays the opening wide full-body distance. "
+    "The place stays the opening place. The camera stays with them."
+)
+_SAME_TAKE = (
+    " One continuous take. The place, the light, and the rendering stay the same as the opening frame. "
+    "The camera moves inside this shot. The picture stays sharp."
+)
 # Non-gin kisses keep both faces inside without a face-filling frame.
 FACE_PAIR_HOLD = (
     "Both faces stay fully inside the frame. "
@@ -5310,6 +5350,9 @@ def camera_line(
     planted = beat_loco(beat) == "planted"
     if planted:
         authored = _planted_camera_text(authored).rstrip(".")
+    # A side-scroller pack widens a facial back to feet. The close arc stays the authored camera.
+    if beat.get("facial"):
+        return authored
     if not pack_name:
         return authored
     key = canonical_camera(pack_name)
@@ -6300,6 +6343,8 @@ def _hospital_face_pair(beat: dict[str, Any]) -> bool:
     in front of the woman who is already standing between the knees.
     """
     bid = str(beat.get("id") or "")
+    if beat.get("facial"):
+        return True
     if bid == "04-tsuno-kiss":
         return False
     if "gin" in bid:
@@ -6315,6 +6360,8 @@ def _hospital_prompt_holds(ep: dict[str, Any], beat: dict[str, Any]) -> list[str
     """Face-safe oral and kiss cameras, side-on rides, and a two-person lock on planted sex."""
     if str(ep.get("slug") or "") != "hospital-exit-adult":
         return []
+    if beat.get("facial"):
+        return [FACIAL_CAMERA_LOCK]
     keys = {key for key, _strength in extra_lora_entries(beat)}
     holds: list[str] = []
     bid = str(beat.get("id") or "")
@@ -6431,69 +6478,83 @@ def build_beat_prompt(
     if episode_tone(ep) == "mundane":
         desc.append(MUNDANE_CLAUSE)
     elif loco == "planted":
-        desc.append(GAME_THIRD_PERSON_CLAUSE)
         action_txt = str(beat.get("action") or "")
         bid_now = str(beat.get("id") or "")
-        if bid_now == "04-gin-jupo":
-            desc.append(GIN_ORAL_PACE_CLAUSE)
-        elif bid_now == "04-gin-mouth":
-            desc.append(GIN_MOUTH_PACE_CLAUSE)
-        elif bid_now == "04-gin-spitkiss":
-            desc.append(GIN_SPIT_PACE_CLAUSE)
-        elif bid_now == "04-gin-wait":
-            desc.append(
-                GIN_COLUMN_WAIT_PACE_CLAUSE if _column_rib_action(action_txt) else RIB_WAIT_PACE_CLAUSE
-            )
-        elif bid_now in RIB_WAIT_IDS or bid_now == "04-tsuno-wait":
-            if _column_rib_action(action_txt):
-                desc.append(KISS_WAIT_PACE_CLAUSE)
-            elif "both knees stay bent" in action_txt.lower() and "soles plant" in action_txt.lower():
-                desc.append(RIB_WAIT_PACE_CLAUSE)
+        if beat.get("facial"):
+            desc.append(FACIAL_PACE_CLAUSE)
+        else:
+            desc.append(GAME_THIRD_PERSON_CLAUSE)
+            if bid_now == "04-gin-lick" and "hugs aya" in action_txt.lower():
+                desc.append(GIN_LICK_PACE_CLAUSE)
+            elif "lowers her chest and cheek" in action_txt.lower():
+                desc.append(LOWER_TO_FLOOR_CLAUSE)
+            elif "turns to the grey wall in one continuous move" in action_txt.lower():
+                desc.append(WALL_SET_CLAUSE)
+            elif (
+                "moves the hips back once" in action_txt.lower()
+                and "hips stay back" in action_txt.lower()
+            ):
+                desc.append(HIPS_BACK_ONCE_CLAUSE)
+            elif bid_now == "04-gin-jupo":
+                desc.append(GIN_ORAL_PACE_CLAUSE)
+            elif bid_now == "04-gin-mouth":
+                desc.append(GIN_MOUTH_PACE_CLAUSE)
+            elif bid_now == "04-gin-spitkiss":
+                desc.append(GIN_SPIT_PACE_CLAUSE)
+            elif bid_now == "04-gin-wait":
+                desc.append(
+                    GIN_COLUMN_WAIT_PACE_CLAUSE if _column_rib_action(action_txt) else RIB_WAIT_PACE_CLAUSE
+                )
+            elif bid_now in RIB_WAIT_IDS or bid_now == "04-tsuno-wait":
+                if _column_rib_action(action_txt):
+                    desc.append(KISS_WAIT_PACE_CLAUSE)
+                elif "both knees stay bent" in action_txt.lower() and "soles plant" in action_txt.lower():
+                    desc.append(RIB_WAIT_PACE_CLAUSE)
+                else:
+                    desc.append(PLANTED_PACE_CLAUSE)
+                    desc.append(PLANTED_CLAUSE)
+            elif bid_now == "04-gin-ride":
+                desc.append(
+                    GIN_COLUMN_RIDE_PACE_CLAUSE if _column_rib_action(action_txt) else GIN_RIDE_PACE_CLAUSE
+                )
+            elif bid_now == "04-gin-peak":
+                desc.append(GIN_PEAK_PACE_CLAUSE)
+            elif str(bid_now).endswith("-ride") and _nongin_rib_ride(beat):
+                desc.append(KISS_RIDE_PACE_CLAUSE if _column_rib_action(action_txt) else RIB_RIDE_PACE_CLAUSE)
+            elif _nongin_rib_ride(beat):
+                desc.append(RIB_RIDE_PACE_CLAUSE)
+            elif NELSON_HOLD_RE.search(action_txt):
+                desc.append(NELSON_PACE_CLAUSE)
+                desc.append(NELSON_PLANTED_CLAUSE)
+            elif PEE_STILL_RE.search(action_txt):
+                desc.append(PEE_STILL_CLAUSE)
+            elif SIT_LAP_RE.search(action_txt) and SIT_LAP_MOVE_RE.search(action_txt):
+                desc.append(SIT_LAP_MOVE_CLAUSE)
+            elif SIT_LAP_RE.search(action_txt):
+                desc.append(SIT_LAP_CLAUSE)
+            elif SLIDE_FEET_RE.search(action_txt) and SUPINE_BEFORE_RE.search(action_txt):
+                desc.append(SUPINE_PACE_CLAUSE)
+                desc.append(SLIDE_PACE_CLAUSE)
+                desc.append(SUPINE_PLANTED_CLAUSE)
+                desc.append(RIDE_PAIR_CLAUSE)
+                if RIDE_FOLD_RE.search(action_txt) and not _skip_ride_fold(beat):
+                    desc.append(RIDE_FOLD_CLAUSE)
+            elif SLIDE_FEET_RE.search(action_txt):
+                desc.append(SLIDE_PACE_CLAUSE)
+                desc.append(SLIDE_PLANTED_CLAUSE)
+            elif SUPINE_BEFORE_RE.search(action_txt):
+                desc.append(SUPINE_PACE_CLAUSE)
+                desc.append(SUPINE_PLANTED_CLAUSE)
+                desc.append(RIDE_PAIR_CLAUSE)
+            elif RIDE_PEAK_RE.search(action_txt):
+                desc.append(RIDE_PEAK_CLAUSE)
+            elif TOILET_STALL_RE.search(action_txt):
+                desc.append(TOILET_STALL_CLAUSE)
+            elif CARRY_LIFT_RE.search(action_txt):
+                desc.append(CARRY_LIFT_PACE_CLAUSE)
             else:
                 desc.append(PLANTED_PACE_CLAUSE)
                 desc.append(PLANTED_CLAUSE)
-        elif bid_now == "04-gin-ride":
-            desc.append(
-                GIN_COLUMN_RIDE_PACE_CLAUSE if _column_rib_action(action_txt) else GIN_RIDE_PACE_CLAUSE
-            )
-        elif bid_now == "04-gin-peak":
-            desc.append(GIN_PEAK_PACE_CLAUSE)
-        elif str(bid_now).endswith("-ride") and _nongin_rib_ride(beat):
-            desc.append(KISS_RIDE_PACE_CLAUSE if _column_rib_action(action_txt) else RIB_RIDE_PACE_CLAUSE)
-        elif _nongin_rib_ride(beat):
-            desc.append(RIB_RIDE_PACE_CLAUSE)
-        elif NELSON_HOLD_RE.search(action_txt):
-            desc.append(NELSON_PACE_CLAUSE)
-            desc.append(NELSON_PLANTED_CLAUSE)
-        elif PEE_STILL_RE.search(action_txt):
-            desc.append(PEE_STILL_CLAUSE)
-        elif SIT_LAP_RE.search(action_txt) and SIT_LAP_MOVE_RE.search(action_txt):
-            desc.append(SIT_LAP_MOVE_CLAUSE)
-        elif SIT_LAP_RE.search(action_txt):
-            desc.append(SIT_LAP_CLAUSE)
-        elif SLIDE_FEET_RE.search(action_txt) and SUPINE_BEFORE_RE.search(action_txt):
-            desc.append(SUPINE_PACE_CLAUSE)
-            desc.append(SLIDE_PACE_CLAUSE)
-            desc.append(SUPINE_PLANTED_CLAUSE)
-            desc.append(RIDE_PAIR_CLAUSE)
-            if RIDE_FOLD_RE.search(action_txt) and not _skip_ride_fold(beat):
-                desc.append(RIDE_FOLD_CLAUSE)
-        elif SLIDE_FEET_RE.search(action_txt):
-            desc.append(SLIDE_PACE_CLAUSE)
-            desc.append(SLIDE_PLANTED_CLAUSE)
-        elif SUPINE_BEFORE_RE.search(action_txt):
-            desc.append(SUPINE_PACE_CLAUSE)
-            desc.append(SUPINE_PLANTED_CLAUSE)
-            desc.append(RIDE_PAIR_CLAUSE)
-        elif RIDE_PEAK_RE.search(action_txt):
-            desc.append(RIDE_PEAK_CLAUSE)
-        elif TOILET_STALL_RE.search(action_txt):
-            desc.append(TOILET_STALL_CLAUSE)
-        elif CARRY_LIFT_RE.search(action_txt):
-            desc.append(CARRY_LIFT_PACE_CLAUSE)
-        else:
-            desc.append(PLANTED_PACE_CLAUSE)
-            desc.append(PLANTED_CLAUSE)
     else:
         desc.append(GAME_THIRD_PERSON_CLAUSE)
         action_txt = str(beat.get("action") or "")
@@ -6527,7 +6588,14 @@ def build_beat_prompt(
     action_line = str(beat.get("action") or "").strip().rstrip(".")
     if str(beat.get("id") or "") == "04-dog-spot":
         action_line = _strip_dog_spot_entry(action_line).rstrip(".")
-    desc.append(action_line + ".")
+    same_take = ""
+    if (
+        str(ep.get("slug") or "") == "hospital-exit-adult"
+        and str(beat.get("id") or "") in ("04-gin-lick", "09-kana-kiss", "09-kana-facial")
+        and "one continuous take" not in action_line.lower()
+    ):
+        same_take = _SAME_TAKE
+    desc.append(action_line + "." + same_take)
     hold = _look_hold(ep, beat)
     if hold:
         desc.append(hold)
@@ -6567,7 +6635,15 @@ def build_beat_prompt(
         text = _strip_rib_legacy(text, peak=str(beat.get("id") or "").endswith("-peak"))
         if str(beat.get("id") or "").startswith("03-kiss"):
             text = text.replace("22cm", "24cm")
-    return apply_prompt_surface(ep, text)
+    text = apply_prompt_surface(ep, text)
+    if (
+        beat.get("facial")
+        and str(ep.get("slug") or "") == "hospital-exit-adult"
+        and not surface_is_ward(ep)
+    ):
+        text = text.replace("The same door stays behind Aya. ", "")
+        text = text.replace("The same door stays behind Aya", "")
+    return text
 
 
 def validate_beat_prompt(prompt: str, *, source: str, never: list[str] | None = None, still_as: str = "first") -> list[str]:
