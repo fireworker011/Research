@@ -12,13 +12,13 @@ sys.path.insert(0, str(ROOT / "minimaxh3"))
 from h3_episode import EPISODE_HELPERS  # noqa: E402
 from h3_episode_packs import (  # noqa: E402
     RIDE_FOOT_CHOICES,
+    form_initial,
     form_markdown,
     form_readme,
     ui_choices,
-    ui_default,
 )
 
-BRANCH = "cursor/h3-hospital-ward-34e4"
+BRANCH = "cursor/h3-lora-cards-d736"
 EPISODE_DEFAULT = "kasumi-late-desk-adult"
 REPO = "fireworker011/Research"
 FILE = "minimax_h3_episode_bot.ipynb"
@@ -30,7 +30,7 @@ def colab_url(path: str) -> str:
     return f"https://colab.research.google.com/github/{REPO}/blob/{BRANCH}/{path}"
 
 
-CELL = r'''#@title 一発：話と上から 1〜11、登場とシーンを選んで Run all（迷ったらそのまま）
+CELL = r'''#@title 一発：話と上から 1〜11、登場とシーンを選んで Run all（開いた欄のまま）
 __EPISODE_HELP__
 EPISODE = __EPISODE_DEFAULT__  #@param __EPISODE_CHOICES__
 #@markdown ---
@@ -86,10 +86,10 @@ APPEAR_REI = True  #@param {type:"boolean"}
 APPEAR_KANA = True  #@param {type:"boolean"}
 APPEAR_SHINO = True  #@param {type:"boolean"}
 #@markdown **シーンごと（病棟）。誘うは誘い方も含む。戦い構成と霞東は無視。**
-SCENE_MIKI = __SCENE_DEFAULT__  #@param __SCENE_CHOICES__
-SCENE_REI = __SCENE_DEFAULT__  #@param __SCENE_CHOICES__
-SCENE_KANA = __SCENE_DEFAULT__  #@param __SCENE_CHOICES__
-SCENE_SHINO = __SCENE_DEFAULT__  #@param __SCENE_CHOICES__
+SCENE_MIKI = __SCENE_MIKI_DEFAULT__  #@param __SCENE_CHOICES__
+SCENE_REI = __SCENE_REI_DEFAULT__  #@param __SCENE_CHOICES__
+SCENE_KANA = __SCENE_KANA_DEFAULT__  #@param __SCENE_CHOICES__
+SCENE_SHINO = __SCENE_SHINO_DEFAULT__  #@param __SCENE_CHOICES__
 #@markdown **開始シーン** — 空なら最初から。beat id（例 `04-toilet`）を書くと、そのカットから先を今のドロップダウンどおりに作り直す。前のカットは残す。この設定の並びに無い id は止まる。
 START = ""  #@param {type:"string"}
 FRESH = False  #@param {type:"boolean"}
@@ -219,11 +219,11 @@ MD = f"""# MiniMax H3 エピソード一発（選んで Run all）
 
 [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)]({colab_url(FILE)})
 
-**コードセルは1本。迷ったらドロップダウンはそのままで Run all。** Drive `minimax-h3-comfyui/episodes/<slug>/` に
+**コードセルは1本。開いた欄のまま Run all。** 開いたときの選択は病棟出口、前の最終フレームから続ける、スピード、誘う、トイレ触手、灰色は最初から膝曲げ、角は横になって挿入。シーンはみき四つん這い、れい後ろアナル、かな壁立ち、しのM字。迷ったらこれの印は、台本をそのまま出す行に残す。BRANCH はこの枝。開いたままのセルは古い欄を保持する。 Drive `minimax-h3-comfyui/episodes/<slug>/` に
 `episode.json` とスチールが無ければ GitHub から取ってくる。全ビートを1つのランタイムで描き、
 HUD・タイトル・免責エンドカードを載せて `final/<slug>-<日時>.mp4`（と `latest.mp4`）を書く。動画が描き終わったらランタイムを切る。重みの取得だけと、失敗したときは切らない。
 
-## 話 + 上から 11 つ + 病棟の追加（迷ったらそのまま）
+## 話 + 上から 11 つ + 病棟の追加
 
 **話** — どの予告を描くか
 
@@ -257,11 +257,11 @@ HUD・タイトル・免責エンドカードを載せて `final/<slug>-<日時>
 
 {form_readme("toilet")}
 
-**8. 灰色の長い舌** — 病棟の追加オプション。出ないが既定。霞東は無視
+**8. 灰色の長い舌** — 病棟の追加オプション。開いたときは最初から膝曲げ。迷ったら出ない。霞東は無視
 
 {form_readme("gin")}
 
-**9. 角の頭** — 病棟の追加オプション。出ないが既定。騎乗と個室は新しい話。霞東は無視
+**9. 角の頭** — 病棟の追加オプション。開いたときは横になって挿入。迷ったら出ない。騎乗と個室は新しい話。霞東は無視
 
 {form_readme("tsuno")}
 
@@ -291,7 +291,7 @@ HUD・タイトル・免責エンドカードを載せて `final/<slug>-<日時>
 - **開始シーン**に beat id を書くと、そのカットから先だけ今のドロップダウン（構成・トイレ・灰色・角・犬・異種・登場・シーンごと・つなぎ方）で作り直す。空なら最初から。前の動画は残して首にする。チェーンの前のカットが今の設定と違うとき、または動画が無いときは、そこまで戻って描く。並びに無い id は止まる
 - HUD・字幕は生成後に載せる。H3 に日本語UIを描かせない
 - 投稿しない。アフィURL禁止。他のネタは `minimaxh3/episodes/_template` を複製して EPISODE を変える
-- 話のドロップダウンで霞東あさ / 病棟出口 / 番台を選ぶ（スラッグは `kasumi-late-desk-adult` / `hospital-exit-adult` / `bandai-district-short`）。霞東は Colab 4 オフが行為ルート（Combat なし）。オン＋ハイメモリは戦いルートで 06 と 10 に Combat。病棟修正版は `BRANCH=cursor/h3-hospital-ward-34e4`。霞東本体 `kasumi-late-desk` は PR #141。このノートの Run all で本体 Drive を上書きするな
+- 話のドロップダウンで霞東あさ / 病棟出口 / 番台を選ぶ（スラッグは `kasumi-late-desk-adult` / `hospital-exit-adult` / `bandai-district-short`）。霞東は Colab 4 オフが行為ルート（Combat なし）。オン＋ハイメモリは戦いルートで 06 と 10 に Combat。開いたときの BRANCH は `cursor/h3-lora-cards-d736`。霞東本体 `kasumi-late-desk` は PR #141。このノートの Run all で本体 Drive を上書きするな
 - 番台ショートは 25 秒・ミッション失敗で落ちる版。`bandai-district/raw/` の暖簾・自転車・軽トラをそのまま使い、新しく描くのは理容室の 1 本だけ
 - 成功時は `episode exit 0` のあと「成功。」と出て、ランタイムを切る。重みの取得だけと、失敗したときは切らない。`SystemExit: 0` の赤い枠は出さない
 
@@ -305,55 +305,58 @@ def make_nb() -> dict:
         .replace("__REPO__", REPO)
         .replace("__HELPERS__", json.dumps(HELPERS, indent=4))
         .replace("__EPISODE_HELP__", form_markdown("episode", "話 — どの予告を描くか"))
-        .replace("__EPISODE_DEFAULT__", json.dumps(ui_default("episode"), ensure_ascii=False))
+        .replace("__EPISODE_DEFAULT__", json.dumps(form_initial("episode"), ensure_ascii=False))
         .replace("__EPISODE_CHOICES__", json.dumps(ui_choices("episode"), ensure_ascii=False))
         .replace("__CONNECT_HELP__", form_markdown("connect", "1. つなぎ方 — 動画をどう繋げるか。新しい相手の入りはカット。消滅はチェーンならフェード"))
-        .replace("__CONNECT_DEFAULT__", json.dumps(ui_default("connect"), ensure_ascii=False))
+        .replace("__CONNECT_DEFAULT__", json.dumps(form_initial("connect"), ensure_ascii=False))
         .replace("__CONNECT_CHOICES__", json.dumps(ui_choices("connect"), ensure_ascii=False))
         .replace("__CAMERA_HELP__", form_markdown("camera", "2. カメラ"))
-        .replace("__CAMERA_DEFAULT__", json.dumps(ui_default("camera"), ensure_ascii=False))
+        .replace("__CAMERA_DEFAULT__", json.dumps(form_initial("camera"), ensure_ascii=False))
         .replace("__CAMERA_CHOICES__", json.dumps(ui_choices("camera"), ensure_ascii=False))
         .replace("__PRESET_HELP__", form_markdown("preset", "3. 画質"))
-        .replace("__PRESET_DEFAULT__", json.dumps(ui_default("preset"), ensure_ascii=False))
+        .replace("__PRESET_DEFAULT__", json.dumps(form_initial("preset"), ensure_ascii=False))
         .replace("__PRESET_CHOICES__", json.dumps(ui_choices("preset"), ensure_ascii=False))
         .replace("__COMBAT_HELP__", form_markdown("combat", "4. 格闘 LoRA — ハイメモリ専用の任意"))
-        .replace("__COMBAT_DEFAULT__", json.dumps(ui_default("combat"), ensure_ascii=False))
+        .replace("__COMBAT_DEFAULT__", json.dumps(form_initial("combat"), ensure_ascii=False))
         .replace("__COMBAT_CHOICES__", json.dumps(ui_choices("combat"), ensure_ascii=False))
         .replace("__MISSIONLG_HELP__", form_markdown("missionlg", "正常位 LoRA — 迷ったらオフ。M字の挿入と絶頂だけ"))
-        .replace("__MISSIONLG_DEFAULT__", json.dumps(ui_default("missionlg"), ensure_ascii=False))
+        .replace("__MISSIONLG_DEFAULT__", json.dumps(form_initial("missionlg"), ensure_ascii=False))
         .replace("__MISSIONLG_CHOICES__", json.dumps(ui_choices("missionlg"), ensure_ascii=False))
         .replace("__MESSYBLOW_HELP__", form_markdown("messyblow", "フェラ LoRA — 迷ったら今の v3。オンで口の拍だけ差し替え"))
-        .replace("__MESSYBLOW_DEFAULT__", json.dumps(ui_default("messyblow"), ensure_ascii=False))
+        .replace("__MESSYBLOW_DEFAULT__", json.dumps(form_initial("messyblow"), ensure_ascii=False))
         .replace("__MESSYBLOW_CHOICES__", json.dumps(ui_choices("messyblow"), ensure_ascii=False))
         .replace("__CLOSEUP_HELP__", form_markdown("closeup", "超近距離 LoRA — 迷ったらオフ。穴の見える拍だけ"))
-        .replace("__CLOSEUP_DEFAULT__", json.dumps(ui_default("closeup"), ensure_ascii=False))
+        .replace("__CLOSEUP_DEFAULT__", json.dumps(form_initial("closeup"), ensure_ascii=False))
         .replace("__CLOSEUP_CHOICES__", json.dumps(ui_choices("closeup"), ensure_ascii=False))
         .replace("__STORY_HELP__", form_markdown("story", "5. 構成 — 病棟はここで完了か失敗かが分かれる"))
-        .replace("__STORY_DEFAULT__", json.dumps(ui_default("story"), ensure_ascii=False))
+        .replace("__STORY_DEFAULT__", json.dumps(form_initial("story"), ensure_ascii=False))
         .replace("__STORY_CHOICES__", json.dumps(ui_choices("story"), ensure_ascii=False))
         .replace("__POSE_HELP__", form_markdown("invite_pose", "6. 誘うポーズ — 病棟の□誘うだけ"))
-        .replace("__POSE_DEFAULT__", json.dumps(ui_default("invite_pose"), ensure_ascii=False))
+        .replace("__POSE_DEFAULT__", json.dumps(form_initial("invite_pose"), ensure_ascii=False))
         .replace("__POSE_CHOICES__", json.dumps(ui_choices("invite_pose"), ensure_ascii=False))
         .replace("__RIDE_CHOICES__", json.dumps(list(RIDE_FOOT_CHOICES), ensure_ascii=False))
         .replace("__CHECKPOINT_HELP__", form_markdown("checkpoint", "チェックポイント — 10Eros Max か DaSiWa"))
-        .replace("__CHECKPOINT_DEFAULT__", json.dumps(ui_default("checkpoint"), ensure_ascii=False))
+        .replace("__CHECKPOINT_DEFAULT__", json.dumps(form_initial("checkpoint"), ensure_ascii=False))
         .replace("__CHECKPOINT_CHOICES__", json.dumps(ui_choices("checkpoint"), ensure_ascii=False))
         .replace("__TOILET_HELP__", form_markdown("toilet", "7. トイレ — 洋式汚物、和式汚物、有機物植物の三択。触手は有機物だけ"))
-        .replace("__TOILET_DEFAULT__", json.dumps(ui_default("toilet"), ensure_ascii=False))
+        .replace("__TOILET_DEFAULT__", json.dumps(form_initial("toilet"), ensure_ascii=False))
         .replace("__TOILET_CHOICES__", json.dumps(ui_choices("toilet"), ensure_ascii=False))
-        .replace("__GIN_HELP__", form_markdown("gin", "8. 灰色の長い舌 — 病棟の追加。出ないが既定"))
-        .replace("__GIN_DEFAULT__", json.dumps(ui_default("gin"), ensure_ascii=False))
+        .replace("__GIN_HELP__", form_markdown("gin", "8. 灰色の長い舌 — 病棟の追加。開いたときは最初から膝曲げ。迷ったら出ない"))
+        .replace("__GIN_DEFAULT__", json.dumps(form_initial("gin"), ensure_ascii=False))
         .replace("__GIN_CHOICES__", json.dumps(ui_choices("gin"), ensure_ascii=False))
-        .replace("__TSUNO_HELP__", form_markdown("tsuno", "9. 角の頭 — 病棟の追加。出ないが既定"))
-        .replace("__TSUNO_DEFAULT__", json.dumps(ui_default("tsuno"), ensure_ascii=False))
+        .replace("__TSUNO_HELP__", form_markdown("tsuno", "9. 角の頭 — 病棟の追加。開いたときは横になって挿入。迷ったら出ない"))
+        .replace("__TSUNO_DEFAULT__", json.dumps(form_initial("tsuno"), ensure_ascii=False))
         .replace("__TSUNO_CHOICES__", json.dumps(ui_choices("tsuno"), ensure_ascii=False))
         .replace("__DOG_HELP__", form_markdown("dog", "10. 犬 — 病棟の追加。出ないが既定。灰色はオフにしない"))
-        .replace("__DOG_DEFAULT__", json.dumps(ui_default("dog"), ensure_ascii=False))
+        .replace("__DOG_DEFAULT__", json.dumps(form_initial("dog"), ensure_ascii=False))
         .replace("__DOG_CHOICES__", json.dumps(ui_choices("dog"), ensure_ascii=False))
         .replace("__SPECIES_HELP__", form_markdown("species", "11. 異種 — 病棟の追加。スライムとケモノは同時に出ない"))
-        .replace("__SPECIES_DEFAULT__", json.dumps(ui_default("species"), ensure_ascii=False))
+        .replace("__SPECIES_DEFAULT__", json.dumps(form_initial("species"), ensure_ascii=False))
         .replace("__SPECIES_CHOICES__", json.dumps(ui_choices("species"), ensure_ascii=False))
-        .replace("__SCENE_DEFAULT__", json.dumps(ui_default("scene"), ensure_ascii=False))
+        .replace("__SCENE_MIKI_DEFAULT__", json.dumps(form_initial("scene_miki"), ensure_ascii=False))
+        .replace("__SCENE_REI_DEFAULT__", json.dumps(form_initial("scene_rei"), ensure_ascii=False))
+        .replace("__SCENE_KANA_DEFAULT__", json.dumps(form_initial("scene_kana"), ensure_ascii=False))
+        .replace("__SCENE_SHINO_DEFAULT__", json.dumps(form_initial("scene_shino"), ensure_ascii=False))
         .replace("__SCENE_CHOICES__", json.dumps(ui_choices("scene"), ensure_ascii=False))
     )
     return {

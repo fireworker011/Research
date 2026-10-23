@@ -155,6 +155,7 @@ from h3_episode_packs import (  # noqa: E402
     TSUNO_OVERLAY_KEYS,
     canonical_episode,
     describe_run,
+    form_initial,
     form_readme,
     parse_scenes,
     ui_choices,
@@ -353,18 +354,21 @@ def test_notebook_is_one_cell_and_isolated():
     assert len(code) == 1
     src = "".join(code[0]["source"])
     assert "h3_episode_colab_main" in src
-    assert 'EPISODE = "霞東フロア あさ（迷ったらこれ）"' in src
+    assert 'EPISODE = "病棟出口"' in src
+    assert "霞東フロア あさ（迷ったらこれ）" in src
     assert "病棟出口" in src
     assert "番台ショート（25秒）" in src
-    assert 'BRANCH = "cursor/h3-hospital-ward-34e4"' in src
+    assert 'BRANCH = "cursor/h3-lora-cards-d736"' in src
     assert 'CivitaiのAPIキー = ""' in src
     assert 'os.environ["CIVITAI_API_TOKEN"] = _civitai' in src
     assert "619ea878c0bf2491f6cedd625329c5b3" not in src
-    assert 'PRESET = "バランス（迷ったらこれ）"' in src
+    assert 'PRESET = "スピード（最速）"' in src
+    assert "バランス（迷ったらこれ）" in src
     assert "スピード（最速）" in src and "質（きれい・時間かかる）" in src
     assert 'CAMERA = "横スク（真横・全身・迷ったらこれ）"' in src
     assert "3Dアクション（引きの三人称）" in src
-    assert 'CONNECT = "カット（本ごと独立・迷ったらこれ）"' in src
+    assert 'CONNECT = "前の最終フレームから続ける"' in src
+    assert "カット（本ごと独立・迷ったらこれ）" in src
     assert "前の最終フレームから続ける" in src
     assert "用意した最終フレームへ着く" in src
     assert 'COMBAT = "格闘LoRAオフ（迷ったらこれ）"' in src
@@ -397,9 +401,14 @@ def test_notebook_is_one_cell_and_isolated():
     assert 'AYA_SHAFT = "今のまま"' in src
     assert 'ENEMY_LOOK = ""' in src
     assert "H3_EPISODE_SCENES" in src
-    assert "SCENE_MIKI" in src and "SCENE_SHINO" in src
+    assert 'SCENE_MIKI = "□誘う・四つん這い股広げ"' in src
+    assert 'SCENE_REI = "□誘う・後ろアナル"' in src
+    assert 'SCENE_KANA = "□誘う・壁立ちバック"' in src
+    assert 'SCENE_SHINO = "□誘う・M字開脚仰向け"' in src
+    assert "全体に従う（迷ったらこれ）" in src
     assert "canonical_episode" in src
-    assert 'STORY = "○受け入れる（生存・完了・迷ったらこれ）"' in src
+    assert 'STORY = "□誘う（淫欲・失敗）"' in src
+    assert "○受け入れる（生存・完了・迷ったらこれ）" in src
     assert "□誘う（淫欲・失敗）" in src
     assert "△戦って負ける（敗北H・失敗・ハイメモリ）" in src
     assert 'INVITE_POSE = "四つん這い股広げ（迷ったらこれ）"' in src
@@ -414,9 +423,12 @@ def test_notebook_is_one_cell_and_isolated():
     assert "壁立ちバック" in src
     assert "フルネルソンアナル" in src
     assert "ベロチュー→じゅぼ→騎乗位" not in src
-    assert 'TOILET = "トイレに行かない（迷ったらこれ）"' in src
-    assert 'GIN = "灰色・出ない（迷ったらこれ）"' in src
-    assert 'TSUNO = "角・出ない（迷ったらこれ）"' in src
+    assert 'TOILET = "トイレ・触手"' in src
+    assert "トイレに行かない（迷ったらこれ）" in src
+    assert 'GIN = "灰色・騎乗・最初から膝曲げ"' in src
+    assert "灰色・出ない（迷ったらこれ）" in src
+    assert 'TSUNO = "角・病室で横になって挿入"' in src
+    assert "角・出ない（迷ったらこれ）" in src
     assert 'DOG = "犬・出ない（迷ったらこれ）"' in src
     assert 'SPECIES = "異種・出ない（迷ったらこれ）"' in src
     assert "APPEAR_MIKI" in src and "APPEAR_SHINO" in src
@@ -424,7 +436,7 @@ def test_notebook_is_one_cell_and_isolated():
     md = "".join("".join(c["source"]) for c in nb["cells"] if c["cell_type"] == "markdown")
     assert "619ea878c0bf2491f6cedd625329c5b3" not in md
     assert "CivitaiのAPIキー" in md
-    assert "cursor/h3-hospital-ward-34e4" in md
+    assert "cursor/h3-lora-cards-d736" in md
     assert "kasumi-late-desk-adult" in md
     assert "10Eros Max は Drive" in md
     assert "10Eros_Max_h3_TURBO-hybrid_beta5_int8.safetensors" in md
@@ -3925,6 +3937,35 @@ def test_camera_packs_rotate_and_t2v_rejects_last_frame_lock():
     bad = dict(gpu[0], camera="slow-motion close-up")
     assert any("slow motion" in e for e in validate_episode(dict(ep, beats=[bad, *ep["beats"][1:]])))
     assert any("slow-mo" in h.lower() or "slow" in h.lower() for h in forbidden_hits("no slow-mo please"))
+
+
+def test_form_opens_on_the_ward_exit_invite_run():
+    assert form_initial("episode") == "病棟出口"
+    assert form_initial("connect") == "前の最終フレームから続ける"
+    assert form_initial("camera") == ui_default("camera")
+    assert form_initial("preset") == "スピード（最速）"
+    assert form_initial("combat") == ui_default("combat")
+    assert form_initial("missionlg") == ui_default("missionlg")
+    assert form_initial("messyblow") == ui_default("messyblow")
+    assert form_initial("closeup") == ui_default("closeup")
+    assert form_initial("story") == "□誘う（淫欲・失敗）"
+    assert form_initial("invite_pose") == ui_default("invite_pose")
+    assert form_initial("checkpoint") == ui_default("checkpoint")
+    assert form_initial("toilet") == "トイレ・触手"
+    assert form_initial("gin") == "灰色・騎乗・最初から膝曲げ"
+    assert form_initial("tsuno") == "角・病室で横になって挿入"
+    assert form_initial("dog") == ui_default("dog")
+    assert form_initial("species") == ui_default("species")
+    assert form_initial("scene") == ui_default("scene")
+    assert form_initial("scene_miki") == "□誘う・四つん這い股広げ"
+    assert form_initial("scene_rei") == "□誘う・後ろアナル"
+    assert form_initial("scene_kana") == "□誘う・壁立ちバック"
+    assert form_initial("scene_shino") == "□誘う・M字開脚仰向け"
+    assert ui_default("episode") == "霞東フロア あさ（迷ったらこれ）"
+    assert ui_default("story") == "○受け入れる（生存・完了・迷ったらこれ）"
+    assert ui_default("toilet").startswith("トイレに行かない")
+    assert ui_default("gin").startswith("灰色・出ない")
+    assert ui_default("tsuno").startswith("角・出ない")
 
 
 def test_connect_modes_t2v_chain_landing_and_ui_labels():
