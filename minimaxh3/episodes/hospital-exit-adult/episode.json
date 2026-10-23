@@ -3001,6 +3001,220 @@
           "loco": "walk"
         }
       ],
+      "on_toilet_anal_finger": [
+        {
+          "id": "04-toilet-in",
+          "source": "t2v",
+          "connect": "t2v",
+          "still": "",
+          "trim": {
+            "start": 0,
+            "seconds": 6.0
+          },
+          "cast": [
+            "aya"
+          ],
+          "face_visible": false,
+          "camera_pack": "none",
+          "props": [],
+          "environment": "A filthy crumbling western hospital toilet at night. Cracked grey tiles. Peeling plaster. One stained white porcelain toilet with a seat and a bowl, covered in extra-viscous sticky grimy brown hospital dirt and brown smears. The seat, the bowl, and the tiles stay smeared. A flickering broken fluorescent tube. No clocks. No readable letters. Every adult in frame is fully nude.",
+          "place": "A filthy crumbling western hospital toilet at night. Cracked grey tiles. Peeling plaster. One stained white porcelain toilet with a seat and a bowl, covered in extra-viscous sticky grimy brown hospital dirt and brown smears. The seat, the bowl, and the tiles stay smeared. A flickering broken fluorescent tube. No clocks. No readable letters. Every adult in frame is fully nude.",
+          "hud": {
+            "mission": "出口に出る",
+            "mission_keyword": "出口",
+            "health": 0.9,
+            "money": "¥0",
+            "objective_bearing": 0,
+            "complete": false,
+            "hint": "次へ",
+            "stamina": 0.45,
+            "heat": 3,
+            "objective_distance": 0.5,
+            "icons_active": [
+              "隠"
+            ],
+            "action": ""
+          },
+          "music": "Bass holds",
+          "loco": "walk",
+          "extra_loras": [
+            [
+              "mystic",
+              0.5
+            ]
+          ],
+          "camera": "FROM THE STALL DOOR. Aya walks into this one toilet stall, turns away from the camera, and bends forward over the toilet. Full body including feet. The camera stays behind her the whole take",
+          "action": "Aya WALKS into the filthy stall at walking-and-hit pace, fully nude, TURNS her back to the camera, and BENDS forward at the hips over the filthy porcelain western toilet. Her left palm lands on the toilet tank. Her feet stand apart on the tiles. Her buttocks face the camera. Last frame: Aya bent forward over the toilet, left palm on the tank, buttocks toward the camera, the pussy and anus exposed. Motion starts at frame one. Brisk real-time. Consensual adult game beat",
+          "voices": [
+            {
+              "who": "aya",
+              "line": "はぁ"
+            }
+          ],
+          "sfx": "Footsteps on tile, a palm on the tank, drip, fluorescent buzz, HVAC"
+        },
+        {
+          "id": "04-toilet-afin",
+          "source": "chain",
+          "connect": "chain",
+          "still": "",
+          "trim": {
+            "start": 0,
+            "seconds": 8.0
+          },
+          "cast": [
+            "aya"
+          ],
+          "face_visible": false,
+          "camera_pack": "none",
+          "props": [],
+          "environment": "A filthy crumbling western hospital toilet at night. Cracked grey tiles. Peeling plaster. One stained white porcelain toilet with a seat and a bowl, covered in extra-viscous sticky grimy brown hospital dirt and brown smears. The seat, the bowl, and the tiles stay smeared. A flickering broken fluorescent tube. No clocks. No readable letters. Every adult in frame is fully nude.",
+          "place": "A filthy crumbling western hospital toilet at night. Cracked grey tiles. Peeling plaster. One stained white porcelain toilet with a seat and a bowl, covered in extra-viscous sticky grimy brown hospital dirt and brown smears. The seat, the bowl, and the tiles stay smeared. A flickering broken fluorescent tube. No clocks. No readable letters. Every adult in frame is fully nude.",
+          "hud": {
+            "mission": "出口に出る",
+            "mission_keyword": "出口",
+            "health": 0.9,
+            "money": "¥0",
+            "objective_bearing": 0,
+            "complete": false,
+            "hint": "次へ",
+            "stamina": 0.45,
+            "heat": 3,
+            "objective_distance": 0.5,
+            "icons_active": [
+              "隠"
+            ],
+            "action": ""
+          },
+          "music": "Bass holds",
+          "loco": "planted",
+          "extra_loras": [
+            [
+              "analfinger",
+              1.0
+            ],
+            [
+              "mystic",
+              0.5
+            ]
+          ],
+          "trigger": "anal_finger",
+          "camera": "Medium shot from behind and slightly low. Aya faces away from the camera, bent forward over the toilet. Her buttocks fill the center of the frame. The anus and the pussy stay visible. The toilet tank stays ahead of her.",
+          "action": "They start already in this same stall. Aya stands in this same stall facing away from the camera, bent forward at the hips over the filthy porcelain western toilet. Her left palm rests on the toilet tank. Her feet stand apart on the tiles. Her buttocks face the camera. Her pussy and anus are exposed to the camera, the anus a small ring above the pussy. She reaches behind her with her right hand and inserts her index finger into her anus. She moves her wrist to slide her finger in and out of her anus. She breathlessly moans. Last frame: still bent forward, left palm on the tank, the right index finger inside the anus. They stay inside this same stall.",
+          "voices": [
+            {
+              "who": "aya",
+              "line": "あっ、んっ"
+            }
+          ],
+          "sfx": "Soft wet finger sounds, breathless moans, fluorescent buzz",
+          "own_frame": true
+        },
+        {
+          "id": "04-toilet-afast",
+          "source": "chain",
+          "connect": "chain",
+          "still": "",
+          "trim": {
+            "start": 0,
+            "seconds": 8.0
+          },
+          "cast": [
+            "aya"
+          ],
+          "face_visible": false,
+          "camera_pack": "none",
+          "props": [],
+          "environment": "A filthy crumbling western hospital toilet at night. Cracked grey tiles. Peeling plaster. One stained white porcelain toilet with a seat and a bowl, covered in extra-viscous sticky grimy brown hospital dirt and brown smears. The seat, the bowl, and the tiles stay smeared. A flickering broken fluorescent tube. No clocks. No readable letters. Every adult in frame is fully nude.",
+          "place": "A filthy crumbling western hospital toilet at night. Cracked grey tiles. Peeling plaster. One stained white porcelain toilet with a seat and a bowl, covered in extra-viscous sticky grimy brown hospital dirt and brown smears. The seat, the bowl, and the tiles stay smeared. A flickering broken fluorescent tube. No clocks. No readable letters. Every adult in frame is fully nude.",
+          "hud": {
+            "mission": "出口に出る",
+            "mission_keyword": "出口",
+            "health": 0.9,
+            "money": "¥0",
+            "objective_bearing": 0,
+            "complete": false,
+            "hint": "次へ",
+            "stamina": 0.45,
+            "heat": 3,
+            "objective_distance": 0.5,
+            "icons_active": [
+              "隠"
+            ],
+            "action": ""
+          },
+          "music": "Bass holds",
+          "loco": "planted",
+          "extra_loras": [
+            [
+              "mystic",
+              0.5
+            ],
+            [
+              "jpnmoans",
+              0.55
+            ]
+          ],
+          "trigger": "jpnMoans",
+          "camera": "Medium shot from behind and slightly low. Aya faces away from the camera, bent forward over the toilet. Her buttocks fill the center of the frame. The anus and the pussy stay visible. The toilet tank stays ahead of her. Last frame: the finger is outside, the anus stays a wide open ring, thick brown feces clings to the fingertip, and a small smear of thick brown feces clings around the rim.",
+          "action": "They start already in this same stall with the right index finger inside the anus. Aya stands in this same stall facing away from the camera, bent forward at the hips over the filthy porcelain western toilet. Her left palm rests on the toilet tank. Her feet stand apart on the tiles. Her buttocks face the camera. Her pussy and anus are exposed to the camera. She climaxes, head back, back arched, thighs trembling. Then the right index finger slides out of the anus. The anus stays a wide open ring. Thick brown feces clings to the fingertip. A small smear of thick brown feces clings to the skin around that open ring. Last frame: bent forward, left palm on the tank, the finger outside, the anus a wide open ring, thick brown feces on the fingertip, a small smear of thick brown feces around the open ring. They stay inside this same stall.",
+          "voices": [
+            {
+              "who": "aya",
+              "line": "あっ、いく"
+            }
+          ],
+          "sfx": "Faster wet finger sounds, rising moans, a sharp gasp",
+          "own_frame": true
+        },
+        {
+          "id": "04-toilet-out",
+          "source": "chain",
+          "connect": "end",
+          "still": "",
+          "trim": {
+            "start": 0,
+            "seconds": 10.0
+          },
+          "cast": [
+            "aya"
+          ],
+          "face_visible": false,
+          "camera_pack": "none",
+          "props": [],
+          "environment": "A filthy crumbling western hospital toilet at night. Cracked grey tiles. Peeling plaster. One stained white porcelain toilet with a seat and a bowl, covered in extra-viscous sticky grimy brown hospital dirt and brown smears. The seat, the bowl, and the tiles stay smeared. A flickering broken fluorescent tube. No clocks. No readable letters. Every adult in frame is fully nude.",
+          "place": "A filthy crumbling western hospital toilet at night. Cracked grey tiles. Peeling plaster. One stained white porcelain toilet with a seat and a bowl, covered in extra-viscous sticky grimy brown hospital dirt and brown smears. The seat, the bowl, and the tiles stay smeared. A flickering broken fluorescent tube. No clocks. No readable letters. Every adult in frame is fully nude.",
+          "hud": {
+            "mission": "出口に出る",
+            "mission_keyword": "出口",
+            "health": 0.9,
+            "money": "¥0",
+            "objective_bearing": 0,
+            "complete": false,
+            "hint": "次へ",
+            "stamina": 0.45,
+            "heat": 3,
+            "objective_distance": 0.5,
+            "icons_active": [
+              "隠"
+            ],
+            "action": ""
+          },
+          "music": "Bass holds",
+          "loco": "walk",
+          "extra_loras": [],
+          "trigger": "",
+          "camera": "PROFILE side-on. The opening keeps Aya bent at the toilet, full body including both feet. She brings the fingertip to her mouth, then straightens and walks RIGHT. Full body including both feet.",
+          "action": "The right index fingertip, with thick brown feces clinging to it, goes into Aya's open mouth. She licks that fingertip clean. The fingertip leaves the mouth clean. Then Aya STRAIGHTENS from the toilet and WALKS RIGHT out of the stall into the corridor at walking-and-hit pace, fully nude. Last frame: only Aya walking RIGHT in the corridor, fully nude, female body, the fingertip clean. Motion starts at frame one. Brisk real-time. Consensual adult game beat",
+          "voices": [
+            {
+              "who": "aya",
+              "line": "はぁ"
+            }
+          ],
+          "sfx": "A soft breath, footsteps on linoleum, HVAC"
+        }
+      ],
       "on_toilet_wash": [
         {
           "id": "04-toilet-in",

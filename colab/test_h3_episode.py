@@ -2640,6 +2640,40 @@ def test_hospital_finger_pose_and_squat_toilet_modes():
         assert word not in low
     _assert_hospital_bans(finger)
 
+    afin_ep = prepare_episode(raw, story_override="accept", toilet_override="指アナル", connect_override="chain")
+    assert validate_episode(afin_ep, root=HOSPITAL_DIR) == []
+    afin_ids = [b["id"] for b in afin_ep["beats"] if str(b["id"]).startswith("04-toilet")]
+    assert afin_ids == ["04-toilet-in", "04-toilet-afin", "04-toilet-afast", "04-toilet-out"]
+    afin = next(b for b in afin_ep["beats"] if b["id"] == "04-toilet-afin")
+    assert extra_lora_entries(afin)[0] == ("analfinger", 1.0)
+    assert LORA_FILES["analfinger"] == "af_h3_vids512_imgs1024_000011750.safetensors"
+    assert "3388162" in LORA_URLS["analfinger"]
+    assert "fileId=3277184" in LORA_URLS["analfinger"]
+    assert LORA_STRENGTHS["analfinger"] == 1.0
+    afin_prompt = build_beat_prompt(afin_ep, afin, trigger=merge_trigger("", afin))
+    assert afin_prompt.startswith("anal_finger")
+    assert "inserts her index finger into her anus" in afin_prompt
+    assert "all four feet" not in afin_prompt
+    assert "buttocks fill the center" in afin_prompt.lower()
+    assert "into the pussy" not in afin_prompt.lower()
+    assert "penis-shaped dildo" not in afin_prompt.lower()
+    assert beat_source(afin) == "chain"
+    assert "solodildo" not in extra_keys(afin)
+    assert "thumbinbutt" not in extra_keys(afin)
+    afast = next(b for b in afin_ep["beats"] if b["id"] == "04-toilet-afast")
+    assert "wide open ring" in afast["action"].lower()
+    assert "thick brown feces" in afast["action"].lower()
+    assert "analfinger" not in extra_keys(afast)
+    assert "jpnmoans" in extra_keys(afast)
+    afast_prompt = build_beat_prompt(afin_ep, afast, trigger=merge_trigger("", afast))
+    assert "the anus stays a wide open ring" in afast_prompt.lower()
+    assert "thick brown feces clings to the fingertip" in afast_prompt.lower()
+    walked = next(b for b in afin_ep["beats"] if b["id"] == "04-toilet-out")
+    assert "licks that fingertip" in walked["action"].lower()
+    assert "solodildo" not in extra_keys(walked)
+    alias = prepare_episode(raw, story_override="accept", toilet_override="アナル指", connect_override="chain")
+    assert [b["id"] for b in alias["beats"] if str(b["id"]).startswith("04-toilet")] == afin_ids
+
     wash = prepare_episode(raw, story_override="accept", toilet_override="和式", connect_override="t2v")
     miki = prepare_episode(raw, story_override="accept", toilet_override="和式ミキ", connect_override="t2v")
     assert validate_episode(wash, root=HOSPITAL_DIR) == []
@@ -4094,8 +4128,16 @@ def test_form_opens_on_the_ward_exit_invite_run():
     assert ui_default("tsuno").startswith("角・出ない")
     assert TOILET_MODES["finger"]["choice_ja"] == "トイレ・ディルド"
     assert "膣" in TOILET_MODES["finger"]["when_ja"]
-    assert canonical_toilet("トイレ・アナル指") == "finger"
-    assert canonical_toilet("アナル指") == "finger"
+    assert TOILET_MODES["anal_finger"]["choice_ja"] == "トイレ・指アナル"
+    assert "肛門" in TOILET_MODES["anal_finger"]["when_ja"]
+    assert "膣" not in TOILET_MODES["anal_finger"]["when_ja"]
+    assert "Self Anal Finger" in TOILET_MODES["anal_finger"]["when_ja"]
+    assert canonical_toilet("トイレ・アナル指") == "anal_finger"
+    assert canonical_toilet("アナル指") == "anal_finger"
+    assert canonical_toilet("指アナル") == "anal_finger"
+    assert canonical_toilet("指") == "anal_finger"
+    assert canonical_toilet("ディルド") == "finger"
+    assert canonical_toilet("トイレ・ディルド") == "finger"
     assert "マット" not in TSUNO_MODES["invite_jacko"]["hint_ja"]
     assert "寝床" in TSUNO_MODES["invite_ride"]["hint_ja"]
     assert TSUNO_MODES["invite_jacko"]["choice_ja"] == "角・病室でベッドの後ろアナル"

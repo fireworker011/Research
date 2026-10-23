@@ -345,6 +345,9 @@ LORA_FILES = {
     "cumfacial": "cum_facial_000005400.safetensors",
     # az420 dildo. Version 3282820 fileId 3167066. Trigger stays off the action.
     "solodildo": "dildoing-mh3-e60-az420.safetensors",
+    # Self Anal Finger (Civitai 2988249). Card workflow: 1.0, prompt opens with anal_finger.
+    # Version 3388162 fileId 3277184. Western toilet row only. Not ThumbInButt.
+    "analfinger": "af_h3_vids512_imgs1024_000011750.safetensors",
     # Ref2VA UNet only. Registered only. No trigger. Do not add this key to a ward beat extra.
     "charswap": "h3_character_swap_pro4500_1000.safetensors",
     # Ref2VA UNet only. Registered only. Trigger LumiReal merges when this key is in extra.
@@ -384,6 +387,7 @@ LORA_URLS = {
     "closeup": "https://civitai.com/api/download/models/3399711?fileId=3290118",
     "cumfacial": "https://civitai.com/api/download/models/3290895?fileId=3175377",
     "solodildo": "https://civitai.com/api/download/models/3282820?fileId=3167066",
+    "analfinger": "https://civitai.com/api/download/models/3388162?fileId=3277184",
     "charswap": "https://huggingface.co/akatz-ai/MiniMax-H3-Character-Swap-LoRA/resolve/main/h3_character_swap_pro4500_1000.safetensors",
     "anime2real": "https://huggingface.co/LiseTY/Minimax-H3-ref2v_Anime_2_Realism/resolve/main/Anime2Realsim__H3.safetensors",
 }
@@ -422,6 +426,8 @@ LORA_STRENGTHS = {
     "cumfacial": 0.8,
     # The dildo card lists no strength. Ward beats keep 0.7.
     "solodildo": 0.7,
+    # Self Anal Finger card workflow is 1.0.
+    "analfinger": 1.0,
     "charswap": 1.0,
     "anime2real": 1.0,
 }
@@ -5474,8 +5480,17 @@ def _planted_camera_text(text: str) -> str:
     return re.sub(r"\s{2,}", " ", out).strip()
 
 
-def _hospital_camera_text(cam: str, *, sideride: bool, face_pair: bool = False) -> str:
-    """Ward shots keep the opening size. A side-scroll track reads as a push-in on a kiss."""
+def _hospital_camera_text(
+    cam: str,
+    *,
+    sideride: bool,
+    face_pair: bool = False,
+    authored_medium: bool = False,
+) -> str:
+    """Ward shots keep the opening size. A side-scroll track reads as a push-in on a kiss.
+
+    Self Anal Finger keeps the authored medium of the buttocks. A feet lock widens that card shot.
+    """
     out = cam
     if sideride:
         out = re.sub(r"\s*from directly above\b", "", out, flags=re.I)
@@ -5512,7 +5527,8 @@ def _hospital_camera_text(cam: str, *, sideride: bool, face_pair: bool = False) 
         flags=re.I,
     )
     # Face-pair shots name their own frame. A whole-take feet lock would hide the knees-up kiss.
-    if not face_pair:
+    # The anal-finger card names a medium of the buttocks. The same feet lock hides the anus.
+    if not face_pair and not authored_medium:
         if not out.lower().startswith("wide full-body"):
             out = HOSPITAL_FAR_LEAD + " " + out
         if "both heads and all four feet" not in out.lower():
@@ -6938,6 +6954,18 @@ def _hospital_i2v_lines(beat: dict[str, Any]) -> list[str]:
             "Once the glans clears the rim, both pelvises stay on that back mark. "
             "The hips stay back until the last frame. The shaft stays outside."
         )
+    if bid == "04-toilet-afast":
+        lines.append(
+            "She climaxes, then the right index finger slides out of the anus. "
+            "The anus stays a wide open ring. Thick brown feces clings to the fingertip. "
+            "A small smear of thick brown feces clings to the skin around that open ring. "
+            "The place and the rendering stay the opening frame."
+        )
+    if bid == "04-toilet-out" and "licks that fingertip" in low:
+        lines.append(
+            "The fingertip with thick brown feces goes into the open mouth. "
+            "She licks that fingertip clean. Then she straightens and walks for the rest of the clip."
+        )
     if bid == "04-gin-lick":
         lines.append(
             "The hug, the kiss, and Aya's return to the sitting pose stay inside this same picture. "
@@ -7167,6 +7195,7 @@ def build_beat_prompt(
             cam or "",
             sideride="sideride" in {key for key, _strength in extra_lora_entries(beat)},
             face_pair=_hospital_face_pair(beat),
+            authored_medium=str(beat.get("id") or "") in ("04-toilet-afin", "04-toilet-afast"),
         )
         if source == "chain":
             cam = _hospital_i2v_camera(beat, cam or "")
@@ -7319,6 +7348,7 @@ _LORA_TRIGGER_TOKENS = (
     ("cunny", "performing cunnilingus"),
     ("thumbinbutt", "thum1n8utt"),
     ("solodildo", DILDO_TRIGGER),
+    ("analfinger", "anal_finger"),
     ("cumfacial", "cmst"),
     ("anuspussy", "zxqanus"),
     ("anuspussy", "zxqvagina"),
