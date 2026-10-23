@@ -154,6 +154,7 @@ from h3_episode_packs import (  # noqa: E402
     TSUNO_MODES,
     TSUNO_OVERLAY_KEYS,
     canonical_episode,
+    canonical_toilet,
     describe_run,
     form_initial,
     form_readme,
@@ -3995,6 +3996,13 @@ def test_form_opens_on_the_ward_exit_invite_run():
     assert ui_default("toilet").startswith("トイレに行かない")
     assert ui_default("gin").startswith("灰色・出ない")
     assert ui_default("tsuno").startswith("角・出ない")
+    assert TOILET_MODES["finger"]["choice_ja"] == "トイレ・ディルド"
+    assert "膣" in TOILET_MODES["finger"]["when_ja"]
+    assert canonical_toilet("トイレ・アナル指") == "finger"
+    assert canonical_toilet("アナル指") == "finger"
+    assert "マット" not in TSUNO_MODES["invite_jacko"]["hint_ja"]
+    assert "寝床" in TSUNO_MODES["invite_ride"]["hint_ja"]
+    assert TSUNO_MODES["invite_jacko"]["choice_ja"] == "角・病室でベッドの後ろアナル"
 
 
 def test_connect_modes_t2v_chain_landing_and_ui_labels():
