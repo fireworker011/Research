@@ -96,6 +96,7 @@ from h3_episode import (  # noqa: E402
     expected_duration,
     extra_lora_entries,
     ensure_episode_loras,
+    refresh_downloaded_loras,
     fetch_text,
     finish_episode,
     forbidden_hits,
@@ -352,8 +353,18 @@ def test_helpers_list_matches_files():
 def test_notebook_is_one_cell_and_isolated():
     nb = json.loads((ROOT / "minimax_h3_episode_bot.ipynb").read_text(encoding="utf-8"))
     code = [c for c in nb["cells"] if c["cell_type"] == "code"]
-    assert len(code) == 1
+    assert len(code) == 2
     src = "".join(code[0]["source"])
+    refresh = "".join(code[1]["source"])
+    assert 'LORA_REFRESH = "更新しない（迷ったらこれ）"' in refresh
+    assert "すでにある LoRA を更新する" in refresh
+    assert "refresh_downloaded_loras" in refresh
+    assert "from h3_episode_colab_main" not in refresh
+    assert "maybe_unassign" not in refresh
+    assert "Comfy は起動しない" in refresh
+    assert 'CivitaiのAPIキー = ""' in refresh
+    assert "619ea878c0bf2491f6cedd625329c5b3" not in refresh
+    assert 'BRANCH = "cursor/h3-lora-cards-d736"' in refresh
     assert "h3_episode_colab_main" in src
     assert 'EPISODE = "病棟出口"' in src
     assert "霞東フロア あさ（迷ったらこれ）" in src
@@ -450,6 +461,7 @@ def test_notebook_is_one_cell_and_isolated():
     md = "".join("".join(c["source"]) for c in nb["cells"] if c["cell_type"] == "markdown")
     assert "619ea878c0bf2491f6cedd625329c5b3" not in md
     assert "CivitaiのAPIキー" in md
+    assert "LoRA 更新" in md
     assert "cursor/h3-lora-cards-d736" in md
     assert "kasumi-late-desk-adult" in md
     assert "10Eros Max は Drive" in md
@@ -4574,6 +4586,79 @@ def test_page_only_loras_are_not_fetched(tmp_path, monkeypatch):
         "skip page eleptors-furry-anthro-lora-minimax-h3.safetensors",
         "fetch failed MM-H3_Blowjob_v3.safetensors",
     ]
+
+
+def test_refresh_updates_a_downloaded_lora_and_keeps_the_old_file_on_failure(tmp_path, monkeypatch):
+    import h3_episode as mod
+
+    fname = LORA_FILES["analfinger"]
+    dest = tmp_path / fname
+    dest.write_bytes(b"k" * 1_000_001)
+    seen: list[str] = []
+
+    def fake_fetch(url: str, path: Path, *, min_bytes: int = 100, **_kwargs) -> bool:
+        seen.append(url)
+        Path(path).write_bytes(b"n" * (min_bytes + 1))
+        return True
+
+    monkeypatch.setattr(mod, "fetch_text", fake_fetch)
+    notes = refresh_downloaded_loras(tmp_path)
+    assert f"replaced {fname}" in notes
+    assert dest.read_bytes().startswith(b"n")
+    assert (tmp_path / f"{fname}.url").read_text(encoding="utf-8").strip() == LORA_URLS["analfinger"]
+    assert LORA_URLS["blowjob"] not in seen
+    assert f"skip absent {LORA_FILES['blowjob']}" in notes
+    assert f"skip page {LORA_FILES['furryenh']}" in notes
+    again = refresh_downloaded_loras(tmp_path)
+    assert f"skip current {fname}" in again
+    assert seen == [LORA_URLS["analfinger"]]
+
+    dest.write_bytes(b"z" * 1_000_001)
+    (tmp_path / f"{fname}.url").unlink()
+    monkeypatch.setattr(mod, "fetch_text", lambda *_a, **_k: False)
+    failed = refresh_downloaded_loras(tmp_path)
+    assert f"refresh failed {fname}" in failed
+    assert dest.read_bytes().startswith(b"z")
+    assert not (tmp_path / f"{fname}.refresh").exists()
+
+    old = tmp_path / "anus_pussy_v2.safetensors"
+    old.write_bytes(b"old-anus")
+    eros = tmp_path / LORA_FILES["anuspussy"]
+    assert not eros.exists()
+
+    def fake_eros(url: str, path: Path, *, min_bytes: int = 100, **_kwargs) -> bool:
+        if url != LORA_URLS["anuspussy"]:
+            return False
+        Path(path).write_bytes(b"e" * (min_bytes + 1))
+        return True
+
+    monkeypatch.setattr(mod, "fetch_text", fake_eros)
+    renamed = refresh_downloaded_loras(tmp_path)
+    assert f"fetched {LORA_FILES['anuspussy']}" in renamed
+    assert eros.is_file() and eros.stat().st_size > 1_000_000
+    assert old.read_bytes() == b"old-anus"
+
+
+def test_ensure_records_the_url_it_fetched_and_still_skips_a_large_file(tmp_path, monkeypatch):
+    import h3_episode as mod
+
+    fname = LORA_FILES["blowjob"]
+    dest = tmp_path / fname
+
+    def fake_fetch(url: str, path: Path, *, min_bytes: int = 100, **_kwargs) -> bool:
+        Path(path).write_bytes(b"b" * (min_bytes + 1))
+        return True
+
+    monkeypatch.setattr(mod, "fetch_text", fake_fetch)
+    notes = ensure_episode_loras({"render": {"lora_prefetch": ["blowjob"]}}, tmp_path)
+    assert notes == [f"fetched {fname}"]
+    assert (tmp_path / f"{fname}.url").read_text(encoding="utf-8").strip() == LORA_URLS["blowjob"]
+
+    calls: list[str] = []
+    monkeypatch.setattr(mod, "fetch_text", lambda *a, **_k: calls.append(a[0]) or False)
+    skipped = ensure_episode_loras({"render": {"lora_prefetch": ["blowjob"]}}, tmp_path)
+    assert calls == []
+    assert skipped == [f"skip existing {fname}"]
 
 
 def test_civitai_redirect_drops_authorization_before_the_weight_host(monkeypatch):

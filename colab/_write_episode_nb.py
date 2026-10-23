@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Write the one-click episode Colab notebook (one code cell: bootstrap → render all beats → HUD → stitch → stop)."""
+"""Write the one-click episode Colab notebook (render cell, then a CPU LoRA update cell)."""
 from __future__ import annotations
 
 import json
@@ -366,7 +366,7 @@ HUD・タイトル・免責エンドカードを載せて `final/<slug>-<日時>
 - 本番の inbox / queued / output は触らない。`models/` だけ共有
 - チェックポイントと LoRA の取得は CPU で足りる。ランタイムが CPU のときは Drive へ置いて止まり、Comfy は起動しない。動画を描くときだけ A100
 - あさの 10Eros Max は Drive `models/diffusion_models/10Eros_Max_h3_TURBO-hybrid_beta5_int8.safetensors` を使う（HuggingFace からは取らない）
-- Civitai の LoRA はコードセルの **CivitaiのAPIキー** に貼る（空のまま保存する。キーはコミットしない）。空なら Colab のシークレット `CIVITAI_API_TOKEN`。Drive に 1MB 超の同名ファイルがあれば再取得しない
+- Civitai の LoRA はコードセルの **CivitaiのAPIキー** に貼る（空のまま保存する。キーはコミットしない）。空なら Colab のシークレット `CIVITAI_API_TOKEN`。動画セルは Drive に 1MB 超の同名ファイルがあれば再取得しない。取り直すときは次の **LoRA 更新** セル。開いたときは更新しない。欄を切り替えてそのセルだけ実行する。CPU で足りる。Comfy は起動しない
 - 途中で止まっても `raw/<beat>.mp4` があるビートは飛ばして再開（FRESH で作り直し）
 - **開始シーン**に beat id を書くと、そのカットから先だけ今のドロップダウン（構成・トイレ・灰色・角・犬・異種・登場・シーンごと・つなぎ方）で作り直す。空なら最初から。前の動画は残して首にする。チェーンの前のカットが今の設定と違うとき、または動画が無いときは、そこまで戻って描く。並びに無い id は止まる
 - HUD・字幕は生成後に載せる。H3 に日本語UIを描かせない
@@ -377,6 +377,62 @@ HUD・タイトル・免責エンドカードを載せて `final/<slug>-<日時>
 
 セッション名 `{SESSION}`。GPU は A100。手順は `minimaxh3/episodes/README.md`。
 """
+
+REFRESH_CELL = r'''#@title LoRA 更新：Drive に既にあるファイルを今の URL へ（このセルだけ。CPU で足りる）
+#@markdown 動画セルは、1MB を超える同名ファイルを取り直さない。取り直すときはこのセル。
+#@markdown 開いたときは更新しない。欄を切り替えて、このセルだけ実行する。GPU は要らない。Comfy は起動しない。チェックポイントは取らない。
+#@markdown 同名が既にあっても、URL の記録が無いか違うときは取り直す。失敗しても前のファイルは残る。まだ Drive に無いファイルは取らない。ファイル名が替わった LoRA は、古い名前が Drive にあるとき新しい名前を取る。古いファイルは消さない。
+#@markdown **CivitaiのAPIキー** — 空なら Colab のシークレット `CIVITAI_API_TOKEN`。値は表示しない。空のまま保存する。
+LORA_REFRESH = "更新しない（迷ったらこれ）"  #@param ["更新しない（迷ったらこれ）", "すでにある LoRA を更新する"]
+CivitaiのAPIキー = ""  #@param {type:"string"}
+if LORA_REFRESH != "すでにある LoRA を更新する":
+    print("LoRA は更新しません。欄を「すでにある LoRA を更新する」にして、このセルだけ実行。")
+else:
+    import os, shutil, sys, urllib.request
+    from pathlib import Path
+    from google.colab import drive
+    DRIVE_ROOT = "/content/drive/MyDrive/minimax-h3-comfyui"
+    BRANCH = "__BRANCH__"
+    RAW = "https://raw.githubusercontent.com/__REPO__/" + BRANCH
+    drive.mount("/content/drive")
+    _civitai = str(CivitaiのAPIキー or "").strip()
+    if _civitai:
+        os.environ["CIVITAI_API_TOKEN"] = _civitai
+    print("Civitai API:", "フォームから読み込み済み（値は出しません）" if _civitai else "フォームは空（シークレットがあればそれを使う）")
+    del _civitai
+
+    def fetch_text(url: str, dest: Path) -> bool:
+        try:
+            urllib.request.urlretrieve(url, dest)
+            return dest.is_file() and dest.stat().st_size > 100
+        except Exception as e:
+            print("fetch fail", url, e)
+            return False
+
+    HELPERS = __HELPERS__
+    LIB = Path(DRIVE_ROOT) / "episodes" / "_lib"
+    LIB.mkdir(parents=True, exist_ok=True)
+    for rel in HELPERS:
+        name = Path(rel).name
+        dest = Path("/content") / name
+        ok = fetch_text(f"{RAW}/{rel}", dest)
+        if not ok and (LIB / name).is_file():
+            shutil.copy2(LIB / name, dest)
+            ok = True
+        if not ok:
+            raise SystemExit(f"helper missing: {name}")
+        shutil.copy2(dest, LIB / name)
+        print("helper", name)
+    sys.path.insert(0, "/content")
+    from h3_episode import refresh_downloaded_loras
+    notes = refresh_downloaded_loras(Path(DRIVE_ROOT) / "models" / "loras")
+    failed = [note for note in notes if note.startswith("refresh failed ") or note.startswith("fetch failed ")]
+    for note in notes:
+        print("lora:", note)
+    if failed:
+        raise SystemExit("LoRA の更新が止まりました: " + ", ".join(failed))
+    print("LoRA の更新が終わりました。動画は描いていません。描くときは上のセルを A100 で実行。")
+'''
 
 
 def make_nb() -> dict:
@@ -500,6 +556,11 @@ def make_nb() -> dict:
         .replace("__SCENE_SHINO_DEFAULT__", json.dumps(form_initial("scene_shino"), ensure_ascii=False))
         .replace("__SCENE_CHOICES__", json.dumps(ui_choices("scene"), ensure_ascii=False))
     )
+    refresh = (
+        REFRESH_CELL.replace("__BRANCH__", BRANCH)
+        .replace("__REPO__", REPO)
+        .replace("__HELPERS__", json.dumps(HELPERS, indent=4))
+    )
     return {
         "nbformat": 4,
         "nbformat_minor": 5,
@@ -521,6 +582,13 @@ def make_nb() -> dict:
                 "execution_count": None,
                 "outputs": [],
                 "source": [line + "\n" for line in cell.strip("\n").split("\n")],
+            },
+            {
+                "cell_type": "code",
+                "metadata": {"id": "lora_refresh"},
+                "execution_count": None,
+                "outputs": [],
+                "source": [line + "\n" for line in refresh.strip("\n").split("\n")],
             },
         ],
     }

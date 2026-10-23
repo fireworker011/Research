@@ -7677,6 +7677,7 @@ def ensure_episode_loras(ep: dict[str, Any], loras_dir: Path | str) -> list[str]
             continue
         print("fetch LoRA", fname)
         if fetch_text(url, dest, min_bytes=1_000_000):
+            _write_lora_url(dest, url)
             notes.append(f"fetched {fname}")
         else:
             if dest.is_file():
@@ -7919,6 +7920,89 @@ def _civitai_token() -> str:
         return str(_COLAB_USERDATA.get("CIVITAI_API_TOKEN") or "").strip()
     except Exception:
         return ""
+
+
+# Drive names this key used before the current file. The update cell fetches the
+# current name when one of these is already on Drive. The old file stays.
+_LORA_REPLACED_FILES: dict[str, tuple[str, ...]] = {
+    "anuspussy": ("anus_pussy_v2.safetensors",),
+    "solodildo": ("h3_base_dildo_v1.0_9250.safetensors",),
+    "kiss": ("cxy_kiss_lora_h3_v01_step1750.safetensors",),
+    "cumfacial": ("face_cum_000001000.safetensors",),
+}
+
+
+def _lora_url_record(dest: Path) -> Path:
+    return dest.with_name(dest.name + ".url")
+
+
+def _recorded_lora_url(dest: Path) -> str:
+    rec = _lora_url_record(dest)
+    if not rec.is_file():
+        return ""
+    try:
+        return rec.read_text(encoding="utf-8").strip()
+    except OSError:
+        return ""
+
+
+def _write_lora_url(dest: Path, url: str) -> None:
+    _lora_url_record(dest).write_text(str(url).strip() + "\n", encoding="utf-8")
+
+
+def _lora_weight_current(dest: Path, url: str) -> bool:
+    if not dest.is_file() or dest.stat().st_size <= 1_000_000:
+        return False
+    if not _lora_file_loadable(dest):
+        return False
+    return _recorded_lora_url(dest) == str(url).strip()
+
+
+def refresh_downloaded_loras(loras_dir: Path | str) -> list[str]:
+    """Re-fetch LoRAs already on Drive when the registered URL is not the saved one.
+
+    ensure_episode_loras leaves a file over 1MB in place. This pass replaces that
+    file. The download goes to a sibling ``.refresh`` and the previous file stays
+    if the fetch fails. A registered file that is not on Drive is left absent,
+    unless an older filename for that same key is already there. Page URLs are
+    skipped. No GPU and no Comfy.
+    """
+    root = Path(loras_dir)
+    root.mkdir(parents=True, exist_ok=True)
+    notes: list[str] = []
+    for key, fname in LORA_FILES.items():
+        url = str(LORA_URLS.get(key) or "").strip()
+        if not fname or not url:
+            continue
+        if not _lora_download_url(url):
+            notes.append(f"skip page {fname}")
+            continue
+        dest = root / fname
+        retired = any((root / old).is_file() for old in _LORA_REPLACED_FILES.get(key, ()))
+        if not dest.is_file() and not retired:
+            notes.append(f"skip absent {fname}")
+            continue
+        if _lora_weight_current(dest, url):
+            notes.append(f"skip current {fname}")
+            continue
+        had = dest.is_file()
+        tmp = dest.with_name(dest.name + ".refresh")
+        if tmp.is_file():
+            tmp.unlink()
+        print("refresh LoRA", fname)
+        if fetch_text(url, tmp, min_bytes=1_000_000) and _lora_weight_current_bytes(tmp):
+            tmp.replace(dest)
+            _write_lora_url(dest, url)
+            notes.append(f"replaced {fname}" if had else f"fetched {fname}")
+        else:
+            if tmp.is_file():
+                tmp.unlink()
+            notes.append(f"refresh failed {fname}" if had else f"fetch failed {fname}")
+    return notes
+
+
+def _lora_weight_current_bytes(path: Path) -> bool:
+    return path.is_file() and path.stat().st_size > 1_000_000 and _lora_file_loadable(path)
 
 
 def _lora_file_loadable(path: Path) -> bool:
