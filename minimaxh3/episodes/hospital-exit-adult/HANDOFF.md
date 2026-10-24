@@ -9,15 +9,37 @@
 ## 正本（ここだけを編集する）
 
 - リポジトリ: `fireworker011/Research`
-- ブランチ: `cursor/h3-hospital-ward-34e4`
-- PR: https://github.com/fireworker011/Research/pull/147
-- Colab: https://colab.research.google.com/github/fireworker011/Research/blob/cursor/h3-hospital-ward-34e4/minimax_h3_episode_bot.ipynb
+- ブランチ: `cursor/h3-lora-cards-d736`
+- PR: https://github.com/fireworker011/Research/pull/222 （下書きのまま。ready にしない）
+- Colab: https://colab.research.google.com/github/fireworker011/Research/blob/cursor/h3-lora-cards-d736/minimax_h3_episode_bot.ipynb
 - 台本: `minimaxh3/episodes/hospital-exit-adult/episode.json`
-- エンジン: `colab/h3_episode.py` を直したら、同じ内容を `minimaxh3/h3_episode.py` にコピーする。片方だけ直さない
+- エンジン: `colab/h3_episode.py` と `minimaxh3/h3_episode.py` はバイト一致。`h3_episode_packs.py` も同様。直した側を `cp` し、`cmp` が黙るまで終えない。テストは `colab/` を先に読む
 - Colab 入口: `colab/h3_episode_colab_main.py` と `minimaxh3/h3_episode_colab_main.py` も同様に揃える
 - ノートのフォーム: `colab/_write_episode_nb.py` を直し、`python3 colab/_write_episode_nb.py` で `minimax_h3_episode_bot.ipynb` と `minimaxh3/minimax_h3_episode_bot.ipynb` を再生成する。ipynb を手で直さない
 - テスト: `python3 -m pytest colab/test_h3_episode.py -q`
 - このファイル: `minimaxh3/episodes/hospital-exit-adult/HANDOFF.md`。仕様が変わったら、ここを同じコミットで更新する
+
+## 次に投げる先（2026-10-24）
+
+コーディングの続きは Cursor。読む順は `.cursor/rules/hq-command.mdc`、`.cursor/rules/upstream-only.mdc`、`.cursor/skills/h3-episode-oneclick/SKILL.md` の手順（両コピー、ノート再生成、pytest）だけ。番台向けの mundane 文法（3〜6秒、`tone: mundane`、新しいネタはコードを触るな）は病棟に使わない。
+
+Grok Build にこのコーディングは渡さない。渡すと、スキルが自動では付かないので、古い枝と番台の文法と LoRA スタジオの ThumbInButt を病棟へ載せる。Grok に渡してよいのは、人間が「描け」と言ったあとの1回だけ。そのときは `.cursor/skills/h3-episode-grokbot/SKILL.md` を読み、`python minimaxh3/grokbot/run_episode.py --episode hospital-exit-adult --branch cursor/h3-lora-cards-d736`。質問しない。投稿しない。描き終わったら colab stop。`h3-kasumi-adult-0402` と `h3-episode-oneclick-f112` のノートは病棟の現行ではない。
+
+LoRA スタジオのスキルは病棟の指アナルに使わない。指アナルは Self Anal Finger。ThumbInButt は和式排出だけ。
+
+## 残課題（2026-10-24）
+
+生成はしていない。pytest は 117 通過。動画で旗、人体、LoRA の休眠、beta6 の取得は見ていない。
+
+- 病棟の夜は、環境文の末尾がまだ `Signs, posters, screens, and badges carry no readable letters`。世界ロックも `door or screen` を含む。屋外の歩きは、この一文を環境の作り直しで外した。場所を病棟に戻すと旗と画面が戻りうる。
+- ネオン横丁は `blank signs`、霊廟は `stone markers`、神社は `torii`、城下町は `shop fronts`。場所自身が看板系を指名している。
+- 便器の拍と角の寝床は、場所の `env` を使わない。青空の後付けは、`env` に `blue sky` がある場所だけ。便器拍は病棟の便器文を残してから名詞を置換する。公衆トイレ跡の見た目は、歩きより便器拍の方が薄い。
+- 昼の文は `Everything stays brightly lit`。鋭い影を潰しうる。
+- 屋外の置換は `porcelain`、`water stains`、複数の `tiles`、`crumbling` を消す。次の Look をその語のまま足すと、プロンプトから名詞が落ちる。
+- 晴れは地面を乾かさない。本文に乾きが無い場所は、晴れだけでは乾かない。
+- フルネルソンの学習文は `man's arms` を含む。消すと LoRA が動かない。横挿入に he や daddy を足すと、角が男になる。ステップの上限は 16。見本の 20 は使えない。
+- 開いたままの Colab は古い欄を保持する。LoRA 更新セルは、まだ Drive に無いファイルを取らない。analfist、fullnelson、beta6 は描くセルが取る。beta5 は beta6 の代わりにならない。古いファイルは消さない。
+- 別枝 `cursor/pose-ref-gaps-d736`、`cursor/human-cast-anatomy-d736`、`cursor/hospital-anal-dildo-face-d736`、`cursor/rehearsal-room-adult-d736` をこの枝へ混ぜない。draft PR #122 はマージしない。
 
 ## いま（2026-10-23）残りの姿勢
 
