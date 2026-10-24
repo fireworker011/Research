@@ -29,8 +29,15 @@ LoRA スタジオのスキルは病棟の指アナルに使わない。指アナ
 
 ## 残課題（2026-10-24）
 
-生成はしていない。pytest は 122 通過。動画で旗、人体、LoRA の休眠は見ていない。beta6 の取得コードは直した。Colab での 21GB の着地はまだ見ていない。
+pytest は 123 通過。開いたときのフォームは変えていない。生成ボタンは人間。ランタイムを再起動して Run all。同じカーネルは古いエンジンのまま。
 
+- beta6 は TURBO-hybrid。スピードの 4step LoRA は積めない。4 step のまま描くと体が溶ける。スピードで steps の無い拍は euler 8 に上がる。バランスは元から 8。質は 12。拍に書いた steps は優先する。`03-kiss-peak` と `03-kiss-close` は 8 のまま。`04-gin-lick`、`04-gin-jupo`、`04-gin-wait` は steps が無かったので、スピードだと 4 だった。今は 8。
+- 二人の病棟拍から `nothing new enters` を外した。その文は三人目を描く。代わりに同じ二人。犬の拍は変えていない。
+- キャスト欄で no / never から始まる句はプロンプトに出さない。JSON の lock は残す。ギンの lock の `no penis` は残る。舐めの動作文は `hairless pussy`。`no eyeballs` と `no fifth finger` はプロンプトに出さない。
+- `Each adult keeps one head, two arms, and two legs` は `Each adult stays one whole body`。数えた手足は余分に生える。
+- 肛門の中出しは、竿を伝う一文をやめ、輪の縁に置く。`03-kiss-close` は開いた肛門から床へ垂れる。亀頭の尿道口の残りは、その拍には付けない。膣の `down the buried shaft` はそのまま。
+- `04-gin-wait` の synth を外した。全身の待ちに穴の寄り LoRA がもう一つの腰を貼る。penis と mystic は残す。
+- beta6 の取得コードは直してある。Colab での 21GB の着地は、この人体の直しとは別。着地前のランは古い取得のまま止まっている。
 - 病棟の夜は、`Signs, posters, screens, and badges` の一文を足さない。`no_text_on_signs` は false。世界ロックから `door or screen` を外した。`no readable letters` と、ゴムの扉と出口の doorway は残す。場所を病棟に戻しても、その一文と `screen` は戻らない。
 - ネオン横丁の `blank signs`、霊廟の `stone markers`、神社の `torii`、城下町の `shop fronts` は、場所の env に残す。場所自身が看板系を指名している。
 - 便器拍と角の寝床は、場所の `env` を使う。便器拍はその後に、行為が要る便器の文を残し、病棟の名詞を場所の名詞へ替える。青空は env の中にある。env に無い場所へは足さない。

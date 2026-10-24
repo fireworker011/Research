@@ -844,10 +844,14 @@ def test_resolve_preset_fallbacks(tmp_path):
     assert "cinema" not in {k for spec in PRESET_CANON.values() for k, _s, _o in spec["stack"]}
     speed_on_hybrid = apply_unet_preset_rules(speed, EROS_MAX_UNET)
     assert speed_on_hybrid["stack"] == []
+    assert speed_on_hybrid["steps"] == 8
     assert any("TURBO-hybrid" in n for n in speed_on_hybrid["notes"])
+    assert any("steps raised to 8" in n for n in speed_on_hybrid["notes"])
+    assert apply_unet_preset_rules(speed, "fl2va.safetensors")["steps"] == 4
     balance_on_hybrid = apply_unet_preset_rules(balance, EROS_MAX_UNET)
     assert balance_on_hybrid["stack"] == []
     assert balance_on_hybrid["steps"] == 8 and balance_on_hybrid["sampler"] == "euler"
+    assert not any("steps raised to 8" in n for n in balance_on_hybrid["notes"])
 
 
 def test_kasumi_late_desk_validates_and_stills_are_clean():
@@ -6954,6 +6958,53 @@ def test_hospital_wash_gape_oral_wait_overflow_and_dog_lick():
     assert len(miki["beats"]) <= MAX_BEATS
     assert len(gin["beats"]) <= MAX_BEATS
     assert len(oral["beats"]) <= MAX_BEATS
+
+
+def test_hospital_anal_drip_stays_on_the_rim_and_the_pair_stays_two():
+    raw = load_episode(HOSPITAL_DIR / "episode.json")
+    ep = prepare_episode(
+        raw,
+        story_override="誘う",
+        scenes_override="miki=invite_all_fours,rei=inherit,kana=inherit,shino=inherit",
+        gin_override="犯される",
+        connect_override="chain",
+    )
+    peak = next(b for b in ep["beats"] if b["id"] == "03-kiss-peak")
+    close = next(b for b in ep["beats"] if b["id"] == "03-kiss-close")
+    assert "rim of the anus" in peak["action"].lower()
+    assert "down the buried shaft" not in peak["action"].lower()
+    assert "one head, two arms" not in peak["action"].lower()
+    assert "each adult stays one whole body" in peak["action"].lower()
+    assert "drips from the ring" in close["action"].lower() or "dripping from the ring" in close["action"].lower()
+    assert "open anus" in close["action"].lower()
+    assert "urethral opening" not in close["action"].lower()
+    assert "rim of the anus" in close["action"].lower()
+    peak_prompt = build_beat_prompt(ep, peak)
+    close_prompt = build_beat_prompt(ep, close)
+    assert "nothing new enters" not in peak_prompt.lower()
+    assert "same two adults" in peak_prompt.lower()
+    assert "urethral opening" not in close_prompt.lower()
+    assert "drips from the ring" in close_prompt.lower() or "dripping from the ring" in close_prompt.lower()
+    assert "no testicles" not in peak_prompt.lower()
+    assert "no clothes" not in peak_prompt.lower()
+    assert "no eyeballs" not in peak_prompt.lower()
+    lick = next(b for b in ep["beats"] if b["id"] == "04-gin-lick")
+    waited = next(b for b in ep["beats"] if b["id"] == "04-gin-wait")
+    assert "no penis" not in lick["action"].lower()
+    assert "hairless pussy" in lick["action"].lower()
+    assert "futanari" not in lick["action"].lower()
+    lick_prompt = build_beat_prompt(ep, lick)
+    assert "nothing new enters" not in lick_prompt.lower()
+    assert "no penis" not in lick_prompt.lower()
+    assert "same two adults" in lick_prompt.lower()
+    assert "synth" not in extra_keys(waited)
+    assert "penis" in extra_keys(waited)
+    assert "mystic" in extra_keys(waited)
+    assert "no penis" in ep["cast"]["gin"]["lock"]
+    ride = prepare_episode(raw, story_override="誘う", invite_pose_override="騎乗位")
+    ride_peak = next(b for b in ride["beats"] if b["id"] == "03-kiss-peak")
+    assert "down the buried shaft" in ride_peak["action"].lower()
+    assert "nothing new enters" not in build_beat_prompt(ride, ride_peak).lower()
 
 
 def test_hospital_siderear_keeps_the_join_visible():

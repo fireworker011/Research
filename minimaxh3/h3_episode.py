@@ -849,6 +849,11 @@ RIDE_CONTINUITY = (
     "One continuous take. Aya and the partner stay the same two adults in this one place "
     "from the first frame to the last."
 )
+# Two adults are already in the frame. The absence sentence draws a third body.
+HOSPITAL_PAIR_CONTINUITY = (
+    "One continuous take. These two adults stay the same two adults in this one place "
+    "from the first frame to the last."
+)
 RIDE_PAIR_CLAUSE = (
     "Aya and the partner stay the same two adults on this floor spot. "
     "The adult on her back is the one with the shaft. The rider is the one on that adult. "
@@ -4915,6 +4920,14 @@ _SALIVA_PART = "A saliva string stretches between the parting lips."
 _GLANS_REMNANT = (
     " A small remnant of thick WHITE semen stays at the urethral opening on the tip of the glans."
 )
+_SHAFT_OVERFLOW = "Thick WHITE goo OVERFLOWS from the join down the buried shaft and over the groin."
+_ANAL_RIM_OVERFLOW = (
+    "Thick WHITE goo OVERFLOWS from the anus at the join and stays on the rim of the anus."
+)
+_LIMB_COUNT = "Each adult keeps one head, two arms, and two legs."
+_WHOLE_BODY = "Each adult stays one whole body."
+_GIN_NO_PENIS = "Gin has a female body, no penis."
+_GIN_FEMALE = "Gin has a female body and a hairless pussy."
 _FACIAL_CUM_IDS = frozenset({"04-gin-mouth", "09-kana-facial", "04-tsuno-wait"})
 _LEFT_FOOT = (
     " Aya's left foot stays inside the frame, toes visible, beside the right foot. "
@@ -5106,10 +5119,38 @@ def _shaft_wall_cam_yaw(match: re.Match[str]) -> str:
     )
 
 
+def _anal_semen_site(action: str) -> bool:
+    """The visible semen is already placed on the open anus or its rim."""
+    low = action.lower()
+    if "anus" not in low and "ring" not in low:
+        return False
+    return any(
+        phrase in low
+        for phrase in (
+            "inside the anus",
+            "in the anus",
+            "open anus",
+            "from the ring",
+            "rim of the anus",
+        )
+    )
+
+
 def _glans_remnant_due(bid: str, action: str) -> bool:
     """After ejaculation, a remnant stays at the urethral opening once the shaft is outside."""
     low = action.lower()
     if "urethral opening" in low:
+        return False
+    if any(
+        phrase in low
+        for phrase in (
+            "drips from the ring",
+            "dripping from the ring",
+            "from inside the open anus",
+            "from the open anus",
+            "on the rim of the anus",
+        )
+    ):
         return False
     if bid in _FACIAL_CUM_IDS:
         return "ejaculat" in low or "semen" in low
@@ -5227,6 +5268,21 @@ def apply_pose_notes(ep: dict[str, Any]) -> dict[str, Any]:
                 "Both heads and all four feet stay inside the frame. "
                 "Both mouths stay readable. Floor runs LEFT to RIGHT."
             )
+        if _anal_semen_site(action):
+            action = action.replace(_SHAFT_OVERFLOW, _ANAL_RIM_OVERFLOW)
+            action = action.replace("WHITE goo is on the join", "WHITE goo is on the rim of the anus")
+            action = action.replace("WHITE goo on the join", "WHITE goo on the rim of the anus")
+            action = action.replace(
+                "WHITE goo pooled at the join and running down",
+                "WHITE goo on the rim of the anus",
+            )
+        action = action.replace(_LIMB_COUNT, _WHOLE_BODY)
+        if bid == "04-gin-lick":
+            action = action.replace(_GIN_NO_PENIS, _GIN_FEMALE)
+        if bid == "04-gin-wait" and any(key == "synth" for key, _strength in extra_lora_entries(beat)):
+            beat["extra_loras"] = [
+                [key, strength] for key, strength in extra_lora_entries(beat) if key != "synth"
+            ]
         if _glans_remnant_due(bid, action):
             action = action.rstrip(".") + "." + _GLANS_REMNANT
         action, trig = _lock_rear_anal(action, str(beat.get("trigger") or ""))
@@ -6628,6 +6684,7 @@ def forbidden_hits(text: str, *, never: list[str] | None = None) -> list[str]:
 
 
 _LOOK_DROP_RE = re.compile(r"\b(?:no|never|not|without)\b", re.IGNORECASE)
+_LEADING_NEG_RE = re.compile(r"^(?:no|never|not|without)\b", re.IGNORECASE)
 _SHAFT_IN_LOOK_RE = re.compile(r"\b(?:shaft|penis|\d+\s*cm)\b", re.IGNORECASE)
 _SEX_ACT_RE = re.compile(
     r"pussy|anus|glans|joined at the base|white rope|white goo|lips (?:reach|meet|at) the base|inside the mouth",
@@ -6659,6 +6716,17 @@ def _positive_look(lock: str) -> str:
     for part in str(lock or "").split(","):
         piece = part.strip().rstrip(".")
         if not piece or _LOOK_DROP_RE.search(piece):
+            continue
+        kept.append(piece)
+    return ", ".join(kept)
+
+
+def _drop_leading_negations(lock: str) -> str:
+    """Drop clauses that start with a negation. A mixed clause keeps its positive count."""
+    kept: list[str] = []
+    for part in str(lock or "").split(","):
+        piece = part.strip().rstrip(".")
+        if not piece or _LEADING_NEG_RE.match(piece):
             continue
         kept.append(piece)
     return ", ".join(kept)
@@ -6743,6 +6811,9 @@ def _cast_block(ep: dict[str, Any], beat: dict[str, Any]) -> str:
         name = str(c.get("name_en") or cid.title())
         lock = _paint_horn_lock(str(beat_locks.get(cid) or c.get("lock") or ""), beat, str(cid))
         lock = _drop_tired(lock, beat).strip().rstrip(".")
+        if str(ep.get("slug") or "") == "hospital-exit-adult":
+            lock = lock.replace(" with no eyeballs", "").replace(" and no fifth finger", "")
+            lock = _drop_leading_negations(lock)
         lines.append(f"{name}: {lock}. Adult, {int(c.get('age') or 0)}.")
     return "\n".join(lines)
 
@@ -7120,6 +7191,14 @@ def build_beat_prompt(
             or _nongin_rib_ride(beat)
         )
     )
+    pair_ids = [str(c) for c in (beat.get("cast") or [])]
+    fade_ids = {str(c) for c in (beat.get("fade_cast") or [])}
+    staying = [c for c in pair_ids if c not in fade_ids]
+    hospital_pair = (
+        str(ep.get("slug") or "") == "hospital-exit-adult"
+        and len(staying) == 2
+        and "dog" not in pair_ids
+    )
     if dog_spot:
         desc.append(DOG_SPOT_CONTINUITY)
     elif bid_prompt == "04-tsuno-kiss":
@@ -7128,11 +7207,12 @@ def build_beat_prompt(
             "One continuous take. Aya and Tsuno stay the same two adults in this one place "
             "from the first frame to the last. The standing woman is the same Aya."
         )
+    elif ride_pair:
+        desc.append(RIDE_CONTINUITY)
+    elif hospital_pair:
+        desc.append(HOSPITAL_PAIR_CONTINUITY)
     else:
-        desc.append(RIDE_CONTINUITY if ride_pair else CONTINUITY_CLAUSE)
-    pair_ids = [str(c) for c in (beat.get("cast") or [])]
-    fade_ids = {str(c) for c in (beat.get("fade_cast") or [])}
-    staying = [c for c in pair_ids if c not in fade_ids]
+        desc.append(CONTINUITY_CLAUSE)
     if str(ep.get("slug") or "") == "hospital-exit-adult" and "dog" in pair_ids:
         desc.append("The second body is the quadruped on four paws, black short hide, tan muzzle.")
     elif str(ep.get("slug") or "") == "hospital-exit-adult" and len(staying) == 2:
@@ -8421,7 +8501,11 @@ def resolve_preset(name: str, loras_dir: Path | str | None, *, fallback: str = "
 
 
 def apply_unet_preset_rules(preset: dict[str, Any], unet: str) -> dict[str, Any]:
-    """TURBO-hybrid already has turbo baked in. LoRA patches requantize INT8 and OOM A100 40GB."""
+    """TURBO-hybrid already has turbo baked in. LoRA patches requantize INT8 and OOM A100 40GB.
+
+    The 4-step turbo LoRA cannot stack on this UNet. Four steps without it melts the body,
+    so a speed plan rises to the baked-in euler 8. An authored beat.steps still wins later.
+    """
     if not is_turbo_hybrid_unet(unet):
         return preset
     skip_needles = ("fl2v_turbo", "turbo_v4")
@@ -8433,12 +8517,17 @@ def apply_unet_preset_rules(preset: dict[str, Any], unet: str) -> dict[str, Any]
             dropped.append(str(fname))
             continue
         kept.append((fname, float(strength)))
-    if not dropped:
+    steps = int(preset.get("steps") or 0)
+    if not dropped and steps >= 8:
         return preset
     out = dict(preset)
     out["stack"] = kept
     notes = list(preset.get("notes") or [])
-    notes.append("LoRA skipped on TURBO-hybrid UNet (VRAM; turbo is baked in): " + ", ".join(dropped))
+    if dropped:
+        notes.append("LoRA skipped on TURBO-hybrid UNet (VRAM; turbo is baked in): " + ", ".join(dropped))
+    if steps < 8:
+        out["steps"] = 8
+        notes.append("steps raised to 8 on TURBO-hybrid. The 4-step LoRA is not stacked, and 4 steps melts the body.")
     out["notes"] = notes
     return out
 
