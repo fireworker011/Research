@@ -1,0 +1,47 @@
+{
+  "work_no": 22,
+  "title": "【囁きASMR・本番なし】雨の個室エステ。28歳の担当が、敬語のまま肩と耳を溶かす～聞いてから、手だけで数えます～【合成音声】",
+  "price_jpy": 990,
+  "price_note": "PR #186 の企画で置いた表示価格。この作品の販売本数は測っていない。",
+  "publish": false,
+  "original": true,
+  "all_characters_adult": true,
+  "real_people": false,
+  "penetration": false,
+  "heroine": {
+    "name": "藤崎環",
+    "reading": "ふじさき たまき",
+    "age": 28,
+    "job": "個室エステの担当。この仕事6年目の成人"
+  },
+  "listener": "予約済みの成人の客。台本では年齢を下に置かない",
+  "voice": {
+    "engine": "COEIROINK",
+    "speaker": "つくよみちゃん",
+    "style_hint": "れいせいを小さくし、ささやきに寄せる"
+  },
+  "booth": {
+    "category": "ささやき・癒し系",
+    "adult": true,
+    "tags": ["ASMR", "ASMR男性向け", "ASMR音声", "音声作品", "耳かき", "ささやき", "お姉さん", "癒し", "本番なし"]
+  },
+  "dlsite": {
+    "age": "R-18",
+    "ai_option": "AI一部利用",
+    "ai_option_note": "表紙が画像生成AIのため。声は市販のCOEIROINK。",
+    "genres": ["ASMR", "癒し", "バイノーラル/ダミヘ", "お姉さん", "ささやき", "ラブラブ/あまあま", "耳かき", "ダウナー"]
+  },
+  "planned_tracks": [
+    {"file": "part01", "title": "受付と、今日の範囲の確認", "planned_minutes": 6},
+    {"file": "part02", "title": "右の肩と耳", "planned_minutes": 12},
+    {"file": "part03", "title": "左の肩と、オイル", "planned_minutes": 12},
+    {"file": "part04", "title": "伏せたままの囁き", "planned_minutes": 10},
+    {"file": "part05", "title": "聞いてから、手だけで数える", "planned_minutes": 14},
+    {"file": "part06", "title": "タオルと、帰りの一言", "planned_minutes": 6}
+  ],
+  "planned_minutes_note": "配分は企画の長さ。ファイルを測った時間ではない。",
+  "export": {
+    "wav": ["part01.wav", "part02.wav", "part03.wav", "part04.wav", "part05.wav", "part06.wav"],
+    "mp3": ["part01.mp3", "part02.mp3", "part03.mp3", "part04.mp3", "part05.mp3", "part06.mp3", "full.mp3"]
+  }
+}

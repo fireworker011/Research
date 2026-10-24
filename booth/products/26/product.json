@@ -1,0 +1,46 @@
+{
+  "work_no": 26,
+  "title": "【ナース・本番なし】34歳の訪問看護師が、部屋で耳と手だけお世話する～清拭のあと、次回の曜日～【合成音声】",
+  "price_jpy": 1056,
+  "price_note": "PR #186 の企画で置いた表示価格。この作品の販売本数は測っていない。",
+  "publish": false,
+  "original": true,
+  "all_characters_adult": true,
+  "real_people": false,
+  "penetration": false,
+  "heroine": {
+    "name": "森下静",
+    "reading": "もりした しずか",
+    "age": 34,
+    "job": "訪問看護師。臨床12年目の成人。この回は医療行為をしない"
+  },
+  "listener": "自宅に呼んだ成人。台本では年齢を下に置かない。入院中ではない",
+  "voice": {
+    "engine": "COEIROINK",
+    "speaker": "つくよみちゃん",
+    "style_hint": "れいせい。ささやきすぎない。落ち着いた普通の声"
+  },
+  "booth": {
+    "category": "ささやき・癒し系",
+    "adult": true,
+    "tags": ["ASMR", "ASMR男性向け", "ASMR音声", "音声作品", "耳かき", "ささやき", "お姉さん", "ナース", "本番なし"]
+  },
+  "dlsite": {
+    "age": "R-18",
+    "ai_option": "AI一部利用",
+    "ai_option_note": "表紙が画像生成AIのため。声は市販のCOEIROINK。",
+    "genres": ["ナース", "お姉さん", "本番なし", "手コキ", "ささやき", "癒し", "ラブラブ/あまあま", "耳かき"]
+  },
+  "planned_tracks": [
+    {"file": "part01", "title": "訪問の挨拶と、今日やること", "planned_minutes": 5},
+    {"file": "part02", "title": "耳と肩", "planned_minutes": 12},
+    {"file": "part03", "title": "返事を待ってから手", "planned_minutes": 16},
+    {"file": "part04", "title": "清拭と水分", "planned_minutes": 8},
+    {"file": "part05", "title": "次回の曜日", "planned_minutes": 7}
+  ],
+  "planned_minutes_note": "配分は企画の長さ。ファイルを測った時間ではない。",
+  "export": {
+    "wav": ["part01.wav", "part02.wav", "part03.wav", "part04.wav", "part05.wav"],
+    "mp3": ["part01.mp3", "part02.mp3", "part03.mp3", "part04.mp3", "part05.mp3", "full.mp3"]
+  }
+}
