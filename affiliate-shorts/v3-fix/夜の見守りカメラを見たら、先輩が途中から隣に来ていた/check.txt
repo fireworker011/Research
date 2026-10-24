@@ -1,0 +1,12 @@
+{
+  "title": "夜の見守りカメラを見たら、先輩が途中から隣に来ていた",
+  "duration": 15.0,
+  "width": 1080,
+  "height": 1920,
+  "audio_streams": 1,
+  "silence_over_1_5s": 0,
+  "freeze_over_1s": 0,
+  "sync_max_abs": 0.101,
+  "voice_gap_max": 3.185,
+  "source_audio_mapped": false
+}
