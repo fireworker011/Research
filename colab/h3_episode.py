@@ -5668,9 +5668,10 @@ _SURFACE_ROOM_WORDS = (
     "fictional", "no clocks", "readable", "fully nude", "every adult", "plaster", "fluorescent", "dado",
     "hospital toilet", "hospital stall",
 )
+# Naming a sign, poster, screen, badge, flag, or television makes one appear on an open horizon.
 _SURFACE_ENV_TAIL = (
     "Every adult in frame is fully nude. Every adult is normal adult human height. Nobody is giant. "
-    "Signs, posters, screens, and badges carry no readable letters. Adults only in frame."
+    "Adults only in frame."
 )
 
 
@@ -5742,7 +5743,12 @@ def _surface_env(spec: dict[str, Any], original: str) -> str:
         line = s if s.endswith(".") else s + "."
         if line not in seen:
             seen.append(line)
-    return " ".join([base.rstrip(".") + "."] + seen + [_SURFACE_ENV_TAIL])
+    parts = [base.rstrip(".") + "."] + seen
+    # Toilet and bed beats use the room or the ground, not env. Keep the blue sky on those too.
+    if "blue sky" in str(spec.get("env") or "").lower() and "blue sky" not in base.lower():
+        parts.append("Open blue sky. Strong sunlight and sharp shadows.")
+    parts.append(_SURFACE_ENV_TAIL)
+    return " ".join(parts)
 
 
 def surface_is_ward(ep: dict[str, Any]) -> bool:

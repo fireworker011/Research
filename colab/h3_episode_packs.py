@@ -2196,6 +2196,128 @@ PLACE_MODES: dict[str, dict[str, Any]] = {
         "stained dune", "stained sand", "shore hut", "stained sand",
         "shore path", "bend in the shore", "pale sky light", "foul surf", "old wooden toilet",
     ),
+    # Daylight filth under an open blue sky. The look stays in env.
+    # Do not name a sign, poster, screen, badge, flag, or television.
+    "public_toilet_ruin": _surface(
+        "廃れた屋外公衆トイレ跡", "汚れたタイルと便器残骸、糞と染み", "hospital",
+        "A fictional cracked outdoor public toilet ruin, stained tile, broken white toilet bowls, dried feces and grime on the ground, strong sunlight and sharp shadows, open blue sky",
+        "stained tile wall", "dried feces and grime", "ruined toilet shelter", "dried feces and grime",
+        "toilet ruin path", "gap in the ruins", "hard sunlight", "wind over the ruins", "broken outdoor toilet",
+    ),
+    "outdoor_bath": _surface(
+        "汚れた屋外浴場の洗い場", "水垢とカビ、糞混じりの泥", "hospital",
+        "A fictional filthy outdoor bath wash area, peeling tile, water scale and mold, mixed mud and feces, bright sun reflecting off wet patches, sharp shadows, open blue sky",
+        "peeling tile wall", "mud and feces", "outdoor wash area", "mud and feces",
+        "wash walk", "turn in the wash area", "hard sunlight", "water on the stone", "filthy outdoor toilet",
+    ),
+    "animal_pen": _surface(
+        "廃れた屋外動物檻", "糞と泥の床", "hospital",
+        "A fictional abandoned outdoor animal pen, rusty bars, concrete covered in dried feces and mud, strong sunlight and long shadows, open blue sky",
+        "rusty bar", "dried feces and mud", "animal pen", "dried feces and mud",
+        "pen path", "gap in the bars", "hard sunlight", "wind through the bars", "filthy pen toilet",
+    ),
+    "den_mouth": _surface(
+        "過成長した野生の巣穴入口", "糞と獣毛、泥", "hospital",
+        "A fictional overgrown wild den entrance, rocky dirt opening, scattered feces and animal hair, sunlight through the trees, clear shadows, blue sky through the leaves",
+        "dirt bank", "rocky dirt", "den mouth", "rocky dirt",
+        "den path", "mouth of the den", "sunlight through the trees", "wind at the den mouth", "low stone toilet",
+    ),
+    "livestock_shed": _surface(
+        "汚れた屋外家畜小屋の前", "糞と藁と泥", "hospital",
+        "A fictional dirty outdoor livestock shed front, broken wooden fence, ground thick with feces, straw and mud, bright sun and sharp shadows, open blue sky",
+        "wooden fence", "feces straw and mud", "livestock shed", "feces straw and mud",
+        "shed path", "gap in the fence", "hard sunlight", "wind at the shed", "filthy shed toilet",
+    ),
+    "stable_yard": _surface(
+        "廃れた屋外厩舎の運動場", "糞と泥の土", "hospital",
+        "A fictional abandoned outdoor stable yard, cracked earth, dried feces and mud, strong sunlight and long shadows, open blue sky",
+        "yard fence", "dried feces and mud", "stable yard", "dried feces and mud",
+        "yard path", "turn in the yard", "hard sunlight", "wind across the yard", "old wooden toilet",
+    ),
+    "latrine_ruin": _surface(
+        "原始的な屋外便所跡", "糞が残る穴", "hospital",
+        "A fictional primitive outdoor latrine ruin, stone and wood around a hole, feces remaining on the ground, bright sun and clear shadows, open blue sky",
+        "latrine wall", "feces and dirt", "latrine ruin", "feces and dirt",
+        "latrine path", "edge of the hole", "hard sunlight", "wind over the latrine", "primitive latrine",
+    ),
+    "foul_campsite": _surface(
+        "ゴミと糞の散らばる廃キャンプ場", "泥と糞", "hospital",
+        "A fictional trash-strewn abandoned campsite, fallen tent remains, mud and feces mixed on the ground, strong sunlight and sharp shadows, open blue sky",
+        "scrub bank", "mud and feces", "abandoned campsite", "mud and feces",
+        "campsite path", "gap in the remains", "hard sunlight", "wind over the campsite", "old canvas toilet",
+    ),
+    "forest_clearing": _surface(
+        "過成長した森の空き地", "獣の排泄跡、泥と糞", "hospital",
+        "A fictional overgrown forest clearing, fallen logs and mossy ground, dried animal feces and mud, sunlight through the trees, clear shadows, blue sky through the leaves",
+        "fallen log", "moss and mud", "forest clearing", "moss and mud",
+        "clearing path", "gap in the logs", "sunlight through the trees", "wind in the clearing", "old wooden toilet",
+    ),
+    "rocky_bank": _surface(
+        "岩場の川岸", "動物の通り道、糞と足跡", "hospital",
+        "A fictional rocky riverbank, exposed rocks and dried mud, animal tracks and feces, bright open blue sky and long shadows",
+        "exposed rock", "dried mud and rock", "riverbank", "dried mud and rock",
+        "riverbank path", "bend in the bank", "hard sunlight", "water on the rocks", "low stone toilet",
+    ),
+    "forest_spring": _surface(
+        "森の中の湧き水口", "泥と糞混じり", "hospital",
+        "A fictional forest spring outlet, stones and moss around the water, surrounding mud and feces, dappled strong sunlight and shadows, blue sky through the leaves",
+        "mossy stone", "mud and moss", "spring outlet", "mud and moss",
+        "spring path", "edge of the spring", "dappled sunlight", "water at the spring", "low stone toilet",
+    ),
+    "animal_trail": _surface(
+        "蔦に覆われた獣道", "排泄物だらけ", "hospital",
+        "A fictional vine-covered animal trail, muddy leaf-covered path, heavy feces and animal hair, sunlight filtering through the leaves, clear shadows, blue sky through the leaves",
+        "vine bank", "muddy leaves", "animal trail", "muddy leaves",
+        "animal trail", "bend in the trail", "sunlight through the leaves", "wind in the vines", "old wooden toilet",
+    ),
+    "cliff_shade": _surface(
+        "日差しの強い崖下の岩陰", "糞が乾いた岩", "hospital",
+        "A fictional sunny cliff-base rock shade, bare rock and dirt, dried feces on the stone, strong sunlight and sharp shadows, open blue sky beyond the shade",
+        "bare rock", "bare rock and dirt", "rock shade", "bare rock and dirt",
+        "cliff path", "edge of the shade", "hard sunlight", "wind under the cliff", "low stone toilet",
+    ),
+    "wetland_edge": _surface(
+        "湿地の縁", "泥と糞の混ざった地面", "hospital",
+        "A fictional wetland edge, mud and water plants, mixed feces and wet mud, bright sun on the water, clear shadows, open blue sky",
+        "reed bank", "wet mud and feces", "wetland edge", "wet mud and feces",
+        "wetland path", "gap in the plants", "hard sunlight", "water in the wetland", "old wooden toilet",
+    ),
+    "fallen_root": _surface(
+        "倒れた巨木の根元", "獣の巣穴跡、糞と腐葉土", "hospital",
+        "A fictional fallen giant tree root base, exposed roots and a dirt hollow, feces mixed with rotting leaves, sunlight through the canopy, clear shadows, blue sky through the leaves",
+        "exposed root", "rotting leaves and dirt", "root hollow", "rotting leaves and dirt",
+        "root path", "mouth of the hollow", "sunlight through the canopy", "wind at the roots", "old wooden toilet",
+    ),
+    "grassy_slope": _surface(
+        "草が生い茂る斜面", "動物の排泄場所、糞散在", "hospital",
+        "A fictional grassy sunny slope, tall grass and earth, scattered animal feces, open blue sky with long shadows",
+        "grass bank", "grassy earth", "grassy slope", "grassy earth",
+        "slope path", "fork on the slope", "hard sunlight", "wind on the slope", "old wooden toilet",
+    ),
+    "coastal_reef": _surface(
+        "海岸の岩礁", "鳥や獣の糞跡", "hospital",
+        "A fictional coastal rock reef, bare rocks and small pools, dried bird and animal feces, strong sunlight and sharp shadows, open blue sky",
+        "reef rock", "bare rock", "rock reef", "bare rock",
+        "reef path", "gap in the rocks", "hard sunlight", "surf on the rocks", "low stone toilet",
+    ),
+    "cave_mouth": _surface(
+        "洞窟入口の外", "泥と糞の地面", "hospital",
+        "A fictional cave entrance exterior, rocky opening and dirt ground, feces and mud remaining, bright sun hitting the entrance, sharp shadows, open blue sky",
+        "cave rock", "feces and mud", "cave entrance", "feces and mud",
+        "cave approach", "mouth of the cave", "hard sunlight", "wind at the cave mouth", "low stone toilet",
+    ),
+    "pigsty_ruin": _surface(
+        "汚れた屋外豚小屋の跡", "糞と泥が厚い", "hospital",
+        "A fictional dirty outdoor pigsty ruin, broken wooden fence, thick feces and mud on the ground, strong sunlight and clear shadows, open blue sky",
+        "sty fence", "thick feces and mud", "pigsty ruin", "thick feces and mud",
+        "sty path", "gap in the fence", "hard sunlight", "wind over the sty", "filthy sty toilet",
+    ),
+    "rearing_pen": _surface(
+        "廃れた屋外飼育場の囲い", "糞と泥の土", "hospital",
+        "A fictional abandoned outdoor rearing enclosure, rusty wire and earth, feces and mud mixed, bright sun and long shadows, open blue sky",
+        "wire fence", "feces and mud", "rearing enclosure", "feces and mud",
+        "enclosure path", "gap in the wire", "hard sunlight", "wind in the enclosure", "old wooden toilet",
+    ),
 }
 
 TIME_MODES: dict[str, dict[str, Any]] = {
@@ -2236,9 +2358,9 @@ WEATHER_MODES: dict[str, dict[str, Any]] = {
     "clear": {
         "label_ja": "晴れ",
         "choice_ja": "晴れ",
-        "when_ja": "乾いた床と澄んだ光",
+        "when_ja": "澄んだ光。地面の乾きは足さない",
         "form": True,
-        "sentence": "The ground stays dry. The light stays clear.",
+        "sentence": "The light stays clear.",
     },
     "rain": {
         "label_ja": "雨",

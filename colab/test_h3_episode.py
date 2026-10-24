@@ -7068,3 +7068,72 @@ def test_place_and_look_follow_the_form_and_the_ward_stays():
     assert "C-cup breasts" not in bigger["cast"]["aya"]["lock"]
     assert "large full breasts" in bigger["cast"]["aya"]["lock"]
 
+
+FILTH_PLACE_CHOICES = (
+    "廃れた屋外公衆トイレ跡",
+    "汚れた屋外浴場の洗い場",
+    "廃れた屋外動物檻",
+    "過成長した野生の巣穴入口",
+    "汚れた屋外家畜小屋の前",
+    "廃れた屋外厩舎の運動場",
+    "原始的な屋外便所跡",
+    "ゴミと糞の散らばる廃キャンプ場",
+    "過成長した森の空き地",
+    "岩場の川岸",
+    "森の中の湧き水口",
+    "蔦に覆われた獣道",
+    "日差しの強い崖下の岩陰",
+    "湿地の縁",
+    "倒れた巨木の根元",
+    "草が生い茂る斜面",
+    "海岸の岩礁",
+    "洞窟入口の外",
+    "汚れた屋外豚小屋の跡",
+    "廃れた屋外飼育場の囲い",
+)
+_SIGN_NOUNS = ("sign", "poster", "badge", "screen", "flag", "television", "billboard", "monitor")
+
+
+def _assert_no_sign_nouns(text: str, label: str) -> None:
+    low = text.lower()
+    for word in _SIGN_NOUNS:
+        assert re.search(rf"\b{word}s?\b", low) is None, (label, word)
+
+
+def test_filth_places_keep_sun_and_feces_and_omit_sign_nouns():
+    raw = load_episode(HOSPITAL_DIR / "episode.json")
+    base = prepare_episode(raw, story_override="誘う", tsuno_override="角・病室で横になって挿入")
+    cover = next(b for b in base["beats"] if b["id"] == "01-cover")
+    lie = next(b for b in base["beats"] if b["id"] == "04-tsuno-lie")
+    choices = ui_choices("place")
+    for label in FILTH_PLACE_CHOICES:
+        assert label in choices
+        ep = copy.deepcopy(base)
+        ep["render"] = dict(ep["render"], place=label, time="昼", weather="晴れ")
+        prompt = build_beat_prompt(ep, cover)
+        low = prompt.lower()
+        assert "feces" in low, label
+        assert "blue sky" in low, label
+        assert "shadow" in low, label
+        assert "the ground stays dry" not in low
+        assert "linoleum" not in low, label
+        _assert_no_sign_nouns(prompt, label)
+        bed = build_beat_prompt(ep, lie)
+        assert "blue sky" in bed.lower(), label
+        assert "soil bed" not in bed.lower()
+        assert "mattress" not in bed.lower()
+        _assert_no_sign_nouns(bed, label)
+    bog = copy.deepcopy(base)
+    bog["render"] = dict(base["render"], place="腐れ沼", time="昼", weather="晴れ")
+    bog_prompt = build_beat_prompt(bog, cover)
+    assert "signs, posters" not in bog_prompt.lower()
+    _assert_no_sign_nouns(bog_prompt, "腐れ沼")
+    ward = copy.deepcopy(base)
+    ward["render"] = dict(
+        base["render"],
+        place="病棟（迷ったらこれ）",
+        time="夜（迷ったらこれ）",
+        weather="天候なし（迷ったらこれ）",
+    )
+    assert "no readable letters" in build_beat_prompt(ward, cover)
+
