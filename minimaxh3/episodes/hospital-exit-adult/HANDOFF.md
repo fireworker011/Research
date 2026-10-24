@@ -29,16 +29,16 @@ LoRA スタジオのスキルは病棟の指アナルに使わない。指アナ
 
 ## 残課題（2026-10-24）
 
-生成はしていない。pytest は 117 通過。動画で旗、人体、LoRA の休眠、beta6 の取得は見ていない。
+生成はしていない。pytest は 118 通過。動画で旗、人体、LoRA の休眠、beta6 の取得は見ていない。
 
-- 病棟の夜は、環境文の末尾がまだ `Signs, posters, screens, and badges carry no readable letters`。世界ロックも `door or screen` を含む。屋外の歩きは、この一文を環境の作り直しで外した。場所を病棟に戻すと旗と画面が戻りうる。
-- ネオン横丁は `blank signs`、霊廟は `stone markers`、神社は `torii`、城下町は `shop fronts`。場所自身が看板系を指名している。
-- 便器の拍と角の寝床は、場所の `env` を使わない。青空の後付けは、`env` に `blue sky` がある場所だけ。便器拍は病棟の便器文を残してから名詞を置換する。公衆トイレ跡の見た目は、歩きより便器拍の方が薄い。
-- 昼の文は `Everything stays brightly lit`。鋭い影を潰しうる。
-- 屋外の置換は `porcelain`、`water stains`、複数の `tiles`、`crumbling` を消す。次の Look をその語のまま足すと、プロンプトから名詞が落ちる。
+- 病棟の夜は、`Signs, posters, screens, and badges` の一文を足さない。`no_text_on_signs` は false。世界ロックから `door or screen` を外した。`no readable letters` と、ゴムの扉と出口の doorway は残す。場所を病棟に戻しても、その一文と `screen` は戻らない。
+- ネオン横丁の `blank signs`、霊廟の `stone markers`、神社の `torii`、城下町の `shop fronts` は、場所の env に残す。場所自身が看板系を指名している。
+- 便器拍と角の寝床は、場所の `env` を使う。便器拍はその後に、行為が要る便器の文を残し、病棟の名詞を場所の名詞へ替える。青空は env の中にある。env に無い場所へは足さない。
+- 昼の文は `High daylight lights the place.`。`Everything stays brightly lit` は付けない。場所の env にある影は残る。
+- 場所の env には置換を掛けない。`porcelain`、`water stains`、`tiles`、`crumbling` を屋外の Look にそのまま足していない。病棟の便器文では、porcelain の便器句を場所の fixture に替えてから、残った語を落とす。城下町の `dark roof tiles` は残る。
 - 晴れは地面を乾かさない。本文に乾きが無い場所は、晴れだけでは乾かない。
 - フルネルソンの学習文は `man's arms` を含む。消すと LoRA が動かない。横挿入に he や daddy を足すと、角が男になる。ステップの上限は 16。見本の 20 は使えない。
-- 開いたままの Colab は古い欄を保持する。LoRA 更新セルは、まだ Drive に無いファイルを取らない。analfist、fullnelson、beta6 は描くセルが取る。beta5 は beta6 の代わりにならない。古いファイルは消さない。
+- 開いたままの Colab は古い欄を保持する。LoRA 更新セルは、まだ Drive に無いファイルを取らない。analfist、fullnelson、beta6 は描くセルが取る。beta5 は beta6 の代わりにならない。古いファイルは消さない。開いたときのフォームは変えていない。汚泥の干潟、昼、晴れ、トイレ触手、角は横になって挿入。
 - 別枝 `cursor/pose-ref-gaps-d736`、`cursor/human-cast-anatomy-d736`、`cursor/hospital-anal-dildo-face-d736`、`cursor/rehearsal-room-adult-d736` をこの枝へ混ぜない。draft PR #122 はマージしない。
 
 ## いま（2026-10-23）残りの姿勢

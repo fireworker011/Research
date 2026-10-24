@@ -2342,7 +2342,7 @@ TIME_MODES: dict[str, dict[str, Any]] = {
         "choice_ja": "昼",
         "when_ja": "高い光。行為は変えない",
         "form": True,
-        "sentence": "High daylight lights the place. Everything stays brightly lit.",
+        "sentence": "High daylight lights the place.",
     },
 }
 

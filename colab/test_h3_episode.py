@@ -7120,9 +7120,13 @@ def test_filth_places_keep_sun_and_feces_and_omit_sign_nouns():
         _assert_no_sign_nouns(prompt, label)
         bed = build_beat_prompt(ep, lie)
         assert "blue sky" in bed.lower(), label
+        assert "a fictional" in bed.lower(), label
         assert "soil bed" not in bed.lower()
         assert "mattress" not in bed.lower()
+        assert "everything stays brightly lit" not in bed.lower()
+        assert "high daylight lights the place" in bed.lower()
         _assert_no_sign_nouns(bed, label)
+        assert "everything stays brightly lit" not in low
     bog = copy.deepcopy(base)
     bog["render"] = dict(base["render"], place="腐れ沼", time="昼", weather="晴れ")
     bog_prompt = build_beat_prompt(bog, cover)
@@ -7135,5 +7139,51 @@ def test_filth_places_keep_sun_and_feces_and_omit_sign_nouns():
         time="夜（迷ったらこれ）",
         weather="天候なし（迷ったらこれ）",
     )
-    assert "no readable letters" in build_beat_prompt(ward, cover)
+    ward_prompt = build_beat_prompt(ward, cover)
+    assert "no readable letters" in ward_prompt
+    assert "signs, posters, screens, and badges" not in ward_prompt.lower()
+    assert "door or screen" not in ward_prompt.lower()
+    assert "rubber doors" in ward_prompt.lower()
+
+
+def test_toilet_and_bed_use_place_env_and_named_places_keep_their_signs():
+    raw = load_episode(HOSPITAL_DIR / "episode.json")
+    pee = prepare_episode(raw, story_override="誘う", toilet_override="トイレ・小便")
+    pee_beat = next(b for b in pee["beats"] if b["id"] == "04-toilet")
+    ruin = copy.deepcopy(pee)
+    ruin["render"] = dict(ruin["render"], place="廃れた屋外公衆トイレ跡", time="昼", weather="晴れ")
+    pee_prompt = build_beat_prompt(ruin, pee_beat).lower()
+    assert "stained tile" in pee_prompt
+    assert "broken white toilet bowls" in pee_prompt
+    assert "dried feces" in pee_prompt
+    assert "open blue sky" in pee_prompt
+    assert "sharp shadows" in pee_prompt
+    assert "broken outdoor toilet" in pee_prompt
+    assert "porcelain" not in pee_prompt
+    assert "water stains" not in pee_prompt
+    assert "everything stays brightly lit" not in pee_prompt
+    tent = prepare_episode(raw, story_override="誘う", toilet_override="トイレ・触手")
+    tent_beat = next(b for b in tent["beats"] if b["id"] == "04-toilet")
+    mud = copy.deepcopy(tent)
+    mud["render"] = dict(mud["render"], place="汚泥の干潟", time="昼", weather="晴れ")
+    tent_prompt = build_beat_prompt(mud, tent_beat).lower()
+    assert "thick sludge underfoot" in tent_prompt
+    assert "plant-flesh" in tent_prompt or "fleshy" in tent_prompt
+    assert "everything stays brightly lit" not in tent_prompt
+    assert "signs, posters, screens, and badges" not in tent_prompt
+    cover = next(b for b in pee["beats"] if b["id"] == "01-cover")
+    named = {
+        "ネオン横丁": ("blank signs",),
+        "霊廟・奥之院": ("stone markers",),
+        "神社・千本鳥居": ("torii",),
+        "城下町・川越": ("shop fronts", "dark roof tiles"),
+    }
+    for label, nouns in named.items():
+        ep = copy.deepcopy(pee)
+        ep["render"] = dict(ep["render"], place=label, time="夜", weather="天候なし（迷ったらこれ）")
+        prompt = build_beat_prompt(ep, cover).lower()
+        for noun in nouns:
+            assert noun in prompt, label
+        assert "signs, posters, screens, and badges" not in prompt
+        assert "dark roof stone-paved lane" not in prompt
 

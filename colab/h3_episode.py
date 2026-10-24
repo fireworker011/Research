@@ -5721,34 +5721,55 @@ def _surface_decor(spec: dict[str, Any], *, night: bool) -> list[tuple[str, str]
 
 
 def _surface_env(spec: dict[str, Any], original: str) -> str:
-    """Rebuild the environment for this place. Only fixture sentences the act needs survive."""
+    """Rebuild from this place's env. A toilet beat also keeps the fixture sentences the act needs.
+
+    The bed uses the same env. The sky stays inside that env. A second blue-sky sentence is not added.
+    """
     low = original.lower()
     sentences = [s.strip() for s in re.split(r"(?<=\.)\s+", original) if s.strip()]
+    kept: list[str] = []
     if "toilet" in low or "squat pan" in low or " stall" in low:
         kept = [
             s for s in sentences
             if any(w in s.lower() for w in _SURFACE_FIXTURE_WORDS)
             and not any(w in s.lower() for w in _SURFACE_ROOM_WORDS)
         ]
-        base = str(spec["priv"])
-    elif "sickroom" in low or any(w in low for w in ("mattress", "iron bed", "single bed")):
-        # Tsuno's room stops here. Only the place's own ground remains.
-        kept = []
-        base = str(spec["rest"])
-    else:
-        kept = []
-        base = str(spec["env"])
+    base = str(spec.get("env") or "").strip()
+    if not base:
+        base = str(spec.get("rest") or spec.get("priv") or "").strip()
     seen: list[str] = []
     for s in kept:
         line = s if s.endswith(".") else s + "."
         if line not in seen:
             seen.append(line)
-    parts = [base.rstrip(".") + "."] + seen
-    # Toilet and bed beats use the room or the ground, not env. Keep the blue sky on those too.
-    if "blue sky" in str(spec.get("env") or "").lower() and "blue sky" not in base.lower():
-        parts.append("Open blue sky. Strong sunlight and sharp shadows.")
+    parts = [base.rstrip(".") + "."] if base else []
+    parts.extend(seen)
     parts.append(_SURFACE_ENV_TAIL)
     return " ".join(parts)
+
+
+def _rewrite_surface_chunk(spec: dict[str, Any], text: str, *, night: bool) -> str:
+    """Swap ward nouns, then drop leftover ward grime. The place env is not passed in."""
+    out = text
+    for old, new in _place_swaps(spec):
+        out = out.replace(old, new)
+    for pattern, repl in _surface_decor(spec, night=night):
+        out = re.sub(pattern, repl, out)
+    return re.sub(r"\b[Hh]ospital\s+", "", out)
+
+
+def _rewrite_surface_residue(spec: dict[str, Any], text: str, *, night: bool) -> str:
+    """Leave the place env untouched. porcelain, water stains, tiles, and crumbling stay in that sentence."""
+    owned = str(spec.get("env") or "").strip().rstrip(".")
+    owned_sentence = f"{owned}." if owned else ""
+    if owned_sentence and owned_sentence in text:
+        head, _, tail = text.partition(owned_sentence)
+        return (
+            _rewrite_surface_chunk(spec, head, night=night)
+            + owned_sentence
+            + _rewrite_surface_chunk(spec, tail, night=night)
+        )
+    return _rewrite_surface_chunk(spec, text, night=night)
 
 
 def surface_is_ward(ep: dict[str, Any]) -> bool:
@@ -5772,11 +5793,7 @@ def apply_prompt_surface(ep: dict[str, Any], text: str) -> str:
         found = _SURFACE_ENV_RE.search(out)
         if found:
             out = out[: found.start(2)] + _surface_env(spec, found.group(2)) + out[found.end(2):]
-        for pattern, repl in _surface_decor(spec, night=night):
-            out = re.sub(pattern, repl, out)
-        for old, new in _place_swaps(spec):
-            out = out.replace(old, new)
-        out = re.sub(r"\b[Hh]ospital\s+", "", out)
+        out = _rewrite_surface_residue(spec, out, night=night)
     if not night:
         out = re.sub(r"\s+at night\b", "", out)
     bits: list[str] = []

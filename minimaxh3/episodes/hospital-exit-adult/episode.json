@@ -34,8 +34,8 @@
   "violence": "game",
   "world": {
     "name": "Fictional derelict night hospital",
-    "lock": "Fictional derelict old hospital at night, worn down by a fictional pandemic: crumbling peeling beige walls, cracked stained grey linoleum, rusted rails, rubber doors hanging loose, flickering broken fluorescent tubes, water stains, a dark far end, a lit open doorway at adult height as the exit, no clocks, no readable letters on any door or screen, every adult in frame is fully nude, every adult is normal adult human height, nobody is giant",
-    "no_text_on_signs": true
+    "lock": "Fictional derelict old hospital at night, worn down by a fictional pandemic: crumbling peeling beige walls, cracked stained grey linoleum, rusted rails, rubber doors hanging loose, flickering broken fluorescent tubes, water stains, a dark far end, a lit open doorway at adult height as the exit, no clocks, no readable letters, every adult in frame is fully nude, every adult is normal adult human height, nobody is giant",
+    "no_text_on_signs": false
   },
   "cast": {
     "aya": {
