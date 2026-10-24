@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Write the one-click episode Colab notebook (one code cell: bootstrap → render all beats → HUD → stitch → stop)."""
+"""Write the one-click episode Colab notebook (render cell, then a CPU LoRA update cell)."""
 from __future__ import annotations
 
 import json
@@ -12,13 +12,13 @@ sys.path.insert(0, str(ROOT / "minimaxh3"))
 from h3_episode import EPISODE_HELPERS  # noqa: E402
 from h3_episode_packs import (  # noqa: E402
     RIDE_FOOT_CHOICES,
+    form_initial,
     form_markdown,
     form_readme,
     ui_choices,
-    ui_default,
 )
 
-BRANCH = "cursor/h3-hospital-ward-34e4"
+BRANCH = "cursor/h3-lora-cards-d736"
 EPISODE_DEFAULT = "kasumi-late-desk-adult"
 REPO = "fireworker011/Research"
 FILE = "minimax_h3_episode_bot.ipynb"
@@ -30,7 +30,7 @@ def colab_url(path: str) -> str:
     return f"https://colab.research.google.com/github/{REPO}/blob/{BRANCH}/{path}"
 
 
-CELL = r'''#@title 一発：話と上から 1〜11、登場とシーンを選んで Run all（迷ったらそのまま）
+CELL = r'''#@title 一発：話と上から 1〜11、登場とシーンを選んで Run all（開いた欄のまま）
 __EPISODE_HELP__
 EPISODE = __EPISODE_DEFAULT__  #@param __EPISODE_CHOICES__
 #@markdown ---
@@ -38,10 +38,62 @@ __CONNECT_HELP__
 CONNECT = __CONNECT_DEFAULT__  #@param __CONNECT_CHOICES__
 __CAMERA_HELP__
 CAMERA = __CAMERA_DEFAULT__  #@param __CAMERA_CHOICES__
+__DISTANCE_HELP__
+CAMERA_DISTANCE = __DISTANCE_DEFAULT__  #@param __DISTANCE_CHOICES__
+__PLACE_HELP__
+PLACE = __PLACE_DEFAULT__  #@param __PLACE_CHOICES__
+__TIME_HELP__
+TIME_OF_DAY = __TIME_DEFAULT__  #@param __TIME_CHOICES__
+__WEATHER_HELP__
+WEATHER = __WEATHER_DEFAULT__  #@param __WEATHER_CHOICES__
+__DIRT_HELP__
+DIRT = __DIRT_DEFAULT__  #@param __DIRT_CHOICES__
+__LOOK_HELP__
+AYA_LOOK = __LOOK_DEFAULT__  #@param __LOOK_CHOICES__
+#@markdown **あやの容姿。各欄の初期値は今のまま。国の見た目より、ここで選んだ欄が優先。**
+__AYA_HAIR_HELP__
+AYA_HAIR = __AYA_HAIR_DEFAULT__  #@param __AYA_HAIR_CHOICES__
+__AYA_COLOR_HELP__
+AYA_HAIR_COLOR = __AYA_COLOR_DEFAULT__  #@param __AYA_COLOR_CHOICES__
+__AYA_FACE_HELP__
+AYA_FACE = __AYA_FACE_DEFAULT__  #@param __AYA_FACE_CHOICES__
+__AYA_BUST_HELP__
+AYA_BUST = __AYA_BUST_DEFAULT__  #@param __AYA_BUST_CHOICES__
+__AYA_BUTT_HELP__
+AYA_BUTT = __AYA_BUTT_DEFAULT__  #@param __AYA_BUTT_CHOICES__
+__AYA_BUILD_HELP__
+AYA_BUILD = __AYA_BUILD_DEFAULT__  #@param __AYA_BUILD_CHOICES__
+__AYA_HEIGHT_HELP__
+AYA_HEIGHT = __AYA_HEIGHT_DEFAULT__  #@param __AYA_HEIGHT_CHOICES__
+__AYA_DIRT_HELP__
+AYA_DIRT = __AYA_DIRT_DEFAULT__  #@param __AYA_DIRT_CHOICES__
+__AYA_SWEAT_HELP__
+AYA_SWEAT = __AYA_SWEAT_DEFAULT__  #@param __AYA_SWEAT_CHOICES__
+__AYA_CLOTHES_HELP__
+AYA_CLOTHES = __AYA_CLOTHES_DEFAULT__  #@param __AYA_CLOTHES_CHOICES__
+__AYA_SHAFT_HELP__
+AYA_SHAFT = __AYA_SHAFT_DEFAULT__  #@param __AYA_SHAFT_CHOICES__
+__ENEMY_KIND_HELP__
+ENEMY_KIND = __ENEMY_KIND_DEFAULT__  #@param __ENEMY_KIND_CHOICES__
+__ENEMY_LOOK_HELP__
+LOOK_MIKI = __LOOK_MIKI_DEFAULT__  #@param __LOOK_CHOICES__
+LOOK_REI = __LOOK_REI_DEFAULT__  #@param __LOOK_CHOICES__
+LOOK_KANA = __LOOK_KANA_DEFAULT__  #@param __LOOK_CHOICES__
+LOOK_SHINO = __LOOK_SHINO_DEFAULT__  #@param __LOOK_CHOICES__
+LOOK_GIN = __LOOK_GIN_DEFAULT__  #@param __LOOK_CHOICES__
+LOOK_TSUNO = __LOOK_TSUNO_DEFAULT__  #@param __LOOK_CHOICES__
+#@markdown **シード** — 空なら台本の 42。数字を書くとその回だけ絵が変わる。
+SEED = "42"  #@param {type:"string"}
 __PRESET_HELP__
 PRESET = __PRESET_DEFAULT__  #@param __PRESET_CHOICES__
 __COMBAT_HELP__
 COMBAT = __COMBAT_DEFAULT__  #@param __COMBAT_CHOICES__
+__MISSIONLG_HELP__
+MISSIONLG = __MISSIONLG_DEFAULT__  #@param __MISSIONLG_CHOICES__
+__MESSYBLOW_HELP__
+MESSYBLOW = __MESSYBLOW_DEFAULT__  #@param __MESSYBLOW_CHOICES__
+__CLOSEUP_HELP__
+CLOSEUP = __CLOSEUP_DEFAULT__  #@param __CLOSEUP_CHOICES__
 __STORY_HELP__
 STORY = __STORY_DEFAULT__  #@param __STORY_CHOICES__
 __POSE_HELP__
@@ -63,27 +115,23 @@ DOG = __DOG_DEFAULT__  #@param __DOG_CHOICES__
 __SPECIES_HELP__
 SPECIES = __SPECIES_DEFAULT__  #@param __SPECIES_CHOICES__
 #@markdown ---
-#@markdown **あやの容姿。空なら今のまま。英語。髪型を書くと髪色は使わない。竿は今のまま / あり / なし。**
-AYA_HAIR = ""  #@param {type:"string"}
-AYA_HAIR_COLOR = ""  #@param {type:"string"}
-AYA_FACE = ""  #@param {type:"string"}
-AYA_DIRT = ""  #@param {type:"string"}
-AYA_SWEAT = ""  #@param {type:"string"}
-AYA_CLOTHES = ""  #@param {type:"string"}
-AYA_SHAFT = "今のまま"  #@param ["今のまま", "あり", "なし"]
-#@markdown **敵の容姿。空なら今のまま。1行に1人。** `miki; hair=a short blonde bob; clothes=a torn white shirt; shaft=今のまま`
-#@markdown id は miki / rei / kana / shino / gin / tsuno / dog / slime / anthro。key は hair color face dirt sweat clothes shaft。
-ENEMY_LOOK = ""  #@param {type:"string"}
+#@markdown **その他の自由記入。** その人の見た目が「その他」のときだけ使う。`hair=...; face=...`
+FREE_MIKI = ""  #@param {type:"string"}
+FREE_REI = ""  #@param {type:"string"}
+FREE_KANA = ""  #@param {type:"string"}
+FREE_SHINO = ""  #@param {type:"string"}
+FREE_GIN = ""  #@param {type:"string"}
+FREE_TSUNO = ""  #@param {type:"string"}
 #@markdown **登場（病棟）。外すとその人のシーンを飛ばす。4人とも外すと止まる。霞東は無視。**
 APPEAR_MIKI = True  #@param {type:"boolean"}
 APPEAR_REI = True  #@param {type:"boolean"}
 APPEAR_KANA = True  #@param {type:"boolean"}
 APPEAR_SHINO = True  #@param {type:"boolean"}
 #@markdown **シーンごと（病棟）。誘うは誘い方も含む。戦い構成と霞東は無視。**
-SCENE_MIKI = __SCENE_DEFAULT__  #@param __SCENE_CHOICES__
-SCENE_REI = __SCENE_DEFAULT__  #@param __SCENE_CHOICES__
-SCENE_KANA = __SCENE_DEFAULT__  #@param __SCENE_CHOICES__
-SCENE_SHINO = __SCENE_DEFAULT__  #@param __SCENE_CHOICES__
+SCENE_MIKI = __SCENE_MIKI_DEFAULT__  #@param __SCENE_CHOICES__
+SCENE_REI = __SCENE_REI_DEFAULT__  #@param __SCENE_CHOICES__
+SCENE_KANA = __SCENE_KANA_DEFAULT__  #@param __SCENE_CHOICES__
+SCENE_SHINO = __SCENE_SHINO_DEFAULT__  #@param __SCENE_CHOICES__
 #@markdown **開始シーン** — 空なら最初から。beat id（例 `04-toilet`）を書くと、そのカットから先を今のドロップダウンどおりに作り直す。前のカットは残す。この設定の並びに無い id は止まる。
 START = ""  #@param {type:"string"}
 FRESH = False  #@param {type:"boolean"}
@@ -110,9 +158,33 @@ os.environ["H3_COMFY_DIR"] = COMFY_DIR
 os.environ["H3_EPISODE"] = EPISODE
 os.environ["H3_EPISODE_PRESET"] = PRESET
 os.environ["H3_EPISODE_CAMERA"] = CAMERA
+os.environ["H3_EPISODE_CAMERA_DISTANCE"] = CAMERA_DISTANCE
+os.environ["H3_EPISODE_PLACE"] = PLACE
+os.environ["H3_EPISODE_TIME"] = TIME_OF_DAY
+os.environ["H3_EPISODE_WEATHER"] = WEATHER
+os.environ["H3_EPISODE_DIRT"] = DIRT
+os.environ["H3_EPISODE_AYA_LOOK"] = AYA_LOOK
+os.environ["H3_EPISODE_ENEMY_KIND"] = ENEMY_KIND
+os.environ["H3_EPISODE_ENEMY_LOOKS"] = ",".join(
+    f"{cid}={choice}"
+    for cid, choice in (
+        ("miki", LOOK_MIKI),
+        ("rei", LOOK_REI),
+        ("kana", LOOK_KANA),
+        ("shino", LOOK_SHINO),
+        ("gin", LOOK_GIN),
+        ("tsuno", LOOK_TSUNO),
+    )
+)
+_seed = str(SEED or "").strip()
+if _seed:
+    os.environ["H3_EPISODE_SEED"] = _seed
 os.environ["H3_EPISODE_CONNECT"] = CONNECT
 os.environ["H3_EPISODE_END_CONNECT"] = "follow"
 os.environ["H3_EPISODE_COMBAT"] = COMBAT
+os.environ["H3_EPISODE_MISSIONLG"] = MISSIONLG
+os.environ["H3_EPISODE_MESSYBLOW"] = MESSYBLOW
+os.environ["H3_EPISODE_CLOSEUP"] = CLOSEUP
 os.environ["H3_EPISODE_STORY"] = STORY
 os.environ["H3_EPISODE_INVITE_POSE"] = INVITE_POSE
 os.environ["H3_EPISODE_RIDE_BENT"] = RIDE_BENT
@@ -126,11 +198,26 @@ os.environ["H3_EPISODE_SPECIES"] = SPECIES
 os.environ["H3_EPISODE_AYA_HAIR"] = str(AYA_HAIR or "").strip()
 os.environ["H3_EPISODE_AYA_COLOR"] = str(AYA_HAIR_COLOR or "").strip()
 os.environ["H3_EPISODE_AYA_FACE"] = str(AYA_FACE or "").strip()
+os.environ["H3_EPISODE_AYA_BUST"] = str(AYA_BUST or "").strip()
+os.environ["H3_EPISODE_AYA_BUTT"] = str(AYA_BUTT or "").strip()
+os.environ["H3_EPISODE_AYA_BUILD"] = str(AYA_BUILD or "").strip()
+os.environ["H3_EPISODE_AYA_HEIGHT"] = str(AYA_HEIGHT or "").strip()
 os.environ["H3_EPISODE_AYA_DIRT"] = str(AYA_DIRT or "").strip()
 os.environ["H3_EPISODE_AYA_SWEAT"] = str(AYA_SWEAT or "").strip()
 os.environ["H3_EPISODE_AYA_CLOTHES"] = str(AYA_CLOTHES or "").strip()
 os.environ["H3_EPISODE_AYA_SHAFT"] = str(AYA_SHAFT or "").strip()
-os.environ["H3_EPISODE_ENEMY_LOOK"] = str(ENEMY_LOOK or "").strip()
+os.environ["H3_EPISODE_ENEMY_LOOK"] = "\n".join(
+    f"{cid}; {text}"
+    for cid, choice, text in (
+        ("miki", LOOK_MIKI, FREE_MIKI),
+        ("rei", LOOK_REI, FREE_REI),
+        ("kana", LOOK_KANA, FREE_KANA),
+        ("shino", LOOK_SHINO, FREE_SHINO),
+        ("gin", LOOK_GIN, FREE_GIN),
+        ("tsuno", LOOK_TSUNO, FREE_TSUNO),
+    )
+    if choice == "その他" and str(text or "").strip()
+)
 os.environ["H3_EPISODE_APPEAR"] = ",".join(
     name for name, on in (("miki", APPEAR_MIKI), ("rei", APPEAR_REI), ("kana", APPEAR_KANA), ("shino", APPEAR_SHINO)) if on
 ) or "none"
@@ -138,7 +225,6 @@ os.environ["H3_EPISODE_SCENES"] = ",".join(
     f"{name}={choice}"
     for name, choice in (("miki", SCENE_MIKI), ("rei", SCENE_REI), ("kana", SCENE_KANA), ("shino", SCENE_SHINO))
 )
-os.environ["H3_KEEP_RUNTIME"] = "1"
 os.environ["H3_EPISODE_START"] = str(START or "").strip()
 os.environ["H3_EPISODE_FRESH"] = "1" if FRESH else "0"
 os.environ["H3_HELPER_BRANCH"] = BRANCH
@@ -192,6 +278,7 @@ slug = canonical_episode(EPISODE) or EPISODE
 os.environ["H3_EPISODE"] = slug
 Path(DRIVE_ROOT, "episodes", slug).mkdir(parents=True, exist_ok=True)
 from h3_episode_colab_main import main
+from h3_i2v_runtime import maybe_unassign
 
 rc = main()
 print("episode exit", rc)
@@ -200,18 +287,21 @@ if rc:
 if os.environ.get("H3_WEIGHTS_ONLY") == "1":
     print("取得だけ終わりました。ランタイムを A100 にして、もう一度 Run all すると動画を描きます。")
 else:
-    print("成功。完成動画は Drive episodes/" + slug + "/final/ にあります。ランタイムはそのままです。赤い例外は出ません。")
+    print("成功。完成動画は Drive episodes/" + slug + "/final/ にあります。ランタイムを切ります。赤い例外は出ません。")
+    os.environ["H3_UNASSIGN_RUNTIME"] = "1"
+    os.environ.pop("H3_KEEP_RUNTIME", None)
+    maybe_unassign()
 '''
 
 MD = f"""# MiniMax H3 エピソード一発（選んで Run all）
 
 [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)]({colab_url(FILE)})
 
-**コードセルは1本。迷ったらドロップダウンはそのままで Run all。** Drive `minimax-h3-comfyui/episodes/<slug>/` に
+**コードセルは1本。開いた欄のまま Run all。** 開いたときの選択は病棟出口、前の最終フレームから続ける、スピード、誘う、トイレ触手、灰色は最初から膝曲げ、角は横になって挿入、汚泥の干潟、昼、晴れ、人間。顔はみき中東、れい韓国、かな日本、しの南アジア、ぎん北欧、角東南アジア。シーンはみき四つん這い、れい後ろアナル、かな壁立ち、しのM字。迷ったらこれの印は、台本をそのまま出す行に残す。BRANCH はこの枝。開いたままのセルは古い欄を保持する。 Drive `minimax-h3-comfyui/episodes/<slug>/` に
 `episode.json` とスチールが無ければ GitHub から取ってくる。全ビートを1つのランタイムで描き、
-HUD・タイトル・免責エンドカードを載せて `final/<slug>-<日時>.mp4`（と `latest.mp4`）を書く。終わってもランタイムは切らない。
+HUD・タイトル・免責エンドカードを載せて `final/<slug>-<日時>.mp4`（と `latest.mp4`）を書く。動画が描き終わったらランタイムを切る。重みの取得だけと、失敗したときは切らない。
 
-## 話 + 上から 11 つ + 病棟の追加（迷ったらそのまま）
+## 話 + 上から 11 つ + 病棟の追加
 
 **話** — どの予告を描くか
 
@@ -245,11 +335,11 @@ HUD・タイトル・免責エンドカードを載せて `final/<slug>-<日時>
 
 {form_readme("toilet")}
 
-**8. 灰色の長い舌** — 病棟の追加オプション。出ないが既定。霞東は無視
+**8. 灰色の長い舌** — 病棟の追加オプション。開いたときは最初から膝曲げ。迷ったら出ない。霞東は無視
 
 {form_readme("gin")}
 
-**9. 角の頭** — 病棟の追加オプション。出ないが既定。騎乗と個室は新しい話。霞東は無視
+**9. 角の頭** — 病棟の追加オプション。開いたときは横になって挿入。迷ったら出ない。騎乗と個室は新しい話。霞東は無視
 
 {form_readme("tsuno")}
 
@@ -261,7 +351,9 @@ HUD・タイトル・免責エンドカードを載せて `final/<slug>-<日時>
 
 {form_readme("species")}
 
-**容姿** — 空なら今の見た目のまま。あやは髪型、髪色、顔、肌の汚れ、汗、服装、竿。敵は1行に1人。英語だけ。`no` `never` `not` `without` `blood` は書かない。
+**場所** — 病棟なら名詞はそのまま。他は通路・壁・床・トイレの個室・出口だけ替わる。角の個室は部屋を出さず、寝床はその場所の地面。開いたときは汚泥の干潟、昼、晴れ。
+
+**容姿** — あやの各欄と敵の顔。今のままは台本。国を選ぶと髪と顔。角の一つの目と角、しのの長身、竿の長さは国では変えない。その他のときだけ自由記入。英語だけ。`no` `never` `not` `without` `blood` は書かない。
 
 登場チェックを外すと、その感染者のシーンを飛ばす（みき / れい / かな / しの）。**4人とも外すと作る場面が無くなって止まる。最低1人は残す。**
 
@@ -273,18 +365,74 @@ HUD・タイトル・免責エンドカードを載せて `final/<slug>-<日時>
 
 - 本番の inbox / queued / output は触らない。`models/` だけ共有
 - チェックポイントと LoRA の取得は CPU で足りる。ランタイムが CPU のときは Drive へ置いて止まり、Comfy は起動しない。動画を描くときだけ A100
-- あさの 10Eros Max は Drive `models/diffusion_models/10Eros_Max_h3_TURBO-hybrid_beta5_int8.safetensors` を使う（HuggingFace からは取らない）
-- Civitai の LoRA はコードセルの **CivitaiのAPIキー** に貼る（空のまま保存する。キーはコミットしない）。空なら Colab のシークレット `CIVITAI_API_TOKEN`。Drive に 1MB 超の同名ファイルがあれば再取得しない
+- あさの 10Eros Max は Drive `models/diffusion_models/h3ErosMax_beta6_3283276.safetensors` を使う（Civitai 2851079 version 3393047 の int8。beta5 が残っていてもこのファイルが無ければ取り直す）
+- Civitai の LoRA はコードセルの **CivitaiのAPIキー** に貼る（空のまま保存する。キーはコミットしない）。空なら Colab のシークレット `CIVITAI_API_TOKEN`。動画セルは Drive に 1MB 超の同名ファイルがあれば再取得しない。取り直すときは次の **LoRA 更新** セル。開いたときは更新しない。欄を切り替えてそのセルだけ実行する。CPU で足りる。Comfy は起動しない
 - 途中で止まっても `raw/<beat>.mp4` があるビートは飛ばして再開（FRESH で作り直し）
 - **開始シーン**に beat id を書くと、そのカットから先だけ今のドロップダウン（構成・トイレ・灰色・角・犬・異種・登場・シーンごと・つなぎ方）で作り直す。空なら最初から。前の動画は残して首にする。チェーンの前のカットが今の設定と違うとき、または動画が無いときは、そこまで戻って描く。並びに無い id は止まる
 - HUD・字幕は生成後に載せる。H3 に日本語UIを描かせない
 - 投稿しない。アフィURL禁止。他のネタは `minimaxh3/episodes/_template` を複製して EPISODE を変える
-- 話のドロップダウンで霞東あさ / 病棟出口 / 番台を選ぶ（スラッグは `kasumi-late-desk-adult` / `hospital-exit-adult` / `bandai-district-short`）。霞東は Colab 4 オフが行為ルート（Combat なし）。オン＋ハイメモリは戦いルートで 06 と 10 に Combat。病棟修正版は `BRANCH=cursor/h3-hospital-ward-34e4`。霞東本体 `kasumi-late-desk` は PR #141。このノートの Run all で本体 Drive を上書きするな
+- 話のドロップダウンで霞東あさ / 病棟出口 / 番台を選ぶ（スラッグは `kasumi-late-desk-adult` / `hospital-exit-adult` / `bandai-district-short`）。霞東は Colab 4 オフが行為ルート（Combat なし）。オン＋ハイメモリは戦いルートで 06 と 10 に Combat。開いたときの BRANCH は `cursor/h3-lora-cards-d736`。霞東本体 `kasumi-late-desk` は PR #141。このノートの Run all で本体 Drive を上書きするな
 - 番台ショートは 25 秒・ミッション失敗で落ちる版。`bandai-district/raw/` の暖簾・自転車・軽トラをそのまま使い、新しく描くのは理容室の 1 本だけ
-- 成功時は `episode exit 0` のあと「成功。」と出る。ランタイムは切らない。`SystemExit: 0` の赤い枠は出さない
+- 成功時は `episode exit 0` のあと「成功。」と出て、ランタイムを切る。重みの取得だけと、失敗したときは切らない。`SystemExit: 0` の赤い枠は出さない
 
 セッション名 `{SESSION}`。GPU は A100。手順は `minimaxh3/episodes/README.md`。
 """
+
+REFRESH_CELL = r'''#@title LoRA 更新：Drive に既にあるファイルを今の URL へ（このセルだけ。CPU で足りる）
+#@markdown 動画セルは、1MB を超える同名ファイルを取り直さない。取り直すときはこのセル。
+#@markdown 開いたときは更新しない。欄を切り替えて、このセルだけ実行する。GPU は要らない。Comfy は起動しない。チェックポイントは取らない。
+#@markdown 同名が既にあっても、URL の記録が無いか違うときは取り直す。失敗しても前のファイルは残る。まだ Drive に無いファイルは取らない。ファイル名が替わった LoRA は、古い名前が Drive にあるとき新しい名前を取る。古いファイルは消さない。
+#@markdown **CivitaiのAPIキー** — 空なら Colab のシークレット `CIVITAI_API_TOKEN`。値は表示しない。空のまま保存する。
+LORA_REFRESH = "更新しない（迷ったらこれ）"  #@param ["更新しない（迷ったらこれ）", "すでにある LoRA を更新する"]
+CivitaiのAPIキー = ""  #@param {type:"string"}
+if LORA_REFRESH != "すでにある LoRA を更新する":
+    print("LoRA は更新しません。欄を「すでにある LoRA を更新する」にして、このセルだけ実行。")
+else:
+    import os, shutil, sys, urllib.request
+    from pathlib import Path
+    from google.colab import drive
+    DRIVE_ROOT = "/content/drive/MyDrive/minimax-h3-comfyui"
+    BRANCH = "__BRANCH__"
+    RAW = "https://raw.githubusercontent.com/__REPO__/" + BRANCH
+    drive.mount("/content/drive")
+    _civitai = str(CivitaiのAPIキー or "").strip()
+    if _civitai:
+        os.environ["CIVITAI_API_TOKEN"] = _civitai
+    print("Civitai API:", "フォームから読み込み済み（値は出しません）" if _civitai else "フォームは空（シークレットがあればそれを使う）")
+    del _civitai
+
+    def fetch_text(url: str, dest: Path) -> bool:
+        try:
+            urllib.request.urlretrieve(url, dest)
+            return dest.is_file() and dest.stat().st_size > 100
+        except Exception as e:
+            print("fetch fail", url, e)
+            return False
+
+    HELPERS = __HELPERS__
+    LIB = Path(DRIVE_ROOT) / "episodes" / "_lib"
+    LIB.mkdir(parents=True, exist_ok=True)
+    for rel in HELPERS:
+        name = Path(rel).name
+        dest = Path("/content") / name
+        ok = fetch_text(f"{RAW}/{rel}", dest)
+        if not ok and (LIB / name).is_file():
+            shutil.copy2(LIB / name, dest)
+            ok = True
+        if not ok:
+            raise SystemExit(f"helper missing: {name}")
+        shutil.copy2(dest, LIB / name)
+        print("helper", name)
+    sys.path.insert(0, "/content")
+    from h3_episode import refresh_downloaded_loras
+    notes = refresh_downloaded_loras(Path(DRIVE_ROOT) / "models" / "loras")
+    failed = [note for note in notes if note.startswith("refresh failed ") or note.startswith("fetch failed ")]
+    for note in notes:
+        print("lora:", note)
+    if failed:
+        raise SystemExit("LoRA の更新が止まりました: " + ", ".join(failed))
+    print("LoRA の更新が終わりました。動画は描いていません。描くときは上のセルを A100 で実行。")
+'''
 
 
 def make_nb() -> dict:
@@ -293,47 +441,125 @@ def make_nb() -> dict:
         .replace("__REPO__", REPO)
         .replace("__HELPERS__", json.dumps(HELPERS, indent=4))
         .replace("__EPISODE_HELP__", form_markdown("episode", "話 — どの予告を描くか"))
-        .replace("__EPISODE_DEFAULT__", json.dumps(ui_default("episode"), ensure_ascii=False))
+        .replace("__EPISODE_DEFAULT__", json.dumps(form_initial("episode"), ensure_ascii=False))
         .replace("__EPISODE_CHOICES__", json.dumps(ui_choices("episode"), ensure_ascii=False))
         .replace("__CONNECT_HELP__", form_markdown("connect", "1. つなぎ方 — 動画をどう繋げるか。新しい相手の入りはカット。消滅はチェーンならフェード"))
-        .replace("__CONNECT_DEFAULT__", json.dumps(ui_default("connect"), ensure_ascii=False))
+        .replace("__CONNECT_DEFAULT__", json.dumps(form_initial("connect"), ensure_ascii=False))
         .replace("__CONNECT_CHOICES__", json.dumps(ui_choices("connect"), ensure_ascii=False))
         .replace("__CAMERA_HELP__", form_markdown("camera", "2. カメラ"))
-        .replace("__CAMERA_DEFAULT__", json.dumps(ui_default("camera"), ensure_ascii=False))
+        .replace("__CAMERA_DEFAULT__", json.dumps(form_initial("camera"), ensure_ascii=False))
         .replace("__CAMERA_CHOICES__", json.dumps(ui_choices("camera"), ensure_ascii=False))
+        .replace("__DISTANCE_HELP__", form_markdown("camera_distance", "カメラの距離 — 口と顔射は今の距離のまま"))
+        .replace("__DISTANCE_DEFAULT__", json.dumps(form_initial("camera_distance"), ensure_ascii=False))
+        .replace("__DISTANCE_CHOICES__", json.dumps(ui_choices("camera_distance"), ensure_ascii=False))
+        .replace("__PLACE_HELP__", form_markdown("place", "場所 — 病棟なら名詞はそのまま。他は通路・壁・床・トイレの個室・出口だけ替わる。角の個室は部屋を出さず、寝床はその場所の地面"))
+        .replace("__PLACE_DEFAULT__", json.dumps(form_initial("place"), ensure_ascii=False))
+        .replace("__PLACE_CHOICES__", json.dumps(ui_choices("place"), ensure_ascii=False))
+        .replace("__TIME_HELP__", form_markdown("time", "時間帯 — 光だけ。夜は文を足さない"))
+        .replace("__TIME_DEFAULT__", json.dumps(form_initial("time"), ensure_ascii=False))
+        .replace("__TIME_CHOICES__", json.dumps(ui_choices("time"), ensure_ascii=False))
+        .replace("__WEATHER_HELP__", form_markdown("weather", "天候 — 床の濡れと光だけ"))
+        .replace("__WEATHER_DEFAULT__", json.dumps(form_initial("weather"), ensure_ascii=False))
+        .replace("__WEATHER_CHOICES__", json.dumps(ui_choices("weather"), ensure_ascii=False))
+        .replace("__DIRT_HELP__", form_markdown("dirt", "あやの汚れ — 傷や敵の腐りは残す"))
+        .replace("__DIRT_DEFAULT__", json.dumps(form_initial("dirt"), ensure_ascii=False))
+        .replace("__DIRT_CHOICES__", json.dumps(ui_choices("dirt"), ensure_ascii=False))
+        .replace("__LOOK_HELP__", form_markdown("look", "あやの国の見た目 — 今のままは下の各欄。国を選ぶと髪と顔。各欄を選ぶとその欄が優先"))
+        .replace("__AYA_HAIR_HELP__", form_markdown("aya_hair", "あやの髪型"))
+        .replace("__AYA_HAIR_DEFAULT__", json.dumps(form_initial("aya_hair"), ensure_ascii=False))
+        .replace("__AYA_HAIR_CHOICES__", json.dumps(ui_choices("aya_hair"), ensure_ascii=False))
+        .replace("__AYA_COLOR_HELP__", form_markdown("aya_color", "あやの髪色"))
+        .replace("__AYA_COLOR_DEFAULT__", json.dumps(form_initial("aya_color"), ensure_ascii=False))
+        .replace("__AYA_COLOR_CHOICES__", json.dumps(ui_choices("aya_color"), ensure_ascii=False))
+        .replace("__AYA_FACE_HELP__", form_markdown("aya_face", "あやの顔"))
+        .replace("__AYA_FACE_DEFAULT__", json.dumps(form_initial("aya_face"), ensure_ascii=False))
+        .replace("__AYA_FACE_CHOICES__", json.dumps(ui_choices("aya_face"), ensure_ascii=False))
+        .replace("__AYA_BUST_HELP__", form_markdown("aya_bust", "あやのバスト"))
+        .replace("__AYA_BUST_DEFAULT__", json.dumps(form_initial("aya_bust"), ensure_ascii=False))
+        .replace("__AYA_BUST_CHOICES__", json.dumps(ui_choices("aya_bust"), ensure_ascii=False))
+        .replace("__AYA_BUTT_HELP__", form_markdown("aya_butt", "あやのお尻"))
+        .replace("__AYA_BUTT_DEFAULT__", json.dumps(form_initial("aya_butt"), ensure_ascii=False))
+        .replace("__AYA_BUTT_CHOICES__", json.dumps(ui_choices("aya_butt"), ensure_ascii=False))
+        .replace("__AYA_BUILD_HELP__", form_markdown("aya_build", "あやの身体の細さ"))
+        .replace("__AYA_BUILD_DEFAULT__", json.dumps(form_initial("aya_build"), ensure_ascii=False))
+        .replace("__AYA_BUILD_CHOICES__", json.dumps(ui_choices("aya_build"), ensure_ascii=False))
+        .replace("__AYA_HEIGHT_HELP__", form_markdown("aya_height", "あやの身長 — しのの長身は変えない"))
+        .replace("__AYA_HEIGHT_DEFAULT__", json.dumps(form_initial("aya_height"), ensure_ascii=False))
+        .replace("__AYA_HEIGHT_CHOICES__", json.dumps(ui_choices("aya_height"), ensure_ascii=False))
+        .replace("__AYA_DIRT_HELP__", form_markdown("aya_dirt", "あやの汚れの種類 — 今のままは上の場所の汚れ"))
+        .replace("__AYA_DIRT_DEFAULT__", json.dumps(form_initial("aya_dirt"), ensure_ascii=False))
+        .replace("__AYA_DIRT_CHOICES__", json.dumps(ui_choices("aya_dirt"), ensure_ascii=False))
+        .replace("__AYA_SWEAT_HELP__", form_markdown("aya_sweat", "あやの汗"))
+        .replace("__AYA_SWEAT_DEFAULT__", json.dumps(form_initial("aya_sweat"), ensure_ascii=False))
+        .replace("__AYA_SWEAT_CHOICES__", json.dumps(ui_choices("aya_sweat"), ensure_ascii=False))
+        .replace("__AYA_CLOTHES_HELP__", form_markdown("aya_clothes", "あやの服"))
+        .replace("__AYA_CLOTHES_DEFAULT__", json.dumps(form_initial("aya_clothes"), ensure_ascii=False))
+        .replace("__AYA_CLOTHES_CHOICES__", json.dumps(ui_choices("aya_clothes"), ensure_ascii=False))
+        .replace("__AYA_SHAFT_HELP__", form_markdown("aya_shaft", "あやの竿 — 長さは 24cm のまま"))
+        .replace("__AYA_SHAFT_DEFAULT__", json.dumps(form_initial("aya_shaft"), ensure_ascii=False))
+        .replace("__AYA_SHAFT_CHOICES__", json.dumps(ui_choices("aya_shaft"), ensure_ascii=False))
+        .replace("__LOOK_DEFAULT__", json.dumps(form_initial("look"), ensure_ascii=False))
+        .replace("__LOOK_MIKI_DEFAULT__", json.dumps(form_initial("look_miki"), ensure_ascii=False))
+        .replace("__LOOK_REI_DEFAULT__", json.dumps(form_initial("look_rei"), ensure_ascii=False))
+        .replace("__LOOK_KANA_DEFAULT__", json.dumps(form_initial("look_kana"), ensure_ascii=False))
+        .replace("__LOOK_SHINO_DEFAULT__", json.dumps(form_initial("look_shino"), ensure_ascii=False))
+        .replace("__LOOK_GIN_DEFAULT__", json.dumps(form_initial("look_gin"), ensure_ascii=False))
+        .replace("__LOOK_TSUNO_DEFAULT__", json.dumps(form_initial("look_tsuno"), ensure_ascii=False))
+        .replace("__LOOK_CHOICES__", json.dumps(ui_choices("look"), ensure_ascii=False))
+        .replace("__ENEMY_KIND_HELP__", form_markdown("enemy_kind", "敵の種類 — ゾンビは今の感染姿"))
+        .replace("__ENEMY_KIND_DEFAULT__", json.dumps(form_initial("enemy_kind"), ensure_ascii=False))
+        .replace("__ENEMY_KIND_CHOICES__", json.dumps(ui_choices("enemy_kind"), ensure_ascii=False))
+        .replace("__ENEMY_LOOK_HELP__", form_markdown("look", "敵の見た目 — みき、れい、かな、しの、ぎん、角で別々。その他のときだけ自由記入"))
         .replace("__PRESET_HELP__", form_markdown("preset", "3. 画質"))
-        .replace("__PRESET_DEFAULT__", json.dumps(ui_default("preset"), ensure_ascii=False))
+        .replace("__PRESET_DEFAULT__", json.dumps(form_initial("preset"), ensure_ascii=False))
         .replace("__PRESET_CHOICES__", json.dumps(ui_choices("preset"), ensure_ascii=False))
         .replace("__COMBAT_HELP__", form_markdown("combat", "4. 格闘 LoRA — ハイメモリ専用の任意"))
-        .replace("__COMBAT_DEFAULT__", json.dumps(ui_default("combat"), ensure_ascii=False))
+        .replace("__COMBAT_DEFAULT__", json.dumps(form_initial("combat"), ensure_ascii=False))
         .replace("__COMBAT_CHOICES__", json.dumps(ui_choices("combat"), ensure_ascii=False))
+        .replace("__MISSIONLG_HELP__", form_markdown("missionlg", "正常位 LoRA — 迷ったらオフ。M字の挿入と絶頂だけ"))
+        .replace("__MISSIONLG_DEFAULT__", json.dumps(form_initial("missionlg"), ensure_ascii=False))
+        .replace("__MISSIONLG_CHOICES__", json.dumps(ui_choices("missionlg"), ensure_ascii=False))
+        .replace("__MESSYBLOW_HELP__", form_markdown("messyblow", "フェラ LoRA — 迷ったら今の v3。オンで口の拍だけ差し替え"))
+        .replace("__MESSYBLOW_DEFAULT__", json.dumps(form_initial("messyblow"), ensure_ascii=False))
+        .replace("__MESSYBLOW_CHOICES__", json.dumps(ui_choices("messyblow"), ensure_ascii=False))
+        .replace("__CLOSEUP_HELP__", form_markdown("closeup", "超近距離 LoRA — 迷ったらオフ。穴の見える拍だけ"))
+        .replace("__CLOSEUP_DEFAULT__", json.dumps(form_initial("closeup"), ensure_ascii=False))
+        .replace("__CLOSEUP_CHOICES__", json.dumps(ui_choices("closeup"), ensure_ascii=False))
         .replace("__STORY_HELP__", form_markdown("story", "5. 構成 — 病棟はここで完了か失敗かが分かれる"))
-        .replace("__STORY_DEFAULT__", json.dumps(ui_default("story"), ensure_ascii=False))
+        .replace("__STORY_DEFAULT__", json.dumps(form_initial("story"), ensure_ascii=False))
         .replace("__STORY_CHOICES__", json.dumps(ui_choices("story"), ensure_ascii=False))
         .replace("__POSE_HELP__", form_markdown("invite_pose", "6. 誘うポーズ — 病棟の□誘うだけ"))
-        .replace("__POSE_DEFAULT__", json.dumps(ui_default("invite_pose"), ensure_ascii=False))
+        .replace("__POSE_DEFAULT__", json.dumps(form_initial("invite_pose"), ensure_ascii=False))
         .replace("__POSE_CHOICES__", json.dumps(ui_choices("invite_pose"), ensure_ascii=False))
         .replace("__RIDE_CHOICES__", json.dumps(list(RIDE_FOOT_CHOICES), ensure_ascii=False))
         .replace("__CHECKPOINT_HELP__", form_markdown("checkpoint", "チェックポイント — 10Eros Max か DaSiWa"))
-        .replace("__CHECKPOINT_DEFAULT__", json.dumps(ui_default("checkpoint"), ensure_ascii=False))
+        .replace("__CHECKPOINT_DEFAULT__", json.dumps(form_initial("checkpoint"), ensure_ascii=False))
         .replace("__CHECKPOINT_CHOICES__", json.dumps(ui_choices("checkpoint"), ensure_ascii=False))
         .replace("__TOILET_HELP__", form_markdown("toilet", "7. トイレ — 洋式汚物、和式汚物、有機物植物の三択。触手は有機物だけ"))
-        .replace("__TOILET_DEFAULT__", json.dumps(ui_default("toilet"), ensure_ascii=False))
+        .replace("__TOILET_DEFAULT__", json.dumps(form_initial("toilet"), ensure_ascii=False))
         .replace("__TOILET_CHOICES__", json.dumps(ui_choices("toilet"), ensure_ascii=False))
-        .replace("__GIN_HELP__", form_markdown("gin", "8. 灰色の長い舌 — 病棟の追加。出ないが既定"))
-        .replace("__GIN_DEFAULT__", json.dumps(ui_default("gin"), ensure_ascii=False))
+        .replace("__GIN_HELP__", form_markdown("gin", "8. 灰色の長い舌 — 病棟の追加。開いたときは最初から膝曲げ。迷ったら出ない"))
+        .replace("__GIN_DEFAULT__", json.dumps(form_initial("gin"), ensure_ascii=False))
         .replace("__GIN_CHOICES__", json.dumps(ui_choices("gin"), ensure_ascii=False))
-        .replace("__TSUNO_HELP__", form_markdown("tsuno", "9. 角の頭 — 病棟の追加。出ないが既定"))
-        .replace("__TSUNO_DEFAULT__", json.dumps(ui_default("tsuno"), ensure_ascii=False))
+        .replace("__TSUNO_HELP__", form_markdown("tsuno", "9. 角の頭 — 病棟の追加。開いたときは横になって挿入。迷ったら出ない"))
+        .replace("__TSUNO_DEFAULT__", json.dumps(form_initial("tsuno"), ensure_ascii=False))
         .replace("__TSUNO_CHOICES__", json.dumps(ui_choices("tsuno"), ensure_ascii=False))
         .replace("__DOG_HELP__", form_markdown("dog", "10. 犬 — 病棟の追加。出ないが既定。灰色はオフにしない"))
-        .replace("__DOG_DEFAULT__", json.dumps(ui_default("dog"), ensure_ascii=False))
+        .replace("__DOG_DEFAULT__", json.dumps(form_initial("dog"), ensure_ascii=False))
         .replace("__DOG_CHOICES__", json.dumps(ui_choices("dog"), ensure_ascii=False))
         .replace("__SPECIES_HELP__", form_markdown("species", "11. 異種 — 病棟の追加。スライムとケモノは同時に出ない"))
-        .replace("__SPECIES_DEFAULT__", json.dumps(ui_default("species"), ensure_ascii=False))
+        .replace("__SPECIES_DEFAULT__", json.dumps(form_initial("species"), ensure_ascii=False))
         .replace("__SPECIES_CHOICES__", json.dumps(ui_choices("species"), ensure_ascii=False))
-        .replace("__SCENE_DEFAULT__", json.dumps(ui_default("scene"), ensure_ascii=False))
+        .replace("__SCENE_MIKI_DEFAULT__", json.dumps(form_initial("scene_miki"), ensure_ascii=False))
+        .replace("__SCENE_REI_DEFAULT__", json.dumps(form_initial("scene_rei"), ensure_ascii=False))
+        .replace("__SCENE_KANA_DEFAULT__", json.dumps(form_initial("scene_kana"), ensure_ascii=False))
+        .replace("__SCENE_SHINO_DEFAULT__", json.dumps(form_initial("scene_shino"), ensure_ascii=False))
         .replace("__SCENE_CHOICES__", json.dumps(ui_choices("scene"), ensure_ascii=False))
+    )
+    refresh = (
+        REFRESH_CELL.replace("__BRANCH__", BRANCH)
+        .replace("__REPO__", REPO)
+        .replace("__HELPERS__", json.dumps(HELPERS, indent=4))
     )
     return {
         "nbformat": 4,
@@ -356,6 +582,13 @@ def make_nb() -> dict:
                 "execution_count": None,
                 "outputs": [],
                 "source": [line + "\n" for line in cell.strip("\n").split("\n")],
+            },
+            {
+                "cell_type": "code",
+                "metadata": {"id": "lora_refresh"},
+                "execution_count": None,
+                "outputs": [],
+                "source": [line + "\n" for line in refresh.strip("\n").split("\n")],
             },
         ],
     }

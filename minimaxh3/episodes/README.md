@@ -21,8 +21,8 @@ Drive `minimax-h3-comfyui/episodes/<slug>/final/<slug>-<日時>.mp4`（と `late
 
 ## 一発の実行
 
-**スマホ／ブラウザ**: [minimax_h3_episode_bot.ipynb](../../minimax_h3_episode_bot.ipynb) を Colab で開き、**話**（霞東あさ / 病棟出口 / 番台）と上から **つなぎ方・カメラ・画質・格闘・構成** の5つを選んで Run all。迷ったらそのまま（霞東あさ／カット／横スク／バランス／格闘オフ／受け入れる。ドロップダウンに「迷ったらこれ」と書いてある行）。病棟は 5 番の構成が全体の既定。シーンごとで誘う・受け入れる・回避を上書きできる。霞東は 4 番のオフ／オンのまま（5 番とシーンごとは無視）。
-GPU は A100（High-RAM）。終わってもランタイムは切らない。成功時は `DONE` と `episode exit 0` のあと「成功。」と出る。IPython の赤い `SystemExit: 0` は出さない。
+**スマホ／ブラウザ**: [minimax_h3_episode_bot.ipynb](../../minimax_h3_episode_bot.ipynb) を Colab で開き、開いた欄のまま Run all。開いたときの選択は病棟出口、前の最終フレームから続ける、スピード、誘う、トイレ触手、灰色は最初から膝曲げ、角は横になって挿入、汚泥の干潟、昼、晴れ、人間。顔はみき中東、れい韓国、かな日本、しの南アジア、ぎん北欧、角東南アジア。シーンはみき四つん這い、れい後ろアナル、かな壁立ち、しのM字。BRANCH は `cursor/h3-lora-cards-d736`。迷ったらこれの行は、台本をそのまま出す推奨。場所と容姿は選んだときだけ名詞と見た目を替える。霞東は 4 番のオフ／オンのまま（5 番とシーンごとは無視）。
+GPU は A100（High-RAM）。動画が描き終わったらランタイムを切る。重みの取得だけと、失敗したときは切らない。成功時は `DONE` と `episode exit 0` のあと「成功。」と出る。IPython の赤い `SystemExit: 0` は出さない。
 
 **PC（colab CLI）**:
 
@@ -99,7 +99,7 @@ python h3_episode.py finish  /path/to/episodes/<slug>                 # raw/*.mp
 
 ## レンダの決まり
 
-- 土台 UNet は `render.lane` + `render.checkpoint` で固定する。省略時はどちらも `stock`（`minimax_h3_fl2va_pruned_int8_convrot.safetensors`）。`eros-max` は `lane: erotic` のときだけ。あさは Drive の `models/diffusion_models/10Eros_Max_h3_TURBO-hybrid_beta5_int8.safetensors`（約21GB）をそのまま使う（Drive は symlink 不可）。無ければ HuggingFace `TenStrip/10Eros-Max` から取る。inbox / 非エロ予告の `*fl2va*` 先頭取りは 10Eros を飛ばす。霞東本体・番台は stock 固定。`*-adult` は erotic + eros-max 必須。この UNet に LightX2V / Larry / Combat LoRA は積まない（turbo 焼き込み＋A100 40GB）。DT-sQKV は使わない
+- 土台 UNet は `render.lane` + `render.checkpoint` で固定する。省略時はどちらも `stock`（`minimax_h3_fl2va_pruned_int8_convrot.safetensors`）。`eros-max` は `lane: erotic` のときだけ。あさは Drive の `models/diffusion_models/h3ErosMax_beta6_3283276.safetensors`（約21GB、Civitai 2851079 version 3393047 fileId 3283276 の int8）を使う（Drive は symlink 不可）。そのファイルが無ければ Civitai から取る。beta5 の別名は今のファイルに数えない。inbox / 非エロ予告の `*fl2va*` 先頭取りは 10Eros を飛ばす。霞東本体・番台は stock 固定。`*-adult` は erotic + eros-max 必須。この UNet に LightX2V / Larry / Combat LoRA は積まない（turbo 焼き込み＋A100 40GB）。DT-sQKV は使わない
 - LoRA プリセット（シネマ LoRA は積まない）: `speed` = LightX2V turbo4 / 4step（最速。格闘 LoRA は落とす）、`balance` = Larry v4 / 8step euler+simple、`quality` = Larry v4 / 12step euler+beta。別名 `fast`/`preview`=`speed`、`daily`=`balance`。Larry と LightX2V は同時に積まない。ファイルが無ければ `fallback_preset` に落ちる（`status.json` に記録）
 - 格闘ビートは `extra_loras: ["combat"]`（HF `JOKER141/MiniMax-H3-Combat-Base-V2`）。Colab の 4 番は既定オフ。**格闘LoRAオン（ハイメモリ専用）** のときだけ積む（VRAM 70GiB 以上か RAM 60GiB 以上）。A100 40GB では落ちやすい。LightX2V turbo（speed）とは同時に積まない。③ スタジオには足さない。欠けていれば Colab が Drive `models/loras` へ取る。積めたとき格闘本は euler+beta 12step
 - OOM のときはキャンバスを維持して秒数だけ 10→8→6 に落とす。先頭フレームは外さない

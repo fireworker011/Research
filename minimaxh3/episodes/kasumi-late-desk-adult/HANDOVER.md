@@ -72,12 +72,12 @@ inbox / drop_job / run_i2v / Imagine / 投稿 / HQ dump は触るな。霞東 5�
 ## UNet
 
 - このスラッグ: `lane: erotic` + `checkpoint: eros-max`
-- ファイル: Drive `minimax-h3-comfyui/models/diffusion_models/10Eros_Max_h3_TURBO-hybrid_beta5_int8.safetensors`（約21GB）。無ければ HuggingFace `TenStrip/10Eros-Max`
+- ファイル: Drive `minimax-h3-comfyui/models/diffusion_models/h3ErosMax_beta6_3283276.safetensors`（約21GB、Civitai 2851079 version 3393047 fileId 3283276 の int8）。そのファイルが無ければ Civitai から取る。beta5 は今のファイルに数えない
 - その上に `balance`（LoRA なし euler 8。turbo 焼き込み済み。シネマ LoRA は積まない）。`speed` / `quality` に切替可。Combat LoRA は Colab 4 番のハイメモリ任意（既定オフ）
 - GPU ビートは T2V。`render.camera_pack` 既定 `side2d`（横スク）。`action3d` は Colab `CAMERA` か `--camera`
 - 霞東本体・番台に eros-max を書くと check が落とす
 - `*-adult` の省略は stock に落ちない（check が落とす）
-- 10Eros Max は Drive `models/diffusion_models/10Eros_Max_h3_TURBO-hybrid_beta5_int8.safetensors` を使う。HuggingFace からは取らない。途中切れの別ファイル `.part` は無視。stock には落とさない
+- 10Eros Max は Drive `models/diffusion_models/h3ErosMax_beta6_3283276.safetensors` を使う。Civitai 2851079 version 3393047 の int8。途中切れの別ファイル `.part` は無視。stock には落とさない
 - inbox の `*fl2va*` は 10Eros を飛ばす
 - LightX2V turbo LoRA はこの UNet に積まない（turbo は焼き込み済み）。Larry も積まない。Combat はハイメモリでオンにしたときだけ。じゅぼは物語集 blowjob LoRA（`bl0w_j0b`、0.8）。DT-sQKV は使わない
 - Drive は symlink できない。`diffusion_models` のファイルをそのまま読む

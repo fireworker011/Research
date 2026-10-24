@@ -140,8 +140,29 @@ from h3_episode_packs import (
     TSUNO_MODES,
     TSUNO_OVERLAY_KEYS,
     canonical_camera,
+    canonical_camera_distance,
+    canonical_dirt,
+    canonical_enemy_kind,
+    canonical_look,
+    canonical_place,
+    canonical_time,
+    canonical_weather,
     canonical_dog,
+    AYA_SWEAT_PHRASES,
+    CAMERA_DISTANCE_MODES,
+    DIRT_MODES,
+    ENEMY_KIND_MODES,
+    LOOK_MODES,
+    PLACE_MODES,
+    TIME_MODES,
+    WEATHER_MODES,
+    build_limbs_for,
+    dirt_phrase_for,
+    resolve_aya_part,
     canonical_combat,
+    canonical_closeup,
+    canonical_messyblow,
+    canonical_missionlg,
     canonical_connect,
     canonical_end_connect,
     canonical_gin,
@@ -254,8 +275,9 @@ LORA_FILES = {
     "mast": "H3_masturbate_orgasm_v1.4.safetensors",
     # H3 facial. Strength 1.0; lower falls back to a paint-bucket shot. Trigger CUMSH0T.
     "cumshot": "epic_cumshots-MiniMaxH3-ALPHA-CUMSH0T.safetensors",
-    # Experimental H3 kiss. Author: I2V is weak; keep strength at 0.5. No trigger word.
-    "kiss": "cxy_kiss_lora_h3_v01_step1750.safetensors",
+    # Cxy kiss v0.2 beta. Primary video file is step1200. No trigger word. Strength stays 0.5.
+    # The image LoRA and step1000 are other files. Author: tongue motion is still limited.
+    "kiss": "cxy_kiss_lora_h3_v02_step1200.safetensors",
     # az420 Side Riding Cowgirl MiniMaxH3 2. Side-view riding insertion. Do not stack with AIO.
     "sideride": "cowgirl-side-2-mh3-e50-az420.safetensors",
     # H3 penis helper. Trigger PENISLORA. Creampie stacks use 0.45.
@@ -282,6 +304,9 @@ LORA_FILES = {
     "amateur": "amateur-photoreal-h3.safetensors",
     # 3D tentacle pack only. 2D-General (version 3293041) is not registered.
     "tentacles3d": "Tentacles-3D_minimaxh3_3344593_epoch_7.safetensors",
+    # Tentacles H3 1.0.1. No trained word. Sample stacks use 0.9 with mystic, 0.95 alone.
+    # Model 2971784 version 3367732 fileId 3255755. The vine fill stays on tentacles3d.
+    "tentacles101": "Tentacles_H3_101_.safetensors",
     # Facial ropes. Trigger cmst stays on the beat, not in the action.
     "cmst": "face_cum_000001000.safetensors",
     # Jack-O pose. No trigger word. Wash push and the horn bedroom anal. Not stacked with doggy.
@@ -297,15 +322,38 @@ LORA_FILES = {
     # Side/rear view so the shaft stays readable where it meets the pussy.
     # Civitai 2967815 version 3362792 fileId 3250615. No trigger word.
     "siderear": "MMH3_NSFW_Doggystyle_Sex_3354622_epoch_20.safetensors",
-    # Anus and vagina as two holes. Anime stills. Card range 0.9-1.2 reads as illustration.
-    # Ward photoreal uses 0.40. Triggers zxqanus and zxqvagina. zxqmei stays off (character token).
-    # Civitai 2974434 version 3371009 fileId 3259145.
-    "anuspussy": "anus_pussy_v2.safetensors",
+    # Anus and vagina as two holes. Eros retrain of the same card.
+    # Author: the first file is weaker on EROS v5. This file is for EROS v5 INT8.
+    # Ward photoreal stays 0.40. Triggers zxqanus and zxqvagina. zxqmei stays off (character token).
+    # Civitai 2974434 version 3397856 fileId 3288079.
+    "anuspussy": "anus_pussy_eros_v2.safetensors",
+    # Missionary grind augmenter. Trigger MISSIONLG. Card strength 1.0.
+    # Trained as him on top, rolling grind, she lifts her hips. Not on the ward M-shape
+    # (kneel, pelvis stays down, full-body PROFILE). Registered only.
+    # Model 3000657 version 3403761 fileId 3294817.
+    "missionlg": "MISSIONLG_H3_v1.safetensors",
+    # Messy oral. Trigger ME$$Y. Sample strength 1.0. Face-fuck, spit foam, pull-out.
+    # Ward oral stays on blowjob v3. Registered only.
+    # Model 2997232 version 3399472 fileId 3289886.
+    "messyblow": "MessyBlowjob_v1_H3.safetensors",
+    # Extreme close-up of a join. Sample strength 0.5. No trained word.
+    # A ward frame keeps both feet, so this key stays off the beats.
+    # Model 2997416 version 3399711 fileId 3290118.
+    "closeup": "closeup_nsfw.safetensors",
     # FunPhantom facial. Version 3290895 fileId 3175377. Trigger cmst.
     # Drive copy uses this name. The version's published name is face_cum_000001000.safetensors.
     "cumfacial": "cum_facial_000005400.safetensors",
     # az420 dildo. Version 3282820 fileId 3167066. Trigger stays off the action.
     "solodildo": "dildoing-mh3-e60-az420.safetensors",
+    # Self Anal Finger (Civitai 2988249). Card workflow: 1.0, prompt opens with anal_finger.
+    # Version 3388162 fileId 3277184. Western toilet row only. Not ThumbInButt.
+    "analfinger": "af_h3_vids512_imgs1024_000011750.safetensors",
+    # Self Anal Fisting (Civitai 3016789). Trigger 4n4lfi5tin6. Version 3424713 fileId 3319392.
+    # Western toilet row only. Strength 1.0. Not the finger row and not ThumbInButt.
+    "analfist": "h3-selfanalfisting-k3nk-step00015400.safetensors",
+    # Full nelson anal. Trained sentence is the whole trigger. Version 3422679 fileId 3317916.
+    # Model 3015275. The published filename is the Civitai hash name.
+    "fullnelson": "5VR5YKXR0BFRBWJ17K3HEG5KT0.D8qyBosp.safetensors",
     # Ref2VA UNet only. Registered only. No trigger. Do not add this key to a ward beat extra.
     "charswap": "h3_character_swap_pro4500_1000.safetensors",
     # Ref2VA UNet only. Registered only. Trigger LumiReal merges when this key is in extra.
@@ -319,7 +367,7 @@ LORA_URLS = {
     "futatf": "https://civitai.com/api/download/models/3212000?fileId=3093723",
     "mast": "https://civitai.com/api/download/models/3311155?fileId=3196458",
     "cumshot": "https://civitai.com/api/download/models/3202064?fileId=3083352",
-    "kiss": "https://civitai.com/api/download/models/3208556?fileId=3090649",
+    "kiss": "https://civitai.com/api/download/models/3410507?fileId=3302584",
     "sideride": "https://civitai.com/api/download/models/3327446?fileId=3213328",
     "penis": "https://civitai.com/api/download/models/3277703?fileId=3161784",
     "synth": "https://civitai.com/api/download/models/3204862?fileId=3086301",
@@ -332,15 +380,22 @@ LORA_URLS = {
     "slime": "https://civitai.com/models/2533949",
     "anthro": "https://civitai.com/models/2945034",
     "tentacles3d": "https://civitai.com/api/download/models/3347053?fileId=3234017",
+    "tentacles101": "https://civitai.com/api/download/models/3367732?fileId=3255755",
     "cmst": "https://civitai.com/api/download/models/3290895?fileId=3175377",
     "jacko": "https://civitai.com/api/download/models/3355328?fileId=3244536",
     "spoonlg": "https://civitai.com/api/download/models/3363705?fileId=3251540",
     "jpnmoans": "https://civitai.com/api/download/models/3282509?fileId=3166743",
     "doggy": "https://civitai.com/api/download/models/3317042?fileId=3202556",
     "siderear": "https://civitai.com/api/download/models/3362792?fileId=3250615",
-    "anuspussy": "https://civitai.com/api/download/models/3371009?fileId=3259145",
+    "anuspussy": "https://civitai.com/api/download/models/3397856?fileId=3288079",
+    "missionlg": "https://civitai.com/api/download/models/3403761?fileId=3294817",
+    "messyblow": "https://civitai.com/api/download/models/3399472?fileId=3289886",
+    "closeup": "https://civitai.com/api/download/models/3399711?fileId=3290118",
     "cumfacial": "https://civitai.com/api/download/models/3290895?fileId=3175377",
     "solodildo": "https://civitai.com/api/download/models/3282820?fileId=3167066",
+    "analfinger": "https://civitai.com/api/download/models/3388162?fileId=3277184",
+    "analfist": "https://civitai.com/api/download/models/3424713?fileId=3319392",
+    "fullnelson": "https://civitai.com/api/download/models/3422679?fileId=3317916",
     "charswap": "https://huggingface.co/akatz-ai/MiniMax-H3-Character-Swap-LoRA/resolve/main/h3_character_swap_pro4500_1000.safetensors",
     "anime2real": "https://huggingface.co/LiseTY/Minimax-H3-ref2v_Anime_2_Realism/resolve/main/Anime2Realsim__H3.safetensors",
 }
@@ -364,6 +419,7 @@ LORA_STRENGTHS = {
     "anthro": 0.45,
     "amateur": 0.35,
     "tentacles3d": 0.45,
+    "tentacles101": 0.9,
     "cmst": 0.65,
     "jacko": 0.8,
     "spoonlg": 1.0,
@@ -371,16 +427,29 @@ LORA_STRENGTHS = {
     "doggy": 0.5,
     "siderear": 0.8,
     "anuspussy": 0.4,
+    "missionlg": 1.0,
+    "messyblow": 1.0,
+    "closeup": 0.5,
     # FunPhantom says start at 0.75-0.85.
     "cumfacial": 0.8,
     # The dildo card lists no strength. Ward beats keep 0.7.
     "solodildo": 0.7,
+    # Self Anal Finger card workflow is 1.0.
+    "analfinger": 1.0,
+    # Self Anal Fisting card has no separate strength. The insertion beats use 1.0.
+    "analfist": 1.0,
+    # Full nelson sample is the pose LoRA at 1.0. Steps on those beats stay at the episode cap.
+    "fullnelson": 1.0,
     "charswap": 1.0,
     "anime2real": 1.0,
 }
 # Triggers that must stay on the beat trigger, never inside action.
 CMST_TRIGGER = "cmst"
 DILDO_TRIGGER = "pumping a dildo insider her vagina"
+# Civitai 3015275 version 3422679. The trained word is this whole sentence.
+FULLNELSON_TRIGGER = (
+    "Full nelson anal, low POV, woman's legs held high behind her head by man's arms, looking down, deep penetration"
+)
 JPNMOANS_TRIGGER = "jpnMoans"
 DOGGY_TRIGGER = "Doggy style"
 ANIME2REAL_TRIGGER = "LumiReal"
@@ -420,9 +489,12 @@ STOCK_ONLY_SLUGS = frozenset({"kasumi-late-desk", "bandai-district", "bandai-dis
 EROTIC_SLUG_SUFFIX = "-adult"
 EROTIC_MODELS_SUBDIR = "erotic"
 # Drive copy (Naomiichi): MyDrive/minimax-h3-comfyui/models/diffusion_models/
-EROS_MAX_UNET = "10Eros_Max_h3_TURBO-hybrid_beta5_int8.safetensors"
+# H3 Eros Max beta6 int8. Civitai 2851079 version 3393047 fileId 3283276. ~21.2GB.
+# The bf16 primary on that version is not the Colab file.
+EROS_MAX_UNET = "h3ErosMax_beta6_3283276.safetensors"
 EROS_MAX_ALIASES = (
     EROS_MAX_UNET,
+    "10Eros_Max_h3_TURBO-hybrid_beta5_int8.safetensors",
     "10Eros_Max_H3_FL2VA-INT8-ConvRot.safetensors",
 )
 # Combat LoRA on TURBO-hybrid OOMs A100 40GB. Opt-in needs High-Memory (VRAM 80GB or Colab High-RAM).
@@ -439,13 +511,10 @@ CHECKPOINTS: dict[str, dict[str, Any]] = {
         "file": EROS_MAX_UNET,
         "aliases": EROS_MAX_ALIASES,
         "erotic": True,
-        "url": (
-            "https://huggingface.co/TenStrip/10Eros-Max/resolve/main/"
-            f"{EROS_MAX_UNET}"
-        ),
-        # ~21GB int8. A 5GB truncated file must not count as ready.
+        "url": "https://civitai.com/api/download/models/3393047?fileId=3283276",
+        # beta6 int8 is 21,709,633,539 bytes. A 5GB truncated file must not count as ready.
         "min_bytes": 15_000_000_000,
-        "expected_bytes": 21_000_000_000,
+        "expected_bytes": 21_709_633_539,
     },
     # DaSiWa Hybrid v2 int8. Civitai 2877206 version 3314675 fileId 3203130. ~20GB.
     "dasiwa": {
@@ -585,13 +654,13 @@ PLANTED_CLAUSE = (
 )
 # Nelson lifts Aya's feet. "Feet planted" and the word walk (even negated) make H3 invent a walk cycle.
 NELSON_HOLD_RE = re.compile(
-    r"feet stay in the air|heels sit beside|held up, both thighs|forearms already hold both thighs",
+    r"feet stay in the air|heels sit beside|held up, both thighs|forearms already hold both thighs|held high behind her head",
     re.I,
 )
 NELSON_PLANTED_CLAUSE = (
     "The pair stays on this same floor spot. The partner's feet stay on the same linoleum marks. "
-    "Aya's feet stay in the air beside the partner's hips. Only hips and arms move. "
-    "A hip thrust is in place. The camera holds. "
+    "Aya's legs are held high behind her head. Aya's feet stay in the air. Only hips and arms move. "
+    "A hip thrust is in place. The camera holds. Low POV, looking down. "
     "Normal adult human height, nobody is giant."
 )
 # The pussy and the glans share one vertical line. Soles sit outside the legs, beside the buttocks.
@@ -646,6 +715,78 @@ FACIAL_LENS_HOLD = (
     "Aya looks up toward the lens. Aya's face stays in the same place, fully inside the frame, from the hair to the chin. "
     "The erect shaft stays at the lower edge aimed at that face. "
     "The frame holds Aya's face and the shaft. The adults stay the same size."
+)
+# Close facial follows the receiving face. A feet lock widens it back to a full-body frame.
+FACIAL_CAMERA_LOCK = (
+    "Close third-person camera on the receiving face, the hand on the shaft, and the glans. "
+    "The camera moves in an arc around that face."
+)
+FACIAL_PACE_CLAUSE = (
+    "Playback stays at real-time game speed. Snappy. Motion starts at frame one. "
+    "The pair stays on this same floor spot."
+)
+LOWER_TO_FLOOR_CLAUSE = (
+    "Playback stays at real-time third-person game speed. Snappy. "
+    "The body lowers from the opening pose onto the floor in one continuous move. "
+    "Both feet stay on the floor. The pair stays on this same floor spot. "
+    "Normal adult human height, nobody is giant."
+)
+WALL_SET_CLAUSE = (
+    "Playback stays at real-time third-person game speed. Snappy. "
+    "Aya turns from the opening pose to the grey wall in one continuous move and settles into the pose there. "
+    "The pair stays on this same floor spot. The camera holds. "
+    "Normal adult human height, nobody is giant."
+)
+HIPS_BACK_ONCE_CLAUSE = (
+    "Playback stays at real-time third-person game speed. Snappy. "
+    "The hips travel backward once at the opening of the shot and then stay still on that mark. "
+    "The shaft stays outside after that backward travel. "
+    "The hands stay where they are. The feet stay on the floor. "
+    "The pair stays on this same floor spot. The camera holds. "
+    "Normal adult human height, nobody is giant."
+)
+GIN_LICK_PACE_CLAUSE = (
+    "Playback stays at real-time third-person game speed. Snappy. Motion starts at frame one. "
+    "One continuous take. Gin hugs Aya from behind, they turn face to face for the kiss, "
+    "then Aya returns to the sitting pose. "
+    "The camera distance stays the opening wide full-body distance. "
+    "The place stays the opening place. The camera stays with them."
+)
+HIPS_UP_ONCE_CLAUSE = (
+    "Playback stays at real-time third-person game speed. Snappy. "
+    "The hips travel upward once at the opening of the shot and then stay still on that mark. "
+    "The shaft stays outside after that upward travel. "
+    "The hands stay where they are. The feet stay on the floor. "
+    "The pair stays on this same floor spot. The camera holds. "
+    "Normal adult human height, nobody is giant."
+)
+JO_SET_CLAUSE = (
+    "Playback stays at real-time third-person game speed. Snappy. "
+    "The body starts in profile facing right, turns ninety degrees toward the left, "
+    "opens the legs a little, then folds into the pose and holds it. "
+    "Both feet stay on the floor. The pair stays on this same floor spot. The camera holds. "
+    "Normal adult human height, nobody is giant."
+)
+SIDE_LIE_SETTLE_CLAUSE = (
+    "Playback stays at real-time third-person game speed. Snappy. "
+    "Tsuno rolls from the opening pose onto her side on the far long edge of the soil bed in one continuous move. "
+    "Both of Tsuno's feet end on the soil bed. Aya stays standing on the near side of the soil bed. "
+    "The pair stays on this same soil bed. "
+    "Normal adult human height, nobody is giant."
+)
+SIDE_LIE_JOIN_CLAUSE = (
+    "Playback stays at real-time third-person game speed. Snappy. "
+    "Aya lowers from standing onto her side on the near half of the soil bed in one continuous move. "
+    "Aya's hips land on the same line as Tsuno's hips. "
+    "The hairless pussy lands directly in front of the glans. "
+    "The glans stays pressed on the hairless pussy. The shaft stays outside, in the gap between the thighs. "
+    "Tsuno stays on her side on the far long edge, chest against Aya's back. "
+    "The pair stays on this same soil bed. "
+    "Normal adult human height, nobody is giant."
+)
+_SAME_TAKE = (
+    " One continuous take. The place, the light, and the rendering stay the same as the opening frame. "
+    "The camera moves inside this shot. The picture stays sharp."
 )
 # Non-gin kisses keep both faces inside without a face-filling frame.
 FACE_PAIR_HOLD = (
@@ -706,6 +847,11 @@ CONTINUITY_CLAUSE = (
 # Ride clips name the pair. "nothing new enters" gets drawn as a third adult walking in.
 RIDE_CONTINUITY = (
     "One continuous take. Aya and the partner stay the same two adults in this one place "
+    "from the first frame to the last."
+)
+# Two adults are already in the frame. The absence sentence draws a third body.
+HOSPITAL_PAIR_CONTINUITY = (
+    "One continuous take. These two adults stay the same two adults in this one place "
     "from the first frame to the last."
 )
 RIDE_PAIR_CLAUSE = (
@@ -1566,8 +1712,12 @@ def _best_erotic_weight(paths: list[Path], want: str, spec: dict[str, Any]) -> P
 
 
 def is_turbo_hybrid_unet(name: str) -> bool:
+    """True when turbo is already baked in. Beta6 fuses the 8+4 turbo the way TURBO-hybrid did."""
     low = str(name or "").lower()
-    return "turbo-hybrid" in low or "turbo_hybrid" in low
+    if "turbo-hybrid" in low or "turbo_hybrid" in low:
+        return True
+    compact = low.replace("_", "").replace("-", "").replace(" ", "")
+    return "h3erosmax" in compact or compact.startswith("erosmax")
 
 
 def locate_erotic_checkpoint(models_root: Path | str, spec: dict[str, Any] | None = None) -> Path | None:
@@ -1787,6 +1937,7 @@ def apply_connect_mode(ep: dict[str, Any], override: str | None = None) -> dict[
     chain: first GPU beat is T2V; later I2V from the previous clip's last frame.
     landing: first GPU still, later I2V onto the authored still as Picture 2.
     Hospital connect:t2v and connect:cut yield to chain and landing, so 前の最終フレームから続ける makes those shots I2V. off stays T2V. A new person outside a -spot beat is still T2V. Spot beats stay I2V.
+    Rei's meeting hug (06-doggy-spot) stays a cut on chain and landing. The walk before it stays I2V.
     Toilet beats authored connect:chain stay I2V even when the dropdown is a cut.
     Non-gin rib ride seats and peaks authored connect:chain stay I2V even when the dropdown is a cut.
     The horn seat kiss authored connect:chain stays I2V even when the dropdown is a cut.
@@ -1821,6 +1972,11 @@ def apply_connect_mode(ep: dict[str, Any], override: str | None = None) -> dict[
             gpu_seen += 1
             continue
         if _connect_lock_holds(out, beat, name):
+            beat["source"] = "t2v"
+            beat.pop("still_as", None)
+            gpu_seen += 1
+            continue
+        if name in ("chain", "landing") and _rei_front_hug_i2v_cut(beat):
             beat["source"] = "t2v"
             beat.pop("still_as", None)
             gpu_seen += 1
@@ -1902,6 +2058,10 @@ def is_end_connect_beat(beat: dict[str, Any]) -> bool:
 
 def _wire_runtime_connect(beat: dict[str, Any], *, chain: bool) -> None:
     if beat.get("reuse") or is_ui_beat(beat):
+        return
+    if _rei_front_hug_i2v_cut(beat):
+        beat["source"] = "t2v"
+        beat.pop("still_as", None)
         return
     beat["source"] = "chain" if chain else "t2v"
     beat.pop("still_as", None)
@@ -2175,6 +2335,55 @@ def _apply_story_ending(ep: dict[str, Any], spec: dict[str, Any]) -> dict[str, A
     return out
 
 
+def _rei_front_hug_i2v_cut(beat: dict[str, Any]) -> bool:
+    """Rei's meeting stays its own shot when the dropdown is I2V.
+
+    The walk before it keeps the previous frame. A chain would morph that walk into the hug.
+    """
+    return str(beat.get("id") or "") == "06-doggy-spot" and str(beat.get("encounter") or "") == "rei"
+
+
+def _rei_front_hug_beat(body: dict[str, Any]) -> dict[str, Any]:
+    """Rei's meeting. A front hug and a french kiss, then the act branch.
+
+    connect:cut so an I2V dropdown does not continue the walk into this shot.
+    """
+    return {
+        "id": "06-doggy-spot",
+        "source": "t2v",
+        "connect": "cut",
+        "trim": {"start": 0, "seconds": 8.0},
+        "cast": ["aya", "rei"],
+        "encounter": "rei",
+        "place": body.get("place") or "",
+        "camera": (
+            "PROFILE side-on. Floor runs LEFT to RIGHT. "
+            "The camera sits at this wide full-body distance. "
+            "Both adults full body including both feet. Both faces stay in frame. "
+            "Rei comes in from the front and the mouths meet."
+        ),
+        "action": (
+            "They start already on this same linoleum spot. Aya stands facing RIGHT, fully nude. "
+            "Rei comes straight in from the front and HUGS Aya at once. "
+            "Both of Rei's arms WRAP tight around Aya's back and SQUEEZE. "
+            "Chests, bellies, and hips PRESS FLUSH. "
+            "Both faces stay a bright open smile. "
+            "Mouths meet in a deep wet french kiss. Tongues intertwine and lick around each other's lips. "
+            "Then the mouths part. A saliva string stretches between the parting lips. "
+            "Last frame: they stand face to face, lips apart, a saliva string between the mouths, both smiling, "
+            "both full body including both feet. "
+            "Brisk real-time. Consensual adult game beat"
+        ),
+        "voices": [{"who": "aya", "line": "んっ"}],
+        "sfx": "a lip-contact kiss smack when the mouths meet, HVAC",
+        "music": body.get("music") or "Bass holds",
+        "hud": dict(body.get("hud") or {}),
+        "loco": "planted",
+        "extra_loras": [["kiss", 0.5]],
+        "trigger": "",
+    }
+
+
 def apply_story_route(
     ep: dict[str, Any],
     *,
@@ -2211,6 +2420,8 @@ def apply_story_route(
         chosen = beat.get(overlay_field) if overlay_field else None
         body = _pop_overlay_keys(beat, STORY_ROUTE_KEYS)
         body.pop(COMBAT_ROUTE_KEY, None)
+        if str(body.get("id") or "") == "06-doggy" and str(body.get("encounter") or "") == "rei":
+            beats.append(_rei_front_hug_beat(body))
         beats.extend(_expand_overlay(body, chosen))
     out["beats"] = beats
     render = dict(out.get("render") or {})
@@ -3744,7 +3955,7 @@ def apply_default_loco(ep: dict[str, Any]) -> dict[str, Any]:
 
 
 # Blank appearance fields keep the authored look. A set field replaces that person's clause.
-_APPEARANCE_KEYS = ("hair", "color", "face", "dirt", "sweat", "clothes", "shaft")
+_APPEARANCE_KEYS = ("hair", "color", "face", "bust", "butt", "build", "height", "dirt", "sweat", "clothes", "shaft")
 _SHAFT_KEEP = frozenset({"", "今のまま", "default"})
 _SHAFT_ON_WORDS = frozenset({"あり", "on"})
 _SHAFT_OFF_WORDS = frozenset({"なし", "off"})
@@ -3771,6 +3982,11 @@ _APPEARANCE: dict[str, dict[str, Any]] = {
             "damp dirty bangs stuck to her forehead",
         ),
         "clothes": ("fully nude, no clothes, no gown", "fully nude"),
+        "bust": "C-cup breasts",
+        "build": "slender thin body",
+        "limbs": "narrow waist, thin arms",
+        "butt": "",
+        "height": "",
         "shaft": None,
     },
     "miki": {
@@ -3881,13 +4097,16 @@ def _appearance_text(value: Any, where: str) -> str:
 
 
 def _shaft_mode(value: Any) -> str:
-    raw = str(value or "").strip().lower()
-    if raw in _SHAFT_KEEP:
+    mapped = resolve_aya_part("shaft", str(value or ""))
+    raw = mapped.strip().lower()
+    if raw in _SHAFT_KEEP or mapped == "":
         return ""
-    if raw in _SHAFT_ON_WORDS:
+    if raw in _SHAFT_ON_WORDS or mapped == "on":
         return "on"
-    if raw in _SHAFT_OFF_WORDS:
+    if raw in _SHAFT_OFF_WORDS or mapped == "off":
         return "off"
+    if mapped.startswith("clear futanari, erect 24cm"):
+        return mapped
     raise EpisodeError("appearance shaft must be 今のまま, あり, or なし")
 
 
@@ -3954,7 +4173,10 @@ def parse_appearance(raw: str | dict[str, Any] | None) -> dict[str, dict[str, st
             if mode:
                 aya["shaft"] = mode
         else:
-            cleaned = _appearance_text(aya_raw.get(key) if isinstance(aya_raw, dict) else "", f"aya.{key}")
+            cleaned = _appearance_text(
+                resolve_aya_part(key, aya_raw.get(key) if isinstance(aya_raw, dict) else ""),
+                f"aya.{key}",
+            )
             if cleaned:
                 aya[key] = cleaned
     if aya:
@@ -3988,6 +4210,22 @@ def _paint_color(token: str, color: str) -> str:
     if last.lower() in color.lower():
         return color
     return f"{color} {last}"
+
+
+_HAIR_COLOR_RE = re.compile(
+    r"(?:glossy\s+|messy\s+)?"
+    r"(?:gray-white|dark|black|brown|blonde|silver|red|blue|pink|white|green)"
+    r"(?=\s+(?:wavy\s+|curly\s+)?hair\b)"
+)
+
+
+def _recolor_hair(phrase: str, color: str) -> str:
+    """Paint a chosen color onto the first hair-color word. A phrase with no color word stays as written."""
+    painted = _paint_color("dark hair", color)
+    color_word = painted[: -len(" hair")] if painted.endswith(" hair") else painted
+    if _HAIR_COLOR_RE.search(phrase):
+        return _HAIR_COLOR_RE.sub(color_word, phrase, count=1)
+    return phrase
 
 
 def _phrase_unique(old: str, owner: str) -> bool:
@@ -4092,6 +4330,363 @@ def _append_look(ep: dict[str, Any], owner: str, clause: str) -> None:
             beat["action"] = (action.rstrip() + " " + line).strip()
 
 
+
+def _phrase_unique(old: str, owner: str) -> bool:
+    if not old:
+        return False
+    for cid, spec in _APPEARANCE.items():
+        if cid == owner:
+            continue
+        blob = " ".join(str(spec.get(key) or "") for key in ("hair", "face", "shaft"))
+        for key in ("dirt", "sweat", "clothes"):
+            values = spec.get(key) or ()
+            if isinstance(values, str):
+                blob += " " + values
+            else:
+                blob += " " + " ".join(values)
+        if old in blob:
+            return False
+    return True
+
+
+def _replace_tree(node: Any, old: str, new: str) -> None:
+    if isinstance(node, dict):
+        for key, value in node.items():
+            if key in ("id", "appearance"):
+                continue
+            if isinstance(value, str):
+                if old in value:
+                    node[key] = value.replace(old, new)
+            else:
+                _replace_tree(value, old, new)
+    elif isinstance(node, list):
+        for index, value in enumerate(node):
+            if isinstance(value, str):
+                if old in value:
+                    node[index] = value.replace(old, new)
+            else:
+                _replace_tree(value, old, new)
+
+
+def _map_named_sentences(text: str, name: str, old: str, new: str) -> str:
+    if not old or old not in text:
+        return text
+    parts = re.split(r"(?<=\.)\s+", text)
+    out: list[str] = []
+    for part in parts:
+        if old in part and name in part and (name == "Gin" or "Gin" not in part):
+            out.append(part.replace(old, new))
+        else:
+            out.append(part)
+    return " ".join(out)
+
+
+def _replace_phrase(ep: dict[str, Any], owner: str, old: str, new: str) -> None:
+    if not old or old == new:
+        return
+    spec = _APPEARANCE[owner]
+    name = str(spec["name"])
+    if _phrase_unique(old, owner):
+        _replace_tree(ep, old, new)
+        return
+    row = (ep.get("cast") or {}).get(owner) or {}
+    if isinstance(row.get("lock"), str):
+        row["lock"] = row["lock"].replace(old, new)
+    looks = row.get("looks") if isinstance(row.get("looks"), dict) else {}
+    for key, value in list(looks.items()):
+        if isinstance(value, str):
+            looks[key] = value.replace(old, new)
+    for beat in ep.get("beats") or []:
+        if not isinstance(beat, dict):
+            continue
+        locks = beat.get("cast_lock")
+        if isinstance(locks, dict) and isinstance(locks.get(owner), str):
+            locks[owner] = locks[owner].replace(old, new)
+        for field in ("action", "camera", "place", "environment"):
+            value = beat.get(field)
+            if isinstance(value, str) and old in value:
+                beat[field] = _map_named_sentences(value, name, old, new)
+
+
+def _append_look(ep: dict[str, Any], owner: str, clause: str) -> None:
+    row = (ep.get("cast") or {}).get(owner) or {}
+    lock = str(row.get("lock") or "")
+    if clause not in lock:
+        row["lock"] = (lock.rstrip(" .") + ", " + clause).strip()
+    looks = row.get("looks") if isinstance(row.get("looks"), dict) else {}
+    for key, value in list(looks.items()):
+        if isinstance(value, str) and clause not in value:
+            looks[key] = value.rstrip(" .") + ", " + clause
+    name = str(_APPEARANCE[owner]["name"])
+    line = f"{name}'s look for this shot: {clause}."
+    for beat in ep.get("beats") or []:
+        if not isinstance(beat, dict):
+            continue
+        cast = {str(c) for c in (beat.get("cast") or [])}
+        if owner not in cast:
+            continue
+        locks = beat.get("cast_lock")
+        if isinstance(locks, dict) and isinstance(locks.get(owner), str) and clause not in locks[owner]:
+            locks[owner] = locks[owner].rstrip(" .") + ", " + clause
+        action = str(beat.get("action") or "")
+        if line not in action:
+            beat["action"] = (action.rstrip() + " " + line).strip()
+
+
+_ENEMY_LOOK_IDS = ("miki", "rei", "kana", "shino", "gin", "tsuno")
+_HUMAN_SKIN_SWAPS = (
+    ("vivid purple skin that stays vivid purple from face to hips to groin to the 24cm shaft",
+     "natural skin that stays one tone from face to hips to groin to the 24cm shaft"),
+    ("vivid purple skin that stays vivid purple from face to hips to groin to the 20cm shaft",
+     "natural skin that stays one tone from face to hips to groin to the 20cm shaft"),
+    ("very pale gray-white skin that stays pale gray-white from face to hips to groin to the 35cm shaft",
+     "natural skin that stays one tone from face to hips to groin to the 35cm shaft"),
+    ("ashen gray skin that stays ashen gray", "natural skin that stays one tone"),
+    ("the same vivid purple as the hips and torso not pale-tan flesh", "the same tone as the hips"),
+    ("the same vivid purple as the hips not pale-tan flesh", "the same tone as the hips"),
+    ("open red lacerations and torn gashes across the face, neck, breasts, belly, back, arms, hands, thighs, knees, feet, hips, groin and the 24cm shaft",
+     "intact skin across the face, neck, breasts, belly, back, arms, hands, thighs, knees, feet, hips, groin and the 24cm shaft"),
+    ("the LEFT half of the face including the left eye and left cheek is obviously festering and rotting, wet peeling burned skin with raw red flesh showing, and the LEFT half of the body including the left breast, left arm and left hip is the same obvious wet rotting raw red flesh",
+     "both halves of the face and body stay even"),
+    ("hollow empty dark eye sockets with no eyeballs, visible fangs", "clear adult eyes, a soft mouth"),
+    ("hollow empty dark eye sockets with no eyeballs", "clear adult eyes"),
+    ("sunken hollow dark eye sockets", "clear adult eyes"),
+    ("vacant wide-open tired eyes", "clear adult eyes"),
+    ("vacant wide staring monster eyes", "clear adult eyes"),
+    ("lips pulled back so the gums show", "soft lips"),
+    ("patches of skin peeling off the cheeks, shoulders and thighs with red muscle fiber showing in the peeled patches",
+     "even skin on the cheeks, shoulders and thighs"),
+    ("red muscle fiber showing in the peeled patches", "even skin"),
+    ("wet peeling rotting patches", "smooth skin"),
+    ("long clawed fingers", "slim hands"),
+    ("A still-beautiful adult woman's face whose LEFT half is cracked and decaying: deep dry fissures across the left cheek and left brow, the right half still pretty",
+     "A still-beautiful adult woman's face, both halves even and pretty"),
+    ("thick extra-viscous dark-brown filthy sludge covering her from hair to the 24cm shaft to her feet",
+     "clean skin from hair to the 24cm shaft to her feet"),
+    ("the right half of the face and body stays vivid purple, the left-half rot stays readable through the sludge, open wounds across the torso, hips, groin and the 24cm shaft",
+     "the face and body stay one even tone"),
+    ("visible sweat beads on the intact purple skin between the open gashes", "visible sweat beads on the skin"),
+    ("clinging to the intact purple skin and the hair between the open gashes", "clinging to the skin and the hair"),
+    ("on the intact purple skin between the open gashes", "on the skin"),
+    ("grimy dirty extra-viscous filthy slime covering her whole body including the 20cm shaft", "clean skin"),
+    ("the 35cm shaft is the same pale gray-white as the hips and torso not pale-tan flesh and not purple, gray-white shaft and gray-white glans",
+     "the 35cm shaft is the same tone as the hips, a flushed glans"),
+    ("ashen gray shaft that stays ashen gray not pale-tan flesh, smooth skin and grimy dirty stains on the hips, groin and the 24cm shaft",
+     "a shaft the same tone as the hips"),
+    ("flushed dusky-purple glans", "flushed glans"),
+    ("vivid purple skin that stays vivid purple on the hips, groin and 24cm shaft",
+     "natural skin that stays one tone on the hips, groin and 24cm shaft"),
+    ("vivid purple skin that stays vivid purple on the hips, groin and 20cm shaft",
+     "natural skin that stays one tone on the hips, groin and 20cm shaft"),
+    ("vivid purple on the hips, groin and 24cm shaft", "natural skin on the hips, groin and 24cm shaft"),
+    ("vivid purple on the hips, groin and 20cm shaft", "natural skin on the hips, groin and 20cm shaft"),
+    ("the same pale gray-white as the hips not pale-tan flesh and not purple, gray-white shaft and gray-white glans",
+     "the same tone as the hips, a flushed glans"),
+    ("hollow empty dark eye sockets, visible fangs", "clear adult eyes, a soft mouth"),
+    ("hollow empty dark eye sockets", "clear adult eyes"),
+    ("thick extra-viscous dark-brown filthy sludge", "clean skin"),
+    ("vivid purple,", "natural skin,"),
+    ("purple skin,", "natural skin,"),
+    ("the LEFT half of her face and body stays readable as wet rotting raw red flesh on the left eye, left cheek, left breast, left arm and left hip",
+     "her face and body stay one even tone"),
+    ("grimy dirty extra-viscous filthy slime covering her", "clean skin"),
+    ("grimy dirty extra-viscous filthy slime", "clean skin"),
+    ("Thick extra-viscous dark-brown filthy sludge on Rei's shaft smears inward with each forward thrust",
+     "Rei's shaft stays the same tone as the hips"),
+    ("Thick extra-viscous dark-brown filthy sludge on Rei's shaft smears inward",
+     "Rei's shaft stays the same tone as the hips"),
+    ("thick extra-viscous dark-brown filthy sludge on Rei's shaft smears inward",
+     "Rei's shaft stays the same tone as the hips"),
+    ("Thick extra-viscous dark-brown filthy sludge coats the shaft",
+     "The shaft stays the same tone as the hips"),
+    ("Grimy dirty extra-viscous filthy slime stays on Kana's skin", "Kana's skin stays clean"),
+    ("The LEFT half of Rei's face and body stays wet rotting raw red flesh",
+     "Rei's face and body stay one even tone"),
+    ("the same vivid purple as the hips", "the same tone as the hips"),
+    ("long decaying clawed demon feet, nails black and split, skin peeling on the fingers and toes", "human feet"),
+    ("bare decaying clawed feet", "bare feet"),
+    ("sharp claws on those four fingers", "plain nails on those four fingers"),
+    ("red muscle fiber showing in those peeled patches", "even skin"),
+    ("the intact ashen skin", "the intact skin"),
+    ("grimy dirty stains and smooth skin", "smooth skin"),
+    ("open red lacerations on the vivid purple face", "a natural adult face"),
+    ("open red lacerations across the body", "intact skin across the body"),
+    ("at a stiff dragging shambling gait: knees almost straight, each foot SCRAPES the linoleum then lurches forward, "
+     "arms hang limp a little ahead of the hips, torso leans forward, the short brown bob SWAYS and bounces with every lurch",
+     "at a relaxed walking pace, the short brown bob swaying with each step"),
+    ("Miki shambling RIGHT", "Miki walking RIGHT"),
+    ("Miki a stiff dragging shambling gait", "Miki a relaxed walk"),
+    ("an eerie smile", "a soft smile"),
+    ("gums exposed", "soft lips"),
+    ("peeling skin with red muscle fiber showing in the peeled patches", "even skin"),
+    ("peeling skin with red muscle fiber showing", "even skin"),
+    ("peeling skin with even skin", "even skin"),
+    ("Nude ashen-gray Gin", "Nude Gin"),
+    ("Ashen gray skin stays ashen gray", "Gin's skin stays one even tone"),
+    ("The erect ashen-gray 24cm stays ashen gray", "The erect 24cm stays the same tone as the hips"),
+    ("erect ashen-gray 24cm shaft that stays ashen gray not pale-tan flesh", "erect 24cm shaft the same tone as the hips"),
+    ("erect ashen-gray 24cm", "erect 24cm"),
+    ("ashen gray shaft", "shaft"),
+    ("Ashen gray skin that stays ashen gray", "Natural skin that stays one tone"),
+    ("ashen-gray", ""),
+    ("ashen gray", "natural"),
+    # Beat lines paraphrase the locks, so the lock sentences above miss them.
+    ("dry scratch marks on the skin including the hips, groin and the 20cm shaft",
+     "intact skin on the hips, groin and the 20cm shaft"),
+    ("dry scratch marks on the skin including the hips and the erect 20cm shaft",
+     "intact skin on the hips and the erect 20cm shaft"),
+    ("Grimy dirty extra-viscous filthy slime on Kana's skin smears at the join.",
+     "Kana's skin stays clean at the join."),
+    ("a single red tear line under that eye", "clear skin under that eye"),
+    ("Each hand has exactly four long fingers and no fifth finger, plain nails on those four fingers",
+     "Each hand has five fingers and plain nails"),
+    ("each hand exactly four long fingers with sharp claws", "each hand has five fingers and plain nails"),
+    ("Each hand has exactly four long fingers and no fifth finger", "Each hand has five fingers"),
+    ("Each hand has exactly four long fingers", "Each hand has five fingers"),
+    ("each hand exactly four long fingers", "each hand has five fingers"),
+    ("plain nails on those four fingers", "plain nails"),
+    ("four long fingers", "five fingers"),
+    ("no fifth finger", "five fingers"),
+    ("sharp claws", "plain nails"),
+    ("a long forked reptile tongue that can reach out and lick", "a human tongue"),
+    ("Shino's long forked reptile tongue", "Shino's tongue"),
+    ("a long forked reptile tongue", "a human tongue"),
+    ("Shino's long reptile tongue", "Shino's tongue"),
+    ("The long reptile tongue", "The tongue"),
+    ("The forked tongue", "The tongue"),
+    ("long forked reptile tongue", "human tongue"),
+    ("forked reptile tongue", "human tongue"),
+    ("reptile tongue", "tongue"),
+    ("forked tongue", "tongue"),
+    ("a long wet gray tongue hanging out past the chin", "a human tongue"),
+    ("a long wet gray tongue hanging out", "a human tongue hanging out"),
+    ("the long wet gray tongue", "the long tongue"),
+    ("long arms with hands hanging past mid-thigh, long fingers",
+     "two arms of ordinary length and two ordinary hands"),
+    ("long arms with hands past mid-thigh", "two arms of ordinary length"),
+    ("hands hanging past mid-thigh", "hands at ordinary length"),
+    ("hands past mid-thigh", "hands at ordinary length"),
+    ("long arms, long fingers", "two ordinary arms and ordinary hands"),
+    ("Long arms WRAP", "Both arms WRAP"),
+    ("long arms pull", "two arms pull"),
+    ("long arms", "two arms"),
+    ("Long arms", "Both arms"),
+    ("Long fingers KEEP PULLING", "Both hands KEEP PULLING"),
+    ("Long fingers PULL", "Both hands PULL"),
+    ("Long fingers stay", "Both hands stay"),
+    ("long fingers stay", "both hands stay"),
+    ("long fingers", "ordinary hands"),
+    ("Long fingers", "Both hands"),
+    ("very pale gray-white skin", "natural skin"),
+    ("the same pale gray-white as the hips not pale-tan flesh", "the same tone as the hips"),
+    ("the same pale gray-white as the hips", "the same tone as the hips"),
+    ("stays pale gray-white", "stays the same tone as the hips"),
+    ("pale gray-white", "the same tone as the hips"),
+    ("Gray-white shaft, gray-white glans, the same color as her hips.",
+     "A shaft the same tone as the hips, a flushed glans."),
+    ("flushed dusky-gray glans", "flushed glans"),
+    ("flushed dusky glans", "flushed glans"),
+    ("gray-white glans", "flushed glans"),
+    ("Gray-white glans", "flushed glans"),
+    ("gray-white shaft", "shaft"),
+    ("Gray-white shaft", "shaft"),
+    ("vacant monster eyes", "clear adult eyes"),
+    ("Vacant monster eyes", "Clear adult eyes"),
+    ("Miki keeps vacant eyes", "Miki keeps clear adult eyes"),
+    ("Rei stays seated, uninjured, vacant,", "Rei stays seated, uninjured, clear adult eyes,"),
+    ("Hollow empty dark eye sockets stay on the face.", "Clear adult eyes stay on the face."),
+    ("Open red lacerations and torn gashes stay across the face, neck, breasts, belly, back, arms, hands, thighs, knees, feet, hips, groin and the 24cm shaft.",
+     "Intact skin stays across the face, neck, breasts, belly, back, arms, hands, thighs, knees, feet, hips, groin and the 24cm shaft."),
+)
+
+
+def _parse_enemy_looks(raw: dict[str, str] | str) -> dict[str, str]:
+    """Per-enemy look menu. A string is miki=韓国,rei=今のまま."""
+    pairs: dict[str, str] = {}
+    if isinstance(raw, dict):
+        items = raw.items()
+    else:
+        items = []
+        for part in str(raw).replace("\n", ",").split(","):
+            if not part.strip():
+                continue
+            if "=" not in part:
+                raise EpisodeError(f"enemy look needs id=choice, got {part}")
+            cid, choice = part.split("=", 1)
+            items.append((cid, choice))
+    out: dict[str, str] = {}
+    for cid, choice in items:
+        name = str(cid or "").strip().lower()
+        if name not in _ENEMY_LOOK_IDS:
+            raise EpisodeError(f"unknown enemy look id {cid}")
+        key = canonical_look(str(choice or ""))
+        if not key:
+            raise EpisodeError(f"unknown look for {name}: {choice}")
+        out[name] = key
+    return out
+
+
+def _wire_look_choices(render: dict[str, Any]) -> None:
+    """A country look fills hair and face only when those dropdowns are 今のまま. A set dropdown wins."""
+    app = dict(render.get("appearance") or {})
+    if render.get("aya_look"):
+        aya_look = canonical_look(str(render.get("aya_look") or "")) or "keep"
+        aya = dict(app.get("aya") or {})
+        if aya_look not in ("keep", "other"):
+            spec = LOOK_MODES[aya_look]
+            if not aya.get("hair") and spec.get("hair"):
+                aya["hair"] = spec["hair"]
+            if not aya.get("face") and spec.get("face"):
+                aya["face"] = spec["face"]
+        if aya:
+            app["aya"] = aya
+        else:
+            app.pop("aya", None)
+    per_enemy = render.get("enemy_looks") if isinstance(render.get("enemy_looks"), dict) else {}
+    if per_enemy or render.get("enemy_look"):
+        shared = canonical_look(str(render.get("enemy_look") or "")) if render.get("enemy_look") else ""
+        for cid in _ENEMY_LOOK_IDS:
+            raw_choice = per_enemy.get(cid, shared)
+            if raw_choice in ("", None):
+                continue
+            choice = canonical_look(str(raw_choice)) or "keep"
+            if choice == "keep":
+                app.pop(cid, None)
+            elif choice == "other":
+                if not app.get(cid):
+                    app.pop(cid, None)
+            else:
+                spec = LOOK_MODES[choice]
+                row = dict(app.get(cid) or {})
+                if spec.get("hair"):
+                    row["hair"] = spec["hair"]
+                if cid != "tsuno" and spec.get("face"):
+                    row["face"] = spec["face"]
+                if row:
+                    app[cid] = row
+    if app:
+        render["appearance"] = app
+    elif "appearance" in render:
+        render.pop("appearance", None)
+
+
+def _swap_human_skin(value: Any) -> Any:
+    if isinstance(value, str):
+        out = value
+        for old, new in _HUMAN_SKIN_SWAPS:
+            out = out.replace(old, new)
+        return out
+    if isinstance(value, list):
+        return [_swap_human_skin(item) for item in value]
+    if isinstance(value, dict):
+        return {key: _swap_human_skin(item) for key, item in value.items()}
+    return value
+
+
+def apply_human_skin(ep: dict[str, Any]) -> dict[str, Any]:
+    """Drop infection marks after the act is chosen. Shaft length, height, horns, and the single eye stay."""
+    return _swap_human_skin(ep)
+
 def apply_appearance(ep: dict[str, Any]) -> dict[str, Any]:
     """Rewrite look clauses for set fields. No set field leaves every string as authored."""
     specs = (ep.get("render") or {}).get("appearance") or {}
@@ -4106,10 +4701,13 @@ def apply_appearance(ep: dict[str, Any]) -> dict[str, Any]:
         spec = _APPEARANCE[cid]
         hair = str(spec.get("hair") or "")
         if fields.get("hair"):
+            hair_new = str(fields["hair"])
+            if fields.get("color"):
+                hair_new = _recolor_hair(hair_new, str(fields["color"]))
             if hair:
-                _replace_phrase(out, cid, hair, fields["hair"])
+                _replace_phrase(out, cid, hair, hair_new)
             else:
-                _append_look(out, cid, fields["hair"])
+                _append_look(out, cid, hair_new)
         elif fields.get("color"):
             if not hair or not spec.get("color"):
                 _append_look(out, cid, f"hair color {fields['color']}")
@@ -4122,18 +4720,39 @@ def apply_appearance(ep: dict[str, Any]) -> dict[str, Any]:
                 _replace_phrase(out, cid, face, fields["face"])
             else:
                 _append_look(out, cid, fields["face"])
+        for key in ("bust", "butt", "build", "height"):
+            if not fields.get(key):
+                continue
+            old = str(spec.get(key) or "")
+            new = str(fields[key])
+            if old:
+                _replace_phrase(out, cid, old, new)
+            else:
+                _append_look(out, cid, new)
+            if key == "build":
+                limbs = build_limbs_for(new)
+                old_limbs = str(spec.get("limbs") or "")
+                if limbs and old_limbs:
+                    _replace_phrase(out, cid, old_limbs, limbs)
         if fields.get("sweat"):
             sweat_phrases = spec.get("sweat") or ()
+            replacement = str(fields["sweat"])
+            whole = replacement in AYA_SWEAT_PHRASES
             if sweat_phrases:
                 for phrase in sweat_phrases:
-                    if phrase.startswith("visible sweat beads and thick"):
-                        _replace_phrase(out, cid, phrase, f"{fields['sweat']} and thick extra-viscous sticky grimy brown hospital dirt")
+                    if whole and phrase.startswith("visible sweat beads and thick"):
+                        # The dirt clause continues in the same sentence. Swap only the sweat lead-in.
+                        _replace_phrase(out, cid, "visible sweat beads and ", f"{replacement}, ")
+                    elif whole:
+                        _replace_phrase(out, cid, phrase, replacement)
+                    elif phrase.startswith("visible sweat beads and thick"):
+                        _replace_phrase(out, cid, phrase, f"{replacement} and thick extra-viscous sticky grimy brown hospital dirt")
                     elif phrase.startswith("damp dirty bangs"):
-                        _replace_phrase(out, cid, phrase, fields["sweat"])
+                        _replace_phrase(out, cid, phrase, replacement)
                     else:
-                        _replace_phrase(out, cid, phrase, fields["sweat"])
+                        _replace_phrase(out, cid, phrase, replacement)
             else:
-                _append_look(out, cid, fields["sweat"])
+                _append_look(out, cid, replacement)
         if fields.get("dirt"):
             for phrase in spec.get("dirt") or ():
                 _replace_phrase(out, cid, phrase, fields["dirt"])
@@ -4168,34 +4787,35 @@ def apply_appearance(ep: dict[str, Any]) -> dict[str, Any]:
                         "Both wear the clothes written in the look",
                     )
         shaft = fields.get("shaft") or ""
-        if shaft == "on":
+        grown = _AYA_SHAFT if shaft == "on" else shaft if shaft not in ("", "off") else ""
+        if grown:
             if cid == "aya":
                 _replace_phrase(
                     out,
                     "aya",
                     "female body, tired determined expression",
-                    f"female body, {_AYA_SHAFT}, tired determined expression",
+                    f"female body, {grown}, tired determined expression",
                 )
                 row = (out.get("cast") or {}).get("aya") or {}
-                if isinstance(row.get("lock"), str) and _AYA_SHAFT not in row["lock"] and "female body" in row["lock"]:
-                    row["lock"] = row["lock"].replace("female body", f"female body, {_AYA_SHAFT}", 1)
+                if isinstance(row.get("lock"), str) and grown not in row["lock"] and "female body" in row["lock"]:
+                    row["lock"] = row["lock"].replace("female body", f"female body, {grown}", 1)
                 for beat in out.get("beats") or []:
                     if not isinstance(beat, dict):
                         continue
                     action = str(beat.get("action") or "")
                     # Walks that remove the grown shaft stay removed. The look must not put it back.
                     if "No penis" in action or "The grown shaft is gone" in action:
-                        beat["action"] = action.replace(f", {_AYA_SHAFT}", "")
+                        beat["action"] = action.replace(f", {grown}", "")
                         locks = beat.get("cast_lock") if isinstance(beat.get("cast_lock"), dict) else {}
                         base = str(locks.get("aya") or (out.get("cast") or {}).get("aya", {}).get("lock") or "")
-                        if _AYA_SHAFT in base:
+                        if grown in base:
                             locks = dict(locks)
-                            locks["aya"] = base.replace(f", {_AYA_SHAFT}", "")
+                            locks["aya"] = base.replace(f", {grown}", "")
                             beat["cast_lock"] = locks
                         continue
                     locks = beat.get("cast_lock")
-                    if isinstance(locks, dict) and isinstance(locks.get("aya"), str) and _AYA_SHAFT not in locks["aya"] and "female body" in locks["aya"]:
-                        locks["aya"] = locks["aya"].replace("female body", f"female body, {_AYA_SHAFT}", 1)
+                    if isinstance(locks, dict) and isinstance(locks.get("aya"), str) and grown not in locks["aya"] and "female body" in locks["aya"]:
+                        locks["aya"] = locks["aya"].replace("female body", f"female body, {grown}", 1)
                     for field in ("action", "camera"):
                         value = beat.get(field)
                         if not isinstance(value, str) or "female body" not in value:
@@ -4203,15 +4823,15 @@ def apply_appearance(ep: dict[str, Any]) -> dict[str, Any]:
                         parts = re.split(r"(?<=\.)\s+", value)
                         built: list[str] = []
                         for part in parts:
-                            if "Aya" in part and "Gin" not in part and "female body" in part and _AYA_SHAFT not in part:
-                                built.append(part.replace("female body", f"female body, {_AYA_SHAFT}", 1))
+                            if "Aya" in part and "Gin" not in part and "female body" in part and grown not in part:
+                                built.append(part.replace("female body", f"female body, {grown}", 1))
                             else:
                                 built.append(part)
                         beat[field] = " ".join(built)
             elif spec.get("shaft") == "no penis, never futanari":
-                _replace_phrase(out, cid, "no penis, never futanari", _AYA_SHAFT)
+                _replace_phrase(out, cid, "no penis, never futanari", grown)
             elif not spec.get("shaft"):
-                _append_look(out, cid, _AYA_SHAFT)
+                _append_look(out, cid, grown)
         elif shaft == "off":
             clause = spec.get("shaft")
             if clause and clause != "no penis, never futanari":
@@ -4252,6 +4872,425 @@ def apply_appearance(ep: dict[str, Any]) -> dict[str, Any]:
                             beat[field] = " ".join(built)
     return out
 
+def _missionlg_beat(beat: dict[str, Any]) -> bool:
+    """M-shape insert and peak: partner kneels between the open legs. Walks stay off."""
+    action = str(beat.get("action") or "").lower()
+    if "m-shape" not in action or "kneel" not in action or "between" not in action:
+        return False
+    return not str(beat.get("id") or "").endswith("-walk")
+
+
+def apply_card_loras(ep: dict[str, Any]) -> dict[str, Any]:
+    """Form choices. Off leaves the beat extras alone."""
+    render = ep.get("render") or {}
+    mission = canonical_missionlg(str(render.get("missionlg") or "")) == "on"
+    messy = canonical_messyblow(str(render.get("messyblow") or "")) == "on"
+    close = canonical_closeup(str(render.get("closeup") or "")) == "on"
+    if not (mission or messy or close):
+        return ep
+    for beat in ep.get("beats") or []:
+        if not isinstance(beat, dict):
+            continue
+        entries = extra_lora_entries(beat)
+        keys = {key for key, _strength in entries}
+        changed = False
+        if messy and "blowjob" in keys:
+            entries = [
+                ("messyblow", float(LORA_STRENGTHS["messyblow"])) if key == "blowjob" else (key, strength)
+                for key, strength in entries
+            ]
+            trigger = str(beat.get("trigger") or "")
+            if "bl0w_j0b" in trigger:
+                beat["trigger"] = trigger.replace("bl0w_j0b", "").strip()
+            keys = {key for key, _strength in entries}
+            changed = True
+        if mission and _missionlg_beat(beat) and "missionlg" not in keys:
+            entries.append(("missionlg", float(LORA_STRENGTHS["missionlg"])))
+            keys.add("missionlg")
+            changed = True
+        if close and "anuspussy" in keys and "closeup" not in keys:
+            entries.append(("closeup", float(LORA_STRENGTHS["closeup"])))
+            changed = True
+        if changed:
+            beat["extra_loras"] = [[key, strength] for key, strength in entries]
+    return ep
+
+
+_SALIVA_PART = "A saliva string stretches between the parting lips."
+_GLANS_REMNANT = (
+    " A small remnant of thick WHITE semen stays at the urethral opening on the tip of the glans."
+)
+_SHAFT_OVERFLOW = "Thick WHITE goo OVERFLOWS from the join down the buried shaft and over the groin."
+_ANAL_RIM_OVERFLOW = (
+    "Thick WHITE goo OVERFLOWS from the anus at the join and stays on the rim of the anus."
+)
+_LIMB_COUNT = "Each adult keeps one head, two arms, and two legs."
+_WHOLE_BODY = "Each adult stays one whole body."
+_GIN_NO_PENIS = "Gin has a female body, no penis."
+_GIN_FEMALE = "Gin has a female body and a hairless pussy."
+_FACIAL_CUM_IDS = frozenset({"04-gin-mouth", "09-kana-facial", "04-tsuno-wait"})
+_LEFT_FOOT = (
+    " Aya's left foot stays inside the frame, toes visible, beside the right foot. "
+    "Both of Aya's feet stay inside the frame."
+)
+_JO_BEND_RE = re.compile(
+    r"(Aya|Gin) BENDS her knees\. Her face and chest LOWER onto the linoleum\. "
+    r"Her hips RISE\. Both legs open wide to the LEFT and RIGHT\. "
+    r"Both soles stay on the linoleum\. The cleft faces UP\."
+)
+_JO_LAST_RE = re.compile(
+    r"Last frame: (Aya|Gin)'s face and chest on the linoleum, hips high, both legs open wide, "
+    r"each thigh joined at its hip, heels on the linoleum, the cleft up\."
+)
+
+
+def _kiss_parting_string(action: str) -> str:
+    """When a french kiss ends, a saliva string stretches between the parting lips."""
+    low = action.lower()
+    if any(
+        token in low
+        for token in ("saliva string", "drool strand", "wet strand", "string hangs", "string between")
+    ):
+        return action
+    kiss = bool(re.search(r"french kiss|tongues intertwine|mouths meet|mouths join", low))
+    parted = any(
+        token in low
+        for token in ("mouths part", "mouths leave", "mouth leaves", "mouths just parted")
+    )
+    leaves = "steps out of the frame" in low or "fades completely" in low
+    if not kiss and not parted:
+        return action
+    if not parted and not leaves and " pushes " not in low:
+        return action
+    swaps = (
+        ("Then the mouths slowly part.", f"Then the mouths slowly part. {_SALIVA_PART}"),
+        ("Then the mouths part.", f"Then the mouths part. {_SALIVA_PART}"),
+        ("mouths just parted.", f"mouths just parted. {_SALIVA_PART}"),
+        (". Mouths part.", f". Mouths part. {_SALIVA_PART}"),
+        ("Mouths leave.", f"Mouths leave. {_SALIVA_PART}"),
+        (
+            "Then Aya's mouth leaves Gin's mouth.",
+            f"Then Aya's mouth leaves Gin's mouth. {_SALIVA_PART}",
+        ),
+    )
+    for old, new in swaps:
+        if old in action:
+            return action.replace(old, new, 1)
+    if kiss:
+        step = re.search(r"Then [A-Z][a-z]+ steps out of the frame", action)
+        if step:
+            return action[: step.start()] + _SALIVA_PART + " " + action[step.start() :]
+        fade = re.search(r"Then [A-Z][a-z]+ FADES COMPLETELY OUT OF FRAME", action)
+        if fade and re.search(
+            r"french kiss|tongues intertwine|mouths joined",
+            action[max(0, fade.start() - 500) : fade.start()],
+            re.I,
+        ):
+            return action[: fade.start()] + _SALIVA_PART + " " + action[fade.start() :]
+        push = re.search(r"Then [A-Z][a-z]+ PUSHES", action)
+        if push and "french kiss" in action[max(0, push.start() - 220) : push.start()].lower():
+            return action[: push.start()] + _SALIVA_PART + " " + action[push.start() :]
+    return action
+
+
+def _jo_bend_turn(match: re.Match[str]) -> str:
+    name = match.group(1)
+    return (
+        f"{name} starts in true profile facing RIGHT. "
+        f"{name} BENDS her knees and turns her body ninety degrees toward the LEFT until her chest faces the lens. "
+        f"She opens both legs a little. "
+        f"Then her head lowers onto the floor, her back arches, and both legs open into a wide V. "
+        f"Her head stays on the floor nearest the lens. Her eyes stay on the lens. "
+        f"Both arms rest on the floor beside the head. The hips stay high. "
+        f"Both soles stay on the floor, one out to the LEFT and one out to the RIGHT. "
+        f"The cleft and the hairless pussy face the lens. "
+        f"She holds this pose. The camera sits at the head, the far side from a view behind the hips."
+    )
+
+
+def _jo_last_pose(match: re.Match[str]) -> str:
+    name = match.group(1)
+    return (
+        f"Last frame: {name} holds the pose, head on the floor nearest the lens, eyes on the lens, "
+        f"back arched, both legs in a wide V, both soles on the floor, "
+        f"the cleft and the hairless pussy facing the lens."
+    )
+
+
+_FOURS_HOLD = "HOLD still joined at the BASE until the last frame."
+_FOURS_PISTON = (
+    "After the shaft reaches the BASE, the hips move FORWARD and BACK in short presses for the rest of the take. "
+    "Each forward press meets the buttocks. The glans stays inside the anus. The shaft stays buried to the root."
+)
+_OLD_PENIS_CLIMAX = (
+    "This video depicts part of sexual intercourse climax, the female character performs powerful, "
+    "intense thrusts with her penis inside her partner and cums inside of her"
+)
+_ANAL_CLIMAX = (
+    "This video depicts part of sexual intercourse climax. "
+    "The adult who holds the shaft keeps it inside the anus and cums inside the anus. "
+    "The hairless pussy stays a closed slit under the anus. "
+    "The same two adults stay in the frame."
+)
+_ANAL_ENTRY_LEAD = (
+    "The shaft travels into the anus. The hairless pussy stays a closed slit under the anus."
+)
+_ANAL_PRESS_LEAD = (
+    "The glans stays pressed on the closed anus. The shaft stays outside. "
+    "The hairless pussy stays a closed slit under the anus."
+)
+_ANAL_ONLY = (
+    " The shaft uses the anus only. The hairless pussy stays a closed slit under the anus."
+)
+_SHAFT_HEADING_RE = re.compile(
+    r"([A-Za-z]+)'s chest, hips, and knees (?:turn to )?face LEFT, the same direction Aya's chest faces\. "
+    r"\1's side faces the camera, the same as Aya's side\. "
+    r"\1's breasts point LEFT toward Aya's head\. "
+    r"\1's face looks down at Aya's back\. "
+    r"\1's spine stays parallel to Aya's spine\."
+)
+_SHAFT_CAM_RE = re.compile(
+    r"([A-Za-z]+)'s hips (move onto|stay on) the same centerline directly behind Aya's buttocks, "
+    r"chest and knees facing LEFT, the same direction as Aya"
+    r"(?:, one hand on her hip\. Both face LEFT|\. \1's side faces the camera)\."
+)
+_WALL_CAM_RE = re.compile(
+    r"The shaft person's hips (move onto|stay on) the same centerline directly behind Aya's buttocks\. "
+    r"Both chests face LEFT\. Both sides face the camera\. The spines stay parallel\."
+)
+
+
+def _shaft_yaw_from_profile(match: re.Match[str]) -> str:
+    """Aya stays. The shaft adult leaves left true profile by a small yaw to the right."""
+    name = match.group(1)
+    if "turn to" in match.group(0):
+        return (
+            f"{name} starts in left true profile. {name}'s side faces the camera. "
+            f"{name} turns the torso a little toward the RIGHT from that left true profile "
+            f"until the body angle matches Aya. "
+            f"{name}'s feet and soles turn with the torso and point the same way as Aya's feet and soles. "
+            f"{name}'s face looks down at Aya's back."
+        )
+    return (
+        f"{name} stays a little toward the RIGHT from left true profile, the same body angle as Aya. "
+        f"{name}'s side faces the camera. "
+        f"{name}'s feet and soles point the same way as Aya's feet and soles. "
+        f"{name}'s face looks down at Aya's back."
+    )
+
+
+def _shaft_cam_yaw(match: re.Match[str]) -> str:
+    raw, verb = match.group(1), match.group(2)
+    name = "The partner" if raw.lower() == "partner" else raw
+    if verb == "move onto":
+        pose = (
+            f"{name} starts in left true profile and turns a little toward the RIGHT, "
+            f"the same body angle as Aya."
+        )
+    else:
+        pose = (
+            f"{name} stays a little toward the RIGHT from left true profile, "
+            f"the same body angle as Aya."
+        )
+    hand = " One hand stays on her hip." if "one hand" in match.group(0) else ""
+    return (
+        f"{raw}'s hips {verb} the same centerline directly behind Aya's buttocks. "
+        f"{pose} "
+        f"{name}'s feet and soles point the same way as Aya's feet and soles.{hand}"
+    )
+
+
+def _shaft_wall_cam_yaw(match: re.Match[str]) -> str:
+    verb = match.group(1)
+    if verb == "move onto":
+        pose = (
+            "The shaft person starts in left true profile and turns a little toward the RIGHT, "
+            "the same body angle as Aya."
+        )
+    else:
+        pose = (
+            "The shaft person stays a little toward the RIGHT from left true profile, "
+            "the same body angle as Aya."
+        )
+    return (
+        f"The shaft person's hips {verb} the same centerline directly behind Aya's buttocks. "
+        f"{pose} "
+        "The shaft person's feet and soles point the same way as Aya's feet and soles."
+    )
+
+
+def _anal_semen_site(action: str) -> bool:
+    """The visible semen is already placed on the open anus or its rim."""
+    low = action.lower()
+    if "anus" not in low and "ring" not in low:
+        return False
+    return any(
+        phrase in low
+        for phrase in (
+            "inside the anus",
+            "in the anus",
+            "open anus",
+            "from the ring",
+            "rim of the anus",
+        )
+    )
+
+
+def _glans_remnant_due(bid: str, action: str) -> bool:
+    """After ejaculation, a remnant stays at the urethral opening once the shaft is outside."""
+    low = action.lower()
+    if "urethral opening" in low:
+        return False
+    if any(
+        phrase in low
+        for phrase in (
+            "drips from the ring",
+            "dripping from the ring",
+            "from inside the open anus",
+            "from the open anus",
+            "on the rim of the anus",
+        )
+    ):
+        return False
+    if bid in _FACIAL_CUM_IDS:
+        return "ejaculat" in low or "semen" in low
+    left = "moves the hips back once" in low or "moves the hips up once" in low
+    outside = (
+        "shaft stays outside" in low
+        or "outside the anus" in low
+        or "the glans clears the rim" in low
+    )
+    return left and outside and ("semen" in low or "white goo" in low)
+
+
+def _rear_anal_pose(action: str) -> bool:
+    """All-fours and wall rear. The closed slit stays visible. The shaft uses the anus."""
+    low = action.lower()
+    if "between the open thighs" not in low and "between the calves" not in low:
+        return False
+    if "into the pussy" in low or "inside the pussy" in low:
+        return False
+    return "anus" in low
+
+
+def _rear_anal_seated(action: str) -> bool:
+    low = action.lower()
+    if not _rear_anal_pose(action) or "leaves the anus" in low:
+        return False
+    return any(
+        phrase in low
+        for phrase in ("into the anus", "inside the anus", "in the anus", "buried in the anus")
+    )
+
+
+def _lock_rear_anal(action: str, trigger: str) -> tuple[str, str]:
+    """Lead the prompt with the anus. The old climax line names a penis and no hole."""
+    if not _rear_anal_pose(action):
+        return action, trigger
+    seated = _rear_anal_seated(action)
+    if seated and "uses the anus only" not in action.lower():
+        action = action.rstrip(".") + "." + _ANAL_ONLY
+    low = action.lower()
+    if _OLD_PENIS_CLIMAX in trigger:
+        trigger = trigger.replace(_OLD_PENIS_CLIMAX, _ANAL_CLIMAX)
+    elif seated and "anus" not in trigger.lower():
+        if "cums inside" in trigger.lower():
+            trigger = _ANAL_CLIMAX + ("\n" + trigger if trigger.strip() else "")
+        elif not trigger.strip():
+            trigger = _ANAL_ENTRY_LEAD
+    elif (
+        not trigger.strip()
+        and "pressed on the closed anus" in low
+        and "in the anus" not in low
+        and "into the anus" not in low
+    ):
+        trigger = _ANAL_PRESS_LEAD
+    return action, trigger
+
+
+def apply_pose_notes(ep: dict[str, Any]) -> dict[str, Any]:
+    """October pose notes. Stored LoRA cards stay.
+
+    All-fours entry keeps short presses after the shaft seats. The shaft adult yaws a little
+    toward the right so the feet match Aya. After withdrawal the pelvis freezes.
+    All-fours and wall rear keep the shaft in the anus. The prompt lead says so.
+    """
+    if str(ep.get("slug") or "") != "hospital-exit-adult":
+        return ep
+    ward = surface_is_ward(ep)
+    for beat in ep.get("beats") or []:
+        if not isinstance(beat, dict):
+            continue
+        bid = str(beat.get("id") or "")
+        action = str(beat.get("action") or "")
+        if not action:
+            continue
+        action = _kiss_parting_string(action)
+        if (
+            "between the open thighs" in action
+            and "MOVES the hips FORWARD once" in action
+            and "FORWARD and BACK" not in action
+            and _FOURS_HOLD in action
+        ):
+            action = action.replace(_FOURS_HOLD, _FOURS_PISTON)
+        camera = str(beat.get("camera") or "")
+        thighs = "between the open thighs" in action
+        calves = "between the calves" in action or "between the calves" in camera
+        if "side faces the camera" in action and (thighs or calves):
+            action = _SHAFT_HEADING_RE.sub(_shaft_yaw_from_profile, action)
+        if thighs and "side faces the camera" in action:
+            camera = _SHAFT_CAM_RE.sub(_shaft_cam_yaw, camera)
+        if calves:
+            camera = _WALL_CAM_RE.sub(_shaft_wall_cam_yaw, camera)
+        low = action.lower()
+        if "moves the hips back once" in low and "hips stay back" in low and "pelvises freeze" not in low:
+            action = action.rstrip(".") + (
+                ". After the glans clears the rim, both pelvises freeze on that back mark. "
+                "The hips stay back until the last frame."
+            )
+        if bid.endswith("-jo-set"):
+            action = _JO_BEND_RE.sub(_jo_bend_turn, action)
+            action = _JO_LAST_RE.sub(_jo_last_pose, action)
+        if bid in ("04-gin-lick", "09-kana-kiss", "09-kana-facial") and "one continuous take" not in low:
+            action = action.rstrip(".") + "." + _SAME_TAKE
+        if bid == "09-kana-facial" and not ward:
+            action = action.replace("The same door stays behind Aya. ", "")
+            action = action.replace("The same door stays behind Aya", "")
+            camera = camera.replace("The same door stays behind Aya. ", "")
+            camera = camera.replace("The same door stays behind Aya", "")
+        beat["camera"] = camera
+        low = action.lower()
+        if bid == "04-gin-spitkiss" and "left foot stays inside" not in low:
+            action = action.rstrip(".") + "." + _LEFT_FOOT
+            beat["camera"] = (
+                "PROFILE side-on. Wide full-body. Aya stays on her back. "
+                "Aya's left foot and Aya's right foot both stay inside the frame, toes visible. "
+                "Both heads and all four feet stay inside the frame. "
+                "Both mouths stay readable. Floor runs LEFT to RIGHT."
+            )
+        if _anal_semen_site(action):
+            action = action.replace(_SHAFT_OVERFLOW, _ANAL_RIM_OVERFLOW)
+            action = action.replace("WHITE goo is on the join", "WHITE goo is on the rim of the anus")
+            action = action.replace("WHITE goo on the join", "WHITE goo on the rim of the anus")
+            action = action.replace(
+                "WHITE goo pooled at the join and running down",
+                "WHITE goo on the rim of the anus",
+            )
+        action = action.replace(_LIMB_COUNT, _WHOLE_BODY)
+        if bid == "04-gin-lick":
+            action = action.replace(_GIN_NO_PENIS, _GIN_FEMALE)
+        if bid == "04-gin-wait" and any(key == "synth" for key, _strength in extra_lora_entries(beat)):
+            beat["extra_loras"] = [
+                [key, strength] for key, strength in extra_lora_entries(beat) if key != "synth"
+            ]
+        if _glans_remnant_due(bid, action):
+            action = action.rstrip(".") + "." + _GLANS_REMNANT
+        action, trig = _lock_rear_anal(action, str(beat.get("trigger") or ""))
+        if trig != str(beat.get("trigger") or ""):
+            beat["trigger"] = trig
+        beat["action"] = re.sub(r" {2,}", " ", action).strip()
+    return ep
+
 
 def prepare_episode(
     ep: dict[str, Any],
@@ -4282,6 +5321,19 @@ def prepare_episode(
     rei_pose_override: str | None = None,
     appearance_override: str | dict[str, Any] | None = None,
     checkpoint_override: str | None = None,
+    missionlg_override: str | None = None,
+    messyblow_override: str | None = None,
+    closeup_override: str | None = None,
+    place_override: str | None = None,
+    time_override: str | None = None,
+    weather_override: str | None = None,
+    dirt_override: str | None = None,
+    camera_distance_override: str | None = None,
+    seed_override: str | int | None = None,
+    aya_look_override: str | None = None,
+    enemy_kind_override: str | None = None,
+    enemy_look_override: str | None = None,
+    enemy_looks_override: dict[str, str] | str | None = None,
 ) -> dict[str, Any]:
     """Apply Colab/CLI overrides, then wire beats for the chosen connect mode."""
     out = copy.deepcopy(ep)
@@ -4303,6 +5355,12 @@ def prepare_episode(
         render["story"] = canonical_story(story_override) or story_override
     if combat_override not in (None, ""):
         render["combat"] = canonical_combat(combat_override) or combat_override
+    if missionlg_override not in (None, ""):
+        render["missionlg"] = canonical_missionlg(missionlg_override) or missionlg_override
+    if messyblow_override not in (None, ""):
+        render["messyblow"] = canonical_messyblow(messyblow_override) or messyblow_override
+    if closeup_override not in (None, ""):
+        render["closeup"] = canonical_closeup(closeup_override) or closeup_override
     if invite_pose_override not in (None, ""):
         render["invite_pose"] = canonical_invite_pose(invite_pose_override) or invite_pose_override
     if checkpoint_override not in (None, ""):
@@ -4337,9 +5395,68 @@ def prepare_episode(
         render["rei_oral"] = canonical_rei_oral(rei_oral_override) or rei_oral_override
     if rei_pose_override not in (None, ""):
         render["rei_pose"] = canonical_rei_pose(rei_pose_override) or rei_pose_override
+    if place_override not in (None, ""):
+        place_key = canonical_place(place_override)
+        if not place_key:
+            raise EpisodeError(f"unknown place {place_override}")
+        render["place"] = place_key
+    if time_override not in (None, ""):
+        time_key = canonical_time(time_override)
+        if not time_key:
+            raise EpisodeError(f"unknown time {time_override}")
+        render["time"] = time_key
+    if weather_override not in (None, ""):
+        weather_key = canonical_weather(weather_override)
+        if not weather_key:
+            raise EpisodeError(f"unknown weather {weather_override}")
+        render["weather"] = weather_key
+    if dirt_override not in (None, ""):
+        dirt_key = canonical_dirt(dirt_override)
+        if not dirt_key:
+            raise EpisodeError(f"unknown dirt {dirt_override}")
+        render["dirt"] = dirt_key
+    if camera_distance_override not in (None, ""):
+        distance_key = canonical_camera_distance(camera_distance_override)
+        if not distance_key:
+            raise EpisodeError(f"unknown camera distance {camera_distance_override}")
+        render["camera_distance"] = distance_key
+    if seed_override not in (None, ""):
+        try:
+            render["seed"] = int(str(seed_override).strip())
+        except ValueError as exc:
+            raise EpisodeError(f"seed must be an integer, got {seed_override}") from exc
+    if aya_look_override not in (None, ""):
+        aya_look = canonical_look(aya_look_override)
+        if not aya_look:
+            raise EpisodeError(f"unknown look {aya_look_override}")
+        render["aya_look"] = aya_look
+    if enemy_kind_override not in (None, ""):
+        enemy_kind = canonical_enemy_kind(enemy_kind_override)
+        if not enemy_kind:
+            raise EpisodeError(f"unknown enemy kind {enemy_kind_override}")
+        render["enemy_kind"] = enemy_kind
+    if enemy_look_override not in (None, ""):
+        enemy_look = canonical_look(enemy_look_override)
+        if not enemy_look:
+            raise EpisodeError(f"unknown enemy look {enemy_look_override}")
+        render["enemy_look"] = enemy_look
+    if enemy_looks_override not in (None, "", {}):
+        render["enemy_looks"] = _parse_enemy_looks(enemy_looks_override)
     appearance = parse_appearance(appearance_override)
     if appearance:
         render["appearance"] = appearance
+    surface_dirt = dirt_phrase_for(
+        canonical_place(str(render.get("place") or "")) or "hospital",
+        canonical_dirt(str(render.get("dirt") or "")) or "place",
+    )
+    if surface_dirt:
+        app = dict(render.get("appearance") or {})
+        aya = dict(app.get("aya") or {})
+        if not str(aya.get("dirt") or "").strip():
+            aya["dirt"] = surface_dirt
+            app["aya"] = aya
+            render["appearance"] = app
+    _wire_look_choices(render)
     _merge_ride_fork(render, bent=ride_bent_override, column=ride_column_override)
     out["render"] = render
     if _has_story_overlays(out):
@@ -4375,7 +5492,10 @@ def prepare_episode(
     out = _honor_beat_connect(out)
     out = apply_end_connect(out, end_connect=end_connect_override)
     out = apply_look_triggers(keep_chain_cast(out))
-    return apply_appearance(out)
+    out = apply_appearance(out)
+    if canonical_enemy_kind(str((out.get("render") or {}).get("enemy_kind") or "")) == "human":
+        out = apply_human_skin(out)
+    return apply_card_loras(apply_pose_notes(out))
 
 
 def gpu_index_map(ep: dict[str, Any]) -> dict[str, int]:
@@ -4436,8 +5556,17 @@ def _planted_camera_text(text: str) -> str:
     return re.sub(r"\s{2,}", " ", out).strip()
 
 
-def _hospital_camera_text(cam: str, *, sideride: bool, face_pair: bool = False) -> str:
-    """Ward shots keep the opening size. A side-scroll track reads as a push-in on a kiss."""
+def _hospital_camera_text(
+    cam: str,
+    *,
+    sideride: bool,
+    face_pair: bool = False,
+    authored_medium: bool = False,
+) -> str:
+    """Ward shots keep the opening size. A side-scroll track reads as a push-in on a kiss.
+
+    Self Anal Finger keeps the authored medium of the buttocks. A feet lock widens that card shot.
+    """
     out = cam
     if sideride:
         out = re.sub(r"\s*from directly above\b", "", out, flags=re.I)
@@ -4474,7 +5603,8 @@ def _hospital_camera_text(cam: str, *, sideride: bool, face_pair: bool = False) 
         flags=re.I,
     )
     # Face-pair shots name their own frame. A whole-take feet lock would hide the knees-up kiss.
-    if not face_pair:
+    # The anal-finger card names a medium of the buttocks. The same feet lock hides the anus.
+    if not face_pair and not authored_medium:
         if not out.lower().startswith("wide full-body"):
             out = HOSPITAL_FAR_LEAD + " " + out
         if "both heads and all four feet" not in out.lower():
@@ -4503,6 +5633,243 @@ def _strip_exit_doorway(text: str) -> str:
     return out
 
 
+def _camera_distance_skips(beat: dict[str, Any]) -> bool:
+    """Oral and facial beats keep their authored face distance."""
+    bid = str(beat.get("id") or "")
+    if beat.get("facial") or bid.endswith("-facial") or bid.endswith("-oral") or bid.endswith("-mouth"):
+        return True
+    keys = {key for key, _strength in extra_lora_entries(beat)}
+    return bool(keys & {"blowjob", "cumfacial", "cumshot"})
+
+
+def _distance_lock(ep: dict[str, Any], beat: dict[str, Any]) -> str:
+    distance = canonical_camera_distance(str((ep.get("render") or {}).get("camera_distance") or "")) or "side"
+    if distance == "side" or _camera_distance_skips(beat):
+        return ""
+    return str((CAMERA_DISTANCE_MODES.get(distance) or {}).get("lock") or "").strip().rstrip(".")
+
+
+def _place_swaps(spec: dict[str, Any]) -> list[tuple[str, str]]:
+    wall = str(spec["wall"])
+    floor = str(spec["floor"])
+    room = str(spec["room"])
+    bed = str(spec["bed"])
+    edge = str(spec["edge"])
+    path = str(spec["path"])
+    junction = str(spec["junction"])
+    light = str(spec["light"])
+    ambience = str(spec["ambience"])
+    fixture = str(spec["fixture"])
+    return [
+        ("edge of the soil bed", edge),
+        ("soil bed", bed),
+        ("far long edge nearest the window", edge),
+        ("far long edge of the mattress", edge),
+        ("cracked stained grey linoleum", floor),
+        ("beige walls", f"{wall}s"),
+        ("fluorescent tubes", light),
+        ("fluorescent tube", light),
+        ("filthy porcelain western toilet", fixture),
+        ("stained white porcelain toilet", fixture),
+        ("porcelain western toilet", fixture),
+        ("porcelain toilet seat", f"{fixture} seat"),
+        ("porcelain toilet", fixture),
+        ("western toilet bowl", f"{fixture} bowl"),
+        ("the porcelain bowl", "the toilet bowl"),
+        ("porcelain seat", "toilet seat"),
+        ("into the tile floor", f"into the {floor}"),
+        ("stained mattress", bed),
+        ("iron single bed", bed),
+        ("iron bed", bed),
+        ("the bed frame", f"the {bed}"),
+        ("bed frame", bed),
+        ("the bed", f"the {bed}"),
+        ("the mattress", f"the {bed}"),
+        ("cracked linoleum", floor),
+        ("grey linoleum", floor),
+        ("filthy western stall", room),
+        ("this same stall", f"this same {room}"),
+        ("toilet stall", room),
+        ("the filthy stall", f"the {room}"),
+        ("the stall", f"the {room}"),
+        ("STALL DOOR", f"{room.upper()} DOOR"),
+        ("grey wall", wall),
+        ("street corner wall", wall),
+        ("corridor wall", wall),
+        ("hospital wall", wall),
+        ("T-junction", junction),
+        ("old hospital corridor", path),
+        ("hospital corridor", path),
+        ("the corridor continues", f"the {path} continues"),
+        ("the corridor", f"the {path}"),
+        ("corridor", path),
+        ("Corridor", path[:1].upper() + path[1:]),
+        ("old hospital basement", room),
+        ("hospital basement", room),
+        ("basement room", room),
+        ("sickroom", room),
+        ("Fluorescent buzz", ambience[:1].upper() + ambience[1:]),
+        ("fluorescent buzz", ambience),
+        ("hospital fluorescent light", light),
+        ("linoleum", floor),
+        ("Linoleum", floor[:1].upper() + floor[1:]),
+        ("mattress", bed),
+        ("fluorescent", light),
+    ]
+
+
+_SURFACE_ENV_RE = re.compile(r"(environment:\n)(.*?)(\n\nintegrated_multimodal_description:\n)", re.S)
+_SURFACE_FIXTURE_WORDS = ("toilet", "bowl", "seat", "tank", "pitcher", "plant-flesh", "squat", "pan", "vine", "sap", "toy")
+_SURFACE_ROOM_WORDS = (
+    "fictional", "no clocks", "readable", "fully nude", "every adult", "plaster", "fluorescent", "dado",
+    "hospital toilet", "hospital stall",
+)
+# Naming a sign, poster, screen, badge, flag, or television makes one appear on an open horizon.
+_SURFACE_ENV_TAIL = (
+    "Every adult in frame is fully nude. Every adult is normal adult human height. Nobody is giant. "
+    "Adults only in frame."
+)
+
+
+def _surface_dirt_noun(spec: dict[str, Any]) -> str:
+    return str((DIRT_MODES.get(str(spec.get("dirt") or "hospital")) or {}).get("noun") or "grimy brown dust")
+
+
+def _surface_decor(spec: dict[str, Any], *, night: bool) -> list[tuple[str, str]]:
+    """Ward decor and grime outside the ward. Regex pairs, applied before the noun swaps."""
+    ambience = str(spec["ambience"])
+    dirt = _surface_dirt_noun(spec)
+    pairs = [
+        (r"\s*,?\s*a purple fluorescent wash", ""),
+        (r"\bflickering broken\s+", ""),
+        (r"\b[Cc]rumbling\s+", ""),
+        (r"\b[Pp]eeling (?=(?:beige |cream )?(?:walls?\b|plaster|paint|street|door|cracked))", ""),
+        (r"\brusted (?=(?:dark |iron |metal )?(?:rails?\b|handrail|sink|single|bed|iron|door|frame|pipe|corridor))", ""),
+        (r"\b[Cc]racked stained\s+", ""),
+        (r"\bwater stains,?\s*", ""),
+        (r"\brubber doors hanging loose,?\s*", ""),
+        (r"\b[Dd]erelict\s+", ""),
+        (r"\bHVAC fading\b", ambience),
+        (r"\bHVAC\b", ambience),
+        (r"\bdistant drip\b", ambience),
+        (r"\bLinoleum scrape\b", "A scrape on the ground"),
+        (r"head would hit the corridor tubes if she stood straight", "taller than a doorframe"),
+        (r"(?:head )?ducked under the tubes", "head ducked low"),
+        (r"\bunder the tubes\b", "low"),
+        (r"Thick extra-viscous sticky grimy brown hospital dirt", dirt[:1].upper() + dirt[1:]),
+        (r"Extra-viscous sticky grimy brown hospital dirt", dirt[:1].upper() + dirt[1:]),
+        (r"Brown hospital dirt", dirt[:1].upper() + dirt[1:]),
+        (r"(?i)thick extra-viscous sticky grimy brown hospital dirt", dirt),
+        (r"(?i)extra-viscous sticky grimy brown hospital dirt", dirt),
+        (r"(?i)grimy brown hospital dirt", dirt),
+        (r"(?i)brown hospital dirt", dirt),
+        (r"(?i)\bhospital dirt\b", dirt),
+        (r"\bthe tiles\b", f"the {spec['floor']}"),
+        (r"\btiles\b", str(spec["floor"])),
+        (r"\bporcelain\s+", ""),
+    ]
+    if not night:
+        pairs += [
+            (r"\ba dark far end\b", "the far end"),
+            (r"\bdark (?=corridor)", ""),
+        ]
+    return pairs
+
+
+def _surface_env(spec: dict[str, Any], original: str) -> str:
+    """Rebuild from this place's env. A toilet beat also keeps the fixture sentences the act needs.
+
+    The bed uses the same env. The sky stays inside that env. A second blue-sky sentence is not added.
+    """
+    low = original.lower()
+    sentences = [s.strip() for s in re.split(r"(?<=\.)\s+", original) if s.strip()]
+    kept: list[str] = []
+    if "toilet" in low or "squat pan" in low or " stall" in low:
+        kept = [
+            s for s in sentences
+            if any(w in s.lower() for w in _SURFACE_FIXTURE_WORDS)
+            and not any(w in s.lower() for w in _SURFACE_ROOM_WORDS)
+        ]
+    base = str(spec.get("env") or "").strip()
+    if not base:
+        base = str(spec.get("rest") or spec.get("priv") or "").strip()
+    seen: list[str] = []
+    for s in kept:
+        line = s if s.endswith(".") else s + "."
+        if line not in seen:
+            seen.append(line)
+    parts = [base.rstrip(".") + "."] if base else []
+    parts.extend(seen)
+    parts.append(_SURFACE_ENV_TAIL)
+    return " ".join(parts)
+
+
+def _rewrite_surface_chunk(spec: dict[str, Any], text: str, *, night: bool) -> str:
+    """Swap ward nouns, then drop leftover ward grime. The place env is not passed in."""
+    out = text
+    for old, new in _place_swaps(spec):
+        out = out.replace(old, new)
+    for pattern, repl in _surface_decor(spec, night=night):
+        out = re.sub(pattern, repl, out)
+    return re.sub(r"\b[Hh]ospital\s+", "", out)
+
+
+def _rewrite_surface_residue(spec: dict[str, Any], text: str, *, night: bool) -> str:
+    """Leave the place env untouched. porcelain, water stains, tiles, and crumbling stay in that sentence."""
+    owned = str(spec.get("env") or "").strip().rstrip(".")
+    owned_sentence = f"{owned}." if owned else ""
+    if owned_sentence and owned_sentence in text:
+        head, _, tail = text.partition(owned_sentence)
+        return (
+            _rewrite_surface_chunk(spec, head, night=night)
+            + owned_sentence
+            + _rewrite_surface_chunk(spec, tail, night=night)
+        )
+    return _rewrite_surface_chunk(spec, text, night=night)
+
+
+def surface_is_ward(ep: dict[str, Any]) -> bool:
+    return (canonical_place(str((ep.get("render") or {}).get("place") or "")) or "hospital") == "hospital"
+
+
+def apply_prompt_surface(ep: dict[str, Any], text: str) -> str:
+    """Hospital night with no weather is unchanged. Elsewhere the act clauses are already chosen."""
+    if str(ep.get("slug") or "") != "hospital-exit-adult":
+        return text
+    render = ep.get("render") or {}
+    place = canonical_place(str(render.get("place") or "")) or "hospital"
+    time_key = canonical_time(str(render.get("time") or "")) or "night"
+    weather = canonical_weather(str(render.get("weather") or "")) or "off"
+    if place == "hospital" and time_key == "night" and weather == "off":
+        return text
+    spec = PLACE_MODES[place]
+    night = time_key == "night"
+    out = text
+    if place != "hospital":
+        found = _SURFACE_ENV_RE.search(out)
+        if found:
+            out = out[: found.start(2)] + _surface_env(spec, found.group(2)) + out[found.end(2):]
+        out = _rewrite_surface_residue(spec, out, night=night)
+    if not night:
+        out = re.sub(r"\s+at night\b", "", out)
+    bits: list[str] = []
+    time_spec = TIME_MODES[time_key]
+    if night:
+        if place != "hospital":
+            bits.append(str(time_spec.get("away") or ""))
+    else:
+        bits.append(str(time_spec.get("sentence") or ""))
+    bits.append(str((WEATHER_MODES.get(weather) or {}).get("sentence") or ""))
+    bits = [b for b in bits if b]
+    if bits:
+        needle = "\n\nintegrated_multimodal_description:\n"
+        if needle in out:
+            out = out.replace(needle, " " + " ".join(bits) + needle, 1)
+    out = re.sub(r"[ \t]{2,}", " ", out)
+    out = re.sub(r"\s+([,.])", r"\1", out)
+    return out
+
+
 def camera_line(
     ep: dict[str, Any],
     beat: dict[str, Any],
@@ -4516,6 +5883,9 @@ def camera_line(
     planted = beat_loco(beat) == "planted"
     if planted:
         authored = _planted_camera_text(authored).rstrip(".")
+    # A side-scroller pack widens a facial back to feet. The close arc stays the authored camera.
+    if beat.get("facial"):
+        return authored
     if not pack_name:
         return authored
     key = canonical_camera(pack_name)
@@ -4524,6 +5894,9 @@ def camera_line(
     spec = CAMERA_PACKS[key]
     if planted and spec.get("planted_lock"):
         lock = str(spec["planted_lock"]).strip().rstrip(".")
+        distance_lock = _distance_lock(ep, beat)
+        if distance_lock:
+            lock = distance_lock
         if str(beat.get("id") or "") in GIN_STILL_IDS or _nongin_rib_ride(beat):
             # "Nobody walks" and "not a step" get drawn as a walk. Rib seats name their own hold.
             lock = lock.replace("A hip thrust is in place, not a step. ", "")
@@ -4532,6 +5905,9 @@ def camera_line(
             lock = lock.replace("No track, no pan, no scroll. ", "")
     else:
         lock = str(spec["lock"]).strip().rstrip(".")
+        distance_lock = _distance_lock(ep, beat)
+        if distance_lock:
+            lock = distance_lock
     # The exit doorway on a mid-episode walk reads as the mission end, so the next scene cannot continue.
     if not planted and not _is_final_footage_beat(ep, beat):
         lock = _strip_exit_doorway(lock)
@@ -5007,6 +6383,27 @@ def validate_episode(ep: dict[str, Any], *, root: Path | str | None = None) -> l
         combat_key = canonical_combat(combat)
         if combat_key not in COMBAT_MODES:
             errs.append(f"render.combat must be one of {list(COMBAT_MODES)}")
+    for flag, canon in (
+        ("missionlg", canonical_missionlg),
+        ("messyblow", canonical_messyblow),
+        ("closeup", canonical_closeup),
+    ):
+        raw_flag = str(render.get(flag) or "").strip()
+        if raw_flag and canon(raw_flag) not in ("off", "on"):
+            errs.append(f"render.{flag} must be off or on")
+    for flag, canon, registry in (
+        ("place", canonical_place, PLACE_MODES),
+        ("time", canonical_time, TIME_MODES),
+        ("weather", canonical_weather, WEATHER_MODES),
+        ("dirt", canonical_dirt, DIRT_MODES),
+        ("camera_distance", canonical_camera_distance, CAMERA_DISTANCE_MODES),
+        ("enemy_kind", canonical_enemy_kind, ENEMY_KIND_MODES),
+        ("aya_look", canonical_look, LOOK_MODES),
+        ("enemy_look", canonical_look, LOOK_MODES),
+    ):
+        raw_flag = str(render.get(flag) or "").strip()
+        if raw_flag and canon(raw_flag) not in registry:
+            errs.append(f"render.{flag} is unknown")
     story = str(render.get("story") or "").strip()
     if story:
         story_key = canonical_story(story)
@@ -5287,6 +6684,7 @@ def forbidden_hits(text: str, *, never: list[str] | None = None) -> list[str]:
 
 
 _LOOK_DROP_RE = re.compile(r"\b(?:no|never|not|without)\b", re.IGNORECASE)
+_LEADING_NEG_RE = re.compile(r"^(?:no|never|not|without)\b", re.IGNORECASE)
 _SHAFT_IN_LOOK_RE = re.compile(r"\b(?:shaft|penis|\d+\s*cm)\b", re.IGNORECASE)
 _SEX_ACT_RE = re.compile(
     r"pussy|anus|glans|joined at the base|white rope|white goo|lips (?:reach|meet|at) the base|inside the mouth",
@@ -5318,6 +6716,17 @@ def _positive_look(lock: str) -> str:
     for part in str(lock or "").split(","):
         piece = part.strip().rstrip(".")
         if not piece or _LOOK_DROP_RE.search(piece):
+            continue
+        kept.append(piece)
+    return ", ".join(kept)
+
+
+def _drop_leading_negations(lock: str) -> str:
+    """Drop clauses that start with a negation. A mixed clause keeps its positive count."""
+    kept: list[str] = []
+    for part in str(lock or "").split(","):
+        piece = part.strip().rstrip(".")
+        if not piece or _LEADING_NEG_RE.match(piece):
             continue
         kept.append(piece)
     return ", ".join(kept)
@@ -5402,6 +6811,9 @@ def _cast_block(ep: dict[str, Any], beat: dict[str, Any]) -> str:
         name = str(c.get("name_en") or cid.title())
         lock = _paint_horn_lock(str(beat_locks.get(cid) or c.get("lock") or ""), beat, str(cid))
         lock = _drop_tired(lock, beat).strip().rstrip(".")
+        if str(ep.get("slug") or "") == "hospital-exit-adult":
+            lock = lock.replace(" with no eyeballs", "").replace(" and no fifth finger", "")
+            lock = _drop_leading_negations(lock)
         lines.append(f"{name}: {lock}. Adult, {int(c.get('age') or 0)}.")
     return "\n".join(lines)
 
@@ -5471,6 +6883,43 @@ RIDE_CAMERA_HOLD = (
 
 PAIR_FRAME_HOLD = "Only two adults share this frame. Two faces."
 
+AYA_NEW_PLEASURE_FACE = (
+    "At the moment the shaft seats, Aya's face shows overwhelmed joy at a new pleasure. "
+    "Eyes half-closed, brows knit, cheeks flushed, mouth wide open. "
+    "A continuous string of saliva keeps dripping from the tongue."
+)
+
+
+def _aya_new_pleasure_seat(ep: dict[str, Any], beat: dict[str, Any]) -> bool:
+    """First pussy seating. Aya receiving, or Gin taking Aya's shaft. Peaks stay as written."""
+    if str(ep.get("slug") or "") != "hospital-exit-adult":
+        return False
+    low = str(beat.get("action") or "").lower()
+    if "overwhelmed joy at a new pleasure" in low:
+        return False
+    if "hold still joined at the base" not in low:
+        return False
+    if "already joined" in low or "already buried" in low or "each inward" in low:
+        return False
+    seat = (
+        "travels into the pussy" in low
+        or "travels into gin's pussy" in low
+        or "travels into aya's pussy" in low
+        or "travels into the hairless pussy" in low
+    )
+    if not seat:
+        return False
+    cast = {str(c) for c in (beat.get("cast") or [])}
+    blob = low + " " + " ".join(sorted(cast))
+    if "aya" not in blob:
+        return False
+    if "gin" in blob and ("gin's pussy" in low or "into gin" in low or "grown" in low):
+        return True
+    named_other = ("miki's pussy", "rei's pussy", "kana's pussy", "shino's pussy", "tsuno's pussy")
+    if any(part in low for part in named_other):
+        return False
+    return "travels into the pussy" in low or "travels into the hairless pussy" in low
+
 
 def _hospital_face_pair(beat: dict[str, Any]) -> bool:
     """Non-gin oral, facial, and kiss use a face frame instead of feet for the whole take.
@@ -5479,6 +6928,8 @@ def _hospital_face_pair(beat: dict[str, Any]) -> bool:
     in front of the woman who is already standing between the knees.
     """
     bid = str(beat.get("id") or "")
+    if beat.get("facial"):
+        return True
     if bid == "04-tsuno-kiss":
         return False
     if "gin" in bid:
@@ -5494,6 +6945,8 @@ def _hospital_prompt_holds(ep: dict[str, Any], beat: dict[str, Any]) -> list[str
     """Face-safe oral and kiss cameras, side-on rides, and a two-person lock on planted sex."""
     if str(ep.get("slug") or "") != "hospital-exit-adult":
         return []
+    if beat.get("facial"):
+        return [FACIAL_CAMERA_LOCK]
     keys = {key for key, _strength in extra_lora_entries(beat)}
     holds: list[str] = []
     bid = str(beat.get("id") or "")
@@ -5513,7 +6966,7 @@ def _hospital_prompt_holds(ep: dict[str, Any], beat: dict[str, Any]) -> list[str
         holds.append(FACE_PAIR_HOLD)
         if re.search(r"travels into|before the shaft enters", blob, re.I):
             holds.append(BEFORE_ACT_FULLBODY)
-    elif gin and _KISS_FRAME_RE.search(blob):
+    elif gin and bid != "04-gin-lick" and _KISS_FRAME_RE.search(blob):
         holds.append(KISS_FRAME_HOLD)
     cast = [str(c) for c in (beat.get("cast") or [])]
     sex = bool(keys & {"blowjob", "sideride", "thrust", "mystic", "futatf"}) or bool(
@@ -5522,6 +6975,155 @@ def _hospital_prompt_holds(ep: dict[str, Any], beat: dict[str, Any]) -> list[str
     if beat_loco(beat) == "planted" and len(cast) == 2 and sex and "sideride" not in keys and bid != "04-tsuno-kiss":
         holds.append(PAIR_FRAME_HOLD)
     return holds
+
+
+def _hospital_i2v_camera(beat: dict[str, Any], cam: str) -> str:
+    """Chain camera keeps the authored shot, except the hug and the Jack-O turn."""
+    bid = str(beat.get("id") or "")
+    if bid == "04-gin-lick":
+        return (
+            "The camera stays at the opening distance. "
+            "Gin hugs Aya from behind, they turn face to face for the kiss, "
+            "then Aya returns to the sitting pose, all inside this same picture. "
+            "The place, the light, and the rendering stay the opening frame. The picture stays sharp."
+        )
+    if bid.endswith("-jo-set"):
+        return (
+            "The camera stays at the opening wide distance. "
+            "Both adults stay full body, both heads and all four feet inside the frame. "
+            "The body turns inside that frame. The camera sits at the head."
+        )
+    return cam
+
+
+def _hospital_i2v_lines(beat: dict[str, Any]) -> list[str]:
+    """Opening-frame motion for chain. Empty when this beat has no chain note."""
+    bid = str(beat.get("id") or "")
+    low = str(beat.get("action") or "").lower()
+    lines = ["This I2V clip starts on the opening frame."]
+    if bid.endswith("-in") and "forward and back in short presses" in low:
+        lines.append(
+            "The shaft travels inward until the root meets the buttocks. "
+            "The whole shaft is hidden inside the anus. The groin stays flush with the buttocks. "
+            "After the shaft reaches the base, the hips move forward and back in short presses until the last frame. "
+            "Each forward press keeps the root flush with the buttocks. The glans stays inside the anus."
+        )
+        if "between the open thighs" in low or "knees stay planted" in low:
+            lines.append(
+                "Aya's chest and cheek stay down. Both of Aya's knees stay on the ground. "
+                "The shaft adult stays kneeling behind Aya. Both stay on this same ground spot."
+            )
+    elif bid.endswith("-in") and "hold still joined at the base" in low and "inside the anus" in low:
+        lines.append(
+            "The whole shaft is hidden inside the anus. The groin stays flush with the buttocks. "
+            "The root stays flush with the buttocks until the last frame. The glans stays inside the anus."
+        )
+        if "between the calves" in low or "heels lifted" in low:
+            lines.append(
+                "Aya stays bent forward. Her heels stay lifted. Both feet stay on the ground. "
+                "The shaft adult stays standing behind Aya."
+            )
+    if bid.endswith("-peak") and ("inside the anus" in low or "in the anus" in low) and "forward and back" in low:
+        lines.append(
+            "The root stays flush with the buttocks. The whole shaft stays hidden inside the anus. "
+            "The hips move forward and back in short presses. "
+            "Each forward press keeps the root flush with the buttocks. The glans stays inside the anus. "
+            "White goo overflows from the join."
+        )
+        if "knees stay planted" in low or "between the open thighs" in low:
+            lines.append(
+                "Aya's chest and cheek stay down. Both of Aya's knees stay on the ground. "
+                "The shaft adult stays kneeling behind Aya. Both stay on this same ground spot."
+            )
+        elif "heels lifted" in low or "between the calves" in low:
+            lines.append(
+                "Aya stays bent forward. Her heels stay lifted. Both feet stay on the ground. "
+                "The shaft adult stays standing behind Aya."
+            )
+    if bid.endswith("-press") and ("between the open thighs" in low or "between the calves" in low):
+        lines.append(
+            "Aya's pose stays the pose in the opening frame. "
+            "The shaft adult's torso turns a little toward the right from the left side "
+            "until the body angle matches Aya. "
+            "The shaft adult's feet and soles point the same way as Aya's feet and soles. "
+            "The shaft adult's face looks down at Aya's back."
+        )
+        if "between the open thighs" in low:
+            lines.append(
+                "Aya's chest and cheek stay down. Both of Aya's knees stay on the ground. "
+                "The glans stays pressed on the closed anus. The shaft stays outside."
+            )
+        elif "between the calves" in low:
+            lines.append(
+                "Aya stays bent forward. Her heels stay lifted. Both feet stay on the ground. "
+                "The glans stays pressed on the closed anus. The shaft stays outside."
+            )
+    if bid.endswith("-jo-anal") and "inside the anus" in low:
+        lines.append(
+            "The whole shaft is hidden inside the anus. The root stays flush with the buttocks. "
+            "The glans stays inside the anus. The head stays on the floor. The hips stay high."
+        )
+    if "moves the hips back once" in low and "hips stay back" in low:
+        lines.append(
+            "Once the glans clears the rim, both pelvises stay on that back mark. "
+            "The hips stay back until the last frame. The shaft stays outside."
+        )
+    if bid == "04-toilet-afast":
+        lines.append(
+            "She climaxes, then the right index finger slides out of the anus. "
+            "The anus stays a wide open ring. Thick brown feces clings to the fingertip. "
+            "A small smear of thick brown feces clings to the skin around that open ring. "
+            "The place and the rendering stay the opening frame."
+        )
+    if bid == "04-toilet-afpull":
+        lines.append(
+            "She climaxes, then the hand slides out of the anus closed around a mass of thick brown feces. "
+            "The whole hand is coated thick with brown feces. The anus stays a wide open ring. "
+            "The place and the rendering stay the opening frame."
+        )
+    if bid == "04-toilet-afsmear":
+        lines.append(
+            "She smiles and wipes the feces-coated hand across her chest, her breasts, and her belly. "
+            "Thick brown feces stays smeared on the chest and the belly. The hand stays coated."
+        )
+    if bid == "04-toilet-out" and "licks the thick brown feces off that hand" in low:
+        lines.append(
+            "The feces-coated hand goes to the open mouth. "
+            "She licks the thick brown feces off that hand until the hand is clean. "
+            "Then she straightens and walks for the rest of the clip."
+        )
+    if bid == "04-toilet-out" and "licks that fingertip" in low:
+        lines.append(
+            "The fingertip with thick brown feces goes into the open mouth. "
+            "She licks that fingertip clean. Then she straightens and walks for the rest of the clip."
+        )
+    if bid == "04-gin-lick":
+        lines.append(
+            "The hug, the kiss, and Aya's return to the sitting pose stay inside this same picture. "
+            "The camera distance stays the opening distance. "
+            "The place, the light, and the rendering stay the opening frame. The picture stays sharp."
+        )
+    if bid == "04-gin-spitkiss":
+        lines.append(
+            "The camera moves back until Aya's left foot and Aya's right foot are inside the frame, toes visible. "
+            "Both of Aya's feet stay inside the frame. "
+            "The place, the light, and the rendering stay the opening frame. The picture stays sharp."
+        )
+    if bid.endswith("-jo-set"):
+        lines.append(
+            "The opening frame is the standing side view, with the receiver facing RIGHT. "
+            "The body turns ninety degrees toward the LEFT in one continuous move. "
+            "The legs open a little, then the head lowers onto the floor and the pose holds until the last frame. "
+            "The camera sits at the head."
+        )
+    if bid == "10-shino" or (bid.endswith("-spot") and "shino" in bid):
+        lines.append(
+            "Aya and Shino face each other. Their eyes meet. "
+            "Shino stays stooping. Shino's side faces the camera. The doorway stays behind Shino."
+        )
+    if len(lines) == 1:
+        return []
+    return lines
 
 
 def build_beat_prompt(
@@ -5589,6 +7191,14 @@ def build_beat_prompt(
             or _nongin_rib_ride(beat)
         )
     )
+    pair_ids = [str(c) for c in (beat.get("cast") or [])]
+    fade_ids = {str(c) for c in (beat.get("fade_cast") or [])}
+    staying = [c for c in pair_ids if c not in fade_ids]
+    hospital_pair = (
+        str(ep.get("slug") or "") == "hospital-exit-adult"
+        and len(staying) == 2
+        and "dog" not in pair_ids
+    )
     if dog_spot:
         desc.append(DOG_SPOT_CONTINUITY)
     elif bid_prompt == "04-tsuno-kiss":
@@ -5597,11 +7207,12 @@ def build_beat_prompt(
             "One continuous take. Aya and Tsuno stay the same two adults in this one place "
             "from the first frame to the last. The standing woman is the same Aya."
         )
+    elif ride_pair:
+        desc.append(RIDE_CONTINUITY)
+    elif hospital_pair:
+        desc.append(HOSPITAL_PAIR_CONTINUITY)
     else:
-        desc.append(RIDE_CONTINUITY if ride_pair else CONTINUITY_CLAUSE)
-    pair_ids = [str(c) for c in (beat.get("cast") or [])]
-    fade_ids = {str(c) for c in (beat.get("fade_cast") or [])}
-    staying = [c for c in pair_ids if c not in fade_ids]
+        desc.append(CONTINUITY_CLAUSE)
     if str(ep.get("slug") or "") == "hospital-exit-adult" and "dog" in pair_ids:
         desc.append("The second body is the quadruped on four paws, black short hide, tan muzzle.")
     elif str(ep.get("slug") or "") == "hospital-exit-adult" and len(staying) == 2:
@@ -5610,69 +7221,99 @@ def build_beat_prompt(
     if episode_tone(ep) == "mundane":
         desc.append(MUNDANE_CLAUSE)
     elif loco == "planted":
-        desc.append(GAME_THIRD_PERSON_CLAUSE)
         action_txt = str(beat.get("action") or "")
         bid_now = str(beat.get("id") or "")
-        if bid_now == "04-gin-jupo":
-            desc.append(GIN_ORAL_PACE_CLAUSE)
-        elif bid_now == "04-gin-mouth":
-            desc.append(GIN_MOUTH_PACE_CLAUSE)
-        elif bid_now == "04-gin-spitkiss":
-            desc.append(GIN_SPIT_PACE_CLAUSE)
-        elif bid_now == "04-gin-wait":
-            desc.append(
-                GIN_COLUMN_WAIT_PACE_CLAUSE if _column_rib_action(action_txt) else RIB_WAIT_PACE_CLAUSE
-            )
-        elif bid_now in RIB_WAIT_IDS or bid_now == "04-tsuno-wait":
-            if _column_rib_action(action_txt):
-                desc.append(KISS_WAIT_PACE_CLAUSE)
-            elif "both knees stay bent" in action_txt.lower() and "soles plant" in action_txt.lower():
-                desc.append(RIB_WAIT_PACE_CLAUSE)
+        if beat.get("facial"):
+            desc.append(FACIAL_PACE_CLAUSE)
+        else:
+            # The full-nelson card is a low POV looking down. A feet-wide gameplay camera fights it.
+            if "fullnelson" not in {key for key, _strength in extra_lora_entries(beat)}:
+                desc.append(GAME_THIRD_PERSON_CLAUSE)
+            if bid_now == "04-gin-lick" and "hugs aya" in action_txt.lower():
+                desc.append(GIN_LICK_PACE_CLAUSE)
+            elif "lowers her chest and cheek" in action_txt.lower():
+                desc.append(LOWER_TO_FLOOR_CLAUSE)
+            elif "turns to the grey wall in one continuous move" in action_txt.lower():
+                desc.append(WALL_SET_CLAUSE)
+            elif (
+                "moves the hips back once" in action_txt.lower()
+                and "hips stay back" in action_txt.lower()
+            ):
+                desc.append(HIPS_BACK_ONCE_CLAUSE)
+            elif "turns her body ninety degrees" in action_txt.lower():
+                desc.append(JO_SET_CLAUSE)
+            elif (
+                "moves the hips up once" in action_txt.lower()
+                and "hips stay up" in action_txt.lower()
+            ):
+                desc.append(HIPS_UP_ONCE_CLAUSE)
+            elif (
+                "far long edge of the soil bed" in action_txt.lower()
+                and "lowers her hip onto the soil bed" in action_txt.lower()
+            ):
+                desc.append(SIDE_LIE_JOIN_CLAUSE)
+            elif bid_now == "04-tsuno-beckon" and "far long edge of the soil bed" in action_txt.lower():
+                desc.append(SIDE_LIE_SETTLE_CLAUSE)
+            elif bid_now == "04-gin-jupo":
+                desc.append(GIN_ORAL_PACE_CLAUSE)
+            elif bid_now == "04-gin-mouth":
+                desc.append(GIN_MOUTH_PACE_CLAUSE)
+            elif bid_now == "04-gin-spitkiss":
+                desc.append(GIN_SPIT_PACE_CLAUSE)
+            elif bid_now == "04-gin-wait":
+                desc.append(
+                    GIN_COLUMN_WAIT_PACE_CLAUSE if _column_rib_action(action_txt) else RIB_WAIT_PACE_CLAUSE
+                )
+            elif bid_now in RIB_WAIT_IDS or bid_now == "04-tsuno-wait":
+                if _column_rib_action(action_txt):
+                    desc.append(KISS_WAIT_PACE_CLAUSE)
+                elif "both knees stay bent" in action_txt.lower() and "soles plant" in action_txt.lower():
+                    desc.append(RIB_WAIT_PACE_CLAUSE)
+                else:
+                    desc.append(PLANTED_PACE_CLAUSE)
+                    desc.append(PLANTED_CLAUSE)
+            elif bid_now == "04-gin-ride":
+                desc.append(
+                    GIN_COLUMN_RIDE_PACE_CLAUSE if _column_rib_action(action_txt) else GIN_RIDE_PACE_CLAUSE
+                )
+            elif bid_now == "04-gin-peak":
+                desc.append(GIN_PEAK_PACE_CLAUSE)
+            elif str(bid_now).endswith("-ride") and _nongin_rib_ride(beat):
+                desc.append(KISS_RIDE_PACE_CLAUSE if _column_rib_action(action_txt) else RIB_RIDE_PACE_CLAUSE)
+            elif _nongin_rib_ride(beat):
+                desc.append(RIB_RIDE_PACE_CLAUSE)
+            elif NELSON_HOLD_RE.search(action_txt):
+                desc.append(NELSON_PACE_CLAUSE)
+                desc.append(NELSON_PLANTED_CLAUSE)
+            elif PEE_STILL_RE.search(action_txt):
+                desc.append(PEE_STILL_CLAUSE)
+            elif SIT_LAP_RE.search(action_txt) and SIT_LAP_MOVE_RE.search(action_txt):
+                desc.append(SIT_LAP_MOVE_CLAUSE)
+            elif SIT_LAP_RE.search(action_txt):
+                desc.append(SIT_LAP_CLAUSE)
+            elif SLIDE_FEET_RE.search(action_txt) and SUPINE_BEFORE_RE.search(action_txt):
+                desc.append(SUPINE_PACE_CLAUSE)
+                desc.append(SLIDE_PACE_CLAUSE)
+                desc.append(SUPINE_PLANTED_CLAUSE)
+                desc.append(RIDE_PAIR_CLAUSE)
+                if RIDE_FOLD_RE.search(action_txt) and not _skip_ride_fold(beat):
+                    desc.append(RIDE_FOLD_CLAUSE)
+            elif SLIDE_FEET_RE.search(action_txt):
+                desc.append(SLIDE_PACE_CLAUSE)
+                desc.append(SLIDE_PLANTED_CLAUSE)
+            elif SUPINE_BEFORE_RE.search(action_txt):
+                desc.append(SUPINE_PACE_CLAUSE)
+                desc.append(SUPINE_PLANTED_CLAUSE)
+                desc.append(RIDE_PAIR_CLAUSE)
+            elif RIDE_PEAK_RE.search(action_txt):
+                desc.append(RIDE_PEAK_CLAUSE)
+            elif TOILET_STALL_RE.search(action_txt):
+                desc.append(TOILET_STALL_CLAUSE)
+            elif CARRY_LIFT_RE.search(action_txt):
+                desc.append(CARRY_LIFT_PACE_CLAUSE)
             else:
                 desc.append(PLANTED_PACE_CLAUSE)
                 desc.append(PLANTED_CLAUSE)
-        elif bid_now == "04-gin-ride":
-            desc.append(
-                GIN_COLUMN_RIDE_PACE_CLAUSE if _column_rib_action(action_txt) else GIN_RIDE_PACE_CLAUSE
-            )
-        elif bid_now == "04-gin-peak":
-            desc.append(GIN_PEAK_PACE_CLAUSE)
-        elif str(bid_now).endswith("-ride") and _nongin_rib_ride(beat):
-            desc.append(KISS_RIDE_PACE_CLAUSE if _column_rib_action(action_txt) else RIB_RIDE_PACE_CLAUSE)
-        elif _nongin_rib_ride(beat):
-            desc.append(RIB_RIDE_PACE_CLAUSE)
-        elif NELSON_HOLD_RE.search(action_txt):
-            desc.append(NELSON_PACE_CLAUSE)
-            desc.append(NELSON_PLANTED_CLAUSE)
-        elif PEE_STILL_RE.search(action_txt):
-            desc.append(PEE_STILL_CLAUSE)
-        elif SIT_LAP_RE.search(action_txt) and SIT_LAP_MOVE_RE.search(action_txt):
-            desc.append(SIT_LAP_MOVE_CLAUSE)
-        elif SIT_LAP_RE.search(action_txt):
-            desc.append(SIT_LAP_CLAUSE)
-        elif SLIDE_FEET_RE.search(action_txt) and SUPINE_BEFORE_RE.search(action_txt):
-            desc.append(SUPINE_PACE_CLAUSE)
-            desc.append(SLIDE_PACE_CLAUSE)
-            desc.append(SUPINE_PLANTED_CLAUSE)
-            desc.append(RIDE_PAIR_CLAUSE)
-            if RIDE_FOLD_RE.search(action_txt) and not _skip_ride_fold(beat):
-                desc.append(RIDE_FOLD_CLAUSE)
-        elif SLIDE_FEET_RE.search(action_txt):
-            desc.append(SLIDE_PACE_CLAUSE)
-            desc.append(SLIDE_PLANTED_CLAUSE)
-        elif SUPINE_BEFORE_RE.search(action_txt):
-            desc.append(SUPINE_PACE_CLAUSE)
-            desc.append(SUPINE_PLANTED_CLAUSE)
-            desc.append(RIDE_PAIR_CLAUSE)
-        elif RIDE_PEAK_RE.search(action_txt):
-            desc.append(RIDE_PEAK_CLAUSE)
-        elif TOILET_STALL_RE.search(action_txt):
-            desc.append(TOILET_STALL_CLAUSE)
-        elif CARRY_LIFT_RE.search(action_txt):
-            desc.append(CARRY_LIFT_PACE_CLAUSE)
-        else:
-            desc.append(PLANTED_PACE_CLAUSE)
-            desc.append(PLANTED_CLAUSE)
     else:
         desc.append(GAME_THIRD_PERSON_CLAUSE)
         action_txt = str(beat.get("action") or "")
@@ -5696,7 +7337,20 @@ def build_beat_prompt(
             cam or "",
             sideride="sideride" in {key for key, _strength in extra_lora_entries(beat)},
             face_pair=_hospital_face_pair(beat),
+            authored_medium=(
+                str(beat.get("id") or "")
+                in (
+                    "04-toilet-afin",
+                    "04-toilet-afast",
+                    "04-toilet-afist",
+                    "04-toilet-afpull",
+                    "04-toilet-afsmear",
+                )
+                or "fullnelson" in {key for key, _strength in extra_lora_entries(beat)}
+            ),
         )
+        if source == "chain":
+            cam = _hospital_i2v_camera(beat, cam or "")
     if cam and str(beat.get("id") or "") == "04-dog-spot":
         cam = _strip_dog_spot_entry(cam)
     if cam:
@@ -5706,11 +7360,28 @@ def build_beat_prompt(
     action_line = str(beat.get("action") or "").strip().rstrip(".")
     if str(beat.get("id") or "") == "04-dog-spot":
         action_line = _strip_dog_spot_entry(action_line).rstrip(".")
-    desc.append(action_line + ".")
+    same_take = ""
+    if (
+        str(ep.get("slug") or "") == "hospital-exit-adult"
+        and str(beat.get("id") or "") in ("04-gin-lick", "09-kana-kiss", "09-kana-facial")
+        and "one continuous take" not in action_line.lower()
+    ):
+        same_take = _SAME_TAKE
+    desc.append(action_line + "." + same_take)
+    if source == "chain" and str(ep.get("slug") or "") == "hospital-exit-adult":
+        if str(beat.get("id") or "") == "04-gin-lick":
+            desc[-1] = desc[-1].replace(
+                "The camera moves inside this shot. ",
+                "The camera distance stays the opening distance. ",
+            )
+        for i2v_line in _hospital_i2v_lines(beat):
+            desc.append(i2v_line)
+    if _aya_new_pleasure_seat(ep, beat):
+        desc.append(AYA_NEW_PLEASURE_FACE)
     hold = _look_hold(ep, beat)
     if hold:
         desc.append(hold)
-    if keys:
+    if keys and surface_is_ward(ep):
         desc.append("Props in this shot stay locked: " + "; ".join(f"{k} = {str(props[k]).rstrip('.')}" for k in keys) + ".")
     if str(ep.get("violence") or "none") == "game" and beat.get("physics", False):
         desc.append(VIOLENCE_CLAUSE)
@@ -5746,6 +7417,14 @@ def build_beat_prompt(
         text = _strip_rib_legacy(text, peak=str(beat.get("id") or "").endswith("-peak"))
         if str(beat.get("id") or "").startswith("03-kiss"):
             text = text.replace("22cm", "24cm")
+    text = apply_prompt_surface(ep, text)
+    if (
+        beat.get("facial")
+        and str(ep.get("slug") or "") == "hospital-exit-adult"
+        and not surface_is_ward(ep)
+    ):
+        text = text.replace("The same door stays behind Aya. ", "")
+        text = text.replace("The same door stays behind Aya", "")
     return text
 
 
@@ -5816,9 +7495,14 @@ _LORA_TRIGGER_TOKENS = (
     ("spoonlg", "SPOONLG."),
     ("jpnmoans", "jpnMoans"),
     ("blowjob", "bl0w_j0b"),
+    ("messyblow", "ME$$Y."),
+    ("missionlg", "MISSIONLG"),
     ("cunny", "performing cunnilingus"),
     ("thumbinbutt", "thum1n8utt"),
     ("solodildo", DILDO_TRIGGER),
+    ("analfinger", "anal_finger"),
+    ("analfist", "4n4lfi5tin6"),
+    ("fullnelson", FULLNELSON_TRIGGER),
     ("cumfacial", "cmst"),
     ("anuspussy", "zxqanus"),
     ("anuspussy", "zxqvagina"),
@@ -6147,6 +7831,7 @@ def ensure_episode_loras(ep: dict[str, Any], loras_dir: Path | str) -> list[str]
             continue
         print("fetch LoRA", fname)
         if fetch_text(url, dest, min_bytes=1_000_000):
+            _write_lora_url(dest, url)
             notes.append(f"fetched {fname}")
         else:
             if dest.is_file():
@@ -6182,9 +7867,10 @@ def resolve_unet(
 
 
 def ensure_episode_checkpoint(ep: dict[str, Any], models_root: Path | str) -> list[str]:
-    """Use a Drive copy of 10Eros_Max if one exists; otherwise fetch into models/erotic/.
+    """Use the current Eros Max file when it is already on Drive. Otherwise fetch it.
 
-    Never download it for a stock episode. Incomplete copies stay as `*.part`.
+    An older alias, including beta5, does not count. H3_EROS_MAX still pins one file.
+    Never download an erotic checkpoint for a stock episode. Incomplete copies stay as `*.part`.
     """
     notes: list[str] = []
     key = episode_checkpoint(ep)
@@ -6196,9 +7882,21 @@ def ensure_episode_checkpoint(ep: dict[str, Any], models_root: Path | str) -> li
     dest = erotic_checkpoint_path(models_root, spec)
     min_bytes = int(spec.get("min_bytes") or 1_000_000)
     expected = int(spec.get("expected_bytes") or 0)
+    want = str(spec.get("file") or "")
     found = locate_erotic_checkpoint(models_root, spec)
-    if found is not None:
-        print("reuse Drive Eros Max", found, found.stat().st_size, "no HuggingFace fetch")
+    explicit = (os.environ.get("H3_EROS_MAX") or "").strip()
+    pinned = False
+    if key == "eros-max" and explicit and found is not None:
+        try:
+            pinned = found.resolve() == Path(explicit).resolve()
+        except OSError:
+            pinned = found == Path(explicit)
+    if (
+        found is not None
+        and _checkpoint_ready(found, min_bytes)
+        and (found.name == want or pinned)
+    ):
+        print("reuse Drive Eros Max", found, found.stat().st_size, "no new fetch")
         notes.append(f"reused Drive copy {found}")
         return notes
     if _checkpoint_ready(dest, min_bytes):
@@ -6220,7 +7918,8 @@ def ensure_episode_checkpoint(ep: dict[str, Any], models_root: Path | str) -> li
     need = expected or min_bytes
     raise EpisodeError(
         f"fetch incomplete {spec['file']}: {have} / {need} bytes kept on Drive. "
-        "stock fallback is forbidden. Run all again (same A100); it continues the .part"
+        "stock fallback is forbidden. The .part stays. "
+        "Restart the runtime so this engine loads, then Run all. It continues the .part."
     )
 
 
@@ -6391,6 +8090,89 @@ def _civitai_token() -> str:
         return ""
 
 
+# Drive names this key used before the current file. The update cell fetches the
+# current name when one of these is already on Drive. The old file stays.
+_LORA_REPLACED_FILES: dict[str, tuple[str, ...]] = {
+    "anuspussy": ("anus_pussy_v2.safetensors",),
+    "solodildo": ("h3_base_dildo_v1.0_9250.safetensors",),
+    "kiss": ("cxy_kiss_lora_h3_v01_step1750.safetensors",),
+    "cumfacial": ("face_cum_000001000.safetensors",),
+}
+
+
+def _lora_url_record(dest: Path) -> Path:
+    return dest.with_name(dest.name + ".url")
+
+
+def _recorded_lora_url(dest: Path) -> str:
+    rec = _lora_url_record(dest)
+    if not rec.is_file():
+        return ""
+    try:
+        return rec.read_text(encoding="utf-8").strip()
+    except OSError:
+        return ""
+
+
+def _write_lora_url(dest: Path, url: str) -> None:
+    _lora_url_record(dest).write_text(str(url).strip() + "\n", encoding="utf-8")
+
+
+def _lora_weight_current(dest: Path, url: str) -> bool:
+    if not dest.is_file() or dest.stat().st_size <= 1_000_000:
+        return False
+    if not _lora_file_loadable(dest):
+        return False
+    return _recorded_lora_url(dest) == str(url).strip()
+
+
+def refresh_downloaded_loras(loras_dir: Path | str) -> list[str]:
+    """Re-fetch LoRAs already on Drive when the registered URL is not the saved one.
+
+    ensure_episode_loras leaves a file over 1MB in place. This pass replaces that
+    file. The download goes to a sibling ``.refresh`` and the previous file stays
+    if the fetch fails. A registered file that is not on Drive is left absent,
+    unless an older filename for that same key is already there. Page URLs are
+    skipped. No GPU and no Comfy.
+    """
+    root = Path(loras_dir)
+    root.mkdir(parents=True, exist_ok=True)
+    notes: list[str] = []
+    for key, fname in LORA_FILES.items():
+        url = str(LORA_URLS.get(key) or "").strip()
+        if not fname or not url:
+            continue
+        if not _lora_download_url(url):
+            notes.append(f"skip page {fname}")
+            continue
+        dest = root / fname
+        retired = any((root / old).is_file() for old in _LORA_REPLACED_FILES.get(key, ()))
+        if not dest.is_file() and not retired:
+            notes.append(f"skip absent {fname}")
+            continue
+        if _lora_weight_current(dest, url):
+            notes.append(f"skip current {fname}")
+            continue
+        had = dest.is_file()
+        tmp = dest.with_name(dest.name + ".refresh")
+        if tmp.is_file():
+            tmp.unlink()
+        print("refresh LoRA", fname)
+        if fetch_text(url, tmp, min_bytes=1_000_000) and _lora_weight_current_bytes(tmp):
+            tmp.replace(dest)
+            _write_lora_url(dest, url)
+            notes.append(f"replaced {fname}" if had else f"fetched {fname}")
+        else:
+            if tmp.is_file():
+                tmp.unlink()
+            notes.append(f"refresh failed {fname}" if had else f"fetch failed {fname}")
+    return notes
+
+
+def _lora_weight_current_bytes(path: Path) -> bool:
+    return path.is_file() and path.stat().st_size > 1_000_000 and _lora_file_loadable(path)
+
+
 def _lora_file_loadable(path: Path) -> bool:
     """A real weight. A saved model page starts with HTML or JSON and must not enter Comfy."""
     if not path.is_file() or path.stat().st_size <= 0:
@@ -6436,6 +8218,26 @@ class _NoRedirect(urllib.request.HTTPRedirectHandler):
 _DOWNLOAD_OPENER = urllib.request.build_opener(_NoRedirect)
 
 
+def _civitai_headers(token: str = "") -> dict[str, str]:
+    """Bearer for a civitai.com hop. Empty when this process has no token."""
+    headers = {"User-Agent": "h3-episode"}
+    tok = (token or _civitai_token()).strip()
+    if tok:
+        headers["Authorization"] = f"Bearer {tok}"
+    return headers
+
+
+def _next_civitai_location(current: str, exc: urllib.error.HTTPError) -> str:
+    loc = exc.headers.get("Location") or exc.headers.get("location")
+    try:
+        exc.read()
+    finally:
+        exc.close()
+    if not loc:
+        raise exc
+    return _quote_http_url(urllib.parse.urljoin(current, loc))
+
+
 def _open_civitai(url: str, headers: dict[str, str], *, timeout: int = 120):
     """Follow Civitai redirects. Drop Authorization off civitai.com.
 
@@ -6453,16 +8255,40 @@ def _open_civitai(url: str, headers: dict[str, str], *, timeout: int = 120):
             last_exc = exc
             if exc.code not in {301, 302, 303, 307, 308}:
                 raise
-            loc = exc.headers.get("Location") or exc.headers.get("location")
-            try:
-                exc.read()
-            finally:
-                exc.close()
-            if not loc:
-                raise
-            current = _quote_http_url(urllib.parse.urljoin(current, loc))
+            current = _next_civitai_location(current, exc)
             if not _civitai_host(urllib.parse.urlsplit(current).netloc):
                 hdrs.pop("Authorization", None)
+    if last_exc is not None:
+        raise last_exc
+    raise RuntimeError("download redirect failed")
+
+
+def _resolve_civitai_download_url(url: str, *, token: str = "", timeout: int = 60) -> str:
+    """Return the signed weight URL. Do not download the body.
+
+    Bearer is sent only while the hop stays on civitai.com. The returned URL is
+    the first Location on another host. wget and curl resume that URL with no
+    Authorization header. A signed URL expires, so each resume pass resolves again.
+    """
+    current = _quote_http_url(url)
+    headers = _civitai_headers(token)
+    last_exc: urllib.error.HTTPError | None = None
+    for _ in range(8):
+        req = urllib.request.Request(current, headers=headers)
+        try:
+            resp = _DOWNLOAD_OPENER.open(req, timeout=timeout)
+        except urllib.error.HTTPError as exc:
+            last_exc = exc
+            if exc.code not in {301, 302, 303, 307, 308}:
+                raise
+            nxt = _next_civitai_location(current, exc)
+            if not _civitai_host(urllib.parse.urlsplit(nxt).netloc):
+                return nxt
+            current = nxt
+            continue
+        else:
+            resp.close()
+            raise OSError("civitai download has no signed url")
     if last_exc is not None:
         raise last_exc
     raise RuntimeError("download redirect failed")
@@ -6496,18 +8322,31 @@ def fetch_text(url: str, dest: Path, *, min_bytes: int = 100, token: str = "", a
         return ok
     except Exception as e:  # network
         print("fetch fail", url, e)
+        if isinstance(e, urllib.error.HTTPError) and e.code == 403 and "civitai.com" in str(url).lower():
+            print(
+                "fetch refused",
+                dest.name,
+                "Civitai 403. The published file id stays. Paid access on that model refuses this account.",
+            )
         if dest.is_file() and not _download_head_ok(dest, allow_json=allow_json):
             dest.unlink()
         return False
 
 
 def _resume_download_once(url: str, part: Path) -> None:
-    """One pass with wget/curl Range resume. Partial file is kept on failure."""
+    """One pass with wget/curl Range resume. Partial file is kept on failure.
+
+    A civitai.com URL is resolved first. The API token stays on that hop.
+    wget and curl receive the signed URL and no Authorization header.
+    """
     part.parent.mkdir(parents=True, exist_ok=True)
+    fetch_url = url
+    if _civitai_host(urllib.parse.urlsplit(str(url)).netloc):
+        fetch_url = _resolve_civitai_download_url(url)
     wget = shutil.which("wget")
     if wget:
         r = subprocess.run(
-            [wget, "-c", "--tries=3", "--timeout=60", "-O", str(part), url],
+            [wget, "-c", "--tries=3", "--timeout=60", "-O", str(part), fetch_url],
             check=False,
         )
         if r.returncode == 0:
@@ -6516,7 +8355,7 @@ def _resume_download_once(url: str, part: Path) -> None:
     curl = shutil.which("curl")
     if curl:
         r = subprocess.run(
-            ["curl", "-fL", "-C", "-", "--retry", "3", "-o", str(part), url],
+            ["curl", "-fL", "-C", "-", "--retry", "3", "-o", str(part), fetch_url],
             check=False,
         )
         if r.returncode == 0:
@@ -6524,7 +8363,7 @@ def _resume_download_once(url: str, part: Path) -> None:
         raise OSError(f"curl exit {r.returncode}")
     existing = part.stat().st_size if part.is_file() else 0
     req = urllib.request.Request(
-        url,
+        fetch_url,
         headers={"User-Agent": "h3-episode", "Range": f"bytes={existing}-"},
     )
     with urllib.request.urlopen(req, timeout=120) as resp:
@@ -6662,7 +8501,11 @@ def resolve_preset(name: str, loras_dir: Path | str | None, *, fallback: str = "
 
 
 def apply_unet_preset_rules(preset: dict[str, Any], unet: str) -> dict[str, Any]:
-    """TURBO-hybrid already has turbo baked in. LoRA patches requantize INT8 and OOM A100 40GB."""
+    """TURBO-hybrid already has turbo baked in. LoRA patches requantize INT8 and OOM A100 40GB.
+
+    The 4-step turbo LoRA cannot stack on this UNet. Four steps without it melts the body,
+    so a speed plan rises to the baked-in euler 8. An authored beat.steps still wins later.
+    """
     if not is_turbo_hybrid_unet(unet):
         return preset
     skip_needles = ("fl2v_turbo", "turbo_v4")
@@ -6674,12 +8517,17 @@ def apply_unet_preset_rules(preset: dict[str, Any], unet: str) -> dict[str, Any]
             dropped.append(str(fname))
             continue
         kept.append((fname, float(strength)))
-    if not dropped:
+    steps = int(preset.get("steps") or 0)
+    if not dropped and steps >= 8:
         return preset
     out = dict(preset)
     out["stack"] = kept
     notes = list(preset.get("notes") or [])
-    notes.append("LoRA skipped on TURBO-hybrid UNet (VRAM; turbo is baked in): " + ", ".join(dropped))
+    if dropped:
+        notes.append("LoRA skipped on TURBO-hybrid UNet (VRAM; turbo is baked in): " + ", ".join(dropped))
+    if steps < 8:
+        out["steps"] = 8
+        notes.append("steps raised to 8 on TURBO-hybrid. The 4-step LoRA is not stacked, and 4 steps melts the body.")
     out["notes"] = notes
     return out
 
@@ -7304,6 +9152,19 @@ def run_episode(
     rei_pose_override: str | None = None,
     appearance_override: str | dict[str, Any] | None = None,
     checkpoint_override: str | None = None,
+    missionlg_override: str | None = None,
+    messyblow_override: str | None = None,
+    closeup_override: str | None = None,
+    place_override: str | None = None,
+    time_override: str | None = None,
+    weather_override: str | None = None,
+    dirt_override: str | None = None,
+    camera_distance_override: str | None = None,
+    seed_override: str | int | None = None,
+    aya_look_override: str | None = None,
+    enemy_kind_override: str | None = None,
+    enemy_look_override: str | None = None,
+    enemy_looks_override: dict[str, str] | str | None = None,
     start_at: str | None = None,
     port: int = PORT,
     object_info: dict[str, Any] | None = None,
@@ -7341,6 +9202,19 @@ def run_episode(
         rei_pose_override=rei_pose_override,
         appearance_override=appearance_override,
         checkpoint_override=checkpoint_override,
+        missionlg_override=missionlg_override,
+        messyblow_override=messyblow_override,
+        closeup_override=closeup_override,
+        place_override=place_override,
+        time_override=time_override,
+        weather_override=weather_override,
+        dirt_override=dirt_override,
+        camera_distance_override=camera_distance_override,
+        seed_override=seed_override,
+        aya_look_override=aya_look_override,
+        enemy_kind_override=enemy_kind_override,
+        enemy_look_override=enemy_look_override,
+        enemy_looks_override=enemy_looks_override,
     )
     print(
         describe_run(
@@ -7349,6 +9223,9 @@ def run_episode(
             camera=episode_camera_pack(ep),
             preset=str((ep.get("render") or {}).get("preset") or ""),
             combat=episode_combat(ep),
+            missionlg=str((ep.get("render") or {}).get("missionlg") or ""),
+            messyblow=str((ep.get("render") or {}).get("messyblow") or ""),
+            closeup=str((ep.get("render") or {}).get("closeup") or ""),
             story=episode_story(ep),
             invite_pose=episode_invite_pose(ep),
             ride_bent=str((ep.get("render") or {}).get("ride_bent") or ""),
@@ -7369,6 +9246,7 @@ def run_episode(
             rei_kiss=str((ep.get("render") or {}).get("rei_kiss") or ""),
             rei_oral=str((ep.get("render") or {}).get("rei_oral") or ""),
             rei_pose=str((ep.get("render") or {}).get("rei_pose") or ""),
+            surface=ep.get("render") if isinstance(ep.get("render"), dict) else {},
         )
     )
     errs = preflight(ep, root)

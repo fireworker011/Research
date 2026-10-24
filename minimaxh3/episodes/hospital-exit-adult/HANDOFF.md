@@ -9,15 +9,103 @@
 ## 正本（ここだけを編集する）
 
 - リポジトリ: `fireworker011/Research`
-- ブランチ: `cursor/h3-hospital-ward-34e4`
-- PR: https://github.com/fireworker011/Research/pull/147
-- Colab: https://colab.research.google.com/github/fireworker011/Research/blob/cursor/h3-hospital-ward-34e4/minimax_h3_episode_bot.ipynb
+- ブランチ: `cursor/h3-lora-cards-d736`
+- PR: https://github.com/fireworker011/Research/pull/222 （下書きのまま。ready にしない）
+- Colab: https://colab.research.google.com/github/fireworker011/Research/blob/cursor/h3-lora-cards-d736/minimax_h3_episode_bot.ipynb
 - 台本: `minimaxh3/episodes/hospital-exit-adult/episode.json`
-- エンジン: `colab/h3_episode.py` を直したら、同じ内容を `minimaxh3/h3_episode.py` にコピーする。片方だけ直さない
+- エンジン: `colab/h3_episode.py` と `minimaxh3/h3_episode.py` はバイト一致。`h3_episode_packs.py` も同様。直した側を `cp` し、`cmp` が黙るまで終えない。テストは `colab/` を先に読む
 - Colab 入口: `colab/h3_episode_colab_main.py` と `minimaxh3/h3_episode_colab_main.py` も同様に揃える
 - ノートのフォーム: `colab/_write_episode_nb.py` を直し、`python3 colab/_write_episode_nb.py` で `minimax_h3_episode_bot.ipynb` と `minimaxh3/minimax_h3_episode_bot.ipynb` を再生成する。ipynb を手で直さない
 - テスト: `python3 -m pytest colab/test_h3_episode.py -q`
 - このファイル: `minimaxh3/episodes/hospital-exit-adult/HANDOFF.md`。仕様が変わったら、ここを同じコミットで更新する
+
+## 次に投げる先（2026-10-24）
+
+コーディングの続きは Cursor。読む順は `.cursor/rules/hq-command.mdc`、`.cursor/rules/upstream-only.mdc`、`.cursor/skills/h3-episode-oneclick/SKILL.md` の手順（両コピー、ノート再生成、pytest）だけ。番台向けの mundane 文法（3〜6秒、`tone: mundane`、新しいネタはコードを触るな）は病棟に使わない。
+
+Grok Build にこのコーディングは渡さない。渡すと、スキルが自動では付かないので、古い枝と番台の文法と LoRA スタジオの ThumbInButt を病棟へ載せる。Grok に渡してよいのは、人間が「描け」と言ったあとの1回だけ。そのときは `.cursor/skills/h3-episode-grokbot/SKILL.md` を読み、`python minimaxh3/grokbot/run_episode.py --episode hospital-exit-adult --branch cursor/h3-lora-cards-d736`。質問しない。投稿しない。描き終わったら colab stop。`h3-kasumi-adult-0402` と `h3-episode-oneclick-f112` のノートは病棟の現行ではない。
+
+LoRA スタジオのスキルは病棟の指アナルに使わない。指アナルは Self Anal Finger。ThumbInButt は和式排出だけ。
+
+## 残課題（2026-10-24）
+
+pytest は 123 通過。開いたときのフォームは変えていない。生成ボタンは人間。ランタイムを再起動して Run all。同じカーネルは古いエンジンのまま。
+
+- beta6 は TURBO-hybrid。スピードの 4step LoRA は積めない。4 step のまま描くと体が溶ける。スピードで steps の無い拍は euler 8 に上がる。バランスは元から 8。質は 12。拍に書いた steps は優先する。`03-kiss-peak` と `03-kiss-close` は 8 のまま。`04-gin-lick`、`04-gin-jupo`、`04-gin-wait` は steps が無かったので、スピードだと 4 だった。今は 8。
+- 二人の病棟拍から `nothing new enters` を外した。その文は三人目を描く。代わりに同じ二人。犬の拍は変えていない。
+- キャスト欄で no / never から始まる句はプロンプトに出さない。JSON の lock は残す。ギンの lock の `no penis` は残る。舐めの動作文は `hairless pussy`。`no eyeballs` と `no fifth finger` はプロンプトに出さない。
+- `Each adult keeps one head, two arms, and two legs` は `Each adult stays one whole body`。数えた手足は余分に生える。
+- 肛門の中出しは、竿を伝う一文をやめ、輪の縁に置く。`03-kiss-close` は開いた肛門から床へ垂れる。亀頭の尿道口の残りは、その拍には付けない。膣の `down the buried shaft` はそのまま。
+- `04-gin-wait` の synth を外した。全身の待ちに穴の寄り LoRA がもう一つの腰を貼る。penis と mystic は残す。
+- beta6 の取得コードは直してある。Colab での 21GB の着地は、この人体の直しとは別。着地前のランは古い取得のまま止まっている。
+- 病棟の夜は、`Signs, posters, screens, and badges` の一文を足さない。`no_text_on_signs` は false。世界ロックから `door or screen` を外した。`no readable letters` と、ゴムの扉と出口の doorway は残す。場所を病棟に戻しても、その一文と `screen` は戻らない。
+- ネオン横丁の `blank signs`、霊廟の `stone markers`、神社の `torii`、城下町の `shop fronts` は、場所の env に残す。場所自身が看板系を指名している。
+- 便器拍と角の寝床は、場所の `env` を使う。便器拍はその後に、行為が要る便器の文を残し、病棟の名詞を場所の名詞へ替える。青空は env の中にある。env に無い場所へは足さない。
+- 昼の文は `High daylight lights the place.`。`Everything stays brightly lit` は付けない。場所の env にある影は残る。
+- 場所の env には置換を掛けない。`porcelain`、`water stains`、`tiles`、`crumbling` を屋外の Look にそのまま足していない。病棟の便器文では、porcelain の便器句を場所の fixture に替えてから、残った語を落とす。城下町の `dark roof tiles` は残る。
+- 晴れは地面を乾かさない。本文に乾きが無い場所は、晴れだけでは乾かない。
+- フルネルソンの学習文は `man's arms` を含む。消すと LoRA が動かない。横挿入に he や daddy を足すと、角が男になる。ステップの上限は 16。見本の 20 は使えない。
+- 開いたままの Colab は古い欄を保持する。LoRA 更新セルは、まだ Drive に無いファイルを取らない。analfist、fullnelson、beta6 は描くセルが取る。beta5 は beta6 の代わりにならない。古いファイルは消さない。開いたときのフォームは変えていない。汚泥の干潟、昼、晴れ、トイレ触手、角は横になって挿入。
+- beta6 の wget は、Civitai の URL をトークン無しで叩いて exit 6 になっていた。0 バイト。今は最初のホップだけ Bearer を付け、署名 URL を wget か curl に渡す。署名先には Authorization を付けない。署名は失効するので、試し打ちのたびに取り直す。`*.part` は残す。0 バイトの再実行は、同じカーネルに残った古いエンジンでは直らない。ランタイムを再起動して Run all。ノートは `cursor/h3-lora-cards-d736` の helper をそのとき取り直す。
+- fullnelson（version 3422679、fileId 3317916）と analfist（version 3424713、fileId 3319392）の file id は公開メタデータと一致している。両方 `hasActivePaidAccess`。ログイン済みのトークンでも Civitai は 403 を返す。触手と後ろアナルのこの並びでは、その2つは描く拍に乗らない。403 では止まらない。URL は変えていない。
+- 別枝 `cursor/pose-ref-gaps-d736`、`cursor/human-cast-anatomy-d736`、`cursor/hospital-anal-dildo-face-d736`、`cursor/rehearsal-room-adult-d736` をこの枝へ混ぜない。draft PR #122 はマージしない。
+
+## いま（2026-10-23）残りの姿勢
+
+10月4日から9日の姿勢で、この枝にまだ無かった分を足した。土と草と糞の寝床、植物の便器、ディルド、今の LoRA は残す。指アナルは洋式の別行。Self Anal Finger 1.0。アナルフィストはその次の別行。Self Anal Fisting 1.0。ディルドの膣行と、和式排出の ThumbInButt はそのまま。フルネルソンは Full nelson LoRA 1.0。横挿入の頭はフレームの右。チェックポイントは Eros Max beta6 int8。屋外の場所を20足した。昼の晴れ、強い日差しと影、開いた青空。公衆トイレ跡、屋外浴場、動物檻、巣穴、家畜小屋、厩舎、屋外便所、廃キャンプ、森の空き地、川岸、湧き水、獣道、崖下、湿地の縁、倒木の根元、草の斜面、岩礁、洞窟入口、豚小屋、飼育場。屋外の環境文は看板、ポスター、画面、バッジ、旗、テレビを指名しない。晴れは地面を乾かさない。行為の文には貼らない。
+
+- 角の病室は扉正面をやめた。カメラは寝床の足側。角・個室は植物の口とフードを出さず、同じ寝床の上で抱き上げから抜きまで進む。動きの順は変えていない。
+- 四つん這いの挿入は、根元まで入ったあと短い前後。竿役は左の真横から少し右へ向き、足裏はあやと同じ向き。抜きは一度後ろへ出て、腰はその位置で止まる。
+- 四つん這いと壁立ちバックは肛門。挿入と絶頂の先頭文は肛門。マンコは下の閉じた割れ目のまま。絶頂の古い「penis inside her partner」は、この二つの姿勢では使わない。灰色の誘う後背は膣のまま。受け入れるれいの一本も膣のまま。
+- 最初にマンコへ入る拍は、着座の瞬間にあやが新しい快楽で口を開く。絶頂の顔は本文のまま。
+- チェーンの押し当ては、開始の姿勢を保ったまま竿役だけ少し右へ回す。しのの遭遇も見つめ合い。
+- 指アナルは `04-toilet-in` → `04-toilet-afin` → `04-toilet-afast` → `04-toilet-out`。afin は `analfinger` 1.0、トリガー `anal_finger`。ファイル `af_h3_vids512_imgs1024_000011750.safetensors`。Civitai 2988249、version 3388162、fileId 3277184。afast は絶頂のあと指が抜け、肛門は開いた輪、指先と輪の周りに糞。out は指先を舐めて歩く。10秒。名前アナル指、指、指アナルはこの行。ディルドはトイレ・ディルドのまま膣。
+- アナルフィストは `04-toilet-in` → `04-toilet-afist` → `04-toilet-afpull` → `04-toilet-afsmear` → `04-toilet-out`。afist と afpull は `analfist` 1.0、トリガー `4n4lfi5tin6`。ファイル `h3-selfanalfisting-k3nk-step00015400.safetensors`。Civitai 3016789、version 3424713、fileId 3319392。afpull は絶頂のあと手が抜け、その手は糞の塊をつかみ、手全体が糞でべったり。afsmear は笑顔で胸と腹に塗る。out は手を舐めてから歩く。名前アナルフィスト、フィストはこの行。指アナルとは別。
+
+生成はしていない。
+
+## いま（2026-10-23）顔射・後背・ギンの抱き
+
+顔射は近距離の弧に戻した。かなの顔射7本、ギンが犯される口、角の待ち2本。受ける側の右手が竿を持ち、亀頭を自分の顔へ向ける。カメラはその顔の周りを弧で動く。精液は鼻、目、頬、あご。照れた笑い。LoRA は `cumshot` 1.0、竿 0.45。かなは `jpnmoans` 0.55 も残す。トリガーは `CUMSH0T`。全身の足ロックと、下端で止める1枚の枠は、この拍には掛けない。場所が病棟でないとき、扉の文は外す。角の待ちは土と草と糞の寝床のまま。鉄のマットレスの文は戻さない。ギンのジャックオー口内は中出しのまま。
+
+後背は、姿勢、押し当て、挿入、絶頂、一度引いて腰を止める、の並び。四つん這いと壁立ちは、みき、れい、かな、しの。誘うギンの後背は、セットと押し当てを挿入の前に足した。押し当てには行為LoRAを付けない。挿入は `siderear` 0.8。抜いたあとの腰は後ろで止まる。しのの 35cm はそのまま。
+
+ギンの舐めの4本は、背後から強く抱き、向き直って笑顔のキス、唾の糸、座った姿勢へ戻ってから舌。カメラ距離は最初の全身のまま。`kiss` 0.5。
+
+生成はしていない。開いたままの Colab は、このエンジンを読むために開き直して Run all。
+
+## いま（2026-10-23）フォームの初期値
+
+ノートを開いたときの選択は、以前指定した並び。病棟出口、前の最終フレームから続ける、スピード、誘う、トイレ触手、灰色は最初から膝曲げ、角は横になって挿入、汚泥の干潟、昼、晴れ、人間。顔はみき中東、れい韓国、かな日本、しの南アジア、ぎん北欧、角東南アジア。シーンはみき四つん這い、れい後ろアナル、かな壁立ち、しのM字。BRANCH は `cursor/h3-lora-cards-d736`。迷ったらこれの印は、台本をそのまま出す行に残す。正常位、フェラ、超近距離はオフの行で開く。場所が病棟で夜、天候なしのときは名詞を替えない。他の場所は通路・壁・床・個室・出口の名詞だけ替える。角の個室は部屋を出さず、寝床はその場所の地面になる。国の見た目は髪と顔。角の一つの目と角、しのの長身、竿の長さは残す。敵が人間のときは感染の跡を外す。開いたままのセルは古い欄を保持する。トイレの極太ディルド行は欄の名前をトイレ・ディルドにした。中身は座って右手で膣へ入れる並びのまま。指アナルはトイレ・指アナルの別行。アナル指、指もその行。アナルフィストはトイレ・アナルフィストの別行。ディルドはトイレ・ディルドの膣行のまま。角の説明からマットを外し、土と草と糞の寝床と書いた。開いたときの選択は変えていない。
+
+## いま（2026-10-18）角のベッド
+
+角の廃病室のベッドは、この部屋の土と草と糞で作った一段のベッド。平らな上面と、座れる縁。座る、横になる、膝をつく役割は鉄のマットレスのときと同じ。動作の手順は変えていない。
+
+## いま（2026-10-18）ランタイム
+
+エピソードノートは、動画が描き終わったらランタイムを切る。重みの取得だけと、失敗したときは切らない。
+
+## いま（2026-10-17）キス v0.2
+
+`kiss` を v0.2 の主ファイルに差し替えた。ファイル `cxy_kiss_lora_h3_v02_step1200.safetensors`。Civitai 2842199、version 3410507、fileId 3302584。強度は 0.5 のまま。トリガー語は無い。画像用 `cxy_kiss_image_v02` と step1000 は使わない。作者は、舌の硬さが少し良くなったがまだ残るベータ、と書いている。動作の本文は変えていない。
+
+## いま（2026-10-15）LoRA 5枚
+
+カードを開いた。ファイル名と強度はカードの数字だけ。動作の本文は変えていない。生成は人間。
+
+積んだもの。
+
+- `anuspussy` を Eros 版に差し替えた。ファイル `anus_pussy_eros_v2.safetensors`。Civitai 2974434、version 3397856、fileId 3288079。作者は、前の版が公式チェックポイントでは動くが EROS v5 では弱い、と書いている。病棟のチェックポイントは H3 Eros Max beta6 int8。ファイル `h3ErosMax_beta6_3283276.safetensors`。Civitai 2851079、version 3393047、fileId 3283276。beta5 のファイルが Drive にあっても、このファイルが無ければ取り直す。古いファイルは消さない。強度は 0.40 のまま。トリガーは `zxqanus` と `zxqvagina`。`zxqmei` は足さない。今まで `anuspussy` が付いていた拍は、このファイルになる。
+- 触手の行為 `04-toilet` だけ `tentacles101` 0.9。ファイル `Tentacles_H3_101_.safetensors`。Civitai 2971784、version 3367732、fileId 3255755。トリガー語はカードに無い。サンプルは mystic と積むとき 0.9、単体は 0.95。2D-General（3293041）は登録しない。fill の蔦は `tentacles3d` 0.45 のまま。4本の HOLD の文は残す。サンプル動画は抜き差しとカットが多い。文が HOLD のままなので、絵が前後し始めたら 0.9 を下げる。
+
+上の2枚は毎回このファイル。ドロップダウンにはしない。
+
+フォームの選択肢。既定はオフ。オンにした回だけ積む。動作の本文は変えない。フォームは開いたとき BRANCH `cursor/h3-lora-cards-d736`。開いたままの Colab は、開き直して Run all。
+
+- 正常位 `missionlg`。ファイル `MISSIONLG_H3_v1.safetensors`。version 3403761、fileId 3294817。トリガー `MISSIONLG`。カードの強度は 1.0。既定は「正常位LoRAオフ（迷ったらこれ）」。オンは「正常位LoRAオン（M字の挿入と絶頂）」。オンのとき、動作文に M-shape と kneel と between がある挿入と絶頂だけ `missionlg` 1.0 を足す。id が `-walk` で終わる歩きと、便器の一人 M字は足さない。学習は、相手が上に乗って腰を回し、受けが腰を上げる。病棟の M字は、相手が膝をつき、あやの骨盤は床、PROFILE の全身。1.0 は膝つきの文と喧嘩する。サンプルの一部は GRINDLG との合成ファイルと beta6 を使っている。公開ファイルはその合成ではない。
+- フェラ `messyblow`。ファイル `MessyBlowjob_v1_H3.safetensors`。version 3399472、fileId 3289886。トリガー `ME$$Y.`。サンプル強度は 1.0。既定は「フェラは今のまま（迷ったらこれ）」。オンは「フェラをMessyに差し替える」。`blowjob` が付いている拍だけ `messyblow` 1.0 に差し替え、その拍の `bl0w_j0b` を外して `ME$$Y.` を足す。口の文はそのまま。絵は顔を前後に突く、泡、口から抜く。
+- 超近距離 `closeup`。ファイル `closeup_nsfw.safetensors`。version 3399711、fileId 3290118。サンプル強度は 0.5。トリガー語は無い。既定は「超近距離オフ（迷ったらこれ）」。オンは「超近距離オン（穴の見える拍）」。`anuspussy` が付いている拍に `closeup` 0.5 を足す。画面が穴へ寄る。病棟の画面は両足まで入れる。オンにすると足が切れることがある。
 
 ## いま（2026-09-30）
 
@@ -120,7 +208,7 @@ Colab の「前の最終フレームから続ける」は `connect=chain`。
 
 ## 角・廃病室
 
-全枝の `04-tsuno-meet-spot` は廃病室、connect は cut。角はマットレスの縁に座り、右手が `erect ashen-gray 24cm` を上下。あやが扉から入る。extra は mystic 0.5。通路の遅れ足は角の spot に書かない。
+全枝の `04-tsuno-meet-spot` は廃病室、connect は cut。角は土のベッドの縁に座り、右手が `erect ashen-gray 24cm` を上下。あやが扉から入る。extra は mystic 0.5。通路の遅れ足は角の spot に書かない。
 
 立ちバック、誘う立ちバック、後ろアナル、フルネルソンは、spot の次に `04-tsuno-stand`（縁から立つ）。spot、stand、meet、in、carry の connect は cut。カットを選ぶと T2V。チェーンと着地では I2V。密着の meet、後ろアナル、フルネルソンの本文は残す。壁立ちバックの in と peak は肛門。脹脛のあいだの低いカメラと、すでに屈んだ一回の挿入。場所の語は病室。`04-tsuno-stall` 以降の connect 欄も cut のまま。カットでは T2V。チェーンと着地では I2V。
 
@@ -135,12 +223,12 @@ Colab の「前の最終フレームから続ける」は `connect=chain`。
 - kiss chain: 角は座ったまま。同じあや一人が膝の間に立ったまま、胴を前へ倒して口が付く。涎の糸。カメラはドア正面の広い全身のまま、距離は固定。顔の寄りは足さない。`nothing new enters` と `Two faces` はこの拍に足さない。kiss 0.5 + mystic 0.5。寝室の同じ `04-tsuno-kiss` も同じ文
 - oral chain: あやが深く膝を曲げる。閉じた唇が根元往復。blowjob 0.8 + mystic 0.5 + penis 0.45。トリガーは `bl0w_j0b`。横挿入と寝室アナルの両方。STANDS は書かない
 - wait chain: 一度口から出す。WHITE はあやの顔と舌。寄り。extra は cumshot 1.0 + cmst 0.8 + penis 0.45 + mystic 0.5。トリガーは `CUMSH0T` `cmst` `PENISLORA`。cumshot は 1.0 未満だと絵の具になる
-- spit cut: あやがしゃがみから両足で立つ。角はマットレスの縁に座ったまま。口が付き、あやの舌が WHITE を角の舌へ渡す。涎の糸。カメラはドア正面。extra は kiss 0.5 + cumouf 0.5。トリガーは `CUMOUF`。寝室 Jack-O には付けない
-- beckon chain: 角が先に縁からマットレスへ滑って横になる。空いた手がベッドへ手招き。あやはベッド横の床に立ったまま。カメラはベッド横の `PROFILE`。距離は固定。全身
-- lie cut: あやが膝をマットレスに上げ、腰を下ろして角の前で同じ向きに横になる。上の膝は窓へ上がる。下の脚はマットレス。胸は窓。角の近い腕はあやの首の下。もう一方の手は上がった腿。竿は太ももの外側。カメラはベッド横の `PROFILE`。`FRONT from the doorway` は書かない。参照は Drive `1QLLFwFEMCtXvnghJaXiRp6DadqzdaluM`
+- spit cut: あやがしゃがみから両足で立つ。角は土のベッドの縁に座ったまま。口が付き、あやの舌が WHITE を角の舌へ渡す。涎の糸。カメラはドア正面。extra は kiss 0.5 + cumouf 0.5。トリガーは `CUMOUF`。寝室 Jack-O には付けない
+- beckon chain: 角が先に縁から土のベッドへ滑って横になる。空いた手がベッドへ手招き。あやはベッド横の床に立ったまま。カメラはベッド横の `PROFILE`。距離は固定。全身
+- lie cut: あやが膝を土のベッドに上げ、腰を下ろして角の前で同じ向きに横になる。上の膝は窓へ上がる。下の脚は土のベッド。胸は窓。角の近い腕はあやの首の下。もう一方の手は上がった腿。竿は太ももの外側。カメラはベッド横の `PROFILE`。`FRONT from the doorway` は書かない。参照は Drive `1QLLFwFEMCtXvnghJaXiRp6DadqzdaluM`
 - sidekiss chain: 胸は窓のまま、顎だけ肩越しに戻して口が付く。上の膝は窓へ上がったまま。角の手はその腿。竿は太ももの外側。カメラはベッド横の `PROFILE`。`FRONT from the doorway` は書かない
-- ride 10秒 cut: 横のまま。上の膝は窓。下の脚はマットレス。角の近い手がその腿を持つ。角の腰がマットレスに沿って一度前へ。太ももの線に沿って一度マンコへ入れて `HOLD still joined at the BASE until the last frame`。口は上がった腿の横で近い。結合部は太ももの横、画面中央。extra 先頭 spoonlg 1.0、penis 0.6。trigger は `SPOONLG.`。Turbo は切る。`LIFTS` も前腕も空中の足も書かない
-- peak chain: 同じ膝と手のまま、口は付いたまま。角の腰がマットレスに沿って後ろへ戻り、竿は上がった腿の外側、亀頭はマンコに当たる。それから前へ戻して根元。その抜き差しをもう二回。腰は密着に戻る。溢れ。`HOLD still joined at the BASE until the last frame`。結合部は太ももの横、画面中央。`FRONT from the doorway` は消す。extra は spoonlg 1.0 + penis 0.6 + synth 0.4 + thrust 0.55 + jpnmoans 0.55。トリガーは `SPOONLG.` と中出しの文と `PENISLORA` と `jpnMoans`。あやは「あ、いく」
+- ride 10秒 cut: 横のまま。頭はフレームの右、足は左。上の膝はカメラ側。下の脚は土のベッド。汗。角の腰が土のベッドに沿って一度前へ。太ももの線に沿って一度マンコへ入れて `HOLD still joined at the BASE until the last frame`。結合部は太ももの横、画面中央。extra 先頭 spoonlg 1.0、penis 0.6。trigger は `SPOONLG.`。Turbo は切る。`LIFTS` も前腕も空中の足も書かない
+- peak 10秒 chain: 同じ横向き。頭は右。角の近い手は上がった膝。角は背後からマンコへ入れ、腰を速く円く回しながら抜き差しする。あやは肩越しに角を見る。それから密着して中。溢れ。`HOLD still joined at the BASE until the last frame`。結合部は太ももの横、画面中央。`FRONT from the doorway` は消す。extra は spoonlg 1.0 + penis 0.6 + synth 0.4 + thrust 0.55 + jpnmoans 0.55。トリガーは `SPOONLG.` と円腰の文と中出しの文と `PENISLORA` と `jpnMoans`。あやは「あ、いく」。参考の頭が左でも、この場面の頭は右
 - ride-kiss chain: 結合のまま口。kiss 0.5
 - walk cut: 0–3 秒はベッドで口、ここで抜ける。そのあと入り口のあや一人。`No penis` `The grown shaft is gone`
 
@@ -164,7 +252,7 @@ action に jacko、doggy、hug、wraps は書かない。doggy LoRA は同時に
 
 ## 洋式
 
-便器は有機物だけ。洋式は緑の外皮、赤い肉の口がボウル、植物の唇、琥珀の液、根、後ろにもう一本のウツボカズラ。磁器もタンクも便座も書かない。動作は変えない。触手も同じ植物便器に座る。順番は in で座る → fill で両手首と両足首 → toilet の 0–3 秒で 4 本が付いて HOLD → out は cut、触手が外れて立つ。tentacles3d 0.45 は 4 本の拍。和式は床と同じ高さの長い植物の口。フードは遠端のウツボカズラの葉。beige platform は戻さない。
+便器は有機物だけ。洋式は緑の外皮、赤い肉の口がボウル、植物の唇、琥珀の液、根、後ろにもう一本のウツボカズラ。磁器もタンクも便座も書かない。動作は変えない。触手も同じ植物便器に座る。順番は in で座る → fill で両手首と両足首 → toilet の 0–3 秒で 4 本が付いて HOLD → out は cut、触手が外れて立つ。`04-toilet` の 4 本は `tentacles101` 0.9。fill の蔦は `tentacles3d` 0.45。和式は床と同じ高さの長い植物の口。フードは遠端のウツボカズラの葉。beige platform は戻さない。
 
 ## 角・個室（新話 `wash_carry`）
 
@@ -269,7 +357,7 @@ action に jacko、doggy、hug、wraps は書かない。doggy LoRA は同時に
 
 ## 正常位と後背位の挿入
 
-四つん這いと壁立ちバック、角の立ちバック（肛門の in と peak）は `siderear` 0.8 の次に `anuspussy` 0.40。灰色の誘う後背は膣のまま、同じ並び。`siderear` は `MMH3_NSFW_Doggystyle_Sex_3354622_epoch_20.safetensors`。Civitai 2967815、version 3362792、fileId 3250615。トリガー語は無い。`anuspussy` は `anus_pussy_v2.safetensors`。Civitai 2974434、version 3371009、fileId 3259145。カードの推奨はアニメ静止画で 0.9–1.2。参照動画は 1.0 で絵になる。病棟の写真調では 0.40。トリガーは `zxqanus` と `zxqvagina`。`zxqmei` はキャラトークンなので足さない。`doggy` は足さない。
+四つん這いと壁立ちバック、角の立ちバック（肛門の in と peak）は `siderear` 0.8 の次に `anuspussy` 0.40。灰色の誘う後背は膣のまま、同じ並び。`siderear` は `MMH3_NSFW_Doggystyle_Sex_3354622_epoch_20.safetensors`。Civitai 2967815、version 3362792、fileId 3250615。トリガー語は無い。`anuspussy` は `anus_pussy_eros_v2.safetensors`。Civitai 2974434、version 3397856、fileId 3288079。前の版 3371009 は外した。病棟の写真調では 0.40。トリガーは `zxqanus` と `zxqvagina`。`zxqmei` はキャラトークンなので足さない。`doggy` は足さない。
 
 四つん這いの in / peak と、壁立ちバックの in / peak（角の立ちバックも含む）だけ、カメラを差し替えた。横の `SIDE-REAR` は頬が穴を隠す。四つん這いは開いた太もものあいだ、低い、少し見上げる。肛門とマンコの両方が画面に残る。立ちは脹脛のあいだ、低い、少し見上げる。肛門はマンコの上の閉じた輪。結合部は画面中央。竿の線が見える。距離は固定。参照の後背位（Drive `1JXFwfFM0mghDbtFYMBzTv6vGZSDhGeyz`）は肛門。受けは胸と頬を床に置いたまま、顔を左肩越しに竿役へ戻す。竿役は画面左から一歩ずつ入り、右手で亀頭を肛門へ運び、手を離してから腰を一度前へ。根元で HOLD。peak は右手を竿から離したまま短い前後。亀頭は肛門の中。マンコは肛門の下の閉じた割れ目。中出しは肛門。参照の立ちバック（Drive `16V50kQYP5XmGLxVAmTtyKYeAQPh4lApV`）の映像は膣。台本の壁立ちは肛門。あやは壁へ一歩、爪先で止まり、胴を倒し、両掌は壁。胸は床へ下がる。竿役の左手は腰、右手は亀頭を肛門へ置いて離す。一度前へ入れて根元 HOLD。peak は左手を腰に置いたまま速い前後。胸が揺れ、尻が揺れる。足は爪先。肛門は埋まったまま。マンコは下の閉じた割れ目。角の竿は `erect ashen-gray 24cm`。あやに竿は生やさない。connect 欄は変えていない。灰色の誘う後背は膣のまま。右手で亀頭をマンコへ置き、肛門は上の閉じた輪。
 
@@ -293,11 +381,11 @@ id は `03-kiss-jo` `06-doggy-jo` `09-join-jo` `12-exit-jo` に `-set` `-behind`
 
 ## トイレ
 
-洋式触手の行為 `04-toilet` は 0 秒から触手4本。左乳首、右乳首、マンコ、口。`KEEP THRUSTING` は書かない。`HOLD still joined at those four places until the last frame`。Aya says 「気持ちいい」。声欄はひらがなの `きもちいい`（漢字は声欄に置かない。H3 が読み違える）。extra は tentacles3d 0.45 + mystic 0.5 + jpnmoans 0.55。2D-General は登録しない。ThumbInButt / doggy / jacko / thrust / Turbo は積まない。続く fill も同じ4箇所のまま。汚液はマンコと口へ。肛門と `KEEP THRUSTING` は書かない。出の最終はあや一人。`The tentacles are gone`。`No tentacles` は書かない。
+洋式触手の行為 `04-toilet` は 0 秒から触手4本。左乳首、右乳首、マンコ、口。`KEEP THRUSTING` は書かない。`HOLD still joined at those four places until the last frame`。Aya says 「気持ちいい」。声欄はひらがなの `きもちいい`（漢字は声欄に置かない。H3 が読み違える）。extra は tentacles101 0.9 + mystic 0.5 + jpnmoans 0.55。fill は tentacles3d 0.45。2D-General は登録しない。ThumbInButt / doggy / jacko / thrust / Turbo は積まない。続く fill も同じ4箇所のまま。汚液はマンコと口へ。肛門と `KEEP THRUSTING` は書かない。出の最終はあや一人。`The tentacles are gone`。`No tentacles` は書かない。
 
 小便は、座りが正面の M 字になってから。あやは笑顔のまま、腰は止めたまま、便器も止めたまま。液体は透明なレモン色の黄色い水。見透ける水で、一本の明るい黄色の柱。マンコからその黄色い水をカメラの正面へ飛ばす。動くのは黄色い流れだけ。便器の中へ流す文は書かない。否定の「動かない」は書かない。
 
-洋式の指枝は、床の吸盤に立った極太のペニス形。小便は触らない。ThumbInButt はこの枝から外す。和式の排出は ThumbInButt のまま。順番は `04-toilet-toy` でしゃがみ、両足は植物の縁の外、肛門は穴の中央、玩具は外。次の `04-toilet` で腰を一度下ろし、根元まで HOLD。「気持ちいい」。`04-toilet-pump` は短い上下で絶頂、溢れ、「あ、いく」。`04-toilet-gape` で腰を一度上げ、玩具が抜けて落ち、輪が開く。`04-toilet-out` で立って歩く。extra は mystic 0.5 + penis 0.45。pump は jpnmoans 0.55 を足す。一人の拍に thrust は積まない。jacko と doggy と ThumbInButt は積まない。
+指アナルは洋式汚物の別行。便器は白い磁器。植物の口も吸盤もディルドも出さない。順番は `04-toilet-in` で入って背を向け、便器に前かがみ、左手はタンク。`04-toilet-afin` は右手の人差し指を肛門へ出し入れ。extra は `analfinger` 1.0 + mystic 0.5。トリガー `anal_finger`。ファイル `af_h3_vids512_imgs1024_000011750.safetensors`。Civitai 2988249、version 3388162、fileId 3277184。`04-toilet-afast` は絶頂のあと指が抜け、肛門は開いた輪のまま。指先に厚い糞。開いた輪の周りにも薄い糞。extra は mystic 0.5 + jpnmoans 0.55。トリガー `jpnMoans`。`04-toilet-out` は指先を口で舐め取り、立って右へ歩く。10秒。extra は空。ThumbInButt はこの行に積まない。和式の排出は ThumbInButt のまま。ディルド行は下の便器の定義。座って右手で膣。id は `04-toilet-toy` `04-toilet` `04-toilet-pump` `04-toilet-gape` `04-toilet-out`。
 
 和式は洋式個室。洋式便座は出さない。便器は和式パン。カメラは洋式アナルと同じ低い後ろ下。あやの背中がカメラ。顔はフード。赤い靴は書かない。squat と spot の 0 秒は `Aya already SQUATS deep over the plant mouth, heels on the tiles, both feet planted OUTSIDE the fleshy plant rim of the plant mouth, knees open, anus over the CENTER of the hole, face toward the hood.` `folded over the pan` は書かない。和式パン専用の H3 LoRA は市場に無い。Illustrious の squat toilet LoRA は積まない。
 
@@ -365,7 +453,9 @@ id は `03-kiss-jo` `06-doggy-jo` `09-join-jo` `12-exit-jo` に `-set` `-behind`
 - 四つ足: https://civitai.com/models/1782485/furry-enhancer-video 強度 0.55
 - 広げる: `minimax_h3_pussy_spread_v0.2.safetensors` 強度 0.50。fileId は置かない
 - クンニ: https://civarchive.com/models/1971266?modelVersionId=3318405 ファイル `cunny-mh3-e62-az420.safetensors`
-- アナル指: 洋式の指枝は吸盤のペニス形。ThumbInButt は積まない。ファイル `MiniMax H3 - ThumbInButt.safetensors` fileId 3168734 は和式排出に残る。ページ URL は重みにしない
+- 指アナル: Self Anal Finger 1.0。ファイル `af_h3_vids512_imgs1024_000011750.safetensors`。version 3388162、fileId 3277184。トリガー `anal_finger`。ThumbInButt は和式排出に残る。ファイル `MiniMax H3 - ThumbInButt.safetensors` fileId 3168734。ページ URL は重みにしない
+- アナルフィスト: Self Anal Fisting 1.0。ファイル `h3-selfanalfisting-k3nk-step00015400.safetensors`。version 3424713、fileId 3319392。トリガー `4n4lfi5tin6`
+- フルネルソン: ファイル `5VR5YKXR0BFRBWJ17K3HEG5KT0.D8qyBosp.safetensors`。Civitai 3015275、version 3422679、fileId 3317916。強度 1.0。トリガーは学習文そのもの。steps は 16、sampler は `res_multistep`。見本の 20 は、このエピソードの上限が 16 なので使わない
 
 ## 禁止語
 
@@ -385,15 +475,15 @@ Colab の **開始シーン** が空なら最初から。beat id を書くと、
 
 ## 便器の定義と 2026-10-03 の直し
 
-便器は三択。洋式汚物まみれは小便・オナニー・ディルド。白い磁器に茶色の汚れ。和式汚物まみれは和式排出と和式ミキ。床と同じ高さの和式パンに茶色の汚れ。有機物植物の洋式は触手だけ。植物のボウルに粘液。触手は有機物便器以外に出さない。ディルドは洋式汚物の便座の横。右手で持つ。吸盤も植物の口も使わない。extra は `solodildo` 0.7。ファイル `dildoing-mh3-e60-az420.safetensors`。Civitai 2903074、version 3282820、fileId 3167066。カードに強度の数字は無いので 0.7 のまま。トリガーは `pumping a dildo insider her vagina`。洋式のディルドは膣をポンプする。
+便器は三択。洋式汚物まみれは小便・オナニー・ディルド・指アナル・アナルフィスト。白い磁器に茶色の汚れ。和式汚物まみれは和式排出と和式ミキ。床と同じ高さの和式パンに茶色の汚れ。有機物植物の洋式は触手だけ。植物のボウルに粘液。触手は有機物便器以外に出さない。ディルドは洋式汚物の便座の横。右手で持つ。吸盤も植物の口も使わない。extra は `solodildo` 0.7。ファイル `dildoing-mh3-e60-az420.safetensors`。Civitai 2903074、version 3282820、fileId 3167066。カードに強度の数字は無いので 0.7 のまま。トリガーは `pumping a dildo insider her vagina`。洋式のディルドは膣をポンプする。指アナルは同じ洋式汚物。前かがみで右手の人差し指。`analfinger` 1.0。ディルドは積まない。アナルフィストも同じ洋式汚物。前かがみで右手を肛門へ。抜いた手は糞の塊をつかみ、手は糞でべったり。笑顔で胸と腹に塗り、その手を舐めてから歩く。`analfist` 1.0。指アナルの LoRA もディルドも積まない。
 
 顔射は `cumfacial` 0.8。ファイル `cum_facial_000005400.safetensors`。FunPhantom version 3290895、fileId 3175377。公開名は `face_cum_000001000.safetensors`。トリガーは `cmst` を先に置く。ページの開始帯は 0.75–0.85。ギンの口は先に竿が口の外へ出て、白い筋は亀頭の先の尿道から顔と舌へ。かなの顔射と角の顔射も同じ LoRA。
 
 ギンの Jack-O の set は、あやが先にゆっくり立ち、それからギンが姿勢を作る。挿入はしない。behind は尻の後ろへ回り、同じ方向を向いてから立つ。腕は2本。anal で入れる。床の Jack-O も、竿役は尻の後ろへ回ってから同じ方向を向く。
 
-角の口は、角の手が竿を離してマットレスに残る。あやの口だけが竿に付く。blowjob 0.8 はそのまま。
+角の口は、角の手が竿を離して土のベッドに残る。あやの口だけが竿に付く。blowjob 0.8 はそのまま。
 
-角の横は、角の頭が画面 LEFT、足が RIGHT、全身がマットレス。あやも頭が LEFT。キスのあいだ竿は外。次の ride で入れる。
+角の横は、角の頭が画面 LEFT、足が RIGHT、全身が土のベッド。あやも頭が LEFT。キスのあいだ竿は外。次の ride で入れる。
 
 立ちバックと四つん這いは肛門。anuspussy 0.40。カメラは横。あやは LEFT 向き。竿役は RIGHT で同じ方向。しのの竿は 35cm。抱擁の生成文、曲げ膝の跨ぎ、誘う最後の look、容姿の竿句も 35cm。lock と同じ。
 
@@ -401,9 +491,9 @@ Colab の **開始シーン** が空なら最初から。beat id を書くと、
 
 □誘うの壁立ちバックと四つん這い股広げは、横からのアナル。siderear 0.8、anuspussy 0.40。竿は肛門。終わりはあや一人。角・誘う立ちバックの `04-tsuno-in` `04-tsuno-peak` は壁立ちバックと同じ動き。その前の `04-tsuno-meet` は、抱きながら肛門へ入れる拍として残す。角・後ろアナルの `04-tsuno-in` `04-tsuno-peak` は四つん這い股広げと同じ動き。その前の `04-tsuno-meet` は、壁で胸を掴んで入れる拍として残す。人間が「立ちバックだけ」「四つん這いだけ」と言うまで、その前拍は消さない。どちらも終わりは角が消えてあや一人が歩く。受け入れる立ちバックとフルネルソンの peak から、横寝の文は外した。横寝は病室の横挿入だけ。
 
-二人が出る場面の終わりはベロチュー。0–3 秒は向き合って舌を絡め、3–5 秒で相手が右へ消え、5–8 秒であや一人が歩く。extra は kiss 0.5。犬、触手、小便、オナニー、ディルド、和式の一人排出は付けない。
+二人が出る場面の終わりはベロチュー。0–3 秒は向き合って舌を絡め、3–5 秒で相手が右へ消え、5–8 秒であや一人が歩く。extra は kiss 0.5。犬、触手、小便、オナニー、ディルド、指アナル、アナルフィスト、和式の一人排出は付けない。
 
-チェックポイントと LoRA の取得は CPU で足りる。ランタイムが CPU のとき、ノートは `H3_WEIGHTS_ONLY=1` を置き、Drive へ取って止まる。Comfy は起動しない。動画は A100 でもう一度 Run all。1MB を超える同名ファイルは取り直さない。
+チェックポイントと LoRA の取得は CPU で足りる。ランタイムが CPU のとき、ノートは `H3_WEIGHTS_ONLY=1` を置き、Drive へ取って止まる。Comfy は起動しない。動画は A100 でもう一度 Run all。1MB を超える同名ファイルは、動画セルでは取り直さない。すでに Drive にある LoRA を今の URL へ取り直すセルは、動画セルの次。開いたときは更新しない。欄を「すでにある LoRA を更新する」にしてそのセルだけ実行する。CPU で足りる。Comfy は起動しない。チェックポイントは取らない。同名が 1MB を超えていても、URL の記録が無いか違うときは取り直す。取り直しに失敗したときは前のファイルが残る。まだ Drive に無いファイルは、そのセルでは取らない。ファイル名が替わった LoRA は、古い名前が Drive にあるとき新しい名前を取る。古いファイルは消さない。
 
 「前の最終フレームから続ける」は、1本目だけ T2V。2本目以降は I2V。新しい人は -spot が先に入る。
 

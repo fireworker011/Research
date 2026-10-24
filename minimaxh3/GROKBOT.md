@@ -122,12 +122,12 @@ python minimaxh3/grokbot/run_episode.py --episode kasumi-late-desk-adult --branc
 
 ### 病棟出口（成人エロ・Colab 5 番で完了か失敗か）
 
-同じ枝。inbox は触るな。Drive は `episodes/hospital-exit-adult/` と `models/erotic/` だけ。迷ったら `--story accept`。誘うポーズ・トイレ・登場スキップは病棟だけ。
+枝は `cursor/h3-lora-cards-d736`。霞東の枝ではない。コーディングは Cursor。ここは人間が「描け」と言ったあとの1回だけ。inbox は触るな。Drive は `episodes/hospital-exit-adult/` と `models/erotic/` だけ。迷ったら `--story accept`。誘うポーズ・トイレ・登場スキップは病棟だけ。引き継ぎは `episodes/hospital-exit-adult/HANDOFF.md`。
 
 ```
-skill h3-episode-grokbot を読む。
-質問しない。inbox は触るな。I2V/T2V/R2V ランナーは動かすな。Imagine するな。LoRAスタジオは使うな。
-python minimaxh3/grokbot/run_episode.py --episode hospital-exit-adult --branch cursor/h3-kasumi-adult-0402 --story accept
+skill h3-episode-grokbot を読む。続けて minimaxh3/episodes/hospital-exit-adult/HANDOFF.md の「次に投げる先」と「残課題」を読む。
+質問しない。inbox は触るな。I2V/T2V/R2V ランナーは動かすな。Imagine するな。LoRAスタジオは使うな。コードは直すな。
+python minimaxh3/grokbot/run_episode.py --episode hospital-exit-adult --branch cursor/h3-lora-cards-d736 --story accept
 投稿するな。Wan/Max/完全版ノート/loca.lt は使うな。終わったら colab stop。
 結果は slug と Drive episodes/hospital-exit-adult/final/latest.mp4 のパスだけ。失敗なら status.json のエラー一行。
 ```
