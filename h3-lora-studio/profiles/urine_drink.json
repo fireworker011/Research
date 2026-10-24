@@ -1,0 +1,70 @@
+{
+  "id": "urine_drink",
+  "adults_only": true,
+  "min_age": 21,
+  "feminine_lock": true,
+  "modes": [
+    "i2v",
+    "t2v"
+  ],
+  "allow_turbo": false,
+  "canvas": {
+    "i2v": {
+      "width": 768,
+      "height": 864,
+      "duration_s": 10.0,
+      "aspect": "8:9"
+    },
+    "t2v": {
+      "width": 576,
+      "height": 1024,
+      "duration_s": 10.0,
+      "aspect": "9:16"
+    }
+  },
+  "stack_plan": {
+    "act": {
+      "id": "penis-lora-h3",
+      "strength": 0.7
+    },
+    "helper": [
+      {
+        "id": "synth-pussy-h3",
+        "strength": 0.55
+      }
+    ]
+  },
+  "sampler": {
+    "sampler_name": "euler",
+    "scheduler": "simple",
+    "steps": 12,
+    "note": "Any-pose urine drink. No act LoRA exists. Penis 0.7 + Synth 0.55 / 12step. Turbo off. Yellow from the glans-tip urethra. Pose comes from the prompt."
+  },
+  "disabled": [
+    "thumbinbutt-h3",
+    "anal-penetration-coachbate",
+    "hmnsfw-aio-v25",
+    "lesbian-cunnilingus-h3",
+    "pussy-spread-h3",
+    "futa-h3-v51",
+    "blowjob-h3",
+    "riding-pose-i2v",
+    "facial-cumshot-h3",
+    "cumouf-h3",
+    "final-thrust-h3",
+    "fingering-h3",
+    "hmmasturbation-h3",
+    "doggy-h3",
+    "cowgirl-position-h3",
+    "missionary-pov-h3",
+    "photoreal-h3-still",
+    "larry-v4",
+    "minimax-h3-turbo-fl2v-4step",
+    "cinema-dy"
+  ],
+  "scenes": {
+    "i2v": "PENISLORA\nFor the target video, at 0.00 seconds into the target video, <Picture 1> (from [Shot 1]) is fully referenced.\n\nsubject_definitions:\n<Subject 1> Young adult woman, clearly over 21, same face body and hair as <Picture 1>, fully nude, innocent girl-next-door face, ordinary everyday look, feminine body. Not a man.\n<Subject 2> Young adult woman, clearly over 21, fully nude, innocent girl-next-door face, ordinary everyday look, feminine body, futanari: erect penis, hairless female pussy at the base of the shaft, no testicles, no scrotum. Penis plus vagina, never balls. Not a man.\n\n(S2) pees a yellow stream from the urethral opening at the glans tip of the erect 20cm, the same hole semen would pulse from, not from the pussy at the base. (S1) drinks the yellow stream from the tip. Opaque yellow urine, not clear, not white, not off-screen. Pose and camera follow the user prompt. If none, standing, front, medium two-shot. No man appears. Identity of (S1) stays locked to <Picture 1>.\n\nAll performers are consenting adult women 21 years or older.",
+    "t2v": "PENISLORA\nVertical 9:16 live-action photorealism, no anime.\n\nsubject_definitions:\n<Subject 1> Young adult woman, clearly over 21, fully nude, innocent girl-next-door face, ordinary everyday look, feminine body. Not a man.\n<Subject 2> Young adult woman, clearly over 21, fully nude, innocent girl-next-door face, ordinary everyday look, feminine body, futanari: erect penis, hairless female pussy at the base of the shaft, no testicles, no scrotum. Penis plus vagina, never balls. Not a man.\n\n(S2) pees a yellow stream from the urethral opening at the glans tip of the erect 20cm, the same hole semen would pulse from, not from the pussy at the base. (S1) drinks the yellow stream from the tip. Opaque yellow urine, not clear, not white, not off-screen. Pose and camera follow the user prompt. If none, standing, front, medium two-shot. No man appears.\n\nAll performers are consenting adult women 21 years or older."
+  },
+  "negative": "child, teen, loli, shota, syota, underage, minor, cartoon, illustration, man, male body, masculine, muscular man, white liquid, clear water, semen, feces, worm-like penis"
+}
