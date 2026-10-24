@@ -7838,7 +7838,8 @@ def ensure_episode_checkpoint(ep: dict[str, Any], models_root: Path | str) -> li
     need = expected or min_bytes
     raise EpisodeError(
         f"fetch incomplete {spec['file']}: {have} / {need} bytes kept on Drive. "
-        "stock fallback is forbidden. Run all again (same A100); it continues the .part"
+        "stock fallback is forbidden. The .part stays. "
+        "Restart the runtime so this engine loads, then Run all. It continues the .part."
     )
 
 
@@ -8137,6 +8138,26 @@ class _NoRedirect(urllib.request.HTTPRedirectHandler):
 _DOWNLOAD_OPENER = urllib.request.build_opener(_NoRedirect)
 
 
+def _civitai_headers(token: str = "") -> dict[str, str]:
+    """Bearer for a civitai.com hop. Empty when this process has no token."""
+    headers = {"User-Agent": "h3-episode"}
+    tok = (token or _civitai_token()).strip()
+    if tok:
+        headers["Authorization"] = f"Bearer {tok}"
+    return headers
+
+
+def _next_civitai_location(current: str, exc: urllib.error.HTTPError) -> str:
+    loc = exc.headers.get("Location") or exc.headers.get("location")
+    try:
+        exc.read()
+    finally:
+        exc.close()
+    if not loc:
+        raise exc
+    return _quote_http_url(urllib.parse.urljoin(current, loc))
+
+
 def _open_civitai(url: str, headers: dict[str, str], *, timeout: int = 120):
     """Follow Civitai redirects. Drop Authorization off civitai.com.
 
@@ -8154,16 +8175,40 @@ def _open_civitai(url: str, headers: dict[str, str], *, timeout: int = 120):
             last_exc = exc
             if exc.code not in {301, 302, 303, 307, 308}:
                 raise
-            loc = exc.headers.get("Location") or exc.headers.get("location")
-            try:
-                exc.read()
-            finally:
-                exc.close()
-            if not loc:
-                raise
-            current = _quote_http_url(urllib.parse.urljoin(current, loc))
+            current = _next_civitai_location(current, exc)
             if not _civitai_host(urllib.parse.urlsplit(current).netloc):
                 hdrs.pop("Authorization", None)
+    if last_exc is not None:
+        raise last_exc
+    raise RuntimeError("download redirect failed")
+
+
+def _resolve_civitai_download_url(url: str, *, token: str = "", timeout: int = 60) -> str:
+    """Return the signed weight URL. Do not download the body.
+
+    Bearer is sent only while the hop stays on civitai.com. The returned URL is
+    the first Location on another host. wget and curl resume that URL with no
+    Authorization header. A signed URL expires, so each resume pass resolves again.
+    """
+    current = _quote_http_url(url)
+    headers = _civitai_headers(token)
+    last_exc: urllib.error.HTTPError | None = None
+    for _ in range(8):
+        req = urllib.request.Request(current, headers=headers)
+        try:
+            resp = _DOWNLOAD_OPENER.open(req, timeout=timeout)
+        except urllib.error.HTTPError as exc:
+            last_exc = exc
+            if exc.code not in {301, 302, 303, 307, 308}:
+                raise
+            nxt = _next_civitai_location(current, exc)
+            if not _civitai_host(urllib.parse.urlsplit(nxt).netloc):
+                return nxt
+            current = nxt
+            continue
+        else:
+            resp.close()
+            raise OSError("civitai download has no signed url")
     if last_exc is not None:
         raise last_exc
     raise RuntimeError("download redirect failed")
@@ -8197,18 +8242,31 @@ def fetch_text(url: str, dest: Path, *, min_bytes: int = 100, token: str = "", a
         return ok
     except Exception as e:  # network
         print("fetch fail", url, e)
+        if isinstance(e, urllib.error.HTTPError) and e.code == 403 and "civitai.com" in str(url).lower():
+            print(
+                "fetch refused",
+                dest.name,
+                "Civitai 403. The published file id stays. Paid access on that model refuses this account.",
+            )
         if dest.is_file() and not _download_head_ok(dest, allow_json=allow_json):
             dest.unlink()
         return False
 
 
 def _resume_download_once(url: str, part: Path) -> None:
-    """One pass with wget/curl Range resume. Partial file is kept on failure."""
+    """One pass with wget/curl Range resume. Partial file is kept on failure.
+
+    A civitai.com URL is resolved first. The API token stays on that hop.
+    wget and curl receive the signed URL and no Authorization header.
+    """
     part.parent.mkdir(parents=True, exist_ok=True)
+    fetch_url = url
+    if _civitai_host(urllib.parse.urlsplit(str(url)).netloc):
+        fetch_url = _resolve_civitai_download_url(url)
     wget = shutil.which("wget")
     if wget:
         r = subprocess.run(
-            [wget, "-c", "--tries=3", "--timeout=60", "-O", str(part), url],
+            [wget, "-c", "--tries=3", "--timeout=60", "-O", str(part), fetch_url],
             check=False,
         )
         if r.returncode == 0:
@@ -8217,7 +8275,7 @@ def _resume_download_once(url: str, part: Path) -> None:
     curl = shutil.which("curl")
     if curl:
         r = subprocess.run(
-            ["curl", "-fL", "-C", "-", "--retry", "3", "-o", str(part), url],
+            ["curl", "-fL", "-C", "-", "--retry", "3", "-o", str(part), fetch_url],
             check=False,
         )
         if r.returncode == 0:
@@ -8225,7 +8283,7 @@ def _resume_download_once(url: str, part: Path) -> None:
         raise OSError(f"curl exit {r.returncode}")
     existing = part.stat().st_size if part.is_file() else 0
     req = urllib.request.Request(
-        url,
+        fetch_url,
         headers={"User-Agent": "h3-episode", "Range": f"bytes={existing}-"},
     )
     with urllib.request.urlopen(req, timeout=120) as resp:

@@ -5,6 +5,7 @@ import os
 import re
 import shutil
 import signal
+import subprocess
 import sys
 import threading
 import urllib.parse
@@ -4839,6 +4840,175 @@ def test_fetch_text_sends_civitai_token_only_to_the_opener(tmp_path, monkeypatch
     assert fetch_text("https://civitai.com/api/download/models/1?fileId=2", dest, min_bytes=10)
     assert seen["auth"] == "Bearer secret-token"
     assert b"secret-token" not in dest.read_bytes()
+
+
+def _local_civitai_pair(monkeypatch, mod, cdn_handler, hub_handler):
+    """Hub counts as civitai.com. The weight host does not, so Bearer must stop there."""
+    cdn = ThreadingHTTPServer(("127.0.0.1", 0), cdn_handler)
+    hub = ThreadingHTTPServer(("127.0.0.1", 0), hub_handler)
+    for srv in (cdn, hub):
+        threading.Thread(target=srv.serve_forever, daemon=True).start()
+    monkeypatch.setattr(mod, "_civitai_host", lambda netloc: str(netloc).startswith("localhost"))
+    monkeypatch.setattr(mod, "_civitai_token", lambda: "secret-token")
+    return cdn, hub
+
+
+def test_resume_wgets_the_signed_url_and_continues_the_part(tmp_path, monkeypatch):
+    import h3_episode as mod
+
+    body = b"0123456789abcdef" * 4
+    seen: dict[str, object] = {"hub": 0, "cdn_auth": "unset", "range": None}
+
+    class CDN(BaseHTTPRequestHandler):
+        protocol_version = "HTTP/1.1"
+
+        def do_GET(self):  # noqa: N802
+            seen["cdn_auth"] = self.headers.get("Authorization")
+            seen["range"] = self.headers.get("Range")
+            start = 0
+            if self.headers.get("Range"):
+                start = int(self.headers.get("Range").split("=", 1)[1].split("-", 1)[0] or "0")
+            payload = body[start:]
+            code = 206 if start else 200
+            self.send_response(code)
+            if start:
+                self.send_header("Content-Range", f"bytes {start}-{len(body) - 1}/{len(body)}")
+            self.send_header("Content-Length", str(len(payload)))
+            self.end_headers()
+            self.wfile.write(payload)
+
+        def log_message(self, fmt, *args):  # noqa: ANN001
+            return
+
+    class Hub(BaseHTTPRequestHandler):
+        protocol_version = "HTTP/1.1"
+
+        def do_GET(self):  # noqa: N802
+            seen["hub"] = int(seen["hub"]) + 1
+            seen["hub_auth"] = self.headers.get("Authorization")
+            loc = (
+                f"http://127.0.0.1:{cdn.server_address[1]}/Minimax%20H3.safetensors"
+                "?X-Amz-Signature=abc"
+            )
+            self.send_response(307)
+            self.send_header("Location", loc)
+            self.send_header("Content-Length", "0")
+            self.end_headers()
+
+        def log_message(self, fmt, *args):  # noqa: ANN001
+            return
+
+    cdn, hub = _local_civitai_pair(monkeypatch, mod, CDN, Hub)
+    argv: list[str] = []
+    real_run = subprocess.run
+
+    def spy(args, check=False):  # noqa: ANN001
+        argv.append(args[-1])
+        return real_run(args, check=check)
+
+    monkeypatch.setattr(mod.subprocess, "run", spy)
+    part = tmp_path / "h3ErosMax_beta6_3283276.safetensors.part"
+    part.write_bytes(body[:10])
+    url = f"http://localhost:{hub.server_address[1]}/api/download/models/3393047?fileId=3283276"
+    try:
+        mod._resume_download_once(url, part)
+        assert part.read_bytes() == body
+        part.write_bytes(body[:10])
+        mod._resume_download_once(url, part)
+        assert part.read_bytes() == body
+    finally:
+        hub.shutdown()
+        cdn.shutdown()
+        hub.server_close()
+        cdn.server_close()
+    assert seen["hub_auth"] == "Bearer secret-token"
+    assert seen["cdn_auth"] is None
+    assert seen["hub"] == 2
+    assert argv
+    assert all("secret-token" not in item for item in argv)
+    assert all("api/download" not in item for item in argv)
+    assert all("X-Amz-Signature=abc" in item for item in argv)
+    assert all("Minimax%20H3.safetensors" in item for item in argv)
+
+
+def test_resume_does_not_wget_when_civitai_refuses(tmp_path, monkeypatch):
+    import h3_episode as mod
+
+    class Hub(BaseHTTPRequestHandler):
+        protocol_version = "HTTP/1.1"
+
+        def do_GET(self):  # noqa: N802
+            raw = b'{"error":"Unauthorized"}'
+            self.send_response(401)
+            self.send_header("Content-Length", str(len(raw)))
+            self.end_headers()
+            self.wfile.write(raw)
+
+        def log_message(self, fmt, *args):  # noqa: ANN001
+            return
+
+    hub = ThreadingHTTPServer(("127.0.0.1", 0), Hub)
+    threading.Thread(target=hub.serve_forever, daemon=True).start()
+    monkeypatch.setattr(mod, "_civitai_host", lambda netloc: str(netloc).startswith("localhost"))
+    monkeypatch.setattr(mod, "_civitai_token", lambda: "secret-token")
+    called: list[list[str]] = []
+    monkeypatch.setattr(mod.subprocess, "run", lambda args, check=False: called.append(args))
+    part = tmp_path / "h3ErosMax_beta6_3283276.safetensors.part"
+    url = f"http://localhost:{hub.server_address[1]}/api/download/models/3393047?fileId=3283276"
+    try:
+        with pytest.raises(mod.urllib.error.HTTPError):
+            mod._resume_download_once(url, part)
+    finally:
+        hub.shutdown()
+        hub.server_close()
+    assert called == []
+    assert not part.exists()
+
+
+def test_fetch_resumable_keeps_part_when_the_signed_fetch_fails(tmp_path, monkeypatch):
+    import h3_episode as mod
+
+    signed = "http://127.0.0.1/weight.safetensors?X-Amz-Signature=abc"
+    monkeypatch.setattr(mod, "_resolve_civitai_download_url", lambda url, **_k: signed)
+
+    def boom(args, check=False):  # noqa: ANN001
+        assert args[-1] == signed
+        assert "secret-token" not in args[-1]
+        assert "api/download" not in args[-1]
+        Path(args[args.index("-O") + 1]).write_bytes(b"abc")
+        return subprocess.CompletedProcess(args, 4)
+
+    monkeypatch.setattr(mod.shutil, "which", lambda name: "/usr/bin/wget" if name == "wget" else None)
+    monkeypatch.setattr(mod.subprocess, "run", boom)
+    monkeypatch.setattr(mod.time, "sleep", lambda _s: None)
+    dest = tmp_path / "h3ErosMax_beta6_3283276.safetensors"
+    ok = mod.fetch_resumable(
+        "https://civitai.com/api/download/models/3393047?fileId=3283276",
+        dest,
+        min_bytes=10,
+        expected_bytes=100,
+        tries=2,
+    )
+    assert ok is False
+    assert not dest.exists()
+    assert (dest.with_name(dest.name + ".part")).read_bytes() == b"abc"
+
+
+def test_fetch_text_names_paid_access_on_civitai_403(tmp_path, monkeypatch, capsys):
+    import h3_episode as mod
+
+    def fake_open(url, headers, timeout=120):  # noqa: ANN001
+        raise mod.urllib.error.HTTPError(url, 403, "Forbidden", hdrs=None, fp=None)
+
+    monkeypatch.setattr(mod, "_open_civitai", fake_open)
+    monkeypatch.setattr(mod, "_civitai_token", lambda: "secret-token")
+    dest = tmp_path / LORA_FILES["analfist"]
+    assert fetch_text(LORA_URLS["analfist"], dest, min_bytes=10) is False
+    out = capsys.readouterr().out
+    assert "secret-token" not in out
+    assert "403" in out
+    assert "Paid access" in out
+    assert not dest.exists()
 
 
 def test_fetch_text_keeps_episode_json_and_drops_a_json_error_page(tmp_path, monkeypatch):

@@ -29,7 +29,7 @@ LoRA スタジオのスキルは病棟の指アナルに使わない。指アナ
 
 ## 残課題（2026-10-24）
 
-生成はしていない。pytest は 118 通過。動画で旗、人体、LoRA の休眠、beta6 の取得は見ていない。
+生成はしていない。pytest は 122 通過。動画で旗、人体、LoRA の休眠は見ていない。beta6 の取得コードは直した。Colab での 21GB の着地はまだ見ていない。
 
 - 病棟の夜は、`Signs, posters, screens, and badges` の一文を足さない。`no_text_on_signs` は false。世界ロックから `door or screen` を外した。`no readable letters` と、ゴムの扉と出口の doorway は残す。場所を病棟に戻しても、その一文と `screen` は戻らない。
 - ネオン横丁の `blank signs`、霊廟の `stone markers`、神社の `torii`、城下町の `shop fronts` は、場所の env に残す。場所自身が看板系を指名している。
@@ -39,6 +39,8 @@ LoRA スタジオのスキルは病棟の指アナルに使わない。指アナ
 - 晴れは地面を乾かさない。本文に乾きが無い場所は、晴れだけでは乾かない。
 - フルネルソンの学習文は `man's arms` を含む。消すと LoRA が動かない。横挿入に he や daddy を足すと、角が男になる。ステップの上限は 16。見本の 20 は使えない。
 - 開いたままの Colab は古い欄を保持する。LoRA 更新セルは、まだ Drive に無いファイルを取らない。analfist、fullnelson、beta6 は描くセルが取る。beta5 は beta6 の代わりにならない。古いファイルは消さない。開いたときのフォームは変えていない。汚泥の干潟、昼、晴れ、トイレ触手、角は横になって挿入。
+- beta6 の wget は、Civitai の URL をトークン無しで叩いて exit 6 になっていた。0 バイト。今は最初のホップだけ Bearer を付け、署名 URL を wget か curl に渡す。署名先には Authorization を付けない。署名は失効するので、試し打ちのたびに取り直す。`*.part` は残す。0 バイトの再実行は、同じカーネルに残った古いエンジンでは直らない。ランタイムを再起動して Run all。ノートは `cursor/h3-lora-cards-d736` の helper をそのとき取り直す。
+- fullnelson（version 3422679、fileId 3317916）と analfist（version 3424713、fileId 3319392）の file id は公開メタデータと一致している。両方 `hasActivePaidAccess`。ログイン済みのトークンでも Civitai は 403 を返す。触手と後ろアナルのこの並びでは、その2つは描く拍に乗らない。403 では止まらない。URL は変えていない。
 - 別枝 `cursor/pose-ref-gaps-d736`、`cursor/human-cast-anatomy-d736`、`cursor/hospital-anal-dildo-face-d736`、`cursor/rehearsal-room-adult-d736` をこの枝へ混ぜない。draft PR #122 はマージしない。
 
 ## いま（2026-10-23）残りの姿勢
