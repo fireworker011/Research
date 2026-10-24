@@ -410,8 +410,8 @@ INVITE_POSE_MODES: dict[str, dict[str, Any]] = {
     "nelson": {
         "label_ja": "フルネルソン",
         "choice_ja": "フルネルソンアナル",
-        "when_ja": "あやが正面。竿役は背後。両脚を抱えて肛門だけ。顔と体は入れ替えない",
-        "hint_ja": "あやの顔が正面。竿役の顔はあやの頭の後ろ。竿は肛門だけ。終わりはあや一人歩き",
+        "when_ja": "あやが正面。竿役は背後。両脚は頭の後ろまで上がる。低視点で肛門だけ。顔と体は入れ替えない",
+        "hint_ja": "あやの顔が正面。脚は頭の後ろ。Full nelson LoRA 1.0。竿は肛門だけ。終わりはあや一人歩き",
     },
     "sit": {
         "label_ja": "対面座位",
@@ -519,6 +519,12 @@ TOILET_MODES: dict[str, dict[str, Any]] = {
         "when_ja": "洋式汚物まみれ。便器に前かがみ→右手の人差し指を肛門へ出し入れ→速く→指を舐めて歩く。Self Anal Finger 1.0。触手はこの便器に出ない",
         "hint_ja": "カメラに背を向けて前かがみ。左手はタンク、右手の人差し指を肛門へ。Self Anal Finger 1.0",
     },
+    "anal_fist": {
+        "label_ja": "アナルフィスト",
+        "choice_ja": "トイレ・アナルフィスト",
+        "when_ja": "洋式汚物まみれ。便器に前かがみ→右手を肛門へ出し入れ→抜いた手が糞をつかむ→笑顔で胸と腹に塗る→手を舐めて歩く。Self Anal Fisting 1.0。触手はこの便器に出ない",
+        "hint_ja": "カメラに背を向けて前かがみ。左手はタンク。右手を肛門へ。抜いた手は糞でべったり。胸と腹に塗ってから舐める",
+    },
     "wash": {
         "label_ja": "和式排出",
         "choice_ja": "トイレ・和式排出",
@@ -539,6 +545,7 @@ TOILET_OVERLAY_KEYS: dict[str, str] = {
     "tentacle": "on_toilet_tentacle",
     "finger": "on_toilet_finger",
     "anal_finger": "on_toilet_anal_finger",
+    "anal_fist": "on_toilet_anal_fist",
     "wash": "on_toilet_wash",
     "wash_miki": "on_toilet_wash_miki",
 }
@@ -561,6 +568,11 @@ TOILET_ALIASES: dict[str, str] = _label_aliases(
         "指アナル": "anal_finger",
         "anal finger": "anal_finger",
         "指": "anal_finger",
+        "アナルフィスト": "anal_fist",
+        "フィスト": "anal_fist",
+        "anal fist": "anal_fist",
+        "fisting": "anal_fist",
+        "anal fisting": "anal_fist",
         "finger": "finger",
         "ディルド": "finger",
         "和式": "wash",
@@ -672,13 +684,13 @@ TSUNO_MODES: dict[str, dict[str, Any]] = {
     "nelson": {
         "label_ja": "フルネルソンアナル",
         "choice_ja": "角・フルネルソンアナル",
-        "when_ja": "胸を掴んだ密着から、両脚を抱えてアナルだけ。膣には入れない",
-        "hint_ja": "胸を鷲掴み。入れたまま両脚を抱える。竿は肛門だけ",
+        "when_ja": "胸を掴んだ密着から、両脚を頭の後ろへ抱えてアナルだけ。低視点。膣には入れない",
+        "hint_ja": "胸を鷲掴み。脚は頭の後ろ。Full nelson LoRA 1.0。竿は肛門だけ",
     },
     "invite_ride": {
         "label_ja": "病室で横になって挿入",
         "choice_ja": "角・病室で横になって挿入",
-        "when_ja": "廃病室の土と草と糞の寝床。座り、キス、しゃがみ口、顔射、横になって一度入れて HOLD、円腰の中出し、キス、入り口のあや一人",
+        "when_ja": "廃病室の土と草と糞の寝床。座り、キス、しゃがみ口、顔射、横になって一度入れて HOLD、円を描く腰で中出し、キス、入り口のあや一人。頭はフレームの右",
         "hint_ja": "角は土と草と糞の寝床の縁に座る。個室へ行かない。終わりはあや一人",
     },
     "invite_ride_column": {

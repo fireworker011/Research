@@ -348,6 +348,12 @@ LORA_FILES = {
     # Self Anal Finger (Civitai 2988249). Card workflow: 1.0, prompt opens with anal_finger.
     # Version 3388162 fileId 3277184. Western toilet row only. Not ThumbInButt.
     "analfinger": "af_h3_vids512_imgs1024_000011750.safetensors",
+    # Self Anal Fisting (Civitai 3016789). Trigger 4n4lfi5tin6. Version 3424713 fileId 3319392.
+    # Western toilet row only. Strength 1.0. Not the finger row and not ThumbInButt.
+    "analfist": "h3-selfanalfisting-k3nk-step00015400.safetensors",
+    # Full nelson anal. Trained sentence is the whole trigger. Version 3422679 fileId 3317916.
+    # Model 3015275. The published filename is the Civitai hash name.
+    "fullnelson": "5VR5YKXR0BFRBWJ17K3HEG5KT0.D8qyBosp.safetensors",
     # Ref2VA UNet only. Registered only. No trigger. Do not add this key to a ward beat extra.
     "charswap": "h3_character_swap_pro4500_1000.safetensors",
     # Ref2VA UNet only. Registered only. Trigger LumiReal merges when this key is in extra.
@@ -388,6 +394,8 @@ LORA_URLS = {
     "cumfacial": "https://civitai.com/api/download/models/3290895?fileId=3175377",
     "solodildo": "https://civitai.com/api/download/models/3282820?fileId=3167066",
     "analfinger": "https://civitai.com/api/download/models/3388162?fileId=3277184",
+    "analfist": "https://civitai.com/api/download/models/3424713?fileId=3319392",
+    "fullnelson": "https://civitai.com/api/download/models/3422679?fileId=3317916",
     "charswap": "https://huggingface.co/akatz-ai/MiniMax-H3-Character-Swap-LoRA/resolve/main/h3_character_swap_pro4500_1000.safetensors",
     "anime2real": "https://huggingface.co/LiseTY/Minimax-H3-ref2v_Anime_2_Realism/resolve/main/Anime2Realsim__H3.safetensors",
 }
@@ -428,12 +436,20 @@ LORA_STRENGTHS = {
     "solodildo": 0.7,
     # Self Anal Finger card workflow is 1.0.
     "analfinger": 1.0,
+    # Self Anal Fisting card has no separate strength. The insertion beats use 1.0.
+    "analfist": 1.0,
+    # Full nelson sample is the pose LoRA at 1.0. Steps on those beats stay at the episode cap.
+    "fullnelson": 1.0,
     "charswap": 1.0,
     "anime2real": 1.0,
 }
 # Triggers that must stay on the beat trigger, never inside action.
 CMST_TRIGGER = "cmst"
 DILDO_TRIGGER = "pumping a dildo insider her vagina"
+# Civitai 3015275 version 3422679. The trained word is this whole sentence.
+FULLNELSON_TRIGGER = (
+    "Full nelson anal, low POV, woman's legs held high behind her head by man's arms, looking down, deep penetration"
+)
 JPNMOANS_TRIGGER = "jpnMoans"
 DOGGY_TRIGGER = "Doggy style"
 ANIME2REAL_TRIGGER = "LumiReal"
@@ -473,9 +489,12 @@ STOCK_ONLY_SLUGS = frozenset({"kasumi-late-desk", "bandai-district", "bandai-dis
 EROTIC_SLUG_SUFFIX = "-adult"
 EROTIC_MODELS_SUBDIR = "erotic"
 # Drive copy (Naomiichi): MyDrive/minimax-h3-comfyui/models/diffusion_models/
-EROS_MAX_UNET = "10Eros_Max_h3_TURBO-hybrid_beta5_int8.safetensors"
+# H3 Eros Max beta6 int8. Civitai 2851079 version 3393047 fileId 3283276. ~21.2GB.
+# The bf16 primary on that version is not the Colab file.
+EROS_MAX_UNET = "h3ErosMax_beta6_3283276.safetensors"
 EROS_MAX_ALIASES = (
     EROS_MAX_UNET,
+    "10Eros_Max_h3_TURBO-hybrid_beta5_int8.safetensors",
     "10Eros_Max_H3_FL2VA-INT8-ConvRot.safetensors",
 )
 # Combat LoRA on TURBO-hybrid OOMs A100 40GB. Opt-in needs High-Memory (VRAM 80GB or Colab High-RAM).
@@ -492,13 +511,10 @@ CHECKPOINTS: dict[str, dict[str, Any]] = {
         "file": EROS_MAX_UNET,
         "aliases": EROS_MAX_ALIASES,
         "erotic": True,
-        "url": (
-            "https://huggingface.co/TenStrip/10Eros-Max/resolve/main/"
-            f"{EROS_MAX_UNET}"
-        ),
-        # ~21GB int8. A 5GB truncated file must not count as ready.
+        "url": "https://civitai.com/api/download/models/3393047?fileId=3283276",
+        # beta6 int8 is 21,709,633,539 bytes. A 5GB truncated file must not count as ready.
         "min_bytes": 15_000_000_000,
-        "expected_bytes": 21_000_000_000,
+        "expected_bytes": 21_709_633_539,
     },
     # DaSiWa Hybrid v2 int8. Civitai 2877206 version 3314675 fileId 3203130. ~20GB.
     "dasiwa": {
@@ -638,13 +654,13 @@ PLANTED_CLAUSE = (
 )
 # Nelson lifts Aya's feet. "Feet planted" and the word walk (even negated) make H3 invent a walk cycle.
 NELSON_HOLD_RE = re.compile(
-    r"feet stay in the air|heels sit beside|held up, both thighs|forearms already hold both thighs",
+    r"feet stay in the air|heels sit beside|held up, both thighs|forearms already hold both thighs|held high behind her head",
     re.I,
 )
 NELSON_PLANTED_CLAUSE = (
     "The pair stays on this same floor spot. The partner's feet stay on the same linoleum marks. "
-    "Aya's feet stay in the air beside the partner's hips. Only hips and arms move. "
-    "A hip thrust is in place. The camera holds. "
+    "Aya's legs are held high behind her head. Aya's feet stay in the air. Only hips and arms move. "
+    "A hip thrust is in place. The camera holds. Low POV, looking down. "
     "Normal adult human height, nobody is giant."
 )
 # The pussy and the glans share one vertical line. Soles sit outside the legs, beside the buttocks.
@@ -1691,8 +1707,12 @@ def _best_erotic_weight(paths: list[Path], want: str, spec: dict[str, Any]) -> P
 
 
 def is_turbo_hybrid_unet(name: str) -> bool:
+    """True when turbo is already baked in. Beta6 fuses the 8+4 turbo the way TURBO-hybrid did."""
     low = str(name or "").lower()
-    return "turbo-hybrid" in low or "turbo_hybrid" in low
+    if "turbo-hybrid" in low or "turbo_hybrid" in low:
+        return True
+    compact = low.replace("_", "").replace("-", "").replace(" ", "")
+    return "h3erosmax" in compact or compact.startswith("erosmax")
 
 
 def locate_erotic_checkpoint(models_root: Path | str, spec: dict[str, Any] | None = None) -> Path | None:
@@ -6961,6 +6981,23 @@ def _hospital_i2v_lines(beat: dict[str, Any]) -> list[str]:
             "A small smear of thick brown feces clings to the skin around that open ring. "
             "The place and the rendering stay the opening frame."
         )
+    if bid == "04-toilet-afpull":
+        lines.append(
+            "She climaxes, then the hand slides out of the anus closed around a mass of thick brown feces. "
+            "The whole hand is coated thick with brown feces. The anus stays a wide open ring. "
+            "The place and the rendering stay the opening frame."
+        )
+    if bid == "04-toilet-afsmear":
+        lines.append(
+            "She smiles and wipes the feces-coated hand across her chest, her breasts, and her belly. "
+            "Thick brown feces stays smeared on the chest and the belly. The hand stays coated."
+        )
+    if bid == "04-toilet-out" and "licks the thick brown feces off that hand" in low:
+        lines.append(
+            "The feces-coated hand goes to the open mouth. "
+            "She licks the thick brown feces off that hand until the hand is clean. "
+            "Then she straightens and walks for the rest of the clip."
+        )
     if bid == "04-toilet-out" and "licks that fingertip" in low:
         lines.append(
             "The fingertip with thick brown feces goes into the open mouth. "
@@ -7086,7 +7123,9 @@ def build_beat_prompt(
         if beat.get("facial"):
             desc.append(FACIAL_PACE_CLAUSE)
         else:
-            desc.append(GAME_THIRD_PERSON_CLAUSE)
+            # The full-nelson card is a low POV looking down. A feet-wide gameplay camera fights it.
+            if "fullnelson" not in {key for key, _strength in extra_lora_entries(beat)}:
+                desc.append(GAME_THIRD_PERSON_CLAUSE)
             if bid_now == "04-gin-lick" and "hugs aya" in action_txt.lower():
                 desc.append(GIN_LICK_PACE_CLAUSE)
             elif "lowers her chest and cheek" in action_txt.lower():
@@ -7195,7 +7234,17 @@ def build_beat_prompt(
             cam or "",
             sideride="sideride" in {key for key, _strength in extra_lora_entries(beat)},
             face_pair=_hospital_face_pair(beat),
-            authored_medium=str(beat.get("id") or "") in ("04-toilet-afin", "04-toilet-afast"),
+            authored_medium=(
+                str(beat.get("id") or "")
+                in (
+                    "04-toilet-afin",
+                    "04-toilet-afast",
+                    "04-toilet-afist",
+                    "04-toilet-afpull",
+                    "04-toilet-afsmear",
+                )
+                or "fullnelson" in {key for key, _strength in extra_lora_entries(beat)}
+            ),
         )
         if source == "chain":
             cam = _hospital_i2v_camera(beat, cam or "")
@@ -7349,6 +7398,8 @@ _LORA_TRIGGER_TOKENS = (
     ("thumbinbutt", "thum1n8utt"),
     ("solodildo", DILDO_TRIGGER),
     ("analfinger", "anal_finger"),
+    ("analfist", "4n4lfi5tin6"),
+    ("fullnelson", FULLNELSON_TRIGGER),
     ("cumfacial", "cmst"),
     ("anuspussy", "zxqanus"),
     ("anuspussy", "zxqvagina"),
@@ -7713,9 +7764,10 @@ def resolve_unet(
 
 
 def ensure_episode_checkpoint(ep: dict[str, Any], models_root: Path | str) -> list[str]:
-    """Use a Drive copy of 10Eros_Max if one exists; otherwise fetch into models/erotic/.
+    """Use the current Eros Max file when it is already on Drive. Otherwise fetch it.
 
-    Never download it for a stock episode. Incomplete copies stay as `*.part`.
+    An older alias, including beta5, does not count. H3_EROS_MAX still pins one file.
+    Never download an erotic checkpoint for a stock episode. Incomplete copies stay as `*.part`.
     """
     notes: list[str] = []
     key = episode_checkpoint(ep)
@@ -7727,9 +7779,21 @@ def ensure_episode_checkpoint(ep: dict[str, Any], models_root: Path | str) -> li
     dest = erotic_checkpoint_path(models_root, spec)
     min_bytes = int(spec.get("min_bytes") or 1_000_000)
     expected = int(spec.get("expected_bytes") or 0)
+    want = str(spec.get("file") or "")
     found = locate_erotic_checkpoint(models_root, spec)
-    if found is not None:
-        print("reuse Drive Eros Max", found, found.stat().st_size, "no HuggingFace fetch")
+    explicit = (os.environ.get("H3_EROS_MAX") or "").strip()
+    pinned = False
+    if key == "eros-max" and explicit and found is not None:
+        try:
+            pinned = found.resolve() == Path(explicit).resolve()
+        except OSError:
+            pinned = found == Path(explicit)
+    if (
+        found is not None
+        and _checkpoint_ready(found, min_bytes)
+        and (found.name == want or pinned)
+    ):
+        print("reuse Drive Eros Max", found, found.stat().st_size, "no new fetch")
         notes.append(f"reused Drive copy {found}")
         return notes
     if _checkpoint_ready(dest, min_bytes):

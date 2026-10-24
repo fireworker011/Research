@@ -31,6 +31,7 @@ from h3_episode import (  # noqa: E402
     DEFAULT_CAMERA_PACK,
     EPISODE_HELPERS,
     EROS_MAX_UNET,
+    FULLNELSON_TRIGGER,
     I2VA_HEADER,
     LORA_FILES,
     LORA_STRENGTHS,
@@ -449,6 +450,7 @@ def test_notebook_is_one_cell_and_isolated():
     assert "フルネルソンアナル" in src
     assert "ベロチュー→じゅぼ→騎乗位" not in src
     assert 'TOILET = "トイレ・触手"' in src
+    assert "トイレ・アナルフィスト" in src
     assert "トイレに行かない（迷ったらこれ）" in src
     assert 'GIN = "灰色・騎乗・最初から膝曲げ"' in src
     assert "灰色・出ない（迷ったらこれ）" in src
@@ -465,7 +467,8 @@ def test_notebook_is_one_cell_and_isolated():
     assert "cursor/h3-lora-cards-d736" in md
     assert "kasumi-late-desk-adult" in md
     assert "10Eros Max は Drive" in md
-    assert "10Eros_Max_h3_TURBO-hybrid_beta5_int8.safetensors" in md
+    assert "h3ErosMax_beta6_3283276.safetensors" in md
+    assert "3393047" in md
     assert "迷ったら" in md
     assert "5. 構成" in md
     assert "6. 誘うポーズ" in md
@@ -908,7 +911,9 @@ def test_kasumi_adult_is_erotic_eros_max_and_stock_kasumi_cannot_use_it():
     assert episode_checkpoint(adult) == "eros-max"
     assert CHECKPOINTS["eros-max"]["erotic"] is True
     assert CHECKPOINTS["eros-max"]["file"] == EROS_MAX_UNET
-    assert EROS_MAX_UNET == "10Eros_Max_h3_TURBO-hybrid_beta5_int8.safetensors"
+    assert EROS_MAX_UNET == "h3ErosMax_beta6_3283276.safetensors"
+    assert "3393047" in CHECKPOINTS["eros-max"]["url"]
+    assert "fileId=3283276" in CHECKPOINTS["eros-max"]["url"]
     assert is_turbo_hybrid_unet(EROS_MAX_UNET)
     assert is_erotic_unet_name(EROS_MAX_UNET)
     assert episode_lane(stock) == "stock"
@@ -2754,6 +2759,49 @@ def test_hospital_finger_pose_and_squat_toilet_modes():
     assert pee_act["source"] == "t2v"
 
 
+def test_hospital_anal_fist_grabs_feces_then_smears_and_licks():
+    raw = load_episode(HOSPITAL_DIR / "episode.json")
+    ep = prepare_episode(raw, story_override="accept", toilet_override="アナルフィスト", connect_override="chain")
+    assert validate_episode(ep, root=HOSPITAL_DIR) == []
+    ids = [b["id"] for b in ep["beats"] if str(b["id"]).startswith("04-toilet")]
+    assert ids == [
+        "04-toilet-in",
+        "04-toilet-afist",
+        "04-toilet-afpull",
+        "04-toilet-afsmear",
+        "04-toilet-out",
+    ]
+    fist = next(b for b in ep["beats"] if b["id"] == "04-toilet-afist")
+    pull = next(b for b in ep["beats"] if b["id"] == "04-toilet-afpull")
+    smear = next(b for b in ep["beats"] if b["id"] == "04-toilet-afsmear")
+    out = next(b for b in ep["beats"] if b["id"] == "04-toilet-out")
+    assert extra_lora_entries(fist)[0] == ("analfist", 1.0)
+    assert LORA_FILES["analfist"] == "h3-selfanalfisting-k3nk-step00015400.safetensors"
+    assert "3424713" in LORA_URLS["analfist"]
+    assert "fileId=3319392" in LORA_URLS["analfist"]
+    assert LORA_STRENGTHS["analfist"] == 1.0
+    prompt = build_beat_prompt(ep, fist, trigger=merge_trigger("", fist))
+    assert prompt.startswith("4n4lfi5tin6")
+    assert "pushes that hand into her anus" in prompt
+    assert "all four feet" not in prompt
+    assert "buttocks fill the center" in prompt.lower()
+    assert "into the pussy" not in prompt.lower()
+    assert "index finger" not in prompt.lower()
+    assert "analfinger" not in extra_keys(fist)
+    assert "solodildo" not in extra_keys(fist)
+    assert pull.get("source") == "chain"
+    assert "closed around a mass of thick brown feces" in pull["action"].lower()
+    assert "whole hand is coated thick with brown feces" in pull["action"].lower()
+    assert "wide open ring" in pull["action"].lower()
+    assert "smiles" in smear["action"].lower()
+    assert "across her chest, her breasts, and her belly" in smear["action"].lower()
+    assert "analfist" not in extra_keys(smear)
+    assert "licks the thick brown feces off that hand" in out["action"].lower()
+    assert "walks right" in out["action"].lower()
+    assert out.get("connect") == "end"
+    _assert_hospital_bans(ep)
+
+
 def test_card_lora_choices_stay_off_until_the_form_says_on():
     raw = load_episode(HOSPITAL_DIR / "episode.json")
     assert ui_default("missionlg") == "正常位LoRAオフ（迷ったらこれ）"
@@ -3635,6 +3683,18 @@ def test_hospital_gin_tsuno_optional_events():
     assert nel_in.get("camera_pack") == "none"
     assert nel_in.get("connect") == "cut"
     assert "wide blissful smile" in nel_in["action"].lower()
+    assert extra_lora_entries(nel_in)[0] == ("fullnelson", 1.0)
+    assert LORA_FILES["fullnelson"] == "5VR5YKXR0BFRBWJ17K3HEG5KT0.D8qyBosp.safetensors"
+    assert "3422679" in LORA_URLS["fullnelson"]
+    assert "fileId=3317916" in LORA_URLS["fullnelson"]
+    assert nel_in.get("steps") == 16
+    assert nel_in.get("sampler") == "res_multistep"
+    assert "held high behind her head" in nel_in["action"].lower()
+    assert nel_in["camera"].lower().startswith("low pov, looking down")
+    nel_prompt = build_beat_prompt(nelson, nel_in, trigger=merge_trigger("", nel_in))
+    assert nel_prompt.startswith(FULLNELSON_TRIGGER)
+    assert "all four feet" not in nel_prompt.lower()
+    assert "low pov, looking down" in nel_prompt.lower()
     assert "travels into the anus" in nel_in["action"].lower()
     assert "pussy" not in nel_in["action"].lower()
     assert "lies on one side" not in nel_peak["action"].lower()
@@ -4148,6 +4208,12 @@ def test_form_opens_on_the_ward_exit_invite_run():
     assert canonical_toilet("アナル指") == "anal_finger"
     assert canonical_toilet("指アナル") == "anal_finger"
     assert canonical_toilet("指") == "anal_finger"
+    assert TOILET_MODES["anal_fist"]["choice_ja"] == "トイレ・アナルフィスト"
+    assert "糞" in TOILET_MODES["anal_fist"]["when_ja"]
+    assert "膣" not in TOILET_MODES["anal_fist"]["when_ja"]
+    assert canonical_toilet("アナルフィスト") == "anal_fist"
+    assert canonical_toilet("フィスト") == "anal_fist"
+    assert canonical_toilet("fisting") == "anal_fist"
     assert canonical_toilet("ディルド") == "finger"
     assert canonical_toilet("トイレ・ディルド") == "finger"
     assert "マット" not in TSUNO_MODES["invite_jacko"]["hint_ja"]
@@ -4450,28 +4516,42 @@ def test_eros_reuses_drive_copy_without_huggingface(tmp_path, monkeypatch):
     assert hit is not None and hit.resolve() == payload.resolve()
 
 
-def test_eros_reuses_alias_filename(tmp_path, monkeypatch):
+def test_eros_alias_does_not_block_beta6(tmp_path, monkeypatch):
     adult = load_episode(KASUMI_ADULT_DIR / "episode.json")
-    _forbid_eros_fetch(monkeypatch)
     payload = _sparse_eros(tmp_path / "diffusion_models" / "Eros Max.safetensors")
+
+    def fake_resume(url: str, dest_path: Path, *, min_bytes: int, expected_bytes: int = 0, tries: int = 4) -> bool:
+        assert "3393047" in url and "fileId=3283276" in url
+        assert dest_path.name == EROS_MAX_UNET
+        _sparse_eros(dest_path)
+        return True
+
+    monkeypatch.setattr("h3_episode.fetch_resumable", fake_resume)
     notes = ensure_episode_checkpoint(adult, tmp_path)
-    assert any("reused Drive copy" in n for n in notes)
-    assert resolve_unet(adult, tmp_path / "diffusion_models", models_root=tmp_path) == payload.name
-    assert stage_erotic_unet(adult, tmp_path) == payload.name
+    assert any(f"fetched {EROS_MAX_UNET}" in n for n in notes)
+    assert payload.is_file()
+    assert (tmp_path / "erotic" / EROS_MAX_UNET).stat().st_size > 15_000_000_000
     assert pick_stock_fl2va(tmp_path / "diffusion_models") != payload.name
 
 
 def test_eros_reuses_drive_root_and_hf_cache(tmp_path, monkeypatch):
     adult = load_episode(KASUMI_ADULT_DIR / "episode.json")
-    _forbid_eros_fetch(monkeypatch)
     drive = tmp_path / "minimax-h3-comfyui"
     models = drive / "models"
     (models / "diffusion_models").mkdir(parents=True)
     payload = _sparse_eros(drive / "10Eros-Max.safetensors")
-    notes = ensure_episode_checkpoint(adult, models)
-    assert any("reused Drive copy" in n for n in notes)
-    assert stage_erotic_unet(adult, models) == payload.name
 
+    def fake_resume(url: str, dest_path: Path, *, min_bytes: int, expected_bytes: int = 0, tries: int = 4) -> bool:
+        assert dest_path.name == EROS_MAX_UNET
+        _sparse_eros(dest_path)
+        return True
+
+    monkeypatch.setattr("h3_episode.fetch_resumable", fake_resume)
+    notes = ensure_episode_checkpoint(adult, models)
+    assert any(f"fetched {EROS_MAX_UNET}" in n for n in notes)
+    assert payload.is_file()
+
+    _forbid_eros_fetch(monkeypatch)
     other = tmp_path / "other-comfy"
     other_models = other / "models"
     (other_models / "diffusion_models").mkdir(parents=True)
@@ -4501,19 +4581,26 @@ def test_eros_reuses_h3_eros_max_env(tmp_path, monkeypatch):
     assert stage_erotic_unet(adult, tmp_path / "weights") == payload.name
 
 
-def test_eros_incomplete_canonical_uses_complete_elsewhere(tmp_path, monkeypatch):
+def test_eros_incomplete_canonical_does_not_keep_an_old_alias(tmp_path, monkeypatch):
     adult = load_episode(KASUMI_ADULT_DIR / "episode.json")
-    _forbid_eros_fetch(monkeypatch)
     dest = tmp_path / "erotic" / EROS_MAX_UNET
     dest.parent.mkdir()
     dest.write_bytes(b"partial")
     os.truncate(dest, 5_556_846_100)
     payload = _sparse_eros(tmp_path / "diffusion_models" / "Eros Max.safetensors")
-    notes = ensure_episode_checkpoint(adult, tmp_path)
-    assert any("reused Drive copy" in n for n in notes)
-    assert stage_erotic_unet(adult, tmp_path) == payload.name
-    dest = tmp_path / "erotic" / EROS_MAX_UNET
-    assert dest.is_file() and not dest.is_symlink() and dest.stat().st_size == 5_556_846_100
+
+    def fake_resume(url: str, dest_path: Path, *, min_bytes: int, expected_bytes: int = 0, tries: int = 4) -> bool:
+        part = dest_path.with_name(dest_path.name + ".part")
+        if dest_path.is_file() and dest_path.stat().st_size < min_bytes:
+            dest_path.replace(part)
+        return False
+
+    monkeypatch.setattr("h3_episode.fetch_resumable", fake_resume)
+    with pytest.raises(EpisodeError, match="fetch incomplete"):
+        ensure_episode_checkpoint(adult, tmp_path)
+    assert payload.is_file() and payload.stat().st_size > 15_000_000_000
+    part = dest.with_name(dest.name + ".part")
+    assert part.is_file() and part.stat().st_size == 5_556_846_100
 
 
 def test_eros_tiny_alias_still_fetches(tmp_path, monkeypatch):
@@ -6425,7 +6512,17 @@ def test_hospital_tsuno_ride_and_stall_are_new_stories():
     assert seat.get("connect") == "cut"
     assert beat_source(seat) == "chain"
     peak = next(b for b in ride["beats"] if b["id"] == "04-tsuno-peak")
+    assert "heads stay at the right" in seat["camera"].lower()
+    assert "feet stay at the left" in seat["camera"].lower()
+    assert "heads stay at the left" not in seat["camera"].lower()
+    assert "sheen of sweat" in seat["action"].lower()
     assert extra_lora_entries(peak)[0] == ("spoonlg", 1.0)
+    assert "gyrates the hips fast in a circular" in peak["action"].lower()
+    assert "over her shoulder" in peak["action"].lower()
+    assert "heads stay at the right" in peak["camera"].lower()
+    assert peak["trim"]["seconds"] == 10.0
+    assert "daddy" not in peak["action"].lower()
+    assert "mattress" not in peak["action"].lower()
     assert ("thrust", 0.55) in extra_lora_entries(peak)
     assert ("synth", 0.4) in extra_lora_entries(peak)
     assert "PENISLORA" in peak.get("trigger", "")

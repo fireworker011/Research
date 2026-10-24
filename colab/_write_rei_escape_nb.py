@@ -201,7 +201,7 @@ Drive `minimax-h3-comfyui/episodes/futanari-rei-escape/` に `episode.json` が�
 S00 はタイトルカード。Prompt にレイを入れない。敵1の円口は mystic のみ（口LoRA禁止）。完了で終わる。失敗カードなし。Combat 既定オフ。
 
 - 本番の inbox / queued / output は触らない。`models/` だけ共有
-- 10Eros Max は Drive `models/diffusion_models/10Eros_Max_h3_TURBO-hybrid_beta5_int8.safetensors` を使う
+- 10Eros Max は Drive `models/diffusion_models/h3ErosMax_beta6_3283276.safetensors` を使う
 - HUD・字幕は生成後に載せる。H3 に日本語UIを描かせない
 - 投稿しない。アフィURL禁止
 - マージ前は `BRANCH` もこの枝（`{BRANCH}`）

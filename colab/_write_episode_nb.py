@@ -365,7 +365,7 @@ HUD・タイトル・免責エンドカードを載せて `final/<slug>-<日時>
 
 - 本番の inbox / queued / output は触らない。`models/` だけ共有
 - チェックポイントと LoRA の取得は CPU で足りる。ランタイムが CPU のときは Drive へ置いて止まり、Comfy は起動しない。動画を描くときだけ A100
-- あさの 10Eros Max は Drive `models/diffusion_models/10Eros_Max_h3_TURBO-hybrid_beta5_int8.safetensors` を使う（HuggingFace からは取らない）
+- あさの 10Eros Max は Drive `models/diffusion_models/h3ErosMax_beta6_3283276.safetensors` を使う（Civitai 2851079 version 3393047 の int8。beta5 が残っていてもこのファイルが無ければ取り直す）
 - Civitai の LoRA はコードセルの **CivitaiのAPIキー** に貼る（空のまま保存する。キーはコミットしない）。空なら Colab のシークレット `CIVITAI_API_TOKEN`。動画セルは Drive に 1MB 超の同名ファイルがあれば再取得しない。取り直すときは次の **LoRA 更新** セル。開いたときは更新しない。欄を切り替えてそのセルだけ実行する。CPU で足りる。Comfy は起動しない
 - 途中で止まっても `raw/<beat>.mp4` があるビートは飛ばして再開（FRESH で作り直し）
 - **開始シーン**に beat id を書くと、そのカットから先だけ今のドロップダウン（構成・トイレ・灰色・角・犬・異種・登場・シーンごと・つなぎ方）で作り直す。空なら最初から。前の動画は残して首にする。チェーンの前のカットが今の設定と違うとき、または動画が無いときは、そこまで戻って描く。並びに無い id は止まる
