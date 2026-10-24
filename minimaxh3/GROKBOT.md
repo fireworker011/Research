@@ -60,6 +60,7 @@ python minimaxh3/grokbot/run_r2v.py --watch
 | T2V | [minimax_h3_t2v_bot.ipynb](https://colab.research.google.com/github/fireworker011/Research/blob/cursor/minimax-h3-motion-identity-e959/minimax_h3_t2v_bot.ipynb) | [Drive](https://colab.research.google.com/drive/1ST6gGKP7T3leIDoozk7jfV30dEXA6m8-) |
 | I2V | [minimax_h3_i2v_bot.ipynb](https://colab.research.google.com/github/fireworker011/Research/blob/cursor/minimax-h3-motion-identity-e959/minimax_h3_i2v_bot.ipynb) | [Drive](https://colab.research.google.com/drive/1myFp5BxF7JlaQvgm5PeMj-FFIOKT4yUE) |
 | R2V | [minimax_h3_r2v_bot.ipynb](https://colab.research.google.com/github/fireworker011/Research/blob/cursor/minimax-h3-motion-identity-e959/minimax_h3_r2v_bot.ipynb) | [Drive](https://colab.research.google.com/drive/1uon_V60eQo7rfiyG5P4JXhX6JksBpsbZ) |
+| エピソード | [minimax_h3_episode_bot.ipynb](https://colab.research.google.com/github/fireworker011/Research/blob/cursor/h3-episode-oneclick-f112/minimax_h3_episode_bot.ipynb) | （inbox と別。`episodes/<slug>/`） |
 
 Grokbot の `run_*.py` は同じ処理を `google-colab-cli` で `h3_*_colab_main.py` として exec する。ノートを開いて Run all しても同じ 1件処理。
 
@@ -87,5 +88,58 @@ python minimaxh3/grokbot/drop_job.py --mode t2v --aspect 16:9 --prompt-file prom
 ```
 
 I2V を 16:9 にするなら横の still が要る（オマージュ 8:9 はそのまま）。`--aspect 16:9`。Hailuo API ノートの RATIO は使わない。
+
+## エピソード一発（別系統・inbox を使わない）
+
+複数ビートの完成動画（HUD・カード・連結つき）は **`episodes/<slug>/`** の別ルート。inbox に置かない（裸 jpg はココナラ I2V になる）。
+**15分 Automation には登録しない。** 1回の実行 = 1本の完成 mp4。手順は `minimaxh3/episodes/README.md`。skill は `h3-episode-oneclick`（作る）と `h3-episode-grokbot`（回す）。
+
+Grokbot に話しかけるのはこのブロックをそのまま。slug だけ変える。
+
+### 番台ディストリクト 短縮版（25秒・ミッション失敗で落ちる。次はこれ）
+
+`bandai-district/raw/` の暖簾・自転車・軽トラをそのまま使い、GPU で描くのは理容室 1 本だけ（約 7 分）。
+
+```
+skill h3-episode-grokbot を読む。
+質問しない。inbox は触るな。I2V/T2V/R2V ランナーは動かすな。Imagine するな。
+python minimaxh3/grokbot/run_episode.py --episode bandai-district-short
+投稿するな。Wan/Max/完全版ノート/loca.lt/LoRAスタジオは使うな。終わったら colab stop。
+結果は slug と Drive episodes/bandai-district-short/final/latest.mp4 のパスだけ。失敗なら status.json のエラー一行。
+```
+
+### 番台ディストリクト 92秒版（続きから。raw があるビートは飛ばす）
+
+```
+skill h3-episode-grokbot を読む。
+質問しない。inbox は触るな。I2V/T2V/R2V ランナーは動かすな。Imagine するな。
+python minimaxh3/grokbot/run_episode.py --episode bandai-district
+投稿するな。Wan/Max/完全版ノート/loca.lt/LoRAスタジオは使うな。終わったら colab stop。
+結果は slug と Drive episodes/bandai-district/final/latest.mp4 のパスだけ。失敗なら status.json のエラー一行。
+```
+
+### 全部作り直し（`--fresh`）
+
+```
+skill h3-episode-grokbot を読む。
+質問しない。inbox は触るな。I2V/T2V/R2V ランナーは動かすな。Imagine するな。
+python minimaxh3/grokbot/run_episode.py --episode bandai-district --fresh
+投稿するな。Wan/Max/完全版ノート/loca.lt/LoRAスタジオは使うな。終わったら colab stop。
+結果は slug と Drive episodes/bandai-district/final/latest.mp4 のパスだけ。失敗なら status.json のエラー一行。
+```
+
+### 別ネタ（slug を差し替え）
+
+```
+skill h3-episode-grokbot を読む。
+質問しない。inbox は触るな。I2V/T2V/R2V ランナーは動かすな。Imagine するな。
+python minimaxh3/grokbot/run_episode.py --episode <slug>
+投稿するな。Wan/Max/完全版ノート/loca.lt/LoRAスタジオは使うな。終わったら colab stop。
+結果は slug と Drive episodes/<slug>/final/latest.mp4 のパスだけ。失敗なら status.json のエラー一行。
+```
+
+`<slug>` は `minimaxh3/episodes/<slug>/episode.json` があること。無ければ GitHub の同パスから取る。テンプレから新ネタを足す作業は skill `h3-episode-oneclick`（コードは触らない）。
+
+スマホは `minimax_h3_episode_bot.ipynb` を Run all。セッション名 `h3-episode`。GPU は A100（`--high-mem`）。
 
 投稿は人間。リンクはプロフィール。
