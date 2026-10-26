@@ -384,15 +384,16 @@ def conform_argv(source: str, start_frame: int, end_frame: int, request_frames: 
     start = start_frame / FPS
     length = (end_frame - start_frame) / FPS
     pad = (request_frames - (end_frame - start_frame)) / FPS
+    # -t is an input limit. Placed after -i it caps the output and drops the tpad frames.
     return [
         "ffmpeg",
         "-y",
         "-ss",
         f"{start:.3f}",
-        "-i",
-        source,
         "-t",
         f"{length:.3f}",
+        "-i",
+        source,
         "-vf",
         f"fps={FPS},scale={width}:{height}:force_original_aspect_ratio=increase,"
         f"crop={width}:{height},tpad=stop_mode=clone:stop_duration={pad:.3f}",

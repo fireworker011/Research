@@ -20,6 +20,7 @@ from h3.live_remake import (
     RemakeError,
     align_frames,
     build_remake_plan,
+    conform_argv,
     main,
 )
 
@@ -114,6 +115,54 @@ class PlanTests(unittest.TestCase):
 
     def test_five_seconds_lands_on_the_template_length(self) -> None:
         self.assertEqual(align_frames(120), 124)
+
+    def test_span_of_7_375_seconds_requests_192_frames(self) -> None:
+        self.assertEqual(align_frames(177), 192)
+
+    def test_conform_limits_the_input_and_keeps_the_pad(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            folder = Path(tmp)
+            source = folder / "source.mp4"
+            out = folder / "ref.mp4"
+            subprocess.check_call(
+                [
+                    "ffmpeg",
+                    "-y",
+                    "-f",
+                    "lavfi",
+                    "-i",
+                    "color=c=black:s=320x180:r=24:d=10",
+                    "-c:v",
+                    "libx264",
+                    "-pix_fmt",
+                    "yuv420p",
+                    str(source),
+                ],
+                stdout=subprocess.DEVNULL,
+                stderr=subprocess.DEVNULL,
+            )
+            argv = conform_argv(str(source), 0, 177, 192, (320, 180), str(out))
+            self.assertLess(argv.index("-t"), argv.index("-i"))
+            self.assertEqual(argv[argv.index("-t") + 1], "7.375")
+            self.assertIn("192", argv)
+            subprocess.check_call(argv, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+            counted = subprocess.check_output(
+                [
+                    "ffprobe",
+                    "-v",
+                    "error",
+                    "-count_frames",
+                    "-select_streams",
+                    "v:0",
+                    "-show_entries",
+                    "stream=nb_read_frames",
+                    "-of",
+                    "csv=p=0",
+                    str(out),
+                ],
+                text=True,
+            ).strip()
+        self.assertEqual(counted, "192")
 
     def test_cli_refuses_generate(self) -> None:
         with contextlib.redirect_stdout(io.StringIO()):
