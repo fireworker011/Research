@@ -76,16 +76,16 @@
     "login_label": "fireworker01",
     "status": "hold",
     "client_secret_dir": "C:/Users/hp/Downloads/youtube/fireworker01",
-    "note": "2026-10-26 追加（全アカウント毎日投稿の方針）。fireworker01配下。fireworker01のトークンが夜の棚のものと混ざっている疑いがあるため、トークン確認が済むまで許可・投稿しない。確認後に active へ。"
+    "note": "2026-10-26 追加。fireworker01 には夜の棚と会社員の金メモの2チャンネルがあり、OAuth承認時に選んだチャンネルでトークンの行き先が変わる。トークンごとにチャンネルIDを記録して夜の棚用と金メモ用を分ける。混ざっていたらどちらも使わない。確認まで hold。"
   },
   {
     "platform": "youtube",
     "key": "mikukonkatsu",
     "title": "元婚活難民ミキ",
     "handle": "みくこんかつ",
-    "login_label": "",
+    "login_label": "miki.konkatsu.life",
     "status": "hold",
-    "note": "2026-10-26 追加（全アカウント毎日投稿の方針）。ログイン先のGoogleアカウントが不明。分かるまで許可しない。"
+    "note": "2026-10-26 ナオミチのスマホ画面で確認: Googleアカウントは miki.konkatsu.life。OAuthクライアントJSONがまだ無い（今の6アカウント分に含まれない）。OAuth JSONが必要。用意できるまで許可しない。"
   },
   {
     "platform": "tiktok",
