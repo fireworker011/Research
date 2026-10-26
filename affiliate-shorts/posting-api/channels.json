@@ -5,9 +5,9 @@
     "title": "pet_story_select",
     "handle": "pet_story_select",
     "login_label": "fireworker01",
-    "status": "active",
+    "status": "excluded",
     "client_secret_dir": "C:/Users/hp/Downloads/youtube/fireworker01",
-    "note": "表示名がハンドルと違う場合、許可後に表示された名前へ title を直す。OAuthは fireworker01 のプロジェクト。"
+    "note": "2026-10-26 ナオミチ決定: ペットYouTubeのAPI投稿先は pet_kurasu_monogatari（naomichi235）。このチャンネルはAPI投稿に使わない。fireworker01のトークンは夜の棚のものが他フォルダにコピーされた疑いあり、確認まで使わない。"
   },
   {
     "platform": "youtube",
@@ -56,7 +56,7 @@
     "login_label": "naomichi235",
     "status": "active",
     "client_secret_dir": "C:/Users/hp/Downloads/youtube/naomichi235",
-    "note": "YouTubeは新規作成中。TikTokのペットと暮らす小さな物語り（pet_chiisana_monogatari）とは別。同意画面ではこのチャンネルを選ぶ。"
+    "note": "2026-10-26 ナオミチ決定: ペットYouTubeのAPI投稿先はここ。TikTokのペットと暮らす小さな物語り（pet_chiisana_monogatari）とは別。同意画面ではこのチャンネルを選ぶ。トークンの有無とチャンネルは次のPC起動時に読むだけで確認。"
   },
   {
     "platform": "youtube",
@@ -67,6 +67,25 @@
     "status": "reserved",
     "client_secret_dir": "C:/Users/hp/Downloads/youtube/fireworker012",
     "note": "将来の新規YouTube用。チャンネル名が決まるまで許可しない。TikTokのゆあ（key yua）とは別。"
+  },
+  {
+    "platform": "youtube",
+    "key": "kaishain_kane",
+    "title": "会社員の金メモ",
+    "handle": "kaishain_kane",
+    "login_label": "fireworker01",
+    "status": "hold",
+    "client_secret_dir": "C:/Users/hp/Downloads/youtube/fireworker01",
+    "note": "2026-10-26 追加（全アカウント毎日投稿の方針）。fireworker01配下。fireworker01のトークンが夜の棚のものと混ざっている疑いがあるため、トークン確認が済むまで許可・投稿しない。確認後に active へ。"
+  },
+  {
+    "platform": "youtube",
+    "key": "mikukonkatsu",
+    "title": "元婚活難民ミキ",
+    "handle": "みくこんかつ",
+    "login_label": "",
+    "status": "hold",
+    "note": "2026-10-26 追加（全アカウント毎日投稿の方針）。ログイン先のGoogleアカウントが不明。分かるまで許可しない。"
   },
   {
     "platform": "tiktok",
