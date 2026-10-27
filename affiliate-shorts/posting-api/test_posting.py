@@ -37,6 +37,8 @@ class RulesTest(unittest.TestCase):
                 "nemuri_no_tana",
                 "pet_kurasu_monogatari",
                 "fireworker012_reserved",
+                "kaishain_kane",
+                "mikukonkatsu",
             ],
         )
         self.assertEqual(

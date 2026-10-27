@@ -1,3 +1,4 @@
 # Python 3.11 or newer. The scripts use the standard library only.
 # Windows (PowerShell): py -3
 # No pip packages.
+# fetch_public_stats.py も標準ライブラリだけ。yt-dlp は別コマンドで、このファイルの依存には入れない。
