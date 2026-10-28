@@ -11,6 +11,7 @@ import sys
 from dataclasses import dataclass
 
 from h3.live_remake import LIGHTNING_FILE, LIGHTNING_STEPS, MODEL_FILE, STEPS
+from h3.reproduce import main as reproduce_main
 
 
 class DeskError(Exception):
@@ -60,6 +61,28 @@ LANES: dict[str, Lane] = {
         code="h3/live_remake.py",
         present=True,
         words=("リメイク", "元動画", "live_remake"),
+    ),
+    "reproduce": Lane(
+        id="reproduce",
+        title="渡した動画を測って、完全再現のプロンプトと LoRA の採否を書く",
+        effect=(
+            "ローカルの動画を ffprobe とシーン検出で測り、範囲ごとに Ref2VA の6節を書く。"
+            "秒・カット・カメラは測った値だけ。見ていない動作の文は足さない。"
+            "動画だけなら見た目もその動画。人物の静止画を役つきで渡すと、顔と衣装だけ静止画、動きとカメラは動画。"
+            "既定の LoRA は空。speed、combat、charswap、anime2real、百裂は採否に出して、載せない。"
+            f"--lightning のときだけ {LIGHTNING_FILE} が強さ 1、steps {LIGHTNING_STEPS}。"
+            "リンクだけでは映像を測れず、プロンプトは出さない。"
+        ),
+        give="動画ファイル1本。または役を付けた静止画。動きの英文は任意。リンクだけは測れない。",
+        when="動画のリンクか素材を渡して、完全再現の H3 プロンプトと、必要な LoRA を出したいとき。",
+        story="測った範囲だけ。新しい話は書かない。渡した英文がある範囲だけ、その文を足す。",
+        prompt="Ref2VA の6節。英語。日本語は <d>[Japanese] の中だけ。見ていない動作は書かない。",
+        quality=f"公式 {MODEL_FILE}。steps {STEPS}。横 1344x768、縦 768x1344。24fps。",
+        speed=f"既定は LoRA なし、steps {STEPS}。--lightning のときだけ steps {LIGHTNING_STEPS}。",
+        loras="既定なし。採否の一覧に、載せない LoRA のファイル名と理由を書く。",
+        code="h3/reproduce.py",
+        present=True,
+        words=("完全再現", "reproduce", "丸投げ"),
     ),
     "fast_motion": Lane(
         id="fast_motion",
@@ -388,6 +411,8 @@ def main(argv: list[str] | None = None) -> int:
     if any(flag in args for flag in ("--generate", "--queue", "--publish")):
         print("DESK STOP: 生成と公開はこの窓口では走らない")
         return 1
+    if args and args[0] == "reproduce":
+        return reproduce_main(args[1:])
     try:
         text = render(args[0] if args else None)
     except DeskError as exc:

@@ -484,7 +484,9 @@ def build_remake_plan(sheet: Mapping[str, Any], *, runtime: str = "comfy", light
             )
         description = _filled(span.get("description"))
         if not description:
-            reasons.append(f"範囲 {index} の文が無い。video-to-h3-prompt の出力から、その範囲の動きとカメラを貼る")
+            reasons.append(
+                f"範囲 {index} の文が無い。動画ファイルを python -m h3.reproduce に渡すと、測った尺の再現プロンプトが出る"
+            )
         else:
             _check_text(description, f"範囲 {index} の文")
             _check_labels(description, pictures, index, reasons)

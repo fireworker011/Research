@@ -30,7 +30,7 @@ class DeskTests(unittest.TestCase):
 
     def test_only_live_remake_is_in_this_checkout(self) -> None:
         present = [item.id for item in LANES.values() if item.present]
-        self.assertEqual(present, ["live_remake"])
+        self.assertEqual(present, ["live_remake", "reproduce"])
 
     def test_choose_is_one_lane_or_a_stop(self) -> None:
         self.assertEqual(choose("元動画を静止画に合わせる live_remake"), "live_remake")
@@ -42,6 +42,9 @@ class DeskTests(unittest.TestCase):
             choose("今日の天気")
         with self.assertRaises(DeskError):
             choose("live_remake と 格闘")
+        with self.assertRaises(DeskError):
+            choose("元動画を完全再現")
+        self.assertEqual(choose("完全再現"), "reproduce")
 
     def test_cards_say_generation_stays_off(self) -> None:
         text = render()
@@ -53,6 +56,7 @@ class DeskTests(unittest.TestCase):
         with contextlib.redirect_stdout(io.StringIO()):
             self.assertEqual(main(["--generate"]), 1)
             self.assertEqual(main(["combat_motion"]), 0)
+            self.assertEqual(main(["reproduce"]), 2)
 
 
 if __name__ == "__main__":
