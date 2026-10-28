@@ -268,7 +268,8 @@ M10  PASS 縦長（9:16）
 
 - 作業ツリーのテキスト検索: 一致なし
 - `out` の preview.mp4 と静止画PNG: 一致なし
-- コミット後の `git grep` と `git diff --name-only origin/claude/setup-colab-comfyui-Eb9Lh...HEAD` の結果は、コミットの直後に同じ検索で 0件だったことを下に追記する
+- コミット `da49df51` の `git grep -n -i -E`（指示書のパターン）`-- video-tools/kanememo-overlays/` は出力なし、終了コード 1（一致なし）
+- 同じコミットで `git diff --name-only origin/claude/setup-colab-comfyui-Eb9Lh...HEAD` の39ファイルを、同じパターンで1ファイルずつ検索: 出力なし
 
 ## 直したこと（3回）
 
