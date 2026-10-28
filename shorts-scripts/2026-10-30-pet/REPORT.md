@@ -144,13 +144,25 @@ mp4 は無い。機械チェック M1〜M10 は未実施。下は、作ったと
 
 ## URL断片の検索
 
-作業ツリーに対する検索（コミット前）は、このフォルダで該当0件だった（検索の終了コード1）。コミット後の `git grep` と、`git diff --name-only` で出たファイルへの同じ検索は、実行結果をこの節の末尾に貼る。
+検索語そのものは、このファイルに書くと次の検索で引っかかるので書かない。実行したのは指示書どおりの2つ。基準は `origin/claude/setup-colab-comfyui-Eb9Lh...HEAD`（この節を書く直前の HEAD は 9d0bf47e）。
 
-検索語そのものは、このファイルに書くと次の検索で引っかかるので書かない。実行するコマンドは指示書の、このフォルダ向けのものと、触ったファイル全部向けのもの。
+フォルダ指定の検索: 出力なし。終了コード 1（該当なし）。
 
-### コミット後の結果
+`git diff --name-only` の出力（終了コード 0）:
 
-（実行後に差し替える）
+```
+shorts-scripts/2026-10-30-pet/2026-10-30-ペット-kuroneko-hondana.md
+shorts-scripts/2026-10-30-pet/2026-10-30-ペット-kuroneko-hondana.srt
+shorts-scripts/2026-10-30-pet/2026-10-30-ペット-kuroneko-reizouko.md
+shorts-scripts/2026-10-30-pet/2026-10-30-ペット-kuroneko-reizouko.srt
+shorts-scripts/2026-10-30-pet/2026-10-30-ペット-kuroneko-rouka.md
+shorts-scripts/2026-10-30-pet/2026-10-30-ペット-kuroneko-rouka.srt
+shorts-scripts/2026-10-30-pet/REPORT.md
+```
+
+上の7ファイルを同じ語で1ファイルずつ検索した。7本とも出力なし、終了コード 1。
+
+この節を足したあとも、同じ検索が0件であることを push 前にもう一度確認する。ファイル一覧は増えない（このレポートは最初のコミットから入っている）。
 
 ## 引き継ぎメモ
 
