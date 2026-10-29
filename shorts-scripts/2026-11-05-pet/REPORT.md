@@ -146,13 +146,37 @@
 
 ## URL断片の検索
 
-指示書の検索（アフィリエイトURLの断片3つ）を、このフォルダに対して実行する。断片そのものは、このファイルに連続した文字で書かない。
+指示書の完了条件にある検索（アフィリエイトURLの断片3つ。このファイルには断片を連続した文字で書かない）を、コミット 2858ae40 のあとに実行した。時刻は 2026-10-29 20:19 JST。
 
-作業ツリーを普通の検索で見た結果は、一致0件（2026-10-29 20:18 JST）。`git grep` と、基点との差分ファイルへの同じ検索は、ファイルをコミットしたあとに実行し、下の「検索の記録」に貼る。
+対象フォルダへの `git grep`（パスは `shorts-scripts/2026-11-05-pet/`）:
 
-## 検索の記録
+```
+（標準出力なし）
+終了コード: 1
+```
 
-（コミット後に追記する）
+終了コード 1 は、一致する行が0件のときの git の戻り値。
+
+基点 `origin/claude/setup-colab-comfyui-Eb9Lh` から HEAD までの差分ファイル:
+
+```
+shorts-scripts/2026-11-05-pet/2026-11-05-ペット-kuroneko-tsumetogi.md
+shorts-scripts/2026-11-05-pet/2026-11-05-ペット-kuroneko-tsumetogi.srt
+shorts-scripts/2026-11-05-pet/2026-11-06-ペット-kuroneko-marumaku.md
+shorts-scripts/2026-11-05-pet/2026-11-06-ペット-kuroneko-marumaku.srt
+shorts-scripts/2026-11-05-pet/2026-11-07-ペット-kuroneko-utsawa.md
+shorts-scripts/2026-11-05-pet/2026-11-07-ペット-kuroneko-utsawa.srt
+shorts-scripts/2026-11-05-pet/REPORT.md
+```
+
+上の7ファイルへ同じ断片で `git grep` した結果:
+
+```
+（標準出力なし）
+終了コード: 1
+```
+
+一致は0件。この節を足したあとのコミットでも、push の前にもう一度同じ検索をする。
 
 ## 引き継ぎメモ
 
