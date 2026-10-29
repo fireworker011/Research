@@ -13,6 +13,8 @@ from pathlib import Path
 from h3.live_remake import LIGHTNING_FILE, LIGHTNING_STEPS, MODEL_FILE, STEPS
 from h3.reproduce import ReproduceError, build_reproduction, main
 
+NOTEBOOK = Path(__file__).resolve().parents[1] / "minimax_h3_live_remake.ipynb"
+
 
 def _video(directory: Path, seconds: float) -> Path:
     path = directory / "source.mp4"
@@ -136,6 +138,18 @@ class ReproduceTests(unittest.TestCase):
         self.assertIn("載せる LoRA: なし", blocked.getvalue())
         self.assertIn("生成: しない", blocked.getvalue())
         self.assertNotIn("detailed_description:", blocked.getvalue())
+
+    def test_colab_cell_plans_and_does_not_queue(self) -> None:
+        notebook = json.loads(NOTEBOOK.read_text(encoding="utf-8"))
+        cells = ["".join(cell.get("source", [])) for cell in notebook["cells"]]
+        reproduce = [text for text in cells if "reproduce.py" in text and "build_reproduction" in text]
+        self.assertEqual(len(reproduce), 1)
+        cell = reproduce[0]
+        self.assertIn("LIGHTNING = False", cell)
+        self.assertIn("既にあるので書かない", cell)
+        self.assertIn("生成ボタンは押していない。", cell)
+        self.assertNotIn("post_prompt", cell)
+        self.assertNotIn("/prompt", cell)
 
 
 if __name__ == "__main__":
