@@ -38,7 +38,6 @@ for mod in ("h3pkg.live_remake", "h3pkg.span_queue"):
     sys.modules.pop(mod, None)
 from h3pkg.live_remake import build_remake_plan, load_sheet
 from h3pkg.span_queue import (
-    INT8_VIDEO_VAE,
     build_ref2va_prompt,
     finished_history,
     history_video,
@@ -70,11 +69,7 @@ vae_dir = comfy / "models" / "vae"
 present = [item.name for item in vae_dir.glob("*.safetensors")] if vae_dir.is_dir() else []
 vae = video_vae_name(plan, present)
 if not (vae_dir / vae).is_file():
-    vae_dir.mkdir(parents=True, exist_ok=True)
-    url = "https://huggingface.co/Comfy-Org/MiniMax-H3/resolve/main/vae/" + INT8_VIDEO_VAE
-    print("公式ワークフローの動画 VAE が無いので落とす:", INT8_VIDEO_VAE)
-    subprocess.run(["wget", "-c", "--show-progress", "-O", str(vae_dir / INT8_VIDEO_VAE), url], check=True)
-    vae = INT8_VIDEO_VAE
+    raise SystemExit(f"動画 VAE が Drive の models/vae に無い: {vae}。落とさない。")
 
 input_dir = comfy / "input"
 input_dir.mkdir(parents=True, exist_ok=True)
