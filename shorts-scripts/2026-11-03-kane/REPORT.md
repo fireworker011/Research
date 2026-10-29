@@ -156,14 +156,19 @@ PDFは、社会保険料の免除・給与が無いこと・非課税を条件�
 
 ## アフィリエイト断片の検索
 
-指示書の検索を、このディレクトリに対して実行する。パターンの3断片は指示書のとおり（ホスト名、mat の断片、px の断片）。この REPORT 自体が検索対象なので、断片は連続した文字列では残していない。
+指示書の git grep を実行した。パターンは指示書の3断片（ホスト名、mat の断片、px の断片）。この REPORT が検索対象なので、断片は連続した文字列では残していない。
 
-結果はコミット後に同じコマンドで確認し、0件であることを下に書く。
+対象ディレクトリ `shorts-scripts/2026-11-03-kane/` への git grep: 出力なし。終了コード 1（該当 0件）。
 
-- 対象: `shorts-scripts/2026-11-03-kane/`
-- 差分のファイル一覧に対する同じ検索: `git diff --name-only origin/claude/setup-colab-comfyui-Eb9Lh...HEAD` の各ファイル
+`git diff --name-only origin/claude/setup-colab-comfyui-Eb9Lh...HEAD` のファイルは次の7つ。同じ断片で各ファイルを git grep し、出力なし。
 
-作業中の作業ツリー検索（コミット前）は該当なし。
+- shorts-scripts/2026-11-03-kane/2026-11-03-金メモ-iryohi-kojo.md
+- shorts-scripts/2026-11-03-kane/2026-11-03-金メモ-iryohi-kojo.srt
+- shorts-scripts/2026-11-03-kane/2026-11-04-金メモ-kihon-teate.md
+- shorts-scripts/2026-11-03-kane/2026-11-04-金メモ-kihon-teate.srt
+- shorts-scripts/2026-11-03-kane/2026-11-05-金メモ-ikuji-kyufu.md
+- shorts-scripts/2026-11-03-kane/2026-11-05-金メモ-ikuji-kyufu.srt
+- shorts-scripts/2026-11-03-kane/REPORT.md（この追記の前の版。追記後にも同じ検索をかけ、0件のままにする）
 
 ## 完了条件
 
@@ -172,7 +177,7 @@ PDFは、社会保険料の免除・給与が無いこと・非課税を条件�
 - 字幕の間は最大 0.400秒。script_lint は3本 PASS
 - 自己採点は各本 82
 - 既存6テーマとのかぶり 0
-- アフィリエイト断片は作業ツリーで該当なし。コミット後の git grep の結果を末尾に追記する
+- アフィリエイト断片の git grep は出力なし（0件）。差分7ファイルも同じ
 
 声は VOICEVOX 冥鳴ひまり。クレジットは概要欄と画面。BGMあり（声の下）。CTAなし。PRなし。「広告」の文字なし。
 
