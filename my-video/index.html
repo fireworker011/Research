@@ -1,0 +1,754 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1920, height=1080" />
+    <title>夜航</title>
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      html,
+      body {
+        margin: 0;
+        width: 1920px;
+        height: 1080px;
+        overflow: hidden;
+        background: #0b132b;
+        color: #f4f7ff;
+      }
+
+      #root {
+        position: relative;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        background: #0b132b;
+      }
+
+      #city {
+        position: absolute;
+        inset: 0;
+        width: 1920px;
+        height: 1080px;
+        display: block;
+        z-index: 1;
+      }
+
+      #vignette {
+        position: absolute;
+        inset: 0;
+        z-index: 3;
+        pointer-events: none;
+        background: radial-gradient(
+          ellipse at 50% 46%,
+          rgba(11, 19, 43, 0) 35%,
+          rgba(8, 12, 28, 0.78) 100%
+        );
+      }
+
+      .clip {
+        position: absolute;
+        inset: 0;
+        z-index: 4;
+        pointer-events: none;
+      }
+
+      .type-clip {
+        display: flex;
+      }
+
+      .align-ul {
+        align-items: flex-start;
+        justify-content: flex-start;
+        padding: 240px 0 0 120px;
+      }
+
+      .align-mr {
+        align-items: center;
+        justify-content: flex-end;
+        padding-right: 140px;
+      }
+
+      .align-ll {
+        align-items: flex-end;
+        justify-content: flex-start;
+        padding: 0 0 168px 120px;
+      }
+
+      .sign {
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 18px;
+      }
+
+      .bloom {
+        position: absolute;
+        left: -80px;
+        top: -70px;
+        width: 760px;
+        height: 380px;
+        border-radius: 50%;
+        background: radial-gradient(
+          circle,
+          rgba(247, 37, 133, 0.5) 0%,
+          rgba(247, 37, 133, 0) 70%
+        );
+        z-index: 1;
+      }
+
+      .glitch-stack {
+        position: relative;
+        z-index: 2;
+        display: grid;
+        place-items: center;
+      }
+
+      .glitch-stack span {
+        grid-area: 1 / 1;
+        display: block;
+        font-family: "Noto Sans JP", sans-serif;
+        font-weight: 700;
+        font-size: 200px;
+        line-height: 1;
+        letter-spacing: 0.06em;
+        color: #f4f7ff;
+        white-space: nowrap;
+      }
+
+      .ghost.warm {
+        color: #ffd0e6;
+      }
+
+      .ghost.cool {
+        color: #d7fff6;
+      }
+
+      .rule {
+        display: block;
+        width: 280px;
+        height: 6px;
+        background: #f72585;
+        transform-origin: 0% 50%;
+        z-index: 2;
+      }
+
+      .sub {
+        display: block;
+        z-index: 2;
+        font-family: "Noto Sans JP", sans-serif;
+        font-weight: 700;
+        font-size: 48px;
+        line-height: 1.2;
+        letter-spacing: 0.08em;
+        color: #f4f7ff;
+      }
+
+      .hud {
+        z-index: 5;
+      }
+
+      .hud-cell {
+        position: absolute;
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+      }
+
+      .hud-tl {
+        top: 64px;
+        left: 72px;
+      }
+
+      .hud-tr {
+        top: 64px;
+        right: 72px;
+        align-items: flex-end;
+      }
+
+      .hud-bl {
+        bottom: 64px;
+        left: 72px;
+      }
+
+      .hud-br {
+        bottom: 64px;
+        right: 72px;
+        align-items: flex-end;
+      }
+
+      .k {
+        font-family: "Noto Sans JP", sans-serif;
+        font-weight: 700;
+        font-size: 28px;
+        letter-spacing: 0.12em;
+        color: #f4f7ff;
+      }
+
+      .v {
+        font-family: "JetBrains Mono", ui-monospace, monospace;
+        font-weight: 700;
+        font-size: 40px;
+        letter-spacing: 0.04em;
+        color: #f4f7ff;
+      }
+
+      .latin {
+        font-family: "JetBrains Mono", ui-monospace, monospace;
+        font-weight: 700;
+        font-size: 28px;
+        letter-spacing: 0.14em;
+        color: #f4f7ff;
+      }
+    </style>
+  </head>
+  <body>
+    <div
+      id="root"
+      data-composition-id="main"
+      data-start="0"
+      data-duration="30"
+      data-width="1920"
+      data-height="1080"
+    >
+      <canvas id="city" width="1920" height="1080"></canvas>
+      <div id="vignette"></div>
+
+      <section
+        id="beat-drop"
+        class="clip type-clip align-ul"
+        data-start="0.4"
+        data-duration="6.8"
+        data-track-index="2"
+      >
+        <div class="sign" id="stage-drop">
+          <div class="bloom" id="bloom-drop" data-layout-allow-overflow></div>
+          <div class="glitch-stack">
+            <span class="ghost warm" id="ghost-drop-w" aria-hidden="true">降下</span>
+            <span class="ghost cool" id="ghost-drop-c" aria-hidden="true">降下</span>
+            <span class="word" id="word-drop">降下</span>
+          </div>
+        </div>
+      </section>
+
+      <section
+        id="beat-neon"
+        class="clip type-clip align-mr"
+        data-start="7.4"
+        data-duration="6.8"
+        data-track-index="2"
+      >
+        <div class="sign" id="stage-neon">
+          <div class="bloom" id="bloom-neon" data-layout-allow-overflow></div>
+          <div class="glitch-stack">
+            <span class="ghost warm" id="ghost-neon-w" aria-hidden="true">ネオン</span>
+            <span class="ghost cool" id="ghost-neon-c" aria-hidden="true">ネオン</span>
+            <span class="word" id="word-neon">ネオン</span>
+          </div>
+        </div>
+      </section>
+
+      <section
+        id="beat-trace"
+        class="clip type-clip align-ll"
+        data-start="14.6"
+        data-duration="6.8"
+        data-track-index="2"
+      >
+        <div class="sign" id="stage-trace">
+          <div class="bloom" id="bloom-trace" data-layout-allow-overflow></div>
+          <div class="glitch-stack">
+            <span class="ghost warm" id="ghost-trace-w" aria-hidden="true">軌跡</span>
+            <span class="ghost cool" id="ghost-trace-c" aria-hidden="true">軌跡</span>
+            <span class="word" id="word-trace">軌跡</span>
+          </div>
+        </div>
+      </section>
+
+      <section
+        id="beat-end"
+        class="clip type-clip align-ll"
+        data-start="21.8"
+        data-duration="8.2"
+        data-track-index="2"
+      >
+        <div class="sign" id="stage-end">
+          <div class="bloom" id="bloom-end" data-layout-allow-overflow></div>
+          <div class="glitch-stack">
+            <span class="ghost warm" id="ghost-end-w" aria-hidden="true">夜航</span>
+            <span class="ghost cool" id="ghost-end-c" aria-hidden="true">夜航</span>
+            <span class="word" id="word-end">夜航</span>
+          </div>
+          <span class="rule" id="rule-end"></span>
+          <p class="sub" id="sub-end">光の中を抜ける</p>
+        </div>
+      </section>
+
+      <aside class="clip hud" id="hud" data-start="0" data-duration="30" data-track-index="3">
+        <div class="hud-cell hud-tl" id="hud-alt-cell">
+          <span class="k">高度</span>
+          <span class="v" id="hud-alt">000</span>
+        </div>
+        <div class="hud-cell hud-tr" id="hud-spd-cell">
+          <span class="k">速度</span>
+          <span class="v" id="hud-spd">000</span>
+        </div>
+        <div class="hud-cell hud-bl" id="hud-sector-cell">
+          <span class="latin">SECTOR 07</span>
+        </div>
+        <div class="hud-cell hud-br" id="hud-time-cell">
+          <span class="v" id="hud-time">00:00:00</span>
+        </div>
+      </aside>
+    </div>
+
+    <script>
+      window.__hf = window.__hf || {};
+      window.__hf.buildReady = window.__hf.buildReady || {};
+      window.__hf.buildReady.city = new Promise((resolve) => {
+        window.__resolveCity = resolve;
+      });
+
+      const FRAME = 1 / 30;
+
+      function glitchHash(n) {
+        const x = Math.sin(n * 127.1 + 311.7) * 43758.5453;
+        return x - Math.floor(x);
+      }
+
+      function slamWord(tl, word, stage, start, exitAt) {
+        tl.fromTo(
+          word,
+          { scale: 1.6, opacity: 0, y: 0 },
+          { scale: 1, opacity: 1, y: 0, duration: 0.58, ease: "expo.out" },
+          start,
+        );
+        tl.to(stage, { x: 16, y: -9, duration: FRAME, ease: "power2.out" }, start + 0.58);
+        tl.to(stage, { x: -11, y: 6, duration: FRAME, ease: "power2.out" });
+        tl.to(stage, { x: 0, y: 0, duration: FRAME, ease: "power2.out" });
+        if (exitAt != null) {
+          tl.to(word, { y: -160, opacity: 0, duration: 0.42, ease: "power4.in" }, exitAt);
+        }
+      }
+
+      function glitchCopies(tl, warm, cool, start, immediateRender) {
+        const proxy = { amp: 1 };
+        tl.fromTo(
+          proxy,
+          { amp: 1 },
+          {
+            amp: 0,
+            duration: 0.45,
+            ease: "power2.out",
+            immediateRender,
+            onUpdate: () => {
+              const step = Math.floor(tl.time() / 0.05);
+              const amp = proxy.amp;
+              const split = (layer) => (glitchHash(step * 13 + layer) * 2 - 1) * 26 * amp;
+              const lift = (layer) => (glitchHash(step * 17 + layer) * 2 - 1) * 8 * amp;
+              gsap.set(warm, { x: split(7), y: lift(11) });
+              gsap.set(cool, { x: split(19), y: lift(23) });
+            },
+          },
+          start,
+        );
+        tl.set(warm, { x: 0, y: 0 }, start + 0.45);
+        tl.set(cool, { x: 0, y: 0 }, start + 0.45);
+      }
+
+      function bloomIn(tl, bloom, start, fadeAt) {
+        tl.fromTo(
+          bloom,
+          { opacity: 0, scale: 0.72 },
+          { opacity: 0.42, scale: 1, duration: 0.7, ease: "power2.out" },
+          start + 0.15,
+        );
+        if (fadeAt != null) {
+          tl.to(bloom, { opacity: 0, duration: 0.35, ease: "power2.in" }, fadeAt);
+        }
+      }
+
+      const tl = gsap.timeline({ paused: true });
+
+      slamWord(tl, "#word-drop", "#stage-drop", 0.4, 6.35);
+      glitchCopies(tl, "#ghost-drop-w", "#ghost-drop-c", 0.4, true);
+      bloomIn(tl, "#bloom-drop", 0.4, 6.35);
+
+      slamWord(tl, "#word-neon", "#stage-neon", 7.4, 13.35);
+      glitchCopies(tl, "#ghost-neon-w", "#ghost-neon-c", 7.4, false);
+      bloomIn(tl, "#bloom-neon", 7.4, 13.35);
+
+      slamWord(tl, "#word-trace", "#stage-trace", 14.6, 20.55);
+      glitchCopies(tl, "#ghost-trace-w", "#ghost-trace-c", 14.6, false);
+      bloomIn(tl, "#bloom-trace", 14.6, 20.55);
+
+      slamWord(tl, "#word-end", "#stage-end", 21.8, null);
+      glitchCopies(tl, "#ghost-end-w", "#ghost-end-c", 21.8, false);
+      bloomIn(tl, "#bloom-end", 21.8, null);
+      tl.fromTo(
+        "#rule-end",
+        { scaleX: 0 },
+        { scaleX: 1, duration: 0.55, ease: "power3.out" },
+        22.7,
+      );
+      tl.fromTo(
+        "#sub-end",
+        { opacity: 0, y: 28 },
+        { opacity: 1, y: 0, duration: 0.5, ease: "power3.out" },
+        23.05,
+      );
+      tl.fromTo(
+        "#word-end",
+        { y: 0 },
+        {
+          y: -14,
+          duration: 2.2,
+          ease: "sine.inOut",
+          yoyo: true,
+          repeat: 1,
+          immediateRender: false,
+        },
+        24.2,
+      );
+
+      tl.fromTo("#hud-alt-cell", { opacity: 0, y: -18 }, { opacity: 1, y: 0, duration: 0.45, ease: "power3.out" }, 0.15);
+      tl.fromTo("#hud-spd-cell", { opacity: 0, y: -18 }, { opacity: 1, y: 0, duration: 0.45, ease: "power3.out" }, 0.28);
+      tl.fromTo("#hud-sector-cell", { opacity: 0, y: 18 }, { opacity: 1, y: 0, duration: 0.45, ease: "power3.out" }, 0.4);
+      tl.fromTo("#hud-time-cell", { opacity: 0, y: 18 }, { opacity: 1, y: 0, duration: 0.45, ease: "power3.out" }, 0.52);
+
+      const vignetteRepeat = Math.max(0, Math.floor(30 / 4) - 1);
+      tl.fromTo(
+        "#vignette",
+        { opacity: 0.62 },
+        {
+          opacity: 0.86,
+          duration: 4,
+          ease: "sine.inOut",
+          yoyo: true,
+          repeat: vignetteRepeat,
+        },
+        0,
+      );
+
+      window.__timelines["main"] = tl;
+      tl.seek(0);
+    </script>
+
+    <script type="importmap">
+      {
+        "imports": {
+          "three": "https://cdn.jsdelivr.net/npm/three@0.181.2/build/three.module.js"
+        }
+      }
+    </script>
+    <script type="module">
+      import * as THREE from "three";
+
+      const WIDTH = 1920;
+      const HEIGHT = 1080;
+      const canvas = document.getElementById("city");
+      const renderer = new THREE.WebGLRenderer({
+        canvas,
+        antialias: true,
+        alpha: false,
+        powerPreference: "high-performance",
+      });
+      renderer.setSize(WIDTH, HEIGHT, false);
+      renderer.setPixelRatio(1);
+      renderer.outputColorSpace = THREE.SRGBColorSpace;
+      renderer.setClearColor(0x0b132b, 1);
+
+      const scene = new THREE.Scene();
+      scene.background = new THREE.Color(0x0b132b);
+      scene.fog = new THREE.FogExp2(0x0b132b, 0.0045);
+
+      const camera = new THREE.PerspectiveCamera(48, WIDTH / HEIGHT, 0.1, 800);
+      scene.add(new THREE.HemisphereLight(0x9ad7ff, 0x1a1030, 0.9));
+      const key = new THREE.DirectionalLight(0xff4f9a, 0.45);
+      key.position.set(-30, 50, -10);
+      scene.add(key);
+      const nose = new THREE.PointLight(0x6fffe9, 40, 90, 2);
+      scene.add(nose);
+
+      function mulberry32(seed) {
+        let a = seed >>> 0;
+        return function next() {
+          a |= 0;
+          a = (a + 0x6d2b79f5) | 0;
+          let t = Math.imul(a ^ (a >>> 15), 1 | a);
+          t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+          return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+        };
+      }
+
+      const rng = mulberry32(20261014);
+      const paint = document.createElement("canvas");
+      paint.width = 64;
+      paint.height = 128;
+      const ctx = paint.getContext("2d");
+      ctx.fillStyle = "#0c1428";
+      ctx.fillRect(0, 0, 64, 128);
+      for (let y = 6; y < 122; y += 9) {
+        for (let x = 5; x < 60; x += 8) {
+          if (rng() < 0.38) continue;
+          const hot = rng();
+          ctx.fillStyle = hot > 0.84 ? "#ff4f9a" : hot > 0.58 ? "#ffe08a" : "#7dfff0";
+          ctx.fillRect(x, y, 4, 5);
+        }
+      }
+      const windows = new THREE.CanvasTexture(paint);
+      windows.colorSpace = THREE.SRGBColorSpace;
+      windows.wrapS = THREE.RepeatWrapping;
+      windows.wrapT = THREE.RepeatWrapping;
+      windows.anisotropy = 1;
+
+      const buildingMat = new THREE.MeshStandardMaterial({
+        color: 0xffffff,
+        emissive: 0xffffff,
+        emissiveMap: windows,
+        emissiveIntensity: 0.95,
+        roughness: 0.78,
+        metalness: 0.08,
+      });
+      const BUILDINGS = 120;
+      const buildings = new THREE.InstancedMesh(
+        new THREE.BoxGeometry(1, 1, 1),
+        buildingMat,
+        BUILDINGS,
+      );
+      const dummy = new THREE.Object3D();
+      const tint = new THREE.Color();
+      let placed = 0;
+      for (let z = 8; z <= 460 && placed < BUILDINGS; z += 16) {
+        for (const side of [-1, 1]) {
+          for (let row = 0; row < 2 && placed < BUILDINGS; row += 1) {
+            const width = 6.2 + rng() * 1.6;
+            const depth = 7 + rng() * 2.4;
+            let height = 8 + rng() * 26;
+            if (row === 1 && rng() > 0.62) height += 22 + rng() * 18;
+            const x = side * (13 + row * 10);
+            dummy.position.set(x, height / 2, z + (rng() - 0.5) * 2);
+            dummy.scale.set(width, height, depth);
+            dummy.rotation.set(0, 0, 0);
+            dummy.updateMatrix();
+            buildings.setMatrixAt(placed, dummy.matrix);
+            tint.set(rng() > 0.55 ? "#24344e" : "#2a1d3e");
+            buildings.setColorAt(placed, tint);
+            placed += 1;
+          }
+        }
+      }
+      buildings.count = placed;
+      buildings.instanceMatrix.needsUpdate = true;
+      if (buildings.instanceColor) buildings.instanceColor.needsUpdate = true;
+      buildings.computeBoundingSphere();
+      scene.add(buildings);
+
+      const ground = new THREE.Mesh(
+        new THREE.PlaneGeometry(96, 540),
+        new THREE.MeshStandardMaterial({ color: 0x10182c, roughness: 1, metalness: 0 }),
+      );
+      ground.rotation.x = -Math.PI / 2;
+      ground.position.set(0, 0, 220);
+      scene.add(ground);
+
+      const strip = new THREE.Mesh(
+        new THREE.BoxGeometry(0.28, 0.06, 500),
+        new THREE.MeshStandardMaterial({
+          color: 0x062821,
+          emissive: 0x6fffe9,
+          emissiveIntensity: 1.8,
+          roughness: 0.35,
+        }),
+      );
+      strip.position.set(0, 0.04, 220);
+      scene.add(strip);
+
+      const TRAIL_N = 36;
+      const ribbons = [];
+      for (let lane = 0; lane < 4; lane += 1) {
+        const positions = new Float32Array(TRAIL_N * 2 * 3);
+        const colors = new Float32Array(TRAIL_N * 2 * 3);
+        const indices = [];
+        for (let i = 0; i < TRAIL_N - 1; i += 1) {
+          const a = i * 2;
+          indices.push(a, a + 1, a + 2, a + 1, a + 3, a + 2);
+        }
+        const geometry = new THREE.BufferGeometry();
+        geometry.setAttribute("position", new THREE.BufferAttribute(positions, 3));
+        geometry.setAttribute("color", new THREE.BufferAttribute(colors, 3));
+        geometry.setIndex(indices);
+        const mesh = new THREE.Mesh(
+          geometry,
+          new THREE.MeshBasicMaterial({
+            vertexColors: true,
+            transparent: true,
+            blending: THREE.AdditiveBlending,
+            depthWrite: false,
+            side: THREE.DoubleSide,
+          }),
+        );
+        mesh.frustumCulled = false;
+        mesh.userData = { lane, positions, colors };
+        scene.add(mesh);
+        ribbons.push(mesh);
+      }
+
+      const floats = [];
+      for (let i = 0; i < 6; i += 1) {
+        const mesh = new THREE.Mesh(
+          new THREE.OctahedronGeometry(1.35, 0),
+          new THREE.MeshBasicMaterial({
+            color: i % 2 === 0 ? 0xf72585 : 0x6fffe9,
+            wireframe: true,
+          }),
+        );
+        mesh.userData.base = {
+          x: (i % 2 === 0 ? -1 : 1) * 2.4,
+          y: 18 + (i % 3) * 4.5,
+          z: 70 + i * 52,
+        };
+        scene.add(mesh);
+        floats.push(mesh);
+      }
+
+      const abstract = new THREE.Group();
+      const ico = new THREE.Mesh(
+        new THREE.IcosahedronGeometry(7.5, 1),
+        new THREE.MeshBasicMaterial({ color: 0xf72585, wireframe: true }),
+      );
+      const torus = new THREE.Mesh(
+        new THREE.TorusGeometry(11, 0.16, 12, 80),
+        new THREE.MeshBasicMaterial({ color: 0x6fffe9 }),
+      );
+      torus.rotation.x = Math.PI / 2.35;
+      abstract.add(ico, torus);
+      abstract.position.set(0, 20, 408);
+      scene.add(abstract);
+
+      const CAM = [
+        { t: 0, x: 0, y: 38, z: -24, lx: 0, ly: 12, lz: 40 },
+        { t: 6, x: 1.2, y: 15, z: 48, lx: 0, ly: 8, lz: 120 },
+        { t: 14, x: -3.2, y: 7.2, z: 156, lx: 2.4, ly: 6, lz: 230 },
+        { t: 22, x: 3.4, y: 10, z: 268, lx: 0, ly: 16, lz: 350 },
+        { t: 30, x: 0, y: 26, z: 332, lx: 0, ly: 22, lz: 420 },
+      ];
+
+      function smoothstep(edge0, edge1, value) {
+        const u = Math.min(1, Math.max(0, (value - edge0) / (edge1 - edge0)));
+        return u * u * (3 - 2 * u);
+      }
+
+      function sample(t, key) {
+        if (t <= CAM[0].t) return CAM[0][key];
+        const last = CAM[CAM.length - 1];
+        if (t >= last.t) return last[key];
+        for (let i = 0; i < CAM.length - 1; i += 1) {
+          const a = CAM[i];
+          const b = CAM[i + 1];
+          if (t >= a.t && t <= b.t) {
+            const u = smoothstep(a.t, b.t, t);
+            return a[key] + (b[key] - a[key]) * u;
+          }
+        }
+        return last[key];
+      }
+
+      const altEl = document.getElementById("hud-alt");
+      const spdEl = document.getElementById("hud-spd");
+      const timeEl = document.getElementById("hud-time");
+
+      function renderAt(time) {
+        const t = Number.isFinite(time) ? time : 0;
+        const x = sample(t, "x");
+        const y = sample(t, "y");
+        const z = sample(t, "z");
+        camera.position.set(x, y, z);
+        camera.lookAt(sample(t, "lx"), sample(t, "ly"), sample(t, "lz"));
+        camera.rotateZ(Math.sin(t * 0.35) * 0.035);
+        nose.position.set(x, y - 1.2, z + 16);
+        strip.material.emissiveIntensity = 1.5 + Math.sin(t * 3.1) * 0.45;
+
+        const zPrev = sample(Math.max(0, t - 0.05), "z");
+        const speed = (Math.abs(z - zPrev) / 0.05) * 9;
+        altEl.textContent = String(Math.round(y * 11)).padStart(3, "0");
+        spdEl.textContent = String(Math.round(speed)).padStart(3, "0");
+        const frames = Math.max(0, Math.round(t * 30));
+        const ss = Math.floor(frames / 30);
+        const ff = frames % 30;
+        timeEl.textContent =
+          String(Math.floor(ss / 60)).padStart(2, "0") +
+          ":" +
+          String(ss % 60).padStart(2, "0") +
+          ":" +
+          String(ff).padStart(2, "0");
+
+        ribbons.forEach((mesh) => {
+          const lane = mesh.userData.lane;
+          const positions = mesh.userData.positions;
+          const colors = mesh.userData.colors;
+          const magenta = lane % 2 === 0;
+          const half = 0.2;
+          for (let i = 0; i < TRAIL_N; i += 1) {
+            const u = i / (TRAIL_N - 1);
+            const pz = z - 6 + u * 78;
+            const px = (lane - 1.5) * 1.7 + Math.sin(pz * 0.05 + t * 1.5 + lane) * 1.15;
+            const py = 1.1 + lane * 0.22 + Math.sin(pz * 0.08 + t * 0.9 + lane) * 0.55;
+            const pulse = 0.2 + 0.8 * (0.5 + 0.5 * Math.sin(pz * 0.22 - t * 6 + lane));
+            const base = i * 6;
+            positions[base] = px - half;
+            positions[base + 1] = py;
+            positions[base + 2] = pz;
+            positions[base + 3] = px + half;
+            positions[base + 4] = py + 0.08;
+            positions[base + 5] = pz;
+            const r = (magenta ? 0.97 : 0.28) * pulse;
+            const g = (magenta ? 0.18 : 1) * pulse;
+            const b = (magenta ? 0.55 : 0.92) * pulse;
+            colors[base] = r;
+            colors[base + 1] = g;
+            colors[base + 2] = b;
+            colors[base + 3] = r;
+            colors[base + 4] = g;
+            colors[base + 5] = b;
+          }
+          mesh.geometry.attributes.position.needsUpdate = true;
+          mesh.geometry.attributes.color.needsUpdate = true;
+        });
+
+        floats.forEach((mesh, i) => {
+          const base = mesh.userData.base;
+          mesh.position.set(
+            base.x + Math.sin(t * 0.7 + i) * 0.7,
+            base.y + Math.sin(t * 0.55 + i * 1.3) * 1.1,
+            base.z,
+          );
+          mesh.rotation.y = t * 0.45 + i;
+          mesh.rotation.x = t * 0.22;
+        });
+
+        const appear = smoothstep(15.5, 19.5, t);
+        abstract.scale.setScalar(0.15 + appear * 0.85);
+        abstract.position.y = 16 + appear * 8 + Math.sin(t * 0.8) * 0.6;
+        ico.rotation.y = t * 0.42;
+        ico.rotation.x = t * 0.18;
+        torus.rotation.z = t * 0.65;
+        abstract.visible = appear > 0.02;
+
+        renderer.render(scene, camera);
+      }
+
+      window.addEventListener("hf-seek", (event) => {
+        renderAt(event.detail.time);
+      });
+      renderAt(window.__hfThreeTime || 0);
+      window.__resolveCity();
+    </script>
+  </body>
+</html>
