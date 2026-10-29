@@ -1,20 +1,20 @@
 #!/usr/bin/env bash
 # 下書き動画（灰色の静止カード＋SRT焼き込み）。音は入れない。絵は描かない。生成AIは使わない。
-# 入力は作業フォルダの外。既定は /tmp/inputs（common/ と video/）。このスクリプトは入力をコミットしない。
-# 使い方: INPUTS=/tmp/inputs bash animatics/20261029-night/make.sh
+# 字幕は同じフォルダの subs/（焼き込む時刻まで入れたもの）。台本ファイルはコミットしない。
+# 使い方: bash animatics/20261029-night/make.sh
 #
-# カードの秒は台本のカットどおり。SRTの文言と位置タグは変えない。
+# カードの秒は台本のカットどおり。字幕の文言は変えない。
+# カットより先に出ていた字幕の開始だけ、subs/ 側でカットの境目へ寄せてある。
 # ffmpeg が SRT を ASS にすると PlayRes が 384x288 になり、9:16 では字が縦に伸びる。
-# 直すのは PlayRes と字体だけ（1080x1920、文泉驛微米黑、画面上で約40px）。位置タグはそのまま。
-# 2026-11-02-金メモ-izoku-nenkin は SRT が無いので作らない。
+# 直すのは PlayRes と字体だけ（1080x1920、文泉驛微米黑、画面上で約40px）。
+# 金メモの SRT には位置タグが無いので、焼き込み時だけ位置を足す（文言と時刻はそのまま）。
 set -euo pipefail
 
 ROOT=$(cd "$(dirname "$0")" && pwd)
-INPUTS=${INPUTS:-/tmp/inputs}
 BUILD=${BUILD:-/tmp/animatic-build-20261029-night}
 FONT=/usr/share/fonts/truetype/wqy/wqy-microhei.ttc
 FONTDIR=/usr/share/fonts/truetype/wqy
-SUBS="$INPUTS/video/subs"
+SUBS="$ROOT/subs"
 
 if [[ ! -d "$SUBS" ]]; then
   echo "字幕フォルダが無い: $SUBS" >&2
@@ -28,7 +28,7 @@ fi
 rm -rf "$BUILD"
 mkdir -p "$BUILD"
 
-# SRTをASSにし、画面サイズだけ合わせる。イベント行（文言・位置タグ・時刻）は触らない。
+# SRTをASSにし、画面サイズだけ合わせる。ペットと婚活はイベント行を触らない。
 to_ass() {
   local src="$1" dst="$2"
   ffmpeg -y -hide_banner -loglevel error -i "$src" "$dst"
@@ -37,6 +37,37 @@ to_ass() {
     -e 's/^PlayResY:.*/PlayResY: 1920/' \
     -e 's/^Style: Default,.*/Style: Default,WenQuanYi Micro Hei,40,\&H00FFFFFF,\&H000000FF,\&H00000000,\&H00000000,0,0,0,0,100,100,0,0,1,3,0,2,60,60,90,1/' \
     "$dst"
+}
+
+# 金メモだけ。位置タグが無いので、問いを上、台詞を下、出典をいちばん下に分ける。文言と時刻は変えない。
+place_izoku() {
+  local ass="$1"
+  python3 - "$ass" << 'PY'
+import sys
+path = sys.argv[1]
+lines = open(path, encoding="utf-8").read().splitlines(True)
+out = []
+for line in lines:
+    if not line.startswith("Dialogue:"):
+        out.append(line)
+        continue
+    parts = line.rstrip("\n").split(",", 9)
+    if len(parts) < 10:
+        out.append(line if line.endswith("\n") else line + "\n")
+        continue
+    body = parts[9]
+    if "出典" in body:
+        parts[7] = "36"
+        parts[9] = "{\\an2\\fs26}" + body
+    elif body.startswith("子ども2人なら"):
+        parts[7] = "70"
+        parts[9] = "{\\an8}" + body
+    else:
+        parts[7] = "150"
+        parts[9] = "{\\an2}" + body
+    out.append(",".join(parts) + "\n")
+open(path, "w", encoding="utf-8").writelines(out)
+PY
 }
 
 write_card() {
@@ -50,6 +81,9 @@ write_card() {
 render() {
   local name="$1" dur="$2" frames="$3" end1="$4" dark="$5"
   shift 5
+  if [[ -n "${ONLY:-}" && "$name" != "$ONLY" ]]; then
+    return 0
+  fi
   local ass="$BUILD/${name}.ass"
   local filter="$BUILD/${name}.filter"
   local outdir="$ROOT/$name"
@@ -59,6 +93,9 @@ render() {
   fi
   mkdir -p "$outdir/frames"
   to_ass "$SUBS/${name}.srt" "$ass"
+  if [[ "$name" == *izoku-nenkin ]]; then
+    place_izoku "$ass"
+  fi
   : > "$filter"
   if [[ -n "$dark" ]]; then
     printf "drawbox=x=0:y=0:w=iw:h=ih:color=0x3A3A3A:t=fill:enable='gte(t\\,%s)',\n" "$dark" >> "$filter"
@@ -82,6 +119,11 @@ render() {
 drawtext=fontfile=${FONT}:textfile=${textfile}:fontsize=36:fontcolor=0xF5D76E:borderw=2:bordercolor=0x222222:x=(w-text_w)/2:y=430:line_spacing=8:enable='${enable}',
 EOF
   done
+  if [[ "$name" == *izoku-nenkin ]]; then
+    cat >> "$filter" << EOF
+drawtext=fontfile=${FONT}:textfile=${BUILD}/izoku-amount.txt:fontsize=42:fontcolor=white:borderw=3:bordercolor=0x222222:x=w-text_w-80:y=980:line_spacing=12:enable='lt(t\\,2.5)',
+EOF
+  fi
   printf 'subtitles=%s:fontsdir=%s\n' "$ass" "$FONTDIR" >> "$filter"
   ffmpeg -y -hide_banner -loglevel error \
     -f lavfi -i "color=c=0x6A6A6A:s=1080x1920:r=24:d=${dur}" \
@@ -270,5 +312,29 @@ render "2026-11-04-婚活-jikka-post" 15 360 336 13 \
   10.4 13 "$BUILD/jikka-4.txt" \
   13 - "$BUILD/jikka-5.txt"
 
-echo "SRTなしのため未作成: 2026-11-02-金メモ-izoku-nenkin"
+# 金メモ 遺族基礎年金（台本: 0.0-3.0 / 3.0-10.0 / 10.0-15.0。PRなし。尺15.0秒）
+# 1秒目は食卓に茶碗2つ。金額は台本の画面文字（0.0-2.5）。人物は成人。子どもは映さない。
+write_card "$BUILD/izoku-1.txt" \
+  "カット1　0.0-3.0秒" \
+  "食卓の静止画。茶碗が2つ" \
+  "成人が文字の無い封筒を持って止まる" \
+  "右側に金額。人物は成人だけ"
+write_card "$BUILD/izoku-2.txt" \
+  "カット2　3.0-10.0秒" \
+  "同じ成人が封筒を机に置く" \
+  "上は人数の早見表" \
+  "人物は成人だけ"
+write_card "$BUILD/izoku-3.txt" \
+  "カット3　10.0-15.0秒" \
+  "同じ成人が茶碗2つを並べ直す" \
+  "静かに座る" \
+  "人物は成人だけ"
+write_card "$BUILD/izoku-amount.txt" \
+  "子2人 → 1,334,900円" \
+  "年額・計算額"
+render "2026-11-02-金メモ-izoku-nenkin" 15 360 336 "" \
+  0 3 "$BUILD/izoku-1.txt" \
+  3 10 "$BUILD/izoku-2.txt" \
+  10 - "$BUILD/izoku-3.txt"
+
 echo "完了"
