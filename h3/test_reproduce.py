@@ -146,6 +146,7 @@ class ReproduceTests(unittest.TestCase):
         self.assertEqual(len(reproduce), 1)
         cell = reproduce[0]
         self.assertIn("LIGHTNING = False", cell)
+        self.assertIn("/content/drive/MyDrive/動画倉庫/ネタBOX/1024.mp4", cell)
         self.assertIn("既にあるので書かない", cell)
         self.assertIn("生成ボタンは押していない。", cell)
         self.assertNotIn("post_prompt", cell)
