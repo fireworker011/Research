@@ -153,9 +153,37 @@
 
 ## URL断片の検索
 
-指示書の完了条件にある検索を、この節を書く前に実行する。結果は実行したあと、この節へ貼る。
+指示書の完了条件にある検索を、コミット 7211d64a のあと（2026-10-30 20:15:05 JST）に実行した。検索語は指示書にある3つ。このファイルには、その語を連続した文字で書かない。
 
-対象フォルダへの `git grep`（パスは `shorts-scripts/2026-11-08-pet/`）と、基点からの差分ファイルへの同じ検索。検索語は指示書の完了条件にある3つ。このファイルには、その語を連続した文字で書かない。
+対象フォルダへの `git grep`（パスは `shorts-scripts/2026-11-08-pet/`）:
+
+```
+（標準出力なし）
+終了コード: 1
+```
+
+終了コード 1 は、一致する行が0件のときの git の戻り値。
+
+基点 `origin/claude/setup-colab-comfyui-Eb9Lh` から HEAD（7211d64a）までの差分ファイル:
+
+```
+shorts-scripts/2026-11-08-pet/2026-11-08-ペット-kuroneko-tobira.md
+shorts-scripts/2026-11-08-pet/2026-11-08-ペット-kuroneko-tobira.srt
+shorts-scripts/2026-11-08-pet/2026-11-09-ペット-kuroneko-boru.md
+shorts-scripts/2026-11-08-pet/2026-11-09-ペット-kuroneko-boru.srt
+shorts-scripts/2026-11-08-pet/2026-11-10-ペット-kuroneko-zabuton.md
+shorts-scripts/2026-11-08-pet/2026-11-10-ペット-kuroneko-zabuton.srt
+shorts-scripts/2026-11-08-pet/REPORT.md
+```
+
+上の7ファイルへ同じ語で `git grep` した結果:
+
+```
+（標準出力なし）
+終了コード: 1
+```
+
+一致は0件。この節を足したあとのコミットでも、push の前にもう一度同じ検索をする。
 
 ## 引き継ぎメモ
 
