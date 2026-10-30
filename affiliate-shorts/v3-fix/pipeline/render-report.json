@@ -1,0 +1,98 @@
+[
+  {
+    "title": "返信が遅い人を、好きになった理由",
+    "duration": 44.233,
+    "width": 1080,
+    "height": 1920,
+    "audio_streams": 1,
+    "silence_over_1_5s": 0,
+    "freeze_over_1s": 0,
+    "sync_max_abs": 0.1,
+    "voice_gap_max": 2.574,
+    "source_audio_mapped": false
+  },
+  {
+    "title": "仮交際が、終わった夜",
+    "duration": 32.133,
+    "width": 1080,
+    "height": 1920,
+    "audio_streams": 1,
+    "silence_over_1_5s": 0,
+    "freeze_over_1s": 0,
+    "sync_max_abs": 0.065,
+    "voice_gap_max": 2.422,
+    "source_audio_mapped": false
+  },
+  {
+    "title": "見守りカメラの夕方を見たら、水が減った順番が残っていた",
+    "duration": 13.0,
+    "width": 1080,
+    "height": 1920,
+    "audio_streams": 1,
+    "silence_over_1_5s": 0,
+    "freeze_over_1s": 0,
+    "sync_max_abs": 0.149,
+    "voice_gap_max": 2.299,
+    "source_audio_mapped": false
+  },
+  {
+    "title": "見守りカメラで留守番中を隠し撮りしたら、先輩が止めていた",
+    "duration": 12.0,
+    "width": 1080,
+    "height": 1920,
+    "audio_streams": 1,
+    "silence_over_1_5s": 0,
+    "freeze_over_1s": 0,
+    "sync_max_abs": 0.101,
+    "voice_gap_max": 1.826,
+    "source_audio_mapped": false
+  },
+  {
+    "title": "夜の見守りカメラを見たら、先輩が途中から隣に来ていた",
+    "duration": 15.0,
+    "width": 1080,
+    "height": 1920,
+    "audio_streams": 1,
+    "silence_over_1_5s": 0,
+    "freeze_over_1s": 0,
+    "sync_max_abs": 0.101,
+    "voice_gap_max": 3.185,
+    "source_audio_mapped": false
+  },
+  {
+    "title": "千分の五",
+    "duration": 13.433,
+    "width": 1080,
+    "height": 1920,
+    "audio_streams": 1,
+    "silence_over_1_5s": 0,
+    "freeze_over_1s": 0,
+    "sync_max_abs": 0.033,
+    "voice_gap_max": 0.216,
+    "source_audio_mapped": false
+  },
+  {
+    "title": "半分ずつ",
+    "duration": 17.533,
+    "width": 1080,
+    "height": 1920,
+    "audio_streams": 1,
+    "silence_over_1_5s": 0,
+    "freeze_over_1s": 0,
+    "sync_max_abs": 0.034,
+    "voice_gap_max": 0.22,
+    "source_audio_mapped": false
+  },
+  {
+    "title": "月十五万円まで",
+    "duration": 12.567,
+    "width": 1080,
+    "height": 1920,
+    "audio_streams": 1,
+    "silence_over_1_5s": 0,
+    "freeze_over_1s": 0,
+    "sync_max_abs": 0.045,
+    "voice_gap_max": 0.234,
+    "source_audio_mapped": false
+  }
+]
