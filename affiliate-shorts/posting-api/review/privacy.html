@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>プライバシーポリシー — チャンネル机</title>
+  <style>
+    body { font-family: sans-serif; line-height: 1.6; max-width: 40rem; margin: 2rem auto; padding: 0 1rem; color: #222; }
+    .draft { background: #fff6d8; padding: 0.75rem 1rem; }
+  </style>
+</head>
+<body>
+  <p class="draft">下書きです。公開前に角括弧を置き換え、[公開日] を実際の日付にします。</p>
+  <p><a href="index.html">トップ</a> <a href="terms.html">利用規約</a></p>
+  <h1>プライバシーポリシー</h1>
+  <p>運営者: [運営者名]<br>連絡先: [連絡先メール]<br>公開日: [公開日]</p>
+
+  <h2>このツールについて</h2>
+  <p>チャンネル机（以下「このツール」）は、運営者が自分の端末で動かすスクリプトです。運営者のサーバーへ動画やトークンを送りません。通信先は、運営者が実行したときに限って、Google（YouTube）と TikTok です。</p>
+  <p>このツールは YouTube API Services を利用します。YouTube の利用規約は <a href="https://www.youtube.com/t/terms">https://www.youtube.com/t/terms</a> です。Google のプライバシーポリシーは <a href="http://www.google.com/policies/privacy">http://www.google.com/policies/privacy</a> です。</p>
+
+  <h2>扱う情報</h2>
+  <ul>
+    <li>OAuth のクライアントID、クライアント秘密、refresh token、access token。運営者の端末のファイル、またはその端末の環境変数に置きます。</li>
+    <li>YouTube のチャンネルID、チャンネル名、ハンドル。TikTok の open_id と表示名。</li>
+    <li>運営者が指定した動画ファイル、タイトル、説明文、公開範囲、予約時刻。</li>
+    <li>投稿後にAPIが返す動画ID、公開URL、再生数、高評価数、コメント数、シェア数。YouTube Analytics を有効にしたときは、指定期間の再生数。</li>
+  </ul>
+  <p>アフィリエイトのクリック数と成果数は、このツールでは取得しません。</p>
+  <p>このツールは広告SDKを使わず、ブラウザへクッキーを置きません。端末から広告識別子を読みません。</p>
+
+  <h2>使い方</h2>
+  <p>運営者自身のチャンネルへ動画を投稿し、投稿先が意図したアカウントかを確認し、公開統計を手元で見るために使います。販売、第三者提供、広告配信には使いません。</p>
+  <p>YouTube から受け取ったデータは、YouTube API Services の開発者ポリシーに従います。ポリシーが求める期間を超えて保存せず、取り消しのあとは削除します。公開統計の延長保存は、YouTube の監査で認められた場合だけにします。</p>
+
+  <h2>預ける相手</h2>
+  <p>動画とメタデータを送る相手は、運営者が投稿を実行したときの Google と TikTok です。運営者以外の開発者のサーバーには送りません。</p>
+
+  <h2>保持と削除</h2>
+  <p>トークンと投稿記録は運営者の端末にあります。不要になったファイルは運営者が消します。YouTube API のデータは、開発者ポリシーの更新・削除の期限に従います。</p>
+  <p>Google へのアクセス権の取り消しは <a href="https://security.google.com/settings/security/permissions">https://security.google.com/settings/security/permissions</a> です。取り消し後、このツールは新しい access token を取れなくなります。運営者は、そのアカウントについて端末に残した token と API 由来の記録を消します。</p>
+  <p>TikTok の許可は、TikTok のアプリ権限の画面から外します。外したあと同じく、端末の token と記録を消します。</p>
+
+  <h2>問い合わせ</h2>
+  <p>このポリシーと、このツールのプライバシーについての連絡先は [連絡先メール] です。</p>
+</body>
+</html>
