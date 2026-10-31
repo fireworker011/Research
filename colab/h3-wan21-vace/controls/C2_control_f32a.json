@@ -1,0 +1,85 @@
+{
+ "cut": "C2",
+ "source_seconds": [
+  1.5,
+  5.0
+ ],
+ "aspect": "9:16",
+ "fps": 24,
+ "openpose_keyframes": [
+  {
+   "t": 1.6,
+   "cat_jaw_deg": 15
+  },
+  {
+   "t": 3.0,
+   "cat_jaw_deg": 0
+  },
+  {
+   "t": 3.4,
+   "cat_jaw_deg": 15
+  },
+  {
+   "t": 4.8,
+   "cat_jaw_deg": 0
+  }
+ ],
+ "depth": {
+  "focus_sweep": [
+   [
+    1.5,
+    "near"
+   ],
+   [
+    1.75,
+    "far"
+   ],
+   [
+    2.0,
+    "near"
+   ]
+  ],
+  "sakura_hands": "defocused"
+ },
+ "camera_vector": {
+  "translate": [
+   0,
+   0,
+   0
+  ],
+  "rotate": [
+   0,
+   0,
+   0
+  ],
+  "shake": {
+   "type": "handheld",
+   "amp_px": [
+    1,
+    2
+   ],
+   "irregular": true,
+   "seed": 2
+  }
+ },
+ "jaw_max_deg": 15,
+ "sakura": "static",
+ "caption": [
+  {
+   "t": [
+    1.5,
+    3.0
+   ],
+   "text": "また昨日のプール。"
+  },
+  {
+   "t": [
+    3.0,
+    5.0
+   ],
+   "text": "あんたが“明日から本気出す”って言った日の",
+   "note": "「やつ」は意図的に省略・言いさしで切る"
+  }
+ ],
+ "duration_s": 3.5
+}
