@@ -1,0 +1,6 @@
+node_modules/
+.remotion/
+out/*-silent.mp4
+out/check-video.log
+# ProRes 4444 は1本100MB超。コミットしない。作り方は REPORT.md。
+out/*.mov

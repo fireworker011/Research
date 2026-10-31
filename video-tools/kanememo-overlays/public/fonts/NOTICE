@@ -1,0 +1,12 @@
+NotoSansJP-700.woff
+  Noto Sans JP（日本語サブセット、weight 700）
+  Copyright 2022 The Noto Project Authors
+  Licensed under the SIL Open Font License 1.1
+  https://fonts.google.com/noto/specimen/Noto+Sans+JP
+
+symbols-fallback.ttf
+  WenQuanYi Micro Hei 0.2.0-beta から、矢印と数学記号（U+2190–U+21FF と U+2200–U+22FF）だけを抜いたもの。
+  「→」「≒」など、Noto Sans JP のこのサブセットに無い記号用。
+  Copyright 2008-2009 The WenQuanYi Project Board of Trustees
+  Licensed under the Apache License, Version 2.0
+  http://www.apache.org/licenses/LICENSE-2.0
