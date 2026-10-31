@@ -1,0 +1,323 @@
+{
+  "unet": {
+    "class_type": "UNETLoader",
+    "inputs": {
+      "unet_name": "wan2.1_vace_14B_fp8_scaled.safetensors",
+      "weight_dtype": "default"
+    },
+    "_meta": {
+      "title": "VACE 14B"
+    }
+  },
+  "lora_distill": {
+    "class_type": "LoraLoaderModelOnly",
+    "inputs": {
+      "model": [
+        "unet",
+        0
+      ],
+      "lora_name": "wan2.1_t2v_14b_lora_rank64_lightx2v_4step.safetensors",
+      "strength_model": 1.0
+    },
+    "_meta": {
+      "title": "蒸留 LoRA lightx2v"
+    }
+  },
+  "shift": {
+    "class_type": "ModelSamplingSD3",
+    "inputs": {
+      "model": [
+        "lora_distill",
+        0
+      ],
+      "shift": 8.0
+    },
+    "_meta": {
+      "title": "shift"
+    }
+  },
+  "clip": {
+    "class_type": "CLIPLoader",
+    "inputs": {
+      "clip_name": "umt5_xxl_fp8_e4m3fn_scaled.safetensors",
+      "type": "wan"
+    },
+    "_meta": {
+      "title": "UMT5"
+    }
+  },
+  "positive": {
+    "class_type": "CLIPTextEncode",
+    "inputs": {
+      "clip": [
+        "clip",
+        0
+      ],
+      "text": "same adult brown mackerel tabby cat, white chest, foreground 40%; dreamcore liminal space, endless pale tiled indoor pool hall, flooded window, hazy pastel sky; vertical 9:16, smartphone footage, slight handheld shake, autofocus hunting, fluorescent light, sensor noise, compression artifacts, photorealistic, real concrete texture, weathered paint, no text, no logos, Sakura, adult Japanese woman in her late 20s, mature adult face and proportions, soft smile, brown eyes, long straight dark brown hair with see-through bangs, gold chrysanthemum hair ornament, crimson kimono with gold and white cherry blossom pattern, collar closed and properly worn, gold obi, cat close-up, Sakura at mid distance, hands out of focus, flooded window behind, humid haze, muted pastel, same adult face as the reference image, consistent identity"
+    },
+    "_meta": {
+      "title": "positive"
+    }
+  },
+  "negative": {
+    "class_type": "CLIPTextEncode",
+    "inputs": {
+      "clip": [
+        "clip",
+        0
+      ],
+      "text": "extra fingers, fused hands, extra legs, merged paws, deformed face, 3d render, CGI, plastic, smooth, text, watermark, logo, human-like mouth, extra teeth, deformed jaw"
+    },
+    "_meta": {
+      "title": "negative"
+    }
+  },
+  "vae": {
+    "class_type": "VAELoader",
+    "inputs": {
+      "vae_name": "wan_2.1_vae.safetensors"
+    },
+    "_meta": {
+      "title": "Wan VAE"
+    }
+  },
+  "pose_frames": {
+    "class_type": "VHS_LoadImagesPath",
+    "inputs": {
+      "directory": "/content/wan-vace-work/C2/pose",
+      "image_load_cap": 85,
+      "skip_first_images": 0,
+      "select_every_nth": 1
+    },
+    "_meta": {
+      "title": "OpenPose guides"
+    }
+  },
+  "depth_frames": {
+    "class_type": "VHS_LoadImagesPath",
+    "inputs": {
+      "directory": "/content/wan-vace-work/C2/depth",
+      "image_load_cap": 85,
+      "skip_first_images": 0,
+      "select_every_nth": 1
+    },
+    "_meta": {
+      "title": "Depth guides"
+    }
+  },
+  "openpose": {
+    "class_type": "OpenposePreprocessor",
+    "inputs": {
+      "image": [
+        "pose_frames",
+        0
+      ],
+      "detect_hand": "enable",
+      "detect_body": "enable",
+      "detect_face": "enable",
+      "resolution": 1024,
+      "scale_stick_for_xinsr_cn": "disable"
+    },
+    "_meta": {
+      "title": "OpenPose preprocessor"
+    }
+  },
+  "depth_pre": {
+    "class_type": "DepthAnythingPreprocessor",
+    "inputs": {
+      "image": [
+        "depth_frames",
+        0
+      ],
+      "ckpt_name": "depth_anything_vits14.pth",
+      "resolution": 1024
+    },
+    "_meta": {
+      "title": "Depth preprocessor"
+    }
+  },
+  "control_source": {
+    "class_type": "VaceControlSource",
+    "inputs": {
+      "source": "prerendered",
+      "pose_prerendered": [
+        "pose_frames",
+        0
+      ],
+      "depth_prerendered": [
+        "depth_frames",
+        0
+      ],
+      "pose_preprocessed": [
+        "openpose",
+        0
+      ],
+      "depth_preprocessed": [
+        "depth_pre",
+        0
+      ]
+    },
+    "_meta": {
+      "title": "control source"
+    }
+  },
+  "camera": {
+    "class_type": "VacePoseDepthCamera",
+    "inputs": {
+      "pose": [
+        "control_source",
+        0
+      ],
+      "depth": [
+        "control_source",
+        1
+      ],
+      "width": 576,
+      "height": 1024,
+      "length": 85,
+      "tx": 0.0,
+      "ty": 0.0,
+      "tz": 0.0,
+      "rx": 0.0,
+      "ry": 0.0,
+      "rz": 0.0,
+      "shake_x": 1.0,
+      "shake_y": 2.0,
+      "shake_seed": 2,
+      "irregular": true,
+      "face_protect": 0.35
+    },
+    "_meta": {
+      "title": "camera on pose and depth"
+    }
+  },
+  "face": {
+    "class_type": "LoadImage",
+    "inputs": {
+      "image": "sakura-face-crop.jpg"
+    },
+    "_meta": {
+      "title": "face reference"
+    }
+  },
+  "vace": {
+    "class_type": "WanVaceToVideo",
+    "inputs": {
+      "positive": [
+        "positive",
+        0
+      ],
+      "negative": [
+        "negative",
+        0
+      ],
+      "vae": [
+        "vae",
+        0
+      ],
+      "width": 576,
+      "height": 1024,
+      "length": 85,
+      "batch_size": 1,
+      "strength": 1.0,
+      "control_video": [
+        "camera",
+        0
+      ],
+      "control_masks": [
+        "camera",
+        1
+      ],
+      "reference_image": [
+        "face",
+        0
+      ]
+    },
+    "_meta": {
+      "title": "WanVaceToVideo"
+    }
+  },
+  "sampler": {
+    "class_type": "KSampler",
+    "inputs": {
+      "model": [
+        "shift",
+        0
+      ],
+      "seed": 3,
+      "steps": 4,
+      "cfg": 1.0,
+      "sampler_name": "uni_pc",
+      "scheduler": "simple",
+      "positive": [
+        "vace",
+        0
+      ],
+      "negative": [
+        "vace",
+        1
+      ],
+      "latent_image": [
+        "vace",
+        2
+      ],
+      "denoise": 1.0
+    },
+    "_meta": {
+      "title": "KSampler"
+    }
+  },
+  "trim": {
+    "class_type": "TrimVideoLatent",
+    "inputs": {
+      "samples": [
+        "sampler",
+        0
+      ],
+      "trim_amount": [
+        "vace",
+        3
+      ]
+    },
+    "_meta": {
+      "title": "trim reference latents"
+    }
+  },
+  "decode": {
+    "class_type": "VAEDecode",
+    "inputs": {
+      "samples": [
+        "trim",
+        0
+      ],
+      "vae": [
+        "vae",
+        0
+      ]
+    },
+    "_meta": {
+      "title": "VAEDecode"
+    }
+  },
+  "save": {
+    "class_type": "VHS_VideoCombine",
+    "inputs": {
+      "images": [
+        "decode",
+        0
+      ],
+      "frame_rate": 24,
+      "loop_count": 0,
+      "filename_prefix": "trial-01/C2",
+      "format": "video/h264-mp4",
+      "pingpong": false,
+      "save_output": true,
+      "crf": 19,
+      "pix_fmt": "yuv420p",
+      "save_metadata": false
+    },
+    "_meta": {
+      "title": "H.264 mp4"
+    }
+  }
+}
