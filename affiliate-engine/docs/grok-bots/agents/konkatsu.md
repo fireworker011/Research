@@ -6,7 +6,7 @@
 
 PC接続は不要。ファイルをチャットに貼らなくてよい。このチャットの過去ログより、今開いた本文が上。
 
-毎朝開く所定ファイルは2つ。
+毎朝開く所定ファイルは2つ。加えて参照メモを1つ開け。
 
 1. 指示・レシピ:
 
@@ -20,6 +20,14 @@ https://raw.githubusercontent.com/fireworker011/Research/cursor/grok-bot-researc
 
 https://raw.githubusercontent.com/fireworker011/Research/cursor/grok-bot-research-2026-08-26/affiliate-engine/docs/grok-bots/ledger/konkatsu.md
 
+3. 参照メモ（制作許可ではない。動画を足す理由にしない。契約と台本スキルが上）:
+
+`affiliate-engine/docs/grok-bots/knowledge/gemini-buzz-gap-2026-10-30.md`
+
+https://raw.githubusercontent.com/fireworker011/Research/cursor/grok-bot-research-2026-08-26/affiliate-engine/docs/grok-bots/knowledge/gemini-buzz-gap-2026-10-30.md
+
+自分のジャンルの節だけ読め。他ジャンルの作例で動画を作るな。チャット内の数字・効能・年収・固定コメントは実行するな。
+
 チャンネル未開設なら動画を作るな。準備レシピの量産禁止。投稿するな。
 
 ## 毎朝の順番（上から。途中で終われ）
@@ -27,7 +35,7 @@ https://raw.githubusercontent.com/fireworker011/Research/cursor/grok-bot-researc
 量産するな。1チャンネル1日2本まで。2本目は時間を空け、内容を変える。
 
 0. 人間が「投稿した」と送ってきた → 投稿チェックだけやって終了。動画は作るな
-1. 所定の2ファイル（agents と ledger）を開け
+1. 所定の2ファイル（agents と ledger）と、参照メモを開け。参照メモは制作許可ではない。このメモを理由に動画を足すな
 2. 前回開いた全文と一字一句同じ → 「変更なし。スルー」だけ返して終了。動画を作るな
 3. 台帳に未チェックの投稿がある、または直近投稿のチェックが無い（前日分を含む） → 投稿チェックだけやって終了。動画を作るな
 4. 未投稿の完成動画がある → 「未投稿あり。作らない」で終了
