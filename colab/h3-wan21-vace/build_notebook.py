@@ -9,7 +9,7 @@ ROOT = Path(__file__).resolve().parent
 
 MARKDOWN = """# Wan2.1 VACE 14B — H3 カット生成
 
-既存の `wan22_i2v_lightx2v_colab.ipynb` と同じく、モデルは Google Drive に一度置いて再利用する。有料 API は使わない。
+生成本体は Wan2.1 VACE 14B。有料 API は使わない。Drive にある重みは使い、無い重みは Colab のディスクに取得する。
 
 ランタイムは **A100 以上**。最初のコードセルで、それより小さい GPU は停止する。
 
@@ -18,7 +18,7 @@ MARKDOWN = """# Wan2.1 VACE 14B — H3 カット生成
 1. GPU チェック
 2. 制御 JSON の読み込みと、OpenPose / Depth / カメラ制御の作成
 3. Drive をマウントし、ComfyUI を入れる
-4. モデル取得（Drive にあればスキップ）
+4. モデル取得（Drive にあればそれを使う。無ければ Colab のディスクへ）
 5. ComfyUI 起動
 6. カットごとに 9:16 の mp4 と、使った制御 JSON を書く。mp4 はサンプラーと VAE の出力だけ
 7. 全部書けたら Drive を flush してランタイムを切断し、削除する。失敗したときも削除する

@@ -1,6 +1,6 @@
 # Wan2.1 VACE 14B Colab 起動手順
 
-既存の `wan22_i2v_lightx2v_colab.ipynb` と同じく、モデルは Google Drive に一度置いて再利用する。生成本体は Wan2.1 VACE 14B。有料 API は使わない。
+生成本体は Wan2.1 VACE 14B。有料 API は使わない。Drive に完全な重みがあればそれを使う。無いファイルは Drive に書かず、Colab の `/content/ComfyUI_models` に取得する。ユーザーのファイルは消さない。
 
 ## 起動
 
@@ -8,7 +8,7 @@
    https://colab.research.google.com/github/fireworker011/Research/blob/cursor/wan21-vace-14b-colab-702e/colab/h3-wan21-vace/wan21_vace_14b_colab.ipynb
 2. ランタイム → ランタイムのタイプを変更 → GPU → **A100** を選んで接続する。T4 や L4 のまま実行すると、最初のコードセルで止まる。
 3. 上から順にセルを実行する。途中で Drive の許可が出る。
-4. 初回はモデル約 39GB を Drive に置く。2回目以降は同じファイルを使う。
+4. Drive に重みが無いときは、そのファイルだけ Colab のディスクに取得する。Drive の空きは、モデルを Drive に保存するときだけ見る。出力の mp4 は小さい。
 
 ## 入力
 

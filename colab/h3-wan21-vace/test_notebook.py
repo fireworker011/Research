@@ -3,6 +3,7 @@
 
 import ast
 import json
+import os
 import shutil
 import subprocess
 import tempfile
@@ -161,7 +162,109 @@ def main():
         raise SystemExit("control_masks is not wired to WanVaceToVideo")
     if '["decode", 0]' not in generate_src:
         raise SystemExit("save node is not wired to the VAE decode")
+    download_src = expected_sources[3]
+    if "LOCAL_BASE" not in download_src or "/content/ComfyUI_models" not in download_src:
+        raise SystemExit("missing models are not sent to Colab disk")
+    if "h3_vace_local" not in download_src or "h3_vace_drive" not in download_src:
+        raise SystemExit("extra_model_paths does not list both model locations")
     compile((ROOT / "h3_load_frames.py").read_text(encoding="utf-8"), "h3_load_frames.py", "exec")
+
+    dl = {"_H3_LOAD_ONLY": True}
+    exec(download_src, dl)
+    drive_base = "/content/drive/MyDrive/ComfyUI_models"
+    local_base = "/content/ComfyUI_models"
+    te_name = "umt5_xxl_fp8_e4m3fn_scaled.safetensors"
+    resolved, downloads = dl["plan_models"](
+        dl["MODEL_SPECS"], drive_base, local_base, lambda _path, _min: False
+    )
+    te_dest = resolved[te_name]
+    if not te_dest.startswith(local_base + "/") or drive_base in te_dest:
+        raise SystemExit(f"missing text encoder was not aimed at Colab disk: {te_dest}")
+    if any(dl["needs_drive_space"](item["dest"], drive_base) for item in downloads):
+        raise SystemExit("a missing model still requires Drive space")
+
+    def local_only_free(path):
+        if "MyDrive" in str(path) or str(path).startswith("/content/drive"):
+            raise SystemExit(f"Drive free space was checked for a local download: {path}")
+        return 80_000_000_000
+
+    dl["ensure_download_space"](downloads, local_only_free, drive_base)
+    try:
+        dl["ensure_download_space"](
+            [{"dest": te_dest, "min_bytes": 6_400_000_000}],
+            lambda _path: 6_300_000_000,
+            drive_base,
+        )
+    except RuntimeError as exc:
+        text = str(exc)
+        if not text.startswith("Colab ディスク"):
+            raise SystemExit(f"local disk shortage was reported as Drive: {text}")
+    else:
+        raise SystemExit("a short Colab disk did not stop the download")
+    drive_dest = os.path.join(drive_base, "text_encoders", te_name)
+    try:
+        dl["ensure_download_space"](
+            [{"dest": drive_dest, "min_bytes": 6_400_000_000}],
+            lambda _path: 6_300_000_000,
+            drive_base,
+        )
+    except RuntimeError as exc:
+        if "Drive の空き" not in str(exc):
+            raise SystemExit(f"Drive save did not check Drive space: {exc}")
+    else:
+        raise SystemExit("saving a model to a full Drive was allowed")
+
+    drive_te = os.path.join(drive_base, "text_encoders", te_name)
+    clip_te = os.path.join(drive_base, "clip", te_name)
+    reused, reused_downloads = dl["plan_models"](
+        dl["MODEL_SPECS"],
+        drive_base,
+        local_base,
+        lambda path, _min: path == drive_te,
+    )
+    if reused[te_name] != drive_te or any(item["name"] == te_name for item in reused_downloads):
+        raise SystemExit("an existing Drive text encoder was downloaded again")
+    alt, alt_downloads = dl["plan_models"](
+        dl["MODEL_SPECS"],
+        drive_base,
+        local_base,
+        lambda path, _min: path == clip_te,
+    )
+    if alt[te_name] != clip_te or any(item["name"] == te_name for item in alt_downloads):
+        raise SystemExit("Drive clip/ alt was ignored")
+
+    yaml = dl["extra_model_yaml"](drive_base, local_base)
+    if yaml.find("h3_vace_local") > yaml.find("h3_vace_drive"):
+        raise SystemExit("local model path is not registered before Drive")
+    if drive_base not in yaml or local_base not in yaml or "text_encoders/" not in yaml:
+        raise SystemExit(f"model yaml is missing a location: {yaml}")
+
+    with tempfile.TemporaryDirectory() as tmp:
+        root = Path(tmp)
+        fake_drive = root / "drive"
+        fake_local = root / "local"
+        partial = fake_drive / "text_encoders" / te_name
+        partial.parent.mkdir(parents=True)
+        partial.write_bytes(b"x" * 64)
+        local_partial = fake_local / "text_encoders" / te_name
+        local_partial.parent.mkdir(parents=True)
+        local_partial.write_bytes(b"y" * 64)
+        if dl["removable_incomplete"](str(partial), 1000, str(fake_local), str(fake_drive)):
+            raise SystemExit("an incomplete Drive file was marked for deletion")
+        if not dl["removable_incomplete"](str(local_partial), 1000, str(fake_local), str(fake_drive)):
+            raise SystemExit("an incomplete local download was kept")
+        sizes = {str(partial): 64}
+
+        def exists(path, min_bytes):
+            return sizes.get(path, 0) >= min_bytes
+
+        planned, planned_downloads = dl["plan_models"](
+            dl["MODEL_SPECS"], str(fake_drive), str(fake_local), exists
+        )
+        if not planned[te_name].startswith(str(fake_local)):
+            raise SystemExit("a short Drive file was reused")
+        if str(partial) in [item["dest"] for item in planned_downloads]:
+            raise SystemExit("download dest is the Drive file")
 
     blob = "\n".join(
         [cell_text(cell) for cell in notebook.cells]
