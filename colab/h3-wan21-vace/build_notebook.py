@@ -20,8 +20,9 @@ MARKDOWN = """# Wan2.1 VACE 14B — H3 カット生成
 3. Drive をマウントし、ComfyUI を入れる
 4. モデル取得（Drive にあればそれを使う。無ければ Colab のディスクへ）
 5. ComfyUI 起動
-6. カットごとに 9:16 の mp4 と、使った制御 JSON を書く。mp4 はサンプラーと VAE の出力だけ
-7. 全部書けたら Drive を flush してランタイムを切断し、削除する。失敗したときも削除する
+6. カットごとに 9:16 の mp4 と、使った制御 JSON を書く。mp4 はサンプラーと VAE の出力だけ。終わっても最大 30 分はランタイムを残す
+7. 直すカットだけ再生成する（`CUTS = ["C2"]`）。Drive の `prompts.json` を読み直す
+8. 合格なら切断セルを実行する。操作が 30 分無いときも自動で切断する。失敗したときはすぐ切断する
 
 入力は `マイドライブ/ComfyUI_vace_h3/input/` の `face_ref.png`、`controls/C1_control_1b6a.json`、`controls/C2_control_f32a.json`、`controls/C3_control_88b5.json`、`controls/C4_control_6d2a.json`、`controls/prompts.json`。
 出力は `マイドライブ/ComfyUI_vace_h3/output/<実行時刻>/`。
@@ -53,7 +54,8 @@ def build():
         ("code", _read("cells/04_download.py")),
         ("code", _read("cells/05_launch.py")),
         ("code", _read("cells/06_generate.py")),
-        ("code", _read("cells/07_disconnect.py")),
+        ("code", _read("cells/07_regenerate.py")),
+        ("code", _read("cells/08_disconnect.py")),
     ]
     cells = []
     for kind, source in sources:

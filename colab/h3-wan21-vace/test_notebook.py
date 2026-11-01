@@ -129,8 +129,8 @@ def main():
     notebook = nbformat.read(NOTEBOOK, as_version=4)
     validate(notebook)
     code_cells = [cell for cell in notebook.cells if cell.cell_type == "code"]
-    if len(code_cells) != 7:
-        raise SystemExit(f"expected 7 code cells, got {len(code_cells)}")
+    if len(code_cells) != 8:
+        raise SystemExit(f"expected 8 code cells, got {len(code_cells)}")
     for index, cell in enumerate(code_cells):
         source = cell_text(cell)
         try:
@@ -146,17 +146,25 @@ def main():
         (ROOT / "cells/04_download.py").read_text(encoding="utf-8"),
         (ROOT / "cells/05_launch.py").read_text(encoding="utf-8"),
         (ROOT / "cells/06_generate.py").read_text(encoding="utf-8"),
-        (ROOT / "cells/07_disconnect.py").read_text(encoding="utf-8"),
+        (ROOT / "cells/07_regenerate.py").read_text(encoding="utf-8"),
+        (ROOT / "cells/08_disconnect.py").read_text(encoding="utf-8"),
     ]
     for index, expected in enumerate(expected_sources):
         if cell_text(code_cells[index]) != expected:
             raise SystemExit(f"code cell {index} does not match its source file")
     logic_src = expected_sources[1]
     generate_src = expected_sources[5]
-    disconnect_src = expected_sources[6]
+    regenerate_src = expected_sources[6]
+    disconnect_src = expected_sources[7]
     if "flush_and_unmount" not in generate_src or "unassign" not in generate_src:
         raise SystemExit("generate cell does not flush Drive and delete the runtime")
-    if "release_runtime()" not in disconnect_src:
+    if "arm_idle_timer()" not in generate_src or "IDLE_SECONDS = 30 * 60" not in generate_src:
+        raise SystemExit("generation does not keep the runtime for 30 minutes")
+    if "CUTS" not in regenerate_src or "prompts.json" not in regenerate_src:
+        raise SystemExit("regenerate cell does not re-read prompts.json for CUTS")
+    if "cancel_idle_timer()" not in regenerate_src or "release_runtime()" not in regenerate_src:
+        raise SystemExit("regenerate cell does not reset the idle timer and unassign on error")
+    if "release_runtime()" not in disconnect_src or "cancel_idle_timer()" not in disconnect_src:
         raise SystemExit("disconnect cell does not flush before unassign")
     if "control_masks" not in generate_src or '["frames", 1]' not in generate_src:
         raise SystemExit("control_masks is not wired to WanVaceToVideo")
@@ -530,6 +538,41 @@ def main():
     gen_ns = {"_H3_LOAD_ONLY": True}
     exec(cell_text(code_cells[1]), gen_ns)
     exec(cell_text(code_cells[5]), gen_ns)
+    chosen = gen_ns["select_cuts"](cuts, ["C2"])
+    if [item["cut"] for item in chosen] != ["C2"]:
+        raise SystemExit("select_cuts did not keep only C2")
+    if [item["cut"] for item in gen_ns["select_cuts"](cuts, ["C2", "C2"])] != ["C2"]:
+        raise SystemExit("duplicate CUTS entries were not collapsed")
+    try:
+        gen_ns["select_cuts"](cuts, [])
+    except RuntimeError:
+        pass
+    else:
+        raise SystemExit("empty CUTS was accepted")
+    try:
+        gen_ns["select_cuts"](cuts, ["C9"])
+    except RuntimeError:
+        pass
+    else:
+        raise SystemExit("unknown cut was accepted")
+    if gen_ns["IDLE_SECONDS"] != 30 * 60:
+        raise SystemExit("idle window is not 30 minutes")
+    fired = []
+    gen_ns["arm_idle_timer"](0.3, lambda: fired.append("first"))
+    gen_ns["arm_idle_timer"](0.05, lambda: fired.append("second"))
+    gen_ns["time"].sleep(0.45)
+    if fired != ["second"]:
+        raise SystemExit(f"idle timer did not reset: {fired}")
+    gen_ns["arm_idle_timer"](0.25, lambda: fired.append("third"))
+    gen_ns["cancel_idle_timer"]()
+    gen_ns["time"].sleep(0.4)
+    if "third" in fired:
+        raise SystemExit("cancelled idle timer still fired")
+    regen_ns = {"_H3_LOAD_ONLY": True}
+    exec(cell_text(code_cells[6]), regen_ns)
+    if regen_ns.get("CUTS") != ["C2"]:
+        raise SystemExit(f"regenerate example CUTS is {regen_ns.get('CUTS')}")
+    exec(cell_text(code_cells[7]), {"_H3_LOAD_ONLY": True, "GENERATION_DONE": False})
     info = comfy_object_info()
     for cut in cuts:
         graph, positive, negative = gen_ns["prompt_for_cut"](

@@ -2,6 +2,7 @@ import json
 import os
 import shutil
 import subprocess
+import threading
 import time
 import urllib.error
 import urllib.request
@@ -31,9 +32,28 @@ GEN_SIZE_OVERRIDE = None
 GENERATION_DONE = False
 OUTPUT_MP4S = []
 OUTPUT_JSONS = []
+RUN_DIR = None
+IDLE_SECONDS = 30 * 60
+_IDLE_TIMER = None
+_IDLE_LOCK = threading.Lock()
+_RUNTIME_RELEASED = False
+
+
+def cancel_idle_timer():
+    global _IDLE_TIMER
+    with _IDLE_LOCK:
+        if _IDLE_TIMER is not None:
+            _IDLE_TIMER.cancel()
+            _IDLE_TIMER = None
 
 
 def release_runtime():
+    global _RUNTIME_RELEASED
+    with _IDLE_LOCK:
+        if _RUNTIME_RELEASED:
+            return
+        _RUNTIME_RELEASED = True
+    cancel_idle_timer()
     if colab_drive is None or colab_runtime is None:
         raise RuntimeError(
             "google.colab がないため、Drive の flush とランタイム削除ができません。"
@@ -45,6 +65,33 @@ def release_runtime():
         print(f"Drive の flush に失敗しました: {exc}", flush=True)
     print("ランタイムを切断して削除します。", flush=True)
     colab_runtime.unassign()
+
+
+def idle_disconnect():
+    print("30分操作が無いので、Drive を flush してランタイムを削除します。", flush=True)
+    release_runtime()
+
+
+def arm_idle_timer(seconds=None, callback=None):
+    global _IDLE_TIMER
+    if seconds is None:
+        seconds = IDLE_SECONDS
+    seconds = float(seconds)
+    if seconds < 0:
+        raise ValueError("待機秒数は 0 以上です")
+    action = idle_disconnect if callback is None else callback
+    with _IDLE_LOCK:
+        if _IDLE_TIMER is not None:
+            _IDLE_TIMER.cancel()
+        timer = threading.Timer(seconds, action)
+        timer.daemon = True
+        timer.start()
+        _IDLE_TIMER = timer
+    print(
+        f"QA のためランタイムを最大 {seconds / 60:.0f} 分残します。"
+        "再生成で延長し、合格なら切断セルを実行してください。",
+        flush=True,
+    )
 
 
 def publish_file(src, dest):
@@ -232,8 +279,8 @@ def build_prompt(info, frame_dir, length, width, height, positive, negative, see
     return graph
 
 
-def prompt_for_cut(info, cut, frame_dir, length, width, height, prefix):
-    positive, negative = build_prompts(cut["data"])
+def prompt_for_cut(info, cut, frame_dir, length, width, height, prefix, prompts=None):
+    positive, negative = build_prompts(cut["data"], prompts)
     graph = build_prompt(
         info,
         frame_dir,
@@ -244,9 +291,42 @@ def prompt_for_cut(info, cut, frame_dir, length, width, height, prefix):
         negative,
         sampler_seed(cut),
         prefix,
-        uses_face_reference(cut["cut"]),
+        uses_face_reference(cut["cut"], prompts),
     )
     return graph, positive, negative
+
+
+def select_cuts(cuts, selected):
+    if selected is None:
+        return list(cuts)
+    if not isinstance(selected, (list, tuple)) or not selected:
+        raise RuntimeError("CUTS に再生成するカットを書いてください。例: CUTS = [\"C2\"]")
+    wanted = []
+    seen = set()
+    for item in selected:
+        cut_id = safe_cut_id(item)
+        if cut_id in seen:
+            continue
+        seen.add(cut_id)
+        wanted.append(cut_id)
+    by_id = {cut["cut"]: cut for cut in cuts}
+    missing = [cut_id for cut_id in wanted if cut_id not in by_id]
+    if missing:
+        known = ", ".join(cut["cut"] for cut in cuts)
+        raise RuntimeError(f"CUTS に無いカット: {', '.join(missing)}。あるのは {known} です。")
+    return [by_id[cut_id] for cut_id in wanted]
+
+
+def _store_output(mp4, json_path, replace):
+    mp4_s = str(mp4)
+    json_s = str(json_path)
+    if replace:
+        mp4_name = Path(mp4_s).name
+        json_name = Path(json_s).name
+        OUTPUT_MP4S[:] = [item for item in OUTPUT_MP4S if Path(item).name != mp4_name]
+        OUTPUT_JSONS[:] = [item for item in OUTPUT_JSONS if Path(item).name != json_name]
+    OUTPUT_MP4S.append(mp4_s)
+    OUTPUT_JSONS.append(json_s)
 
 
 def wait_for_cut(prompt_id, cut_id):
@@ -329,8 +409,8 @@ def export_mp4(image_paths, fps, keep_frames, geo, dest):
             staged.unlink()
 
 
-def run_generation():
-    global GENERATION_DONE
+def run_generation(selected=None, run_dir=None, fresh_run=True, prompts=None):
+    global GENERATION_DONE, RUN_DIR
     if not globals().get("GPU_OK"):
         raise RuntimeError("GPU チェックを通過していません。最初のセルから実行してください。")
     for _name in (
@@ -353,6 +433,7 @@ def run_generation():
         "vace_frame_count",
         "letterbox_face",
         "sampler_seed",
+        "load_scene_prompts",
         "EXPORT_WIDTH",
         "EXPORT_HEIGHT",
     ):
@@ -399,13 +480,21 @@ def run_generation():
     boxed.save("/content/ComfyUI/input/face_ref.png")
     print(f"顔参照: {face_path}")
 
-    cuts = list_cuts(CONTROL_DIR)
-    run_id = time.strftime("%Y%m%d-%H%M%S")
-    run_dir = Path(OUTPUT_ROOT) / run_id
+    if prompts is None:
+        prompts = load_scene_prompts(CONTROL_DIR)
+    print(f"prompts.json を読みました: {CONTROL_DIR}/prompts.json")
+    cuts = select_cuts(list_cuts(CONTROL_DIR), selected)
+    if run_dir is None:
+        run_id = time.strftime("%Y%m%d-%H%M%S")
+        run_dir = Path(OUTPUT_ROOT) / run_id
+    else:
+        run_dir = Path(run_dir)
     run_dir.mkdir(parents=True, exist_ok=True)
+    RUN_DIR = str(run_dir)
     print(f"出力フォルダ: {run_dir}")
-    OUTPUT_MP4S.clear()
-    OUTPUT_JSONS.clear()
+    if fresh_run:
+        OUTPUT_MP4S.clear()
+        OUTPUT_JSONS.clear()
 
     for cut in cuts:
         cut_id = safe_cut_id(cut["cut"])
@@ -430,6 +519,7 @@ def run_generation():
             geo["width"],
             geo["height"],
             prefix,
+            prompts,
         )
         print(positive)
         print(negative)
@@ -443,7 +533,7 @@ def run_generation():
         control_image = Image.open(Path(frame_dir) / "frame_0000.png").convert("RGB")
         sampler_image = Image.open(paths[0]).convert("RGB")
         reference_image = None
-        if uses_face_reference(cut_id):
+        if uses_face_reference(cut_id, prompts):
             reference_image = Image.open("/content/ComfyUI/input/face_ref.png").convert("RGB")
         stats = assert_generated_still(sampler_image, control_image, reference_image)
         print(
@@ -458,8 +548,7 @@ def run_generation():
         dest_json = publish_file(copied_json, copied_json)
         if dest_mp4.stat().st_size <= 0 or dest_json.stat().st_size <= 0:
             raise RuntimeError(f"{cut_id}: 出力が空です")
-        OUTPUT_MP4S.append(str(dest_mp4))
-        OUTPUT_JSONS.append(str(dest_json))
+        _store_output(dest_mp4, dest_json, replace=not fresh_run)
         print(f"書き出し: {dest_mp4} ({dest_mp4.stat().st_size} bytes)")
         print(f"制御 JSON: {dest_json}")
         try:
@@ -473,7 +562,7 @@ def run_generation():
         mp4 = run_dir / f"{cut_id}.mp4"
         if not mp4.is_file() or mp4.stat().st_size <= 0:
             missing.append(cut_id)
-    if missing or len(OUTPUT_MP4S) != len(cuts) or len(OUTPUT_JSONS) != len(cuts):
+    if missing or (fresh_run and (len(OUTPUT_MP4S) != len(cuts) or len(OUTPUT_JSONS) != len(cuts))):
         raise RuntimeError(f"出力フォルダに無いカット: {', '.join(missing) or '本数不一致'} ({run_dir})")
     subprocess.run(["sync"], check=False)
     print(f"出力フォルダの中身: {run_dir}")
@@ -481,8 +570,19 @@ def run_generation():
         if path.is_file():
             print(f"  {path.name} {path.stat().st_size} bytes")
     GENERATION_DONE = True
-    print("全カットの mp4 と制御 JSON を Drive に書きました。")
-    print("次のセルで Drive を flush してランタイムを削除します。")
+    if fresh_run:
+        print("全カットの mp4 と制御 JSON を Drive に書きました。")
+    else:
+        print(f"再生成したカットを {run_dir} に書きました。")
+    arm_idle_timer()
+
+
+def regenerate_cuts(selected, prompts=None):
+    if not globals().get("GENERATION_DONE"):
+        raise RuntimeError("先に全カットの生成を終えてください。")
+    if not RUN_DIR:
+        raise RuntimeError("出力フォルダがありません。生成セルを先に実行してください。")
+    run_generation(selected=selected, run_dir=RUN_DIR, fresh_run=False, prompts=prompts)
 
 
 # テストはこのセルを _H3_LOAD_ONLY 付きで読み、ComfyUI へは繋がない。
