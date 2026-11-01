@@ -530,7 +530,7 @@ def run_generation(selected=None, run_dir=None, fresh_run=True, prompts=None):
     for cut in cuts:
         cut_id = safe_cut_id(cut["cut"])
         frame_dir = f"/content/vace_work/{cut_id}/frames"
-        rendered = render_cut(cut, frame_dir, geo["width"], geo["height"])
+        rendered = render_cut(cut, frame_dir, geo["width"], geo["height"], cut_has_cat(prompts, cut_id))
         vace_count = rendered["count"]
         keep_count = rendered["target_count"]
         print(summarize_cut(cut, keep_count))

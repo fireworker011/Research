@@ -1077,10 +1077,10 @@ def person_keypoints(pstate, width, height):
     pts = {
         "neck": (cx, neck_y),
         "nose": (cx + dx, neck_y - 0.62 * u),
-        "r_eye": (cx - 0.2 * u + dx, neck_y - 0.80 * u),
-        "l_eye": (cx + 0.2 * u + dx, neck_y - 0.80 * u),
-        "r_ear": (cx - 0.42 * u + 0.4 * dx, neck_y - 0.72 * u),
-        "l_ear": (cx + 0.42 * u + 0.4 * dx, neck_y - 0.72 * u),
+        "r_eye": (cx - 0.25 * u + dx, neck_y - 0.80 * u),
+        "l_eye": (cx + 0.25 * u + dx, neck_y - 0.80 * u),
+        "r_ear": (cx - 0.4375 * u + 0.4 * dx, neck_y - 0.72 * u),
+        "l_ear": (cx + 0.4375 * u + 0.4 * dx, neck_y - 0.72 * u),
         "r_shoulder": (cx - u, neck_y + 0.12 * u),
         "l_shoulder": (cx + u, neck_y + 0.12 * u),
         "r_elbow": (cx - 1.1 * u, neck_y + 1.4 * u),
@@ -1175,10 +1175,34 @@ def draw_pose(state, data, width, height):
     return image
 
 
-def _paint_depth(label, data, width, height):
+def _paint_person_depth(draw, pstate, value, width, height):
+    pts = person_keypoints(pstate, width, height)
+    u = PERSON_FRAMING[pstate["framing"]]["span"] * width / 2.0 * pstate["scale"]
+    hx, hy = pts["nose"][0], (pts["head_top"][1] + pts["neck"][1]) / 2.0
+    draw.ellipse((hx - 0.5 * u, pts["head_top"][1], hx + 0.5 * u, pts["neck"][1] + 0.05 * u), fill=value)
+    sy = pts["r_shoulder"][1]
+    draw.polygon(
+        [(pts["neck"][0] - 0.25 * u, pts["neck"][1] - 0.1 * u), (pts["neck"][0] + 0.25 * u, pts["neck"][1] - 0.1 * u),
+         (pts["l_shoulder"][0], sy), (pts["l_shoulder"][0] + 0.1 * u, height),
+         (pts["r_shoulder"][0] - 0.1 * u, height), (pts["r_shoulder"][0], sy)],
+        fill=value,
+    )
+
+
+def _paint_depth(label, data, width, height, has_cat=True, pstate=None):
     look = _depth_look(label)
     image = Image.new("L", (width, height), int(look["bg"]))
     draw = ImageDraw.Draw(image)
+    if not has_cat:
+        if pstate is not None:
+            _paint_person_depth(draw, pstate, int(look["cat"]), width, height)
+            image = image.filter(ImageFilter.GaussianBlur(radius=max(2, width // 60)))
+            draw = ImageDraw.Draw(image)
+        if cut_mentions_handle(data):
+            hx = HANDLE_XY[0] * width
+            hy = HANDLE_XY[1] * height
+            draw.rectangle((hx - 0.025 * width, hy - 0.09 * height, hx + 0.025 * width, hy + 0.09 * height), fill=int(look["handle"]))
+        return image
     scale = float(look["cat_scale"])
     cx = CAT_XY[0] * width
     cy = CAT_XY[1] * height
@@ -1194,14 +1218,14 @@ def _paint_depth(label, data, width, height):
     return image
 
 
-def draw_depth(label_a, label_b, alpha, data, width, height):
-    left = _paint_depth(label_a, data, width, height)
+def draw_depth(label_a, label_b, alpha, data, width, height, has_cat=True, pstate=None):
+    left = _paint_depth(label_a, data, width, height, has_cat, pstate)
     if label_a == label_b or alpha <= 0.0:
         image = left
     elif alpha >= 1.0:
-        image = _paint_depth(label_b, data, width, height)
+        image = _paint_depth(label_b, data, width, height, has_cat, pstate)
     else:
-        right = _paint_depth(label_b, data, width, height)
+        right = _paint_depth(label_b, data, width, height, has_cat, pstate)
         image = Image.blend(left, right, float(alpha))
     if data["depth"].get("sakura_hands") == "defocused":
         top = int(height * 0.68)
@@ -1219,7 +1243,7 @@ def composite_controls(pose, depth):
     return Image.composite(pose, depth_rgb, mask)
 
 
-def render_control_frame(cut, index, count, width, height):
+def render_control_frame(cut, index, count, width, height, has_cat=True):
     if count < 1:
         raise ValueError("count")
     if index < 0 or index >= count:
@@ -1229,7 +1253,7 @@ def render_control_frame(cut, index, count, width, height):
     state = pose_state_at(data, t)
     label_a, label_b, alpha = depth_sample(data, t)
     pose = draw_pose(state, data, width, height)
-    depth = draw_depth(label_a, label_b, alpha, data, width, height)
+    depth = draw_depth(label_a, label_b, alpha, data, width, height, has_cat, state.get("person"))
     delta = camera_delta(cut["camera_vector"], index, count, width, height)
     pose_w = warp_image(pose, delta)
     depth_w = warp_image(depth, delta)
@@ -1246,7 +1270,7 @@ def render_control_frame(cut, index, count, width, height):
     }
 
 
-def render_cut(cut, dest_dir, width, height):
+def render_cut(cut, dest_dir, width, height, has_cat=True):
     dest = Path(dest_dir)
     dest.mkdir(parents=True, exist_ok=True)
     for old in list(dest.glob("frame_*.png")) + list(dest.glob("mask_*.png")):
@@ -1257,7 +1281,7 @@ def render_cut(cut, dest_dir, width, height):
     for index in range(count):
         # Pad by repeating the last kept frame so the 4n+1 tail can be trimmed off.
         source_index = min(index, target - 1)
-        frame = render_control_frame(cut, source_index, target, width, height)
+        frame = render_control_frame(cut, source_index, target, width, height, has_cat)
         # Pose only. Depth ellipses and the reference photo stay out of this RGB.
         frame["pose"].save(dest / f"frame_{index:04d}.png")
         # All-ones mask: WanVaceToVideo keeps control pixels where the mask is 0.

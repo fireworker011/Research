@@ -660,6 +660,13 @@ def main():
     n1 = logic["pose_state_at"](c1["data"], 1.5)["person"]["nose_dx"]
     if abs((n1 - n0) - 0.05) > 1e-6:
         raise SystemExit("C1 head turn")
+    pts = logic["person_keypoints"](logic["pose_state_at"](c1["data"], 0.0)["person"], 1000, 1778)
+    if abs((pts["l_ear"][0] - pts["r_ear"][0]) / 1000 - 0.35) > 0.02:
+        raise SystemExit("face_shoulders head spread is not ~35% of width")
+    nocat = logic["render_control_frame"](c1, 0, 4, 90, 160, has_cat=False)["depth_raw"]
+    withcat = logic["render_control_frame"](c1, 0, 4, 90, 160)["depth_raw"]
+    if nocat.getpixel((int(0.38 * 90), 80)) == withcat.getpixel((int(0.38 * 90), 80)) and nocat.tobytes() == withcat.tobytes():
+        raise SystemExit("has_cat=False still paints the cat depth shape")
     legacy = dict(c1["data"]); legacy.pop("person")
     if logic["pose_state_at"](legacy, 0.0)["person"] is not None:
         raise SystemExit("cuts without person must keep old drawing")
