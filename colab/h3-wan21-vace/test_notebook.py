@@ -554,6 +554,24 @@ def main():
         got_ref = logic["uses_face_reference"](cut_id)
         if got_ref is not expect:
             raise SystemExit(f"face reference flag for {cut_id} is {got_ref}")
+    # v4: no-cat cuts drop every cat control line; missing cat_ref is optional.
+    nocat = json.loads(json.dumps(prompts_doc))
+    nocat["has_cat"] = False
+    nocat["block_a"] = "pool hall"
+    nocat["block_s"] = "Sakura"
+    for spec_nc in nocat["cuts"].values():
+        spec_nc["prompt"] = "Sakura close-up"
+    for cut in cuts:
+        pos_nc = logic["build_prompts"](cut["data"] if "data" in cut else cut, nocat)[0]
+        if any(k in pos_nc for k in ("same cat as reference", "cat pose", "cat jaw", "the cat stays")):
+            raise SystemExit(f"{cut['cut']} no-cat prompt still has cat control text")
+    nocat["has_cat"] = True
+    nocat["cuts"]["C1"]["has_cat"] = False
+    if logic["cut_has_cat"](nocat, "C1") or not logic["cut_has_cat"](nocat, "C2"):
+        raise SystemExit("per-cut has_cat does not override top-level")
+    with tempfile.TemporaryDirectory() as empty_dir:
+        if logic["find_optional_cat_reference"](empty_dir) is not None:
+            raise SystemExit("find_optional_cat_reference should return None without cat_ref")
     gen_ns = {"_H3_LOAD_ONLY": True}
     exec(cell_text(code_cells[1]), gen_ns)
     exec(cell_text(code_cells[5]), gen_ns)

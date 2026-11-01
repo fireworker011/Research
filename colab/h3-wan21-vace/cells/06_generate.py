@@ -100,7 +100,9 @@ CAT_REF_URL = (
 )
 
 
-def ensure_cat_reference(directory):
+def ensure_cat_reference(directory, needed=True):
+    if not needed:
+        return find_optional_cat_reference(directory)
     try:
         return find_cat_reference(directory)
     except FileNotFoundError:
@@ -452,6 +454,8 @@ def run_generation(selected=None, run_dir=None, fresh_run=True, prompts=None):
         "letterbox_face",
         "side_by_side_reference",
         "find_cat_reference",
+        "find_optional_cat_reference",
+        "cut_has_cat",
         "scene_spec",
         "read_frame_index",
         "assert_sharpness_recovered",
@@ -499,7 +503,10 @@ def run_generation(selected=None, run_dir=None, fresh_run=True, prompts=None):
         f"（9:16{'、そのまま' if geo['native'] else '、480p をパッド'}）"
     )
     face_path = find_face_reference(FACE_DIR)
-    cat_path = ensure_cat_reference(FACE_DIR)
+    if prompts is None:
+        prompts = load_scene_prompts(CONTROL_DIR)
+    cat_needed = any(cut_has_cat(prompts, cid) for cid in prompts["cuts"])
+    cat_path = ensure_cat_reference(FACE_DIR, cat_needed)
     os.makedirs("/content/ComfyUI/input", exist_ok=True)
     print(f"顔参照: {face_path}")
     print(f"猫参照: {cat_path}")
@@ -530,12 +537,14 @@ def run_generation(selected=None, run_dir=None, fresh_run=True, prompts=None):
         if vace_count != keep_count:
             print(f"VACE は {vace_count} フレーム（4n+1）を生成し、{keep_count} フレームに切ります。")
         ref_name = f"ref_{cut_id}.png"
-        cat_image = Image.open(cat_path)
-        if uses_face_reference(cut_id, prompts):
+        if cat_path is None or not cut_has_cat(prompts, cut_id):
+            reference = letterbox_face(Image.open(face_path), geo["width"], geo["height"])
+        elif uses_face_reference(cut_id, prompts):
+            cat_image = Image.open(cat_path)
             face_image = Image.open(face_path)
             reference = side_by_side_reference(cat_image, face_image, geo["width"], geo["height"])
         else:
-            reference = letterbox_face(cat_image, geo["width"], geo["height"])
+            reference = letterbox_face(Image.open(cat_path), geo["width"], geo["height"])
         reference.save(Path("/content/ComfyUI/input") / ref_name)
         prefix = f"h3_{run_id}_{cut_id}"
         out_root = Path("/content/ComfyUI/output")

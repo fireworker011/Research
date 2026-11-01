@@ -327,6 +327,21 @@ def find_cat_reference(directory):
     return _find_named_image(directory, CAT_FILENAMES, "猫の参照画像")
 
 
+def find_optional_cat_reference(directory):
+    try:
+        return find_cat_reference(directory)
+    except FileNotFoundError:
+        return None
+
+
+def cut_has_cat(prompts, cut_id):
+    """Per-cut has_cat wins, then top-level has_cat. Default True (older prompts.json)."""
+    spec = scene_spec(prompts, cut_id)
+    if "has_cat" in spec:
+        return bool(spec["has_cat"])
+    return bool(prompts.get("has_cat", True))
+
+
 def copy_control_json(cut, dest_dir):
     dest_dir = Path(dest_dir)
     dest_dir.mkdir(parents=True, exist_ok=True)
@@ -1284,8 +1299,10 @@ def focus_prompt_line(sweep):
     return "focus pull " + ", ".join(parts) + ", sharp again by 0.5s, blur radius at most 4px"
 
 
-def _control_lines(data, has_person):
-    lines = ["vertical 9:16 shot", "same cat as reference"]
+def _control_lines(data, has_person, has_cat=True):
+    lines = ["vertical 9:16 shot"]
+    if has_cat:
+        lines.append("same cat as reference")
     if has_person:
         lines.append("the person's face matches the reference image")
     lines.append("follow the OpenPose control, the depth control, and the camera move")
@@ -1294,13 +1311,13 @@ def _control_lines(data, has_person):
     focus_end = str(sweep[-1][1]).replace("_", " ")
     lines.append(f"one focus pull from {focus_start} to {focus_end}")
     lines.append(f"duration {float(data['duration_s'])} seconds")
-    if data.get("sakura") == "static":
+    if has_cat and data.get("sakura") == "static":
         lines.append("the cat stays in place except for its jaw")
     for kf in data["openpose_keyframes"]:
         t = prompt_time(data, kf["t"])
-        if "cat" in kf:
+        if has_cat and "cat" in kf:
             lines.append(f"at {t}s cat pose {str(kf['cat']).replace('_', ' ')}")
-        if "cat_jaw_deg" in kf:
+        if has_cat and "cat_jaw_deg" in kf:
             lines.append(f"at {t}s cat jaw {kf['cat_jaw_deg']} degrees")
         if "wrist_to_handle_cm" in kf:
             lines.append(f"at {t}s wrist is {kf['wrist_to_handle_cm']} cm from the handle")
@@ -1341,7 +1358,9 @@ def build_prompts(data, prompts=None):
     if has_person:
         script_parts.append(prompts["block_s"])
     script_parts.append(spec["prompt"])
-    positive = ", ".join(script_parts) + ". " + ". ".join(_control_lines(data, has_person))
+    positive = ", ".join(script_parts) + ". " + ". ".join(
+        _control_lines(data, has_person, cut_has_cat(prompts, data["cut"]))
+    )
     positive = positive + ". " + focus_prompt_line(spec["focus"])
     negative_parts = [prompts["negative_common"]]
     extra = spec.get("negative", "").strip()
