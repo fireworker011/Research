@@ -389,16 +389,35 @@ def main():
         raise SystemExit("C1 negative has another cut's terms")
     if "extra knuckles, sleeve merging with hand, deformed wrist" not in c4_neg:
         raise SystemExit("C4 hand negative missing")
-    if "また昨日のプール。" not in c2_pos:
-        raise SystemExit("C2 caption missing from prompt")
-    if "あんたが“明日から本気出す”って言った日の" not in c2_pos:
-        raise SystemExit("C2 second caption missing")
+    if "また昨日のプール。" in c2_pos or "あんたが“明日から本気出す”って言った日の" in c2_pos:
+        raise SystemExit("C2 caption leaked into the video prompt")
+    if "spoken line" in c2_pos or "not written on screen" in c2_pos:
+        raise SystemExit("C2 still asks for a spoken line")
+    for cut_id, (positive, _negative) in built.items():
+        if "spoken line" in positive or "not written on screen" in positive:
+            raise SystemExit(f"{cut_id} still puts dialogue in the video prompt")
     if "「やつ」は意図的に省略" in c2_pos:
         raise SystemExit("C2 production note leaked into the prompt")
     if "the cat stays in place except for its jaw" not in c2_pos:
         raise SystemExit("C2 jaw line missing")
     if "at 0.0s cat pose back to camera" not in c1_pos:
         raise SystemExit("C1 control line missing")
+    if "at 1.0s cat pose face to camera" not in c1_pos:
+        raise SystemExit("C1 second pose time")
+    if "at 0.1s cat jaw 15 degrees" not in c2_pos or "at 3.3s cat jaw 0 degrees" not in c2_pos:
+        raise SystemExit("C2 jaw times are not cut-relative")
+    if "at 4.8s" in c2_pos or "at 1.6s" in c2_pos:
+        raise SystemExit("C2 prompt still uses script-absolute times")
+    if "at 0.0s cat pose front" not in c3_pos or "at 1.5s cat pose forepaw to mouth" not in c3_pos:
+        raise SystemExit("C3 pose times are not cut-relative")
+    if "at 3.0s cat pose paw returned" not in c3_pos:
+        raise SystemExit("C3 end pose time")
+    if "at 5.0s" in c3_pos or "at 6.5s" in c3_pos or "at 8.0s" in c3_pos:
+        raise SystemExit("C3 prompt still uses script-absolute times")
+    if "at 0.0s wrist is 10 cm" not in c4_pos or "at 1.6s wrist is 1 cm" not in c4_pos:
+        raise SystemExit("C4 wrist times are not cut-relative")
+    if "at 8.0s" in c4_pos or "at 9.6s" in c4_pos:
+        raise SystemExit("C4 prompt still uses script-absolute times")
     if "does not touch" not in c4_pos or "hand touching" not in c4_neg:
         raise SystemExit("C4 contact constraint missing from prompts")
     for cut_id, expect in (("C1", False), ("C2", True), ("C3", False), ("C4", True)):

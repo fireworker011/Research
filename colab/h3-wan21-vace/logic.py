@@ -7,7 +7,9 @@ JSON のキーは書き換えない。画の文は同じフォルダの prompts.
 - camera_vector.shake.amp_px: 手ブレの振幅（ピクセル）。seed で決まる。
 - wrist_to_handle_cm: 1cm をフレーム高さの 2% として制御画像に描く。
 - OpenPose / Depth の学習済み重みは使わない。線と濃淡はこのファイルが描く。
-- focus_sweep と openpose の時刻範囲の外は、端の値を保持する。
+- focus_sweep と openpose の時刻範囲の外は、端の値を保持する。描画の時刻は JSON の絶対時刻のまま。
+- プロンプトに書くキーフレーム時刻は、source_seconds の開始を 0 としたカット内の時刻。
+- caption の発話は映像プロンプトに入れない。声はあとから足す。
 - 残すフレーム数は duration_s * fps を丸めた枚数。VACE の長さはそれ以上の最小の 4n+1。書き出しで枚数へ切る。
 - OpenPose の線、マスク、顔参照は mp4 に合成しない。深度の楕円も RGB には描き込まない。
 """
@@ -1106,6 +1108,21 @@ def uses_face_reference(cut_id, prompts=None):
     return scene_spec(prompts, cut_id)["has_person"]
 
 
+def prompt_time(data, t):
+    """Keyframe times in the JSON are script-absolute. Prompts use seconds from the cut start."""
+    start = float(data["source_seconds"][0])
+    duration = round(float(data["duration_s"]), 3)
+    local = round(float(t) - start, 3)
+    if local < 0.0:
+        local = 0.0
+    if local > duration:
+        local = duration
+    text = f"{local:.3f}".rstrip("0").rstrip(".")
+    if "." not in text:
+        text += ".0"
+    return text
+
+
 def _control_lines(data, has_person):
     lines = ["vertical 9:16 shot"]
     if has_person:
@@ -1119,7 +1136,7 @@ def _control_lines(data, has_person):
     if data.get("sakura") == "static":
         lines.append("the cat stays in place except for its jaw")
     for kf in data["openpose_keyframes"]:
-        t = kf["t"]
+        t = prompt_time(data, kf["t"])
         if "cat" in kf:
             lines.append(f"at {t}s cat pose {str(kf['cat']).replace('_', ' ')}")
         if "cat_jaw_deg" in kf:
@@ -1132,8 +1149,6 @@ def _control_lines(data, has_person):
         lines.append("cut before the hand touches")
     if "fingers_visible" in data:
         lines.append(f"{int(data['fingers_visible'])} fingers are visible")
-    for cap in data.get("caption") or []:
-        lines.append(f"spoken line, not written on screen: {cap['text']}")
     return lines
 
 
