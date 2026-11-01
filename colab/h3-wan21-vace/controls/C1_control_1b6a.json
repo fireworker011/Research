@@ -53,5 +53,19 @@
    "seed": 1
   }
  },
- "duration_s": 1.5
+ "duration_s": 1.5,
+ "person": {
+  "framing": "face_shoulders",
+  "keyframes": [
+   {
+    "t": 0.0,
+    "scale": 1.0,
+    "nose_dx": 0.0
+   },
+   {
+    "t": 1.5,
+    "nose_dx": 0.05
+   }
+  ]
+ }
 }

@@ -645,6 +645,24 @@ def main():
             raise SystemExit(f"{cut['cut']} still loads the face file by itself")
         if graph["sample"]["inputs"]["seed"] != logic["sampler_seed"](cut):
             raise SystemExit(f"{cut['cut']} seed was not passed through")
+    # close-up framing: head top ~8% from top, shoulders ~80% of width, C2 grows 1.0 -> 1.25
+    for cut in (c1, c3, c4):
+        st = logic["pose_state_at"](cut["data"], cut["source_seconds"][0])["person"]
+        pts = logic["person_keypoints"](st, 1000, 1778)
+        span = (pts["l_shoulder"][0] - pts["r_shoulder"][0]) / 1000
+        if abs(pts["head_top"][1] / 1778 - 0.08) > 0.01 or abs(span - 0.80) > 0.02:
+            raise SystemExit(f"{cut['cut']} is not framed face+shoulders")
+    s0 = logic["pose_state_at"](c2["data"], c2["source_seconds"][0])["person"]["scale"]
+    s1 = logic["pose_state_at"](c2["data"], c2["source_seconds"][1])["person"]["scale"]
+    if abs(s0 - 1.0) > 1e-6 or abs(s1 - 1.25) > 1e-6:
+        raise SystemExit("C2 framing scale does not grow 1.0 -> 1.25")
+    n0 = logic["pose_state_at"](c1["data"], 0.0)["person"]["nose_dx"]
+    n1 = logic["pose_state_at"](c1["data"], 1.5)["person"]["nose_dx"]
+    if abs((n1 - n0) - 0.05) > 1e-6:
+        raise SystemExit("C1 head turn")
+    legacy = dict(c1["data"]); legacy.pop("person")
+    if logic["pose_state_at"](legacy, 0.0)["person"] is not None:
+        raise SystemExit("cuts without person must keep old drawing")
     if logic["sampler_seed"](c1) != 10001:
         raise SystemExit("sampler seed")
 
@@ -657,8 +675,8 @@ def main():
         (face_dir / "face_ref.jpg").write_bytes(b"jpg")
         (face_dir / "face_ref.png").write_bytes(b"png")
         found = logic["find_face_reference"](face_dir)
-        if found.name != "face_ref.png":
-            raise SystemExit("face lookup did not prefer png")
+        if found.name != "face_ref.jpg":
+            raise SystemExit("face lookup did not prefer jpg")
         try:
             logic["find_face_reference"](tmp)
         except FileNotFoundError:

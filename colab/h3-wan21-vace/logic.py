@@ -25,7 +25,8 @@ from pathlib import Path
 
 from PIL import Image, ImageDraw, ImageFilter
 
-FACE_FILENAMES = ("face_ref.png", "face_ref.jpg", "face_ref.jpeg", "face_ref.webp")
+# jpg wins over png when both exist (the newer reference is usually the jpg export).
+FACE_FILENAMES = ("face_ref.jpg", "face_ref.jpeg", "face_ref.png", "face_ref.webp")
 CAT_FILENAMES = ("cat_ref.png", "cat_ref.jpg", "cat_ref.jpeg", "cat_ref.webp")
 FOCUS_BLUR_MAX = 4.0
 FOCUS_RECOVERY_SECONDS = 0.5
@@ -242,6 +243,8 @@ def load_cut(path):
         int(shake["seed"])
         if "irregular" in shake and not isinstance(shake["irregular"], bool):
             raise ValueError(f"{path}: shake.irregular は true / false です")
+    if "person" in data:
+        _check_person(path, data["person"])
     if "caption" in data:
         if not isinstance(data["caption"], list):
             raise ValueError(f"{path}: caption は配列です")
@@ -850,6 +853,7 @@ def pose_state_at(data, t):
         "paw": float(_lerp(paw_samples, t, 0.0)),
         "jaw_deg": float(_lerp(jaw_samples, t, 0.0)),
         "wrist_cm": wrist,
+        "person": person_state_at(data, t),
     }
 
 
@@ -994,8 +998,128 @@ def cut_mentions_handle(data):
     return any(str(item[1]) == "handle" for item in data["depth"]["focus_sweep"])
 
 
+# Close-up person framing. A cut may carry
+#   "person": {"framing": "face_shoulders" | "chest_up",
+#              "keyframes": [{"t": s, "scale": 1.0, "nose_dx": 0.0, "right_wrist": [x, y]}]}
+# t is source seconds; nose_dx is a fraction of frame width; right_wrist is in
+# frame fractions. Cuts without "person" keep the old (cat-only) drawing.
+PERSON_FRAMING = {
+    # head_top: head top as fraction of frame height; span: shoulder width as fraction of width
+    "face_shoulders": {"head_top": 0.08, "span": 0.80},
+    "chest_up": {"head_top": 0.08, "span": 0.60},
+}
+_PERSON_COLORS = {
+    ("neck", "r_shoulder"): (255, 0, 0),
+    ("neck", "l_shoulder"): (255, 85, 0),
+    ("r_shoulder", "r_elbow"): (255, 170, 0),
+    ("r_elbow", "r_wrist"): (255, 255, 0),
+    ("l_shoulder", "l_elbow"): (170, 255, 0),
+    ("l_elbow", "l_wrist"): (85, 255, 0),
+    ("neck", "r_hip"): (0, 255, 0),
+    ("neck", "l_hip"): (0, 255, 255),
+    ("neck", "nose"): (0, 0, 255),
+    ("nose", "r_eye"): (85, 0, 255),
+    ("r_eye", "r_ear"): (170, 0, 255),
+    ("nose", "l_eye"): (255, 0, 255),
+    ("l_eye", "l_ear"): (255, 0, 170),
+}
+
+
+def _check_person(path, person):
+    if not isinstance(person, dict):
+        raise ValueError(f"{path}: person はオブジェクトです")
+    framing = person.get("framing")
+    if framing not in PERSON_FRAMING:
+        raise ValueError(f"{path}: 未知の person.framing です: {framing}")
+    kfs = person.get("keyframes", [])
+    if not isinstance(kfs, list):
+        raise ValueError(f"{path}: person.keyframes は配列です")
+    for kf in kfs:
+        if not isinstance(kf, dict) or "t" not in kf:
+            raise ValueError(f"{path}: person キーフレームに t がありません")
+        float(kf["t"])
+        if "scale" in kf and float(kf["scale"]) <= 0:
+            raise ValueError(f"{path}: person.scale は正の数です")
+        if "nose_dx" in kf:
+            float(kf["nose_dx"])
+        if "right_wrist" in kf:
+            w = kf["right_wrist"]
+            if not isinstance(w, (list, tuple)) or len(w) != 2:
+                raise ValueError(f"{path}: right_wrist は [x, y] です")
+
+
+def person_state_at(data, t):
+    person = data.get("person")
+    if not person:
+        return None
+    kfs = person.get("keyframes", [])
+    def track(key):
+        return [(float(kf["t"]), float(kf[key])) for kf in kfs if key in kf]
+    wx = [(float(kf["t"]), float(kf["right_wrist"][0])) for kf in kfs if "right_wrist" in kf]
+    wy = [(float(kf["t"]), float(kf["right_wrist"][1])) for kf in kfs if "right_wrist" in kf]
+    return {
+        "framing": person["framing"],
+        "scale": float(_lerp(track("scale"), t, 1.0)),
+        "nose_dx": float(_lerp(track("nose_dx"), t, 0.0)),
+        "right_wrist": (float(_lerp(wx, t, 0)), float(_lerp(wy, t, 0))) if wx else None,
+    }
+
+
+def person_keypoints(pstate, width, height):
+    """Pixel keypoints for a close-up person. scale grows the figure about the frame centre line."""
+    spec = PERSON_FRAMING[pstate["framing"]]
+    scale = pstate["scale"]
+    u = spec["span"] * width / 2.0 * scale  # half shoulder width
+    cx = width / 2.0
+    top = spec["head_top"] * height
+    neck_y = top + 1.25 * u
+    dx = pstate["nose_dx"] * width
+    pts = {
+        "neck": (cx, neck_y),
+        "nose": (cx + dx, neck_y - 0.62 * u),
+        "r_eye": (cx - 0.2 * u + dx, neck_y - 0.80 * u),
+        "l_eye": (cx + 0.2 * u + dx, neck_y - 0.80 * u),
+        "r_ear": (cx - 0.42 * u + 0.4 * dx, neck_y - 0.72 * u),
+        "l_ear": (cx + 0.42 * u + 0.4 * dx, neck_y - 0.72 * u),
+        "r_shoulder": (cx - u, neck_y + 0.12 * u),
+        "l_shoulder": (cx + u, neck_y + 0.12 * u),
+        "r_elbow": (cx - 1.1 * u, neck_y + 1.4 * u),
+        "l_elbow": (cx + 1.1 * u, neck_y + 1.4 * u),
+        "r_wrist": (cx - 0.9 * u, neck_y + 2.5 * u),
+        "l_wrist": (cx + 0.9 * u, neck_y + 2.5 * u),
+        "r_hip": (cx - 0.55 * u, neck_y + 2.9 * u),
+        "l_hip": (cx + 0.55 * u, neck_y + 2.9 * u),
+    }
+    if pstate["right_wrist"] is not None:
+        wx, wy = pstate["right_wrist"][0] * width, pstate["right_wrist"][1] * height
+        sx, sy = pts["r_shoulder"]
+        pts["r_wrist"] = (wx, wy)
+        pts["r_elbow"] = ((sx + wx) / 2.0 + 0.25 * u, max(sy, wy) + 0.35 * u)
+    pts["head_top"] = (cx, top)
+    return pts
+
+
+def draw_person(image, pstate, width, height):
+    draw = ImageDraw.Draw(image)
+    pts = person_keypoints(pstate, width, height)
+    lw = max(3, int(width) // 64)
+    for (a, b), color in _PERSON_COLORS.items():
+        draw.line([pts[a], pts[b]], fill=color, width=lw)
+    r = max(3, lw)
+    for name, (x, y) in pts.items():
+        if name == "head_top":
+            continue
+        draw.ellipse((x - r, y - r, x + r, y + r), fill=(255, 255, 255))
+    return pts
+
+
 def draw_pose(state, data, width, height):
     image = Image.new("RGB", (width, height), (0, 0, 0))
+    if state.get("person") is not None:
+        # Close-up cut: the person fills the frame, so the small cat skeleton is not drawn
+        # (it would sit on the person's face). Cat placement still comes from depth.
+        draw_person(image, state["person"], width, height)
+        return image
     draw = ImageDraw.Draw(image)
     facing = max(0.0, min(1.0, state["facing"]))
     paw = max(0.0, min(1.0, state["paw"]))
