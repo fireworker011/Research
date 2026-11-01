@@ -9,6 +9,13 @@ from pathlib import Path
 
 from PIL import Image
 
+try:
+    from google.colab import drive as colab_drive
+    from google.colab import runtime as colab_runtime
+except ImportError:
+    colab_drive = None
+    colab_runtime = None
+
 UNET_FILE = "wan2.1_vace_14B_fp16.safetensors"
 TE_FILE = "umt5_xxl_fp8_e4m3fn_scaled.safetensors"
 VAE_FILE = "wan_2.1_vae.safetensors"
@@ -24,6 +31,40 @@ GEN_SIZE_OVERRIDE = None
 GENERATION_DONE = False
 OUTPUT_MP4S = []
 OUTPUT_JSONS = []
+
+
+def release_runtime():
+    if colab_drive is None or colab_runtime is None:
+        raise RuntimeError(
+            "google.colab がないため、Drive の flush とランタイム削除ができません。"
+        )
+    try:
+        colab_drive.flush_and_unmount()
+        print("Drive を flush してアンマウントしました。", flush=True)
+    except Exception as exc:
+        print(f"Drive の flush に失敗しました: {exc}", flush=True)
+    print("ランタイムを切断して削除します。", flush=True)
+    colab_runtime.unassign()
+
+
+def publish_file(src, dest):
+    src = Path(src)
+    dest = Path(dest)
+    dest.parent.mkdir(parents=True, exist_ok=True)
+    if src.resolve() != dest.resolve():
+        shutil.copyfile(src, dest)
+    with dest.open("rb") as handle:
+        os.fsync(handle.fileno())
+    dir_fd = None
+    try:
+        dir_fd = os.open(dest.parent, os.O_RDONLY)
+        os.fsync(dir_fd)
+    except OSError as exc:
+        print(f"フォルダの fsync をスキップ: {exc}")
+    finally:
+        if dir_fd is not None:
+            os.close(dir_fd)
+    return dest
 
 
 def comfy_call(path, payload=None, timeout=120):
@@ -50,11 +91,41 @@ def pack_inputs(info, class_type, values):
     return {key: value for key, value in values.items() if key in allowed}
 
 
+def validate_prompt_graph(graph, use_reference):
+    vace = graph["vace"]["inputs"]
+    if vace.get("control_video") != ["frames", 0]:
+        raise RuntimeError("control_video はフレーム読み込みだけに繋ぎます。")
+    if vace.get("control_masks") != ["frames", 1]:
+        raise RuntimeError("control_masks はマスク出力だけに繋ぎます。")
+    if use_reference:
+        if vace.get("reference_image") != ["face", 0]:
+            raise RuntimeError("reference_image は顔参照だけに繋ぎます。")
+    elif "reference_image" in vace or "face" in graph:
+        raise RuntimeError("このカットに顔参照を渡していません。")
+    if graph["sample"]["inputs"].get("latent_image") != ["vace", 2]:
+        raise RuntimeError("サンプラーの初期潜在は VACE の潜在だけです。")
+    if graph["trim"]["inputs"].get("samples") != ["sample", 0]:
+        raise RuntimeError("トリムするのはサンプラー出力だけです。")
+    if graph["decode"]["inputs"].get("samples") != ["trim", 0]:
+        raise RuntimeError("VAE はサンプラーの出力だけを復号します。")
+    if graph["save"]["inputs"].get("images") != ["decode", 0]:
+        raise RuntimeError("保存するのは VAE の出力だけです。")
+    for node_id in ("save", "decode", "sample", "trim"):
+        for value in graph[node_id]["inputs"].values():
+            if value in (["frames", 0], ["frames", 1], ["face", 0]):
+                raise RuntimeError(f"{node_id} が制御入力を直接受けています。")
+
+
 def build_prompt(info, frame_dir, length, width, height, positive, negative, seed, prefix, use_reference):
+    frame_outputs = list((info.get("H3LoadFrameDir") or {}).get("output") or [])
+    if "MASK" not in frame_outputs:
+        raise RuntimeError(
+            "H3LoadFrameDir が MASK を返しません。セットアップセルを再実行してください。"
+        )
     vace_spec = info["WanVaceToVideo"]["input"]
     vace_allowed = set(vace_spec.get("required", {})) | set(vace_spec.get("optional", {}))
-    if "control_video" not in vace_allowed:
-        raise RuntimeError("WanVaceToVideo に control_video がありません。ComfyUI を更新してください。")
+    if "control_video" not in vace_allowed or "control_masks" not in vace_allowed:
+        raise RuntimeError("WanVaceToVideo に control_video / control_masks がありません。ComfyUI を更新してください。")
     if use_reference and "reference_image" not in vace_allowed:
         raise RuntimeError("WanVaceToVideo に reference_image がありません。ComfyUI を更新してください。")
     vace_values = {
@@ -67,6 +138,7 @@ def build_prompt(info, frame_dir, length, width, height, positive, negative, see
         "batch_size": 1,
         "strength": 1.0,
         "control_video": ["frames", 0],
+        "control_masks": ["frames", 1],
     }
     graph = {
         "unet": {
@@ -156,6 +228,7 @@ def build_prompt(info, frame_dir, length, width, height, positive, negative, see
             "filename_prefix": prefix,
         }),
     }
+    validate_prompt_graph(graph, use_reference)
     return graph
 
 
@@ -182,7 +255,7 @@ def wait_for_cut(prompt_id, cut_id):
     while True:
         elapsed = time.time() - started
         if elapsed > CUT_TIMEOUT_SECONDS:
-            raise RuntimeError(f"{cut_id} が制限時間を超えました。ランタイムは消しません。")
+            raise RuntimeError(f"{cut_id} が制限時間を超えました。ランタイムを削除します。")
         hist = comfy_call(f"/history/{prompt_id}")
         if prompt_id in hist:
             item = hist[prompt_id]
@@ -205,45 +278,55 @@ def wait_for_cut(prompt_id, cut_id):
         time.sleep(POLL_SECONDS)
 
 
-def export_mp4(image_paths, fps, duration_s, geo, dest):
+def saved_image_paths(history_item, frame_dir):
+    outputs = history_item.get("outputs") or {}
+    if "save" not in outputs:
+        raise RuntimeError("SaveImage の出力が履歴にありません。制御フレームは使いません。")
+    images = outputs["save"].get("images") or []
+    control_root = os.path.abspath(frame_dir)
+    paths = []
+    for image in images:
+        root = "/content/ComfyUI/temp" if image.get("type") == "temp" else "/content/ComfyUI/output"
+        sub = image.get("subfolder") or ""
+        path = os.path.abspath(os.path.join(root, sub, image["filename"]))
+        if path.startswith(control_root + os.sep) or path == control_root:
+            raise RuntimeError(f"制御フレームを出力に使おうとしました: {path}")
+        paths.append(path)
+    paths = [path for path in paths if os.path.isfile(path)]
+    paths.sort()
+    return paths
+
+
+def export_mp4(image_paths, fps, keep_frames, geo, dest):
     seq = Path("/content/vace_work/seq")
     if seq.exists():
         shutil.rmtree(seq)
     seq.mkdir(parents=True)
     for index, path in enumerate(image_paths):
         shutil.copyfile(path, seq / f"frame_{index:04d}.png")
-    cmd = ffmpeg_sequence_cmd(
-        seq / "frame_%04d.png",
-        len(image_paths),
-        fps,
-        duration_s,
-        geo,
-        dest,
-    )
-    result = subprocess.run(cmd, capture_output=True, text=True)
-    if result.returncode != 0:
-        raise RuntimeError(f"ffmpeg に失敗しました: {result.stderr[-2000:]}")
-    probe = subprocess.run(
-        [
-            "ffprobe",
-            "-v",
-            "error",
-            "-select_streams",
-            "v:0",
-            "-show_entries",
-            "stream=width,height",
-            "-of",
-            "csv=p=0:s=x",
-            str(dest),
-        ],
-        capture_output=True,
-        text=True,
-        check=True,
-    )
-    got = probe.stdout.strip()
-    expect = f"{EXPORT_WIDTH}x{EXPORT_HEIGHT}"
-    if got != expect:
-        raise RuntimeError(f"書き出しサイズが {got} です。{expect} が必要です。")
+    staged = Path(str(dest) + ".sized.mp4")
+    duration_s = int(keep_frames) / float(fps)
+    try:
+        cmd = ffmpeg_sequence_cmd(
+            seq / "frame_%04d.png",
+            len(image_paths),
+            fps,
+            duration_s,
+            geo,
+            staged,
+            keep_frames=keep_frames,
+        )
+        result = subprocess.run(cmd, capture_output=True, text=True)
+        if result.returncode != 0:
+            raise RuntimeError(f"ffmpeg に失敗しました: {result.stderr[-2000:]}")
+        finish = ffmpeg_finish_cmd(staged, dest, keep_frames, fps, geo)
+        burned = subprocess.run(finish, capture_output=True, text=True)
+        if burned.returncode != 0:
+            raise RuntimeError(f"手ブレとフォーカスの ffmpeg に失敗しました: {burned.stderr[-2000:]}")
+        assert_export_stream(dest, keep_frames, geo["export_width"], geo["export_height"])
+    finally:
+        if staged.exists():
+            staged.unlink()
 
 
 def run_generation():
@@ -257,13 +340,17 @@ def run_generation():
         "build_prompts",
         "uses_face_reference",
         "ffmpeg_vf",
-        "ffmpeg_duration_args",
         "ffmpeg_sequence_cmd",
+        "ffmpeg_finish_cmd",
+        "assert_export_stream",
+        "assert_generated_still",
+        "read_first_frame",
         "copy_control_json",
         "find_face_reference",
         "safe_cut_id",
         "summarize_cut",
-        "raw_frame_count",
+        "target_frame_count",
+        "vace_frame_count",
         "letterbox_face",
         "sampler_seed",
         "EXPORT_WIDTH",
@@ -317,19 +404,18 @@ def run_generation():
     run_dir = Path(OUTPUT_ROOT) / run_id
     run_dir.mkdir(parents=True, exist_ok=True)
     print(f"出力フォルダ: {run_dir}")
+    OUTPUT_MP4S.clear()
+    OUTPUT_JSONS.clear()
 
     for cut in cuts:
         cut_id = safe_cut_id(cut["cut"])
-        count = render_cut(
-            cut,
-            f"/content/vace_work/{cut_id}/frames",
-            geo["width"],
-            geo["height"],
-        )["count"]
-        raw = raw_frame_count(cut["duration_s"], cut["fps"])
-        print(summarize_cut(cut, count))
-        if count != raw:
-            print(f"注意: {raw} フレームを VACE の制約で {count} フレームに揃えます（4n+1、最大 81）。")
+        frame_dir = f"/content/vace_work/{cut_id}/frames"
+        rendered = render_cut(cut, frame_dir, geo["width"], geo["height"])
+        vace_count = rendered["count"]
+        keep_count = rendered["target_count"]
+        print(summarize_cut(cut, keep_count))
+        if vace_count != keep_count:
+            print(f"VACE は {vace_count} フレーム（4n+1）を生成し、{keep_count} フレームに切ります。")
         prefix = f"h3_{run_id}_{cut_id}"
         out_root = Path("/content/ComfyUI/output")
         out_root.mkdir(parents=True, exist_ok=True)
@@ -339,8 +425,8 @@ def run_generation():
         prompt, positive, negative = prompt_for_cut(
             info,
             cut,
-            f"/content/vace_work/{cut_id}/frames",
-            count,
+            frame_dir,
+            vace_count,
             geo["width"],
             geo["height"],
             prefix,
@@ -351,41 +437,63 @@ def run_generation():
         if queued.get("node_errors") or "prompt_id" not in queued:
             raise RuntimeError(json.dumps(queued, ensure_ascii=False)[:4000])
         item = wait_for_cut(queued["prompt_id"], cut_id)
-        images = []
-        for node_out in item.get("outputs", {}).values():
-            images.extend(node_out.get("images") or [])
-        paths = []
-        for image in images:
-            root = "/content/ComfyUI/temp" if image.get("type") == "temp" else "/content/ComfyUI/output"
-            sub = image.get("subfolder") or ""
-            paths.append(os.path.join(root, sub, image["filename"]))
-        paths = [path for path in paths if os.path.isfile(path)]
-        paths.sort()
-        if len(paths) != count:
-            raise RuntimeError(f"{cut_id}: フレーム数が {len(paths)} でした。{count} を期待しています。")
+        paths = saved_image_paths(item, frame_dir)
+        if len(paths) != vace_count:
+            raise RuntimeError(f"{cut_id}: フレーム数が {len(paths)} でした。{vace_count} を期待しています。")
+        control_image = Image.open(Path(frame_dir) / "frame_0000.png").convert("RGB")
+        sampler_image = Image.open(paths[0]).convert("RGB")
+        reference_image = None
+        if uses_face_reference(cut_id):
+            reference_image = Image.open("/content/ComfyUI/input/face_ref.png").convert("RGB")
+        stats = assert_generated_still(sampler_image, control_image, reference_image)
+        print(
+            f"{cut_id}: 先頭フレーム SSIM {stats['ssim']:.3f} / 骨格色 {stats['skeleton_families']} 系統"
+        )
         local_mp4 = Path(f"/content/vace_work/{cut_id}.mp4")
-        export_mp4(paths, cut["fps"], cut["duration_s"], geo, local_mp4)
-        dest_mp4 = run_dir / f"{cut_id}.mp4"
-        shutil.copyfile(local_mp4, dest_mp4)
-        dest_json = copy_control_json(cut, run_dir)
+        export_mp4(paths, cut["fps"], keep_count, geo, local_mp4)
+        final_image = read_first_frame(local_mp4)
+        assert_generated_still(final_image, control_image, reference_image)
+        dest_mp4 = publish_file(local_mp4, run_dir / f"{cut_id}.mp4")
+        copied_json = copy_control_json(cut, run_dir)
+        dest_json = publish_file(copied_json, copied_json)
         if dest_mp4.stat().st_size <= 0 or dest_json.stat().st_size <= 0:
             raise RuntimeError(f"{cut_id}: 出力が空です")
         OUTPUT_MP4S.append(str(dest_mp4))
         OUTPUT_JSONS.append(str(dest_json))
-        print(f"書き出し: {dest_mp4}")
+        print(f"書き出し: {dest_mp4} ({dest_mp4.stat().st_size} bytes)")
         print(f"制御 JSON: {dest_json}")
         try:
             comfy_call("/free", {"unload_models": False, "free_memory": True})
         except Exception as exc:
             print(f"メモリ解放をスキップ: {exc}")
 
-    if len(OUTPUT_MP4S) != len(cuts) or len(OUTPUT_JSONS) != len(cuts):
-        raise RuntimeError("出力本数がカット数と一致しません。")
+    missing = []
+    for cut in cuts:
+        cut_id = safe_cut_id(cut["cut"])
+        mp4 = run_dir / f"{cut_id}.mp4"
+        if not mp4.is_file() or mp4.stat().st_size <= 0:
+            missing.append(cut_id)
+    if missing or len(OUTPUT_MP4S) != len(cuts) or len(OUTPUT_JSONS) != len(cuts):
+        raise RuntimeError(f"出力フォルダに無いカット: {', '.join(missing) or '本数不一致'} ({run_dir})")
+    subprocess.run(["sync"], check=False)
+    print(f"出力フォルダの中身: {run_dir}")
+    for path in sorted(run_dir.iterdir()):
+        if path.is_file():
+            print(f"  {path.name} {path.stat().st_size} bytes")
     GENERATION_DONE = True
     print("全カットの mp4 と制御 JSON を Drive に書きました。")
-    print("次のセルでランタイムを削除します。")
+    print("次のセルで Drive を flush してランタイムを削除します。")
 
 
 # テストはこのセルを _H3_LOAD_ONLY 付きで読み、ComfyUI へは繋がない。
 if not globals().get("_H3_LOAD_ONLY"):
-    run_generation()
+    try:
+        run_generation()
+    except Exception as exc:
+        print(f"生成に失敗しました: {exc}", flush=True)
+        print("Drive を flush してランタイムを削除します。", flush=True)
+        try:
+            release_runtime()
+        except Exception as release_exc:
+            print(f"ランタイム削除に失敗しました: {release_exc}", flush=True)
+        raise

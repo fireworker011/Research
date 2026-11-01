@@ -1,7 +1,5 @@
 import os
 
-from google.colab import runtime
-
 if not globals().get("GENERATION_DONE"):
     raise RuntimeError(
         "生成が終わっていないので、ランタイムは切断しません。失敗したセルの出力を確認してください。"
@@ -12,5 +10,7 @@ if not paths:
 for path in paths:
     if not os.path.isfile(path) or os.path.getsize(path) == 0:
         raise RuntimeError(f"出力が無いので、ランタイムは切断しません: {path}")
-print("mp4 と制御 JSON を確認しました。ランタイムを切断して削除します。")
-runtime.unassign()
+if "release_runtime" not in globals():
+    raise RuntimeError("生成セルが未実行です。Drive の flush ができません。")
+print("mp4 と制御 JSON を確認しました。Drive を flush してからランタイムを削除します。")
+release_runtime()

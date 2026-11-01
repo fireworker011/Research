@@ -8,13 +8,17 @@ JSON のキーは書き換えない。画の文は同じフォルダの prompts.
 - wrist_to_handle_cm: 1cm をフレーム高さの 2% として制御画像に描く。
 - OpenPose / Depth の学習済み重みは使わない。線と濃淡はこのファイルが描く。
 - focus_sweep と openpose の時刻範囲の外は、端の値を保持する。
-- VACE のフレーム数は 4n+1、最大 81。duration_s * fps に最も近い本数へ揃える。
+- 残すフレーム数は duration_s * fps を丸めた枚数。VACE の長さはそれ以上の最小の 4n+1。書き出しで枚数へ切る。
+- OpenPose の線、マスク、顔参照は mp4 に合成しない。深度の楕円も RGB には描き込まない。
 """
 
 import json
 import math
 import random
 import re
+import shutil
+import subprocess
+import tempfile
 from pathlib import Path
 
 from PIL import Image, ImageDraw, ImageFilter
@@ -26,7 +30,22 @@ EXPORT_HEIGHT = 1280
 GEN_480P = (480, 832)
 GEN_720P = (720, 1280)
 VRAM_NATIVE_9_16_MIB = 70000
-MAX_VACE_FRAMES = 81
+MAX_VACE_FRAMES = 241
+SSIM_REJECT = 0.6
+# The letterbox is mostly flat gray, so a normal frame can share brightness
+# without being the reference. Only a near-copy should fail this one.
+REFERENCE_SSIM_REJECT = 0.95
+SKELETON_FAMILY_FRACTION = 0.0004
+SKELETON_FAMILY_MIN = 3
+SKELETON_FAMILIES = (
+    ("red", ((255, 0, 0), (255, 0, 85), (255, 0, 170), (255, 85, 0))),
+    ("green", ((85, 255, 0), (0, 255, 85), (170, 255, 0))),
+    ("orange", ((255, 170, 0),)),
+    ("blue", ((0, 0, 255), (0, 85, 255))),
+    ("cyan", ((0, 255, 255),)),
+    ("magenta", ((255, 0, 255), (170, 0, 255))),
+    ("yellow", ((255, 255, 0),)),
+)
 CM_OF_FRAME_HEIGHT = 0.02
 MIN_GAP_CM = 1.0
 HANDLE_XY = (0.68, 0.50)
@@ -302,20 +321,37 @@ def copy_control_json(cut, dest_dir):
     return dest
 
 
-def wan_frame_count(duration_s, fps, max_frames=MAX_VACE_FRAMES):
-    raw = max(1, int(round(float(duration_s) * float(fps))))
-    snapped = int(round((raw - 1) / 4.0)) * 4 + 1
+def target_frame_count(duration_s, fps):
+    return max(1, int(round(float(duration_s) * float(fps))))
+
+
+def raw_frame_count(duration_s, fps):
+    return target_frame_count(duration_s, fps)
+
+
+def vace_length_for_count(target, max_frames=MAX_VACE_FRAMES):
+    target = int(target)
+    if target < 1:
+        raise ValueError("フレーム数は 1 以上です")
+    # Smallest 4n+1 that is >= target. 1, 5, 9, ... and 81, 85, 241.
+    length = ((target + 2) // 4) * 4 + 1
     cap = int(max_frames)
     if cap < 1:
         raise ValueError("max_frames は 1 以上です")
     max_ok = ((cap - 1) // 4) * 4 + 1
-    if snapped > max_ok:
-        snapped = max_ok
-    return max(1, snapped)
+    if length > max_ok:
+        raise ValueError(
+            f"VACE の長さ {length} が上限 {max_ok} を超えます。必要フレームは {target} です。"
+        )
+    return length
 
 
-def raw_frame_count(duration_s, fps):
-    return max(1, int(round(float(duration_s) * float(fps))))
+def vace_frame_count(duration_s, fps, max_frames=MAX_VACE_FRAMES):
+    return vace_length_for_count(target_frame_count(duration_s, fps), max_frames=max_frames)
+
+
+def wan_frame_count(duration_s, fps, max_frames=MAX_VACE_FRAMES):
+    return vace_frame_count(duration_s, fps, max_frames=max_frames)
 
 
 def frame_source_time(cut, index, count):
@@ -373,14 +409,20 @@ def ffmpeg_vf(geo):
     )
 
 
-def ffmpeg_duration_args(frame_count, fps, duration_s):
-    produced = frame_count / float(fps)
-    if produced > float(duration_s) + 1e-3:
-        return ["-t", f"{float(duration_s):.3f}"]
-    return []
+def ffmpeg_frame_args(keep_frames):
+    keep = int(keep_frames)
+    if keep < 1:
+        raise ValueError("keep_frames は 1 以上です")
+    return ["-frames:v", str(keep)]
 
 
-def ffmpeg_sequence_cmd(sequence_pattern, frame_count, fps, duration_s, geo, dest):
+def ffmpeg_sequence_cmd(sequence_pattern, frame_count, fps, duration_s, geo, dest, keep_frames=None):
+    if float(duration_s) <= 0 or float(fps) <= 0:
+        raise ValueError("duration_s と fps は正の数です")
+    produced = int(frame_count)
+    keep = produced if keep_frames is None else int(keep_frames)
+    if keep < 1 or keep > produced:
+        raise ValueError(f"切り出しフレーム {keep} が入力 {produced} の範囲外です")
     return [
         "ffmpeg",
         "-y",
@@ -388,9 +430,11 @@ def ffmpeg_sequence_cmd(sequence_pattern, frame_count, fps, duration_s, geo, des
         str(fps),
         "-i",
         str(sequence_pattern),
-        *ffmpeg_duration_args(frame_count, fps, duration_s),
         "-vf",
         ffmpeg_vf(geo),
+        *ffmpeg_frame_args(keep),
+        "-r",
+        str(fps),
         "-c:v",
         "libx264",
         "-pix_fmt",
@@ -399,6 +443,224 @@ def ffmpeg_sequence_cmd(sequence_pattern, frame_count, fps, duration_s, geo, des
         "+faststart",
         str(dest),
     ]
+
+
+def ffmpeg_post_filter(width, height, keep_frames, fps):
+    keep = int(keep_frames)
+    rate = float(fps)
+    if keep < 1 or rate <= 0:
+        raise ValueError("keep_frames と fps は正の数です")
+    duration = keep / rate
+    # ±2 px in x and ±1 px in y. Frame 0 sits on the center of that window.
+    shake = (
+        "crop=w=iw-4:h=ih-4:"
+        "x='2+2*sin(n*0.35)':"
+        "y='2+1*sin(n*0.57)',"
+        f"scale={int(width)}:{int(height)}:flags=bilinear,setsar=1"
+    )
+    # One pull: weight 0 at the first frame, 1 at mid-clip, 0 at the end.
+    weight = f"max(0\\,sin(PI*T/{duration:.6f}))"
+    return (
+        f"[0:v]{shake},"
+        "split[sharp][toblur];"
+        "[toblur]gblur=sigma=6[blurred];"
+        f"[sharp][blurred]blend=all_expr='A*(1-{weight})+B*{weight}'[vout]"
+    )
+
+
+def ffmpeg_finish_cmd(src, dest, keep_frames, fps, geo):
+    return [
+        "ffmpeg",
+        "-y",
+        "-i",
+        str(src),
+        "-filter_complex",
+        ffmpeg_post_filter(geo["export_width"], geo["export_height"], keep_frames, fps),
+        "-map",
+        "[vout]",
+        *ffmpeg_frame_args(keep_frames),
+        "-r",
+        str(fps),
+        "-c:v",
+        "libx264",
+        "-pix_fmt",
+        "yuv420p",
+        "-movflags",
+        "+faststart",
+        str(dest),
+    ]
+
+
+def probe_video_stream(path):
+    result = subprocess.run(
+        [
+            "ffprobe",
+            "-v",
+            "error",
+            "-count_frames",
+            "-select_streams",
+            "v:0",
+            "-show_entries",
+            "stream=width,height,nb_read_frames",
+            "-of",
+            "json",
+            str(path),
+        ],
+        capture_output=True,
+        text=True,
+    )
+    if result.returncode != 0:
+        raise RuntimeError(f"ffprobe に失敗しました: {result.stderr[-2000:]}")
+    payload = json.loads(result.stdout or "{}")
+    streams = payload.get("streams") or []
+    if not streams or "nb_read_frames" not in streams[0]:
+        raise RuntimeError(f"ffprobe がフレーム数を返しませんでした: {result.stdout[:500]}")
+    stream = streams[0]
+    return {
+        "width": int(stream["width"]),
+        "height": int(stream["height"]),
+        "frames": int(stream["nb_read_frames"]),
+    }
+
+
+def assert_export_stream(path, frames, width, height):
+    got = probe_video_stream(path)
+    if got["frames"] != int(frames) or got["width"] != int(width) or got["height"] != int(height):
+        raise RuntimeError(
+            f"書き出しが {got['width']}x{got['height']} {got['frames']} フレームです。"
+            f" {int(width)}x{int(height)} {int(frames)} フレームが必要です。"
+        )
+    return got
+
+
+def _resample_luma(image, side):
+    gray = image.convert("L").resize((side, side), Image.Resampling.BOX)
+    return list(gray.getdata())
+
+
+def _ssim_block(left, right):
+    n = len(left)
+    mean_a = sum(left) / n
+    mean_b = sum(right) / n
+    var_a = sum((value - mean_a) ** 2 for value in left) / n
+    var_b = sum((value - mean_b) ** 2 for value in right) / n
+    cov = sum((a - mean_a) * (b - mean_b) for a, b in zip(left, right)) / n
+    c1 = (0.01 * 255) ** 2
+    c2 = (0.03 * 255) ** 2
+    denom = (mean_a ** 2 + mean_b ** 2 + c1) * (var_a + var_b + c2)
+    if denom == 0:
+        return 1.0
+    return ((2 * mean_a * mean_b + c1) * (2 * cov + c2)) / denom
+
+
+def frame_ssim(left, right, side=64, window=8):
+    if side % window != 0:
+        raise ValueError("side は window の倍数です")
+    sample_a = _resample_luma(left, side)
+    sample_b = _resample_luma(right, side)
+    scores = []
+    for origin_y in range(0, side, window):
+        for origin_x in range(0, side, window):
+            block_a = []
+            block_b = []
+            for offset_y in range(window):
+                row = (origin_y + offset_y) * side + origin_x
+                block_a.extend(sample_a[row : row + window])
+                block_b.extend(sample_b[row : row + window])
+            scores.append(_ssim_block(block_a, block_b))
+    return sum(scores) / len(scores)
+
+
+def _skeleton_pixels(image):
+    rgb = image.convert("RGB")
+    raw = rgb.tobytes()
+    total = rgb.size[0] * rgb.size[1]
+    family_hits = [0] * len(SKELETON_FAMILIES)
+    if total <= 0:
+        return total, family_hits
+    for index in range(0, len(raw), 3):
+        red = raw[index]
+        green = raw[index + 1]
+        blue = raw[index + 2]
+        if max(red, green, blue) < 240 or min(red, green, blue) > 30:
+            continue
+        best = None
+        best_distance = 49
+        for family_index, (_name, colors) in enumerate(SKELETON_FAMILIES):
+            for color in colors:
+                distance = abs(red - color[0]) + abs(green - color[1]) + abs(blue - color[2])
+                if distance < best_distance:
+                    best = family_index
+                    best_distance = distance
+        if best is not None:
+            family_hits[best] += 1
+    return total, family_hits
+
+
+def saturated_skeleton_fraction(image):
+    total, family_hits = _skeleton_pixels(image)
+    if total <= 0:
+        return 0.0
+    return sum(family_hits) / total
+
+
+def saturated_skeleton_families(image):
+    total, family_hits = _skeleton_pixels(image)
+    if total <= 0:
+        return 0
+    present = 0
+    for count in family_hits:
+        if count / total > SKELETON_FAMILY_FRACTION:
+            present += 1
+    return present
+
+
+def assert_generated_still(output_image, control_image, reference_image=None):
+    score = frame_ssim(output_image, control_image)
+    fraction = saturated_skeleton_fraction(output_image)
+    families = saturated_skeleton_families(output_image)
+    if score > SSIM_REJECT:
+        raise RuntimeError(
+            f"出力の先頭フレームが制御フレームに似すぎています (SSIM {score:.3f} > {SSIM_REJECT})。"
+            " 制御画像をそのまま書いています。"
+        )
+    if families >= SKELETON_FAMILY_MIN:
+        raise RuntimeError(
+            f"出力の先頭フレームに骨格の原色が残っています ({families} 色, 割合 {fraction:.4f})。"
+            " サンプラー出力ではありません。"
+        )
+    ref_score = None
+    if reference_image is not None:
+        ref_score = frame_ssim(output_image, reference_image)
+        if ref_score > REFERENCE_SSIM_REJECT:
+            raise RuntimeError(
+                f"出力の先頭フレームが顔参照に似すぎています (SSIM {ref_score:.3f} > {REFERENCE_SSIM_REJECT})。"
+                " 参照画像を合成しています。"
+            )
+    return {
+        "ssim": score,
+        "skeleton": fraction,
+        "skeleton_families": families,
+        "reference_ssim": ref_score,
+    }
+
+
+def read_first_frame(path):
+    temp_dir = Path(tempfile.mkdtemp(prefix="h3frame_"))
+    dest = temp_dir / "frame.png"
+    try:
+        result = subprocess.run(
+            ["ffmpeg", "-y", "-i", str(path), "-frames:v", "1", str(dest)],
+            capture_output=True,
+            text=True,
+        )
+        if result.returncode != 0 or not dest.is_file():
+            raise RuntimeError(f"先頭フレームを読めません: {result.stderr[-2000:]}")
+        image = Image.open(dest).convert("RGB")
+        image.load()
+        return image
+    finally:
+        shutil.rmtree(temp_dir, ignore_errors=True)
 
 
 def _lerp(samples, t, default):
@@ -724,13 +986,19 @@ def render_control_frame(cut, index, count, width, height):
 def render_cut(cut, dest_dir, width, height):
     dest = Path(dest_dir)
     dest.mkdir(parents=True, exist_ok=True)
-    for old in dest.glob("frame_*.png"):
+    for old in list(dest.glob("frame_*.png")) + list(dest.glob("mask_*.png")):
         old.unlink()
-    count = wan_frame_count(cut["duration_s"], cut["fps"])
+    target = target_frame_count(cut["duration_s"], cut["fps"])
+    count = vace_frame_count(cut["duration_s"], cut["fps"])
     metas = []
     for index in range(count):
-        frame = render_control_frame(cut, index, count, width, height)
-        frame["composite"].save(dest / f"frame_{index:04d}.png")
+        # Pad by repeating the last kept frame so the 4n+1 tail can be trimmed off.
+        source_index = min(index, target - 1)
+        frame = render_control_frame(cut, source_index, target, width, height)
+        # Pose only. Depth ellipses and the reference photo stay out of this RGB.
+        frame["pose"].save(dest / f"frame_{index:04d}.png")
+        # All-ones mask: WanVaceToVideo keeps control pixels where the mask is 0.
+        Image.new("L", (int(width), int(height)), 255).save(dest / f"mask_{index:04d}.png")
         metas.append(
             {
                 "time": frame["time"],
@@ -739,7 +1007,14 @@ def render_cut(cut, dest_dir, width, height):
                 "depth": frame["depth"],
             }
         )
-    return {"directory": str(dest), "count": count, "metas": metas, "width": width, "height": height}
+    return {
+        "directory": str(dest),
+        "count": count,
+        "target_count": target,
+        "metas": metas,
+        "width": width,
+        "height": height,
+    }
 
 
 def letterbox_face(image, width, height):
@@ -836,6 +1111,10 @@ def _control_lines(data, has_person):
     if has_person:
         lines.append("the person's face matches the reference image")
     lines.append("follow the OpenPose control, the depth control, and the camera move")
+    sweep = data["depth"]["focus_sweep"]
+    focus_start = str(sweep[0][1]).replace("_", " ")
+    focus_end = str(sweep[-1][1]).replace("_", " ")
+    lines.append(f"one focus pull from {focus_start} to {focus_end}")
     lines.append(f"duration {float(data['duration_s'])} seconds")
     if data.get("sakura") == "static":
         lines.append("the cat stays in place except for its jaw")

@@ -10,8 +10,8 @@
     },
     "C2": {
       "has_person": true,
-      "prompt": "cat close-up, Sakura at mid distance, hands out of focus, flooded window behind, humid haze, muted pastel",
-      "negative": "human-like mouth, extra teeth, deformed jaw"
+      "prompt": "cat in the foreground about 40% of the frame, submerged window and adult Sakura at mid-distance in the background about 60% of the frame, the cat is visible, Sakura at mid distance, hands out of focus, flooded window behind, humid haze, muted pastel",
+      "negative": "human-like mouth, extra teeth, deformed jaw, missing cat, cat out of frame"
     },
     "C3": {
       "has_person": false,
@@ -20,8 +20,8 @@
     },
     "C4": {
       "has_person": true,
-      "prompt": "window handle at mid distance, Sakura's hand from side, relaxed hand, four fingers visible, crimson kimono sleeve, hand near handle, blue-white flooded light",
-      "negative": "extra knuckles, sleeve merging with hand, deformed wrist"
+      "prompt": "cat in the foreground about 40% of the frame, submerged window and adult Sakura at mid-distance in the background about 60% of the frame, window handle at mid distance, Sakura's hand from side, relaxed hand, four fingers visible, crimson kimono sleeve, hand near handle, blue-white flooded light",
+      "negative": "extra knuckles, sleeve merging with hand, deformed wrist, missing cat, cat out of frame"
     }
   }
 }

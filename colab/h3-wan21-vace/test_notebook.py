@@ -71,7 +71,7 @@ def comfy_object_info():
             }
         }
 
-    return {
+    info = {
         "UNETLoader": spec(("unet_name", "weight_dtype")),
         "CLIPLoader": spec(("clip_name", "type"), ("device",)),
         "VAELoader": spec(("vae_name",)),
@@ -80,7 +80,7 @@ def comfy_object_info():
         "H3LoadFrameDir": spec(("directory",)),
         "WanVaceToVideo": spec(
             ("positive", "negative", "vae", "width", "height", "length", "batch_size", "strength"),
-            ("control_video", "reference_image"),
+            ("control_video", "control_masks", "reference_image"),
         ),
         "ModelSamplingSD3": spec(("model", "shift")),
         "KSampler": spec(
@@ -105,6 +105,8 @@ def comfy_object_info():
         ),
         "SaveImage": spec(("images", "filename_prefix")),
     }
+    info["H3LoadFrameDir"]["output"] = ["IMAGE", "MASK"]
+    return info
 
 
 def base_cut(**overrides):
@@ -149,6 +151,16 @@ def main():
         if cell_text(code_cells[index]) != expected:
             raise SystemExit(f"code cell {index} does not match its source file")
     logic_src = expected_sources[1]
+    generate_src = expected_sources[5]
+    disconnect_src = expected_sources[6]
+    if "flush_and_unmount" not in generate_src or "unassign" not in generate_src:
+        raise SystemExit("generate cell does not flush Drive and delete the runtime")
+    if "release_runtime()" not in disconnect_src:
+        raise SystemExit("disconnect cell does not flush before unassign")
+    if "control_masks" not in generate_src or '["frames", 1]' not in generate_src:
+        raise SystemExit("control_masks is not wired to WanVaceToVideo")
+    if '["decode", 0]' not in generate_src:
+        raise SystemExit("save node is not wired to the VAE decode")
     compile((ROOT / "h3_load_frames.py").read_text(encoding="utf-8"), "h3_load_frames.py", "exec")
 
     blob = "\n".join(
@@ -277,11 +289,27 @@ def main():
     if [kf["wrist_to_handle_cm"] for kf in c4["openpose_keyframes"]] != [10, 4, 1]:
         raise SystemExit("C4 wrist distances")
 
-    expected_frames = {"C1": 37, "C2": 81, "C3": 73, "C4": 37}
-    for cut_id, expected in expected_frames.items():
+    expected_vace = {"C1": 37, "C2": 85, "C3": 73, "C4": 41}
+    expected_keep = {"C1": 36, "C2": 84, "C3": 72, "C4": 38}
+    for cut_id, expected in expected_vace.items():
         got = logic["wan_frame_count"](by_id[cut_id]["duration_s"], by_id[cut_id]["fps"])
+        keep = logic["target_frame_count"](by_id[cut_id]["duration_s"], by_id[cut_id]["fps"])
         if got != expected:
-            raise SystemExit(f"{cut_id} frame count {got}, expected {expected}")
+            raise SystemExit(f"{cut_id} vace length {got}, expected {expected}")
+        if keep != expected_keep[cut_id]:
+            raise SystemExit(f"{cut_id} keep frames {keep}, expected {expected_keep[cut_id]}")
+        if got < keep or got % 4 != 1:
+            raise SystemExit(f"{cut_id} vace length {got} is not 4n+1 above {keep}")
+    if logic["vace_length_for_count"](84) != 85 or logic["vace_length_for_count"](81) != 81:
+        raise SystemExit("vace length snap")
+    if logic["vace_length_for_count"](1) != 1 or logic["vace_length_for_count"](2) != 5:
+        raise SystemExit("short vace length")
+    try:
+        logic["vace_length_for_count"](242)
+    except ValueError:
+        pass
+    else:
+        raise SystemExit("over-long cut was accepted")
 
     def close(got, expected, label):
         if abs(float(got) - float(expected)) > 1e-6:
@@ -345,6 +373,16 @@ def main():
             raise SystemExit(f"{cut_id} negative does not start with the script text")
         if "on-screen text" not in negative:
             raise SystemExit(f"{cut_id} negative prompt does not suppress burned-in text")
+    for cut_id in ("C2", "C4"):
+        cut_prompt = prompts_doc["cuts"][cut_id]["prompt"]
+        if "cat" not in cut_prompt or "40%" not in cut_prompt or "60%" not in cut_prompt:
+            raise SystemExit(f"{cut_id} composition is missing the cat or the 40/60 split")
+        if "submerged window" not in cut_prompt or "adult Sakura" not in cut_prompt:
+            raise SystemExit(f"{cut_id} composition is missing the window or Sakura")
+    if "60%" in c1_pos or "submerged window" in c1_pos:
+        raise SystemExit("C1 picked up the Sakura composition")
+    if "missing cat" not in c2_neg:
+        raise SystemExit("C2 does not reject a missing cat")
     if "human-like mouth, extra teeth, deformed jaw" not in c2_neg:
         raise SystemExit("C2 mouth negative missing")
     if "human-like mouth" in c1_neg or "extra knuckles" in c1_neg:
@@ -386,6 +424,14 @@ def main():
         vace_inputs = graph["vace"]["inputs"]
         if vace_inputs.get("control_video") != ["frames", 0]:
             raise SystemExit(f"{cut['cut']} lost control_video")
+        if vace_inputs.get("control_masks") != ["frames", 1]:
+            raise SystemExit(f"{cut['cut']} lost control_masks")
+        if graph["save"]["inputs"].get("images") != ["decode", 0]:
+            raise SystemExit(f"{cut['cut']} save node is not the VAE decode")
+        if graph["decode"]["inputs"].get("samples") != ["trim", 0]:
+            raise SystemExit(f"{cut['cut']} decode is not the sampler")
+        if graph["sample"]["inputs"].get("latent_image") != ["vace", 2]:
+            raise SystemExit(f"{cut['cut']} sampler latent is not VACE")
         if vace_inputs.get("strength") != 1.0:
             raise SystemExit(f"{cut['cut']} strength changed")
         has_ref = "reference_image" in vace_inputs
@@ -534,10 +580,11 @@ def main():
         raise SystemExit("40GB export does not pad to 9:16")
     if logic["ffmpeg_vf"](geo_80) != "setsar=1":
         raise SystemExit("80GB export filter")
-    if logic["ffmpeg_duration_args"](37, 24, 1.5) != ["-t", "1.500"]:
-        raise SystemExit("C1 duration trim")
-    if logic["ffmpeg_duration_args"](81, 24, 3.5) != []:
-        raise SystemExit("C2 should keep every generated frame")
+    if logic["ffmpeg_frame_args"](84) != ["-frames:v", "84"]:
+        raise SystemExit("frame trim args")
+    post = logic["ffmpeg_post_filter"](720, 1280, 84, 24)
+    if "2*sin" not in post or "1*sin" not in post or "gblur=sigma=6" not in post:
+        raise SystemExit("post filter is missing the 1-2px shake or the focus pull")
 
     width, height = 96, 160
     c1_count = logic["wan_frame_count"](c1["duration_s"], c1["fps"])
@@ -568,49 +615,108 @@ def main():
         for cut in cuts:
             rendered = logic["render_cut"](cut, Path(tmp) / cut["cut"], width, height)
             frames = sorted((Path(tmp) / cut["cut"]).glob("frame_*.png"))
-            if rendered["count"] != len(frames):
-                raise SystemExit(f"{cut['cut']} did not write every frame")
+            masks = sorted((Path(tmp) / cut["cut"]).glob("mask_*.png"))
+            if rendered["count"] != len(frames) or rendered["count"] != len(masks):
+                raise SystemExit(f"{cut['cut']} did not write every frame and mask")
+            if rendered["count"] < rendered["target_count"]:
+                raise SystemExit(f"{cut['cut']} generated fewer frames than the cut")
             sample = Image.open(frames[0])
             if sample.size != (width, height) or sample.mode != "RGB":
                 raise SystemExit(f"{cut['cut']} frame is not 9:16 RGB at the test size")
+            expected = logic["render_control_frame"](
+                cut, 0, rendered["target_count"], width, height
+            )
+            if sample.tobytes() != expected["pose"].tobytes():
+                raise SystemExit(f"{cut['cut']} control video is not the pose")
+            if expected["pose"].tobytes() == expected["composite"].tobytes():
+                raise SystemExit(f"{cut['cut']} pose and depth composite are identical")
+            mask = Image.open(masks[0])
+            if mask.mode != "L" or mask.getextrema() != (255, 255):
+                raise SystemExit(f"{cut['cut']} control mask is not fully active")
+
+    pose_plate = logic["render_control_frame"](c1, 0, 8, 480, 832)
+    pose = pose_plate["pose"]
+    pale = Image.new("RGB", pose.size, (210, 198, 176))
+    logic["assert_generated_still"](pale, pose)
+    kimono = Image.new("RGB", pose.size, (186, 196, 188))
+    ImageDraw.Draw(kimono).rectangle((180, 300, 340, 760), fill=(250, 10, 20))
+    logic["assert_generated_still"](kimono, pose)
+    if logic["saturated_skeleton_families"](pose) < 3:
+        raise SystemExit("pose plate did not register skeleton colors")
+    if logic["saturated_skeleton_families"](kimono) >= 3:
+        raise SystemExit("a red kimono was counted as a skeleton")
+    try:
+        logic["assert_generated_still"](pose, pose)
+    except RuntimeError:
+        pass
+    else:
+        raise SystemExit("control frame was accepted as a generated frame")
+    try:
+        logic["assert_generated_still"](pose_plate["composite"], pose)
+    except RuntimeError:
+        pass
+    else:
+        raise SystemExit("depth composite was accepted as a generated frame")
+    face = Image.new("RGB", (80, 80), (220, 30, 40))
+    boxed = logic["letterbox_face"](face, pose.size[0], pose.size[1])
+    try:
+        logic["assert_generated_still"](boxed, pose, boxed)
+    except RuntimeError:
+        pass
+    else:
+        raise SystemExit("reference paste was accepted as a generated frame")
+    logic["assert_generated_still"](pale, pose, boxed)
 
     if shutil.which("ffmpeg") and shutil.which("ffprobe"):
-        with tempfile.TemporaryDirectory() as tmp:
-            seq = Path(tmp) / "seq"
-            seq.mkdir()
-            for index in range(4):
-                Image.new("RGB", (480, 832), (20, 40, index * 20)).save(seq / f"frame_{index:04d}.png")
-            dest = Path(tmp) / "padded.mp4"
+        geo = logic["generation_geometry"](40960)
+
+        def mux_frames(directory, images, keep, dest):
+            directory.mkdir()
+            for index, image in enumerate(images):
+                image.save(directory / f"frame_{index:04d}.png")
+            staged = dest.with_suffix(".sized.mp4")
             cmd = logic["ffmpeg_sequence_cmd"](
-                seq / "frame_%04d.png",
-                4,
+                directory / "frame_%04d.png",
+                len(images),
                 8,
                 1.0,
-                logic["generation_geometry"](40960),
-                dest,
+                geo,
+                staged,
+                keep_frames=keep,
             )
             mux = subprocess.run(cmd, capture_output=True, text=True)
             if mux.returncode != 0:
                 raise SystemExit(f"ffmpeg pad failed: {mux.stderr[-500:]}")
-            probe = subprocess.run(
-                [
-                    "ffprobe",
-                    "-v",
-                    "error",
-                    "-select_streams",
-                    "v:0",
-                    "-show_entries",
-                    "stream=width,height",
-                    "-of",
-                    "csv=p=0:s=x",
-                    str(dest),
-                ],
-                capture_output=True,
-                text=True,
-                check=True,
+            finish = logic["ffmpeg_finish_cmd"](staged, dest, keep, 8, geo)
+            burned = subprocess.run(finish, capture_output=True, text=True)
+            if burned.returncode != 0:
+                raise SystemExit(f"ffmpeg post failed: {burned.stderr[-500:]}")
+            got = logic["assert_export_stream"](dest, keep, 720, 1280)
+            if got["frames"] != keep:
+                raise SystemExit(f"ffprobe frames {got}")
+            return logic["read_first_frame"](dest)
+
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            pale_frame = mux_frames(
+                root / "pale",
+                [Image.new("RGB", (480, 832), (210, 198, 176)) for _ in range(5)],
+                4,
+                root / "pale.mp4",
             )
-            if probe.stdout.strip() != "720x1280":
-                raise SystemExit(f"padded mp4 size {probe.stdout.strip()}")
+            logic["assert_generated_still"](pale_frame, pose, boxed)
+            copied = mux_frames(
+                root / "pose",
+                [pose for _ in range(4)],
+                4,
+                root / "pose.mp4",
+            )
+            try:
+                logic["assert_generated_still"](copied, pose)
+            except RuntimeError:
+                pass
+            else:
+                raise SystemExit("postprocessed control frame was accepted")
     else:
         raise SystemExit("ffmpeg is required to check the 9:16 mux")
 

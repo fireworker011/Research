@@ -20,8 +20,8 @@ MARKDOWN = """# Wan2.1 VACE 14B — H3 カット生成
 3. Drive をマウントし、ComfyUI を入れる
 4. モデル取得（Drive にあればスキップ）
 5. ComfyUI 起動
-6. カットごとに 9:16 の mp4 と、使った制御 JSON を書く
-7. 生成が終わったらランタイムを切断して削除する
+6. カットごとに 9:16 の mp4 と、使った制御 JSON を書く。mp4 はサンプラーと VAE の出力だけ
+7. 全部書けたら Drive を flush してランタイムを切断し、削除する。失敗したときも削除する
 
 入力は `マイドライブ/ComfyUI_vace_h3/input/` の `face_ref.png`、`controls/C1_control_1b6a.json`、`controls/C2_control_f32a.json`、`controls/C3_control_88b5.json`、`controls/C4_control_6d2a.json`、`controls/prompts.json`。
 出力は `マイドライブ/ComfyUI_vace_h3/output/<実行時刻>/`。
