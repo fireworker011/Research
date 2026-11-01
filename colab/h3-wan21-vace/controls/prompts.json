@@ -1,27 +1,31 @@
 {
-  "block_a": "same adult brown mackerel tabby cat, white chest, foreground 40%; dreamcore liminal space, endless pale tiled indoor pool hall, flooded window, hazy pastel sky; vertical 9:16, smartphone footage, slight handheld shake, autofocus hunting, fluorescent light, sensor noise, compression artifacts, photorealistic, real concrete texture, weathered paint, no text, no logos",
+  "block_a": "same cat as reference, adult brown mackerel tabby, white chest, cat in the bottom 40% band of the frame; dreamcore liminal space, endless pale tiled indoor pool hall, flooded window, hazy pastel sky; vertical 9:16, smartphone footage, slight handheld shake, autofocus hunting, fluorescent light, sensor noise, compression artifacts, photorealistic, real concrete texture, weathered paint, no text, no logos",
   "block_s": "Sakura, adult Japanese woman in her late 20s, mature adult face and proportions, soft smile, brown eyes, long straight dark brown hair with see-through bangs, gold chrysanthemum hair ornament, crimson kimono with gold and white cherry blossom pattern, collar closed and properly worn, gold obi",
   "negative_common": "extra fingers, fused hands, extra legs, merged paws, deformed face, 3d render, CGI, plastic, smooth, text, watermark, logo",
   "cuts": {
     "C1": {
       "has_person": false,
-      "prompt": "no person, flooded view outside window, suspended lane ropes with visible anchor points, static, consistent rope count, outside window only, pale cyan and beige",
+      "focus": [[0.0, "near"], [0.25, "far"], [0.5, "near"]],
+      "prompt": "no person, cat in the bottom 40% band of the frame, flooded submerged window in the background, flooded view outside window, suspended lane ropes with visible anchor points, static, consistent rope count, outside window only, pale cyan and beige",
       "negative": ""
     },
     "C2": {
       "has_person": true,
-      "prompt": "cat in the foreground about 40% of the frame, submerged window and adult Sakura at mid-distance in the background about 60% of the frame, the cat is visible, Sakura at mid distance, hands out of focus, flooded window behind, humid haze, muted pastel",
-      "negative": "human-like mouth, extra teeth, deformed jaw, missing cat, cat out of frame"
+      "focus": [[0.0, "near"], [0.25, "far"], [0.5, "near"]],
+      "prompt": "cat in the bottom 40% band of the frame, the cat is visible, adult Sakura 25-35% of frame height, Sakura slightly out of focus, natural skin texture, submerged flooded window in the background, Sakura at mid distance, hands out of focus, humid haze, muted pastel",
+      "negative": "human-like mouth, extra teeth, deformed jaw, missing cat, cat out of frame, beauty filter, airbrushed skin, green tint"
     },
     "C3": {
       "has_person": false,
-      "prompt": "no person, giant high-dive tower in clouds, window-sized, static, overcast cyan light, film grain",
-      "negative": ""
+      "focus": [[0.0, "near"], [0.25, "far"], [0.5, "near"]],
+      "prompt": "no person, cat in the bottom 40% band of the frame, giant high-dive tower in clouds, window-sized, static, overcast cyan light, film grain",
+      "negative": "horn, bump on head, extra ears"
     },
     "C4": {
       "has_person": true,
-      "prompt": "cat in the foreground about 40% of the frame, submerged window and adult Sakura at mid-distance in the background about 60% of the frame, window handle at mid distance, Sakura's hand from side, relaxed hand, four fingers visible, crimson kimono sleeve, hand near handle, blue-white flooded light",
-      "negative": "extra knuckles, sleeve merging with hand, deformed wrist, missing cat, cat out of frame"
+      "focus": [[0.0, "cat"], [0.25, "handle"], [0.5, "cat"]],
+      "prompt": "side close-up of the window handle and Sakura's hand, cat in the bottom 40% band of the frame, adult Sakura 25-35% of frame height, Sakura's hand from side, relaxed hand, four fingers visible, crimson kimono sleeve, hand near handle, blue-white flooded light",
+      "negative": "extra knuckles, sleeve merging with hand, deformed wrist, missing cat, cat out of frame, off-shoulder, open collar, bare shoulder"
     }
   }
 }

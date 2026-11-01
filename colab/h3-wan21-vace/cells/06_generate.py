@@ -94,6 +94,28 @@ def arm_idle_timer(seconds=None, callback=None):
     )
 
 
+CAT_REF_URL = (
+    "https://raw.githubusercontent.com/fireworker011/Research/"
+    "cursor/wan21-vace-14b-colab-702e/colab/h3-wan21-vace/controls/cat_ref.png"
+)
+
+
+def ensure_cat_reference(directory):
+    try:
+        return find_cat_reference(directory)
+    except FileNotFoundError:
+        dest = Path(directory) / "cat_ref.png"
+        dest.parent.mkdir(parents=True, exist_ok=True)
+        print(f"猫参照が無いので取得します: {dest}")
+        result = subprocess.run(["wget", "-q", "-O", str(dest), CAT_REF_URL])
+        if result.returncode != 0 or not dest.is_file() or dest.stat().st_size < 1000:
+            raise FileNotFoundError(
+                "猫の参照画像がありません。"
+                f" {directory}/cat_ref.png に置いてください。"
+            ) from None
+        return dest
+
+
 def publish_file(src, dest):
     src = Path(src)
     dest = Path(dest)
@@ -138,17 +160,14 @@ def pack_inputs(info, class_type, values):
     return {key: value for key, value in values.items() if key in allowed}
 
 
-def validate_prompt_graph(graph, use_reference):
+def validate_prompt_graph(graph):
     vace = graph["vace"]["inputs"]
     if vace.get("control_video") != ["frames", 0]:
         raise RuntimeError("control_video はフレーム読み込みだけに繋ぎます。")
     if vace.get("control_masks") != ["frames", 1]:
         raise RuntimeError("control_masks はマスク出力だけに繋ぎます。")
-    if use_reference:
-        if vace.get("reference_image") != ["face", 0]:
-            raise RuntimeError("reference_image は顔参照だけに繋ぎます。")
-    elif "reference_image" in vace or "face" in graph:
-        raise RuntimeError("このカットに顔参照を渡していません。")
+    if vace.get("reference_image") != ["ref", 0]:
+        raise RuntimeError("reference_image は参照画像だけに繋ぎます。")
     if graph["sample"]["inputs"].get("latent_image") != ["vace", 2]:
         raise RuntimeError("サンプラーの初期潜在は VACE の潜在だけです。")
     if graph["trim"]["inputs"].get("samples") != ["sample", 0]:
@@ -159,11 +178,11 @@ def validate_prompt_graph(graph, use_reference):
         raise RuntimeError("保存するのは VAE の出力だけです。")
     for node_id in ("save", "decode", "sample", "trim"):
         for value in graph[node_id]["inputs"].values():
-            if value in (["frames", 0], ["frames", 1], ["face", 0]):
+            if value in (["frames", 0], ["frames", 1], ["ref", 0], ["face", 0]):
                 raise RuntimeError(f"{node_id} が制御入力を直接受けています。")
 
 
-def build_prompt(info, frame_dir, length, width, height, positive, negative, seed, prefix, use_reference):
+def build_prompt(info, frame_dir, length, width, height, positive, negative, seed, prefix, reference_name):
     frame_outputs = list((info.get("H3LoadFrameDir") or {}).get("output") or [])
     if "MASK" not in frame_outputs:
         raise RuntimeError(
@@ -173,7 +192,7 @@ def build_prompt(info, frame_dir, length, width, height, positive, negative, see
     vace_allowed = set(vace_spec.get("required", {})) | set(vace_spec.get("optional", {}))
     if "control_video" not in vace_allowed or "control_masks" not in vace_allowed:
         raise RuntimeError("WanVaceToVideo に control_video / control_masks がありません。ComfyUI を更新してください。")
-    if use_reference and "reference_image" not in vace_allowed:
+    if "reference_image" not in vace_allowed:
         raise RuntimeError("WanVaceToVideo に reference_image がありません。ComfyUI を更新してください。")
     vace_values = {
         "positive": ["pos", 0],
@@ -186,6 +205,7 @@ def build_prompt(info, frame_dir, length, width, height, positive, negative, see
         "strength": 1.0,
         "control_video": ["frames", 0],
         "control_masks": ["frames", 1],
+        "reference_image": ["ref", 0],
     }
     graph = {
         "unet": {
@@ -219,13 +239,11 @@ def build_prompt(info, frame_dir, length, width, height, positive, negative, see
             "class_type": "H3LoadFrameDir",
             "inputs": pack_inputs(info, "H3LoadFrameDir", {"directory": frame_dir}),
         },
-    }
-    if use_reference:
-        graph["face"] = {
+        "ref": {
             "class_type": "LoadImage",
-            "inputs": pack_inputs(info, "LoadImage", {"image": "face_ref.png"}),
-        }
-        vace_values["reference_image"] = ["face", 0]
+            "inputs": pack_inputs(info, "LoadImage", {"image": reference_name}),
+        },
+    }
     graph["vace"] = {
         "class_type": "WanVaceToVideo",
         "inputs": pack_inputs(info, "WanVaceToVideo", vace_values),
@@ -275,11 +293,11 @@ def build_prompt(info, frame_dir, length, width, height, positive, negative, see
             "filename_prefix": prefix,
         }),
     }
-    validate_prompt_graph(graph, use_reference)
+    validate_prompt_graph(graph)
     return graph
 
 
-def prompt_for_cut(info, cut, frame_dir, length, width, height, prefix, prompts=None):
+def prompt_for_cut(info, cut, frame_dir, length, width, height, prefix, prompts=None, reference_name="ref.png"):
     positive, negative = build_prompts(cut["data"], prompts)
     graph = build_prompt(
         info,
@@ -291,7 +309,7 @@ def prompt_for_cut(info, cut, frame_dir, length, width, height, prefix, prompts=
         negative,
         sampler_seed(cut),
         prefix,
-        uses_face_reference(cut["cut"], prompts),
+        reference_name,
     )
     return graph, positive, negative
 
@@ -377,7 +395,7 @@ def saved_image_paths(history_item, frame_dir):
     return paths
 
 
-def export_mp4(image_paths, fps, keep_frames, geo, dest):
+def export_mp4(image_paths, fps, keep_frames, geo, dest, focus=None):
     seq = Path("/content/vace_work/seq")
     if seq.exists():
         shutil.rmtree(seq)
@@ -399,7 +417,7 @@ def export_mp4(image_paths, fps, keep_frames, geo, dest):
         result = subprocess.run(cmd, capture_output=True, text=True)
         if result.returncode != 0:
             raise RuntimeError(f"ffmpeg に失敗しました: {result.stderr[-2000:]}")
-        finish = ffmpeg_finish_cmd(staged, dest, keep_frames, fps, geo)
+        finish = ffmpeg_finish_cmd(staged, dest, keep_frames, fps, geo, focus)
         burned = subprocess.run(finish, capture_output=True, text=True)
         if burned.returncode != 0:
             raise RuntimeError(f"手ブレとフォーカスの ffmpeg に失敗しました: {burned.stderr[-2000:]}")
@@ -432,6 +450,12 @@ def run_generation(selected=None, run_dir=None, fresh_run=True, prompts=None):
         "target_frame_count",
         "vace_frame_count",
         "letterbox_face",
+        "side_by_side_reference",
+        "find_cat_reference",
+        "scene_spec",
+        "read_frame_index",
+        "assert_sharpness_recovered",
+        "FOCUS_RECOVERY_SECONDS",
         "sampler_seed",
         "load_scene_prompts",
         "EXPORT_WIDTH",
@@ -475,20 +499,20 @@ def run_generation(selected=None, run_dir=None, fresh_run=True, prompts=None):
         f"（9:16{'、そのまま' if geo['native'] else '、480p をパッド'}）"
     )
     face_path = find_face_reference(FACE_DIR)
-    boxed = letterbox_face(Image.open(face_path), geo["width"], geo["height"])
+    cat_path = ensure_cat_reference(FACE_DIR)
     os.makedirs("/content/ComfyUI/input", exist_ok=True)
-    boxed.save("/content/ComfyUI/input/face_ref.png")
     print(f"顔参照: {face_path}")
+    print(f"猫参照: {cat_path}")
 
     if prompts is None:
         prompts = load_scene_prompts(CONTROL_DIR)
     print(f"prompts.json を読みました: {CONTROL_DIR}/prompts.json")
     cuts = select_cuts(list_cuts(CONTROL_DIR), selected)
     if run_dir is None:
-        run_id = time.strftime("%Y%m%d-%H%M%S")
-        run_dir = Path(OUTPUT_ROOT) / run_id
+        run_dir = Path(OUTPUT_ROOT) / time.strftime("%Y%m%d-%H%M%S")
     else:
         run_dir = Path(run_dir)
+    run_id = run_dir.name
     run_dir.mkdir(parents=True, exist_ok=True)
     RUN_DIR = str(run_dir)
     print(f"出力フォルダ: {run_dir}")
@@ -505,6 +529,14 @@ def run_generation(selected=None, run_dir=None, fresh_run=True, prompts=None):
         print(summarize_cut(cut, keep_count))
         if vace_count != keep_count:
             print(f"VACE は {vace_count} フレーム（4n+1）を生成し、{keep_count} フレームに切ります。")
+        ref_name = f"ref_{cut_id}.png"
+        cat_image = Image.open(cat_path)
+        if uses_face_reference(cut_id, prompts):
+            face_image = Image.open(face_path)
+            reference = side_by_side_reference(cat_image, face_image, geo["width"], geo["height"])
+        else:
+            reference = letterbox_face(cat_image, geo["width"], geo["height"])
+        reference.save(Path("/content/ComfyUI/input") / ref_name)
         prefix = f"h3_{run_id}_{cut_id}"
         out_root = Path("/content/ComfyUI/output")
         out_root.mkdir(parents=True, exist_ok=True)
@@ -520,6 +552,7 @@ def run_generation(selected=None, run_dir=None, fresh_run=True, prompts=None):
             geo["height"],
             prefix,
             prompts,
+            ref_name,
         )
         print(positive)
         print(negative)
@@ -532,17 +565,20 @@ def run_generation(selected=None, run_dir=None, fresh_run=True, prompts=None):
             raise RuntimeError(f"{cut_id}: フレーム数が {len(paths)} でした。{vace_count} を期待しています。")
         control_image = Image.open(Path(frame_dir) / "frame_0000.png").convert("RGB")
         sampler_image = Image.open(paths[0]).convert("RGB")
-        reference_image = None
-        if uses_face_reference(cut_id, prompts):
-            reference_image = Image.open("/content/ComfyUI/input/face_ref.png").convert("RGB")
+        reference_image = Image.open(Path("/content/ComfyUI/input") / ref_name).convert("RGB")
         stats = assert_generated_still(sampler_image, control_image, reference_image)
         print(
             f"{cut_id}: 先頭フレーム SSIM {stats['ssim']:.3f} / 骨格色 {stats['skeleton_families']} 系統"
         )
         local_mp4 = Path(f"/content/vace_work/{cut_id}.mp4")
-        export_mp4(paths, cut["fps"], keep_count, geo, local_mp4)
+        focus = scene_spec(prompts, cut_id)["focus"]
+        export_mp4(paths, cut["fps"], keep_count, geo, local_mp4, focus)
         final_image = read_first_frame(local_mp4)
         assert_generated_still(final_image, control_image, reference_image)
+        if keep_count / float(cut["fps"]) >= FOCUS_RECOVERY_SECONDS:
+            later_index = int(round(FOCUS_RECOVERY_SECONDS * float(cut["fps"])))
+            later_image = read_frame_index(local_mp4, later_index)
+            assert_sharpness_recovered(later_image, final_image)
         dest_mp4 = publish_file(local_mp4, run_dir / f"{cut_id}.mp4")
         copied_json = copy_control_json(cut, run_dir)
         dest_json = publish_file(copied_json, copied_json)

@@ -457,12 +457,21 @@ def main():
         raise SystemExit("C2 positive missing crimson kimono")
     if "suspended lane ropes with visible anchor points" not in c1_pos:
         raise SystemExit("C1 cut prompt missing")
-    if "hands out of focus" not in c2_pos:
+    if "hands out of focus" not in c2_pos or "natural skin texture" not in c2_pos:
         raise SystemExit("C2 cut prompt missing")
+    if "slightly out of focus" not in c2_pos:
+        raise SystemExit("C2 Sakura focus line missing")
     if "giant high-dive tower in clouds" not in c3_pos:
         raise SystemExit("C3 cut prompt missing")
     if "Sakura's hand from side" not in c4_pos or "crimson kimono" not in c4_pos:
         raise SystemExit("C4 cut prompt missing")
+    if "side close-up of the window handle" not in c4_pos:
+        raise SystemExit("C4 is not a handle close-up")
+    for cut_id, (positive, _negative) in built.items():
+        if "same cat as reference" not in positive:
+            raise SystemExit(f"{cut_id} does not say same cat as reference")
+        if "bottom 40%" not in positive:
+            raise SystemExit(f"{cut_id} does not place the cat in the bottom 40% band")
     if face_line in c1_pos or face_line in c3_pos:
         raise SystemExit("face reference line on a cut with no person")
     if face_line not in c2_pos or face_line not in c4_pos:
@@ -486,16 +495,26 @@ def main():
             raise SystemExit(f"{cut_id} negative prompt does not suppress burned-in text")
     for cut_id in ("C2", "C4"):
         cut_prompt = prompts_doc["cuts"][cut_id]["prompt"]
-        if "cat" not in cut_prompt or "40%" not in cut_prompt or "60%" not in cut_prompt:
-            raise SystemExit(f"{cut_id} composition is missing the cat or the 40/60 split")
-        if "submerged window" not in cut_prompt or "adult Sakura" not in cut_prompt:
-            raise SystemExit(f"{cut_id} composition is missing the window or Sakura")
-    if "60%" in c1_pos or "submerged window" in c1_pos:
-        raise SystemExit("C1 picked up the Sakura composition")
+        if "bottom 40%" not in cut_prompt or "25-35%" not in cut_prompt:
+            raise SystemExit(f"{cut_id} composition is missing the cat band or Sakura height")
+        if "adult Sakura" not in cut_prompt:
+            raise SystemExit(f"{cut_id} composition is missing Sakura")
+    if "submerged" not in prompts_doc["cuts"]["C1"]["prompt"] or "window in the background" not in prompts_doc["cuts"]["C1"]["prompt"]:
+        raise SystemExit("C1 does not put the flooded window in the background")
+    if "submerged" not in prompts_doc["cuts"]["C2"]["prompt"] or "window in the background" not in prompts_doc["cuts"]["C2"]["prompt"]:
+        raise SystemExit("C2 does not put the submerged window in the background")
+    if "Sakura" in prompts_doc["cuts"]["C1"]["prompt"]:
+        raise SystemExit("C1 prompt includes Sakura")
     if "missing cat" not in c2_neg:
         raise SystemExit("C2 does not reject a missing cat")
     if "human-like mouth, extra teeth, deformed jaw" not in c2_neg:
         raise SystemExit("C2 mouth negative missing")
+    if "beauty filter" not in c2_neg or "airbrushed skin" not in c2_neg or "green tint" not in c2_neg:
+        raise SystemExit("C2 skin negative missing")
+    if "horn, bump on head, extra ears" not in built["C3"][1]:
+        raise SystemExit("C3 head negative missing")
+    if "off-shoulder" not in c4_neg or "open collar" not in c4_neg or "bare shoulder" not in c4_neg:
+        raise SystemExit("C4 collar negative missing")
     if "human-like mouth" in c1_neg or "extra knuckles" in c1_neg:
         raise SystemExit("C1 negative has another cut's terms")
     if "extra knuckles, sleeve merging with hand, deformed wrist" not in c4_neg:
@@ -599,18 +618,13 @@ def main():
             raise SystemExit(f"{cut['cut']} sampler latent is not VACE")
         if vace_inputs.get("strength") != 1.0:
             raise SystemExit(f"{cut['cut']} strength changed")
-        has_ref = "reference_image" in vace_inputs
-        expect_ref = cut["cut"] in {"C2", "C4"}
-        if has_ref is not expect_ref:
-            raise SystemExit(f"{cut['cut']} reference_image present={has_ref}")
+        if vace_inputs.get("reference_image") != ["ref", 0]:
+            raise SystemExit(f"{cut['cut']} lost the cat reference")
+        if graph["ref"]["inputs"].get("image") != "ref.png":
+            raise SystemExit(f"{cut['cut']} reference image name")
         blob_graph = json.dumps(graph)
-        if expect_ref:
-            if vace_inputs["reference_image"] != ["face", 0]:
-                raise SystemExit(f"{cut['cut']} reference_image target")
-            if graph["face"]["inputs"].get("image") != "face_ref.png":
-                raise SystemExit(f"{cut['cut']} face image name")
-        elif "face" in graph or "face_ref.png" in blob_graph or "reference_image" in blob_graph:
-            raise SystemExit(f"{cut['cut']} graph still names the face reference")
+        if "face_ref.png" in blob_graph:
+            raise SystemExit(f"{cut['cut']} still loads the face file by itself")
         if graph["sample"]["inputs"]["seed"] != logic["sampler_seed"](cut):
             raise SystemExit(f"{cut['cut']} seed was not passed through")
     if logic["sampler_seed"](c1) != 10001:
@@ -747,9 +761,18 @@ def main():
         raise SystemExit("80GB export filter")
     if logic["ffmpeg_frame_args"](84) != ["-frames:v", "84"]:
         raise SystemExit("frame trim args")
-    post = logic["ffmpeg_post_filter"](720, 1280, 84, 24)
-    if "2*sin" not in post or "1*sin" not in post or "gblur=sigma=6" not in post:
-        raise SystemExit("post filter is missing the 1-2px shake or the focus pull")
+    post = logic["ffmpeg_post_filter"](720, 1280, 84, 24, prompts_doc["cuts"]["C2"]["focus"])
+    if "2*sin" not in post or "1*sin" not in post or "gblur=sigma=4" not in post:
+        raise SystemExit("post filter is missing the 1-2px shake or the 4px focus pull")
+    if "sigma=6" in post or "sin(PI*T" in post:
+        raise SystemExit("global blur is still in the post filter")
+    default_focus = [(0.0, "near"), (0.25, "far"), (0.5, "near")]
+    if logic["focus_weight_at"](default_focus, 0.0) != 0 or logic["focus_weight_at"](default_focus, 0.5) != 0:
+        raise SystemExit("focus is not sharp at 0s and 0.5s")
+    if logic["focus_weight_at"](default_focus, 0.25) != 1:
+        raise SystemExit("focus is not far at 0.25s")
+    if logic["FOCUS_BLUR_MAX"] != 4:
+        raise SystemExit("focus blur is not capped at 4px")
 
     width, height = 96, 160
     c1_count = logic["wan_frame_count"](c1["duration_s"], c1["fps"])
@@ -775,6 +798,27 @@ def main():
         raise SystemExit("letterbox stretched the face to the corner")
     if not any(boxed.getpixel((x, 20))[0] > 200 for x in range(90)):
         raise SystemExit("letterbox dropped the face")
+    cat_swatch = Image.new("RGB", (40, 80), (150, 70, 30))
+    face_swatch = Image.new("RGB", (30, 30), (10, 200, 40))
+    pair = logic["side_by_side_reference"](cat_swatch, face_swatch, 90, 160)
+    if pair.size != (90, 160):
+        raise SystemExit("combined reference size")
+    left = [pair.getpixel((x, y)) for x in range(40) for y in range(160)]
+    right = [pair.getpixel((x, y)) for x in range(50, 90) for y in range(160)]
+    if not any(pixel[0] > 120 and pixel[1] < 100 for pixel in left):
+        raise SystemExit("cat reference is missing from the left half")
+    if not any(pixel[1] > 150 and pixel[0] < 40 for pixel in right):
+        raise SystemExit("face reference is missing from the right half")
+    if any(pixel[1] > 150 and pixel[0] < 40 for pixel in left):
+        raise SystemExit("face reference leaked into the cat half")
+    cat_file = ROOT / "controls" / "cat_ref.png"
+    if not cat_file.is_file():
+        raise SystemExit("cat_ref.png is not committed")
+    cat_image = Image.open(cat_file)
+    if cat_image.size != (720, 1280) or cat_image.mode != "RGB":
+        raise SystemExit(f"cat_ref.png is {cat_image.size} {cat_image.mode}")
+    if (ROOT / "input" / "cat_ref.png").read_bytes() != cat_file.read_bytes():
+        raise SystemExit("input/cat_ref.png does not match controls/cat_ref.png")
 
     with tempfile.TemporaryDirectory() as tmp:
         for cut in cuts:
@@ -882,6 +926,23 @@ def main():
                 pass
             else:
                 raise SystemExit("postprocessed control frame was accepted")
+
+            def checker(w, h, cell=16):
+                image = Image.new("RGB", (w, h))
+                pixels = image.load()
+                for y in range(h):
+                    for x in range(w):
+                        pixels[x, y] = (255, 255, 255) if ((x // cell) + (y // cell)) % 2 == 0 else (0, 0, 0)
+                return image
+
+            sharp = mux_frames(
+                root / "sharp",
+                [checker(480, 832) for _ in range(8)],
+                8,
+                root / "sharp.mp4",
+            )
+            at_half = logic["read_frame_index"](root / "sharp.mp4", int(round(0.5 * 8)))
+            logic["assert_sharpness_recovered"](at_half, sharp)
     else:
         raise SystemExit("ffmpeg is required to check the 9:16 mux")
 

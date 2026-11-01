@@ -15,13 +15,14 @@
 マイドライブの `ComfyUI_vace_h3/input/` に置くファイル:
 
 - `face_ref.png`
+- `cat_ref.png`（茶トラ、白い胸。全カットの参照。C2 と C4 は顔参照と左右に並べて渡す）
 - `controls/C1_control_1b6a.json`
 - `controls/C2_control_f32a.json`
 - `controls/C3_control_88b5.json`
 - `controls/C4_control_6d2a.json`
 - `controls/prompts.json`
 
-`face_ref.jpg`、`face_ref.jpeg`、`face_ref.webp` は `face_ref.png` の代わりに1枚だけ使える。顔だけの切り抜き。ノートは縦フレームの上の方へ、比率を保って置き、周囲は灰色にする。この画像を WanVaceToVideo の reference に渡すのは C2 と C4 だけ。
+`face_ref.jpg`、`face_ref.jpeg`、`face_ref.webp` は `face_ref.png` の代わりに1枚だけ使える。顔だけの切り抜き。`cat_ref.png` は全カットの reference に渡す。C2 と C4 は猫と顔を左右に並べた1枚にする。WanVaceToVideo は参照を1枚しか受け取らない。
 
 4つの制御 JSON は、このフォルダの同じファイルを中身を変えずに置く。秒数、OpenPose、Depth、カメラはその値のまま使う。`prompts.json` は全カットの固定語ブロック A、C2 と C4 だけのブロック S、カットごとの画の文、共通ネガティブ、C2 の口と C4 の手の追加ネガティブ。
 
@@ -36,7 +37,7 @@
 
 OpenPose、マスク、顔参照は WanVaceToVideo の `control_video` / `control_masks` / `reference_image` にだけ渡す。保存する mp4 はサンプラーと VAE の出力だけ。先頭フレームが制御フレームに近い（SSIM > 0.6）、または骨格の原色が残っているときは、その実行を失敗にする。深度の楕円は制御 RGB に合成しない。
 
-書き出したあと、ffmpeg で 1〜2px の手ブレと、1回のフォーカス送りを焼く。
+書き出したあと、ffmpeg で 1〜2px の手ブレを焼く。フォーカスは全体をぼかさず、`prompts.json` の時刻（near から far へ、0.5 秒で near に戻る）だけ、半径最大 4px で送る。
 
 A100 40GB では 480×832 で生成し、書き出し時に 720×1280 へ収めて上下に細い黒帯を付ける。A100 80GB 以上は 720×1280 のまま生成する。4カットを書いたあとも、QA と再生成のためランタイムは最大 30 分残る。次のセルは `CUTS = ["C2"]` のように直すカットだけを、Drive の `prompts.json` を読み直して再生成する。再生成すると 30 分の待機をやり直す。合格なら最後の切断セルを実行する。30 分操作が無いときも、その待機が Drive を flush してランタイムを削除する。生成や再生成に失敗したときは、待たずに削除する。
 

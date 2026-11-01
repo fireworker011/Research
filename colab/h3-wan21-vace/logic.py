@@ -26,6 +26,10 @@ from pathlib import Path
 from PIL import Image, ImageDraw, ImageFilter
 
 FACE_FILENAMES = ("face_ref.png", "face_ref.jpg", "face_ref.jpeg", "face_ref.webp")
+CAT_FILENAMES = ("cat_ref.png", "cat_ref.jpg", "cat_ref.jpeg", "cat_ref.webp")
+FOCUS_BLUR_MAX = 4.0
+FOCUS_RECOVERY_SECONDS = 0.5
+FOCUS_RECOVERY_RATIO = 0.8
 SCENE_PROMPTS_NAME = "prompts.json"
 EXPORT_WIDTH = 720
 EXPORT_HEIGHT = 1280
@@ -302,17 +306,25 @@ def list_cuts(directory):
     return cuts
 
 
-def find_face_reference(directory):
+def _find_named_image(directory, filenames, label):
     directory = Path(directory)
-    matches = [directory / name for name in FACE_FILENAMES if (directory / name).is_file()]
+    matches = [directory / name for name in filenames if (directory / name).is_file()]
     if not matches:
-        names = ", ".join(FACE_FILENAMES)
+        names = ", ".join(filenames)
         raise FileNotFoundError(
-            "顔の参照画像がありません。"
-            f"顔だけの切り抜きを {directory} に置いてください。"
+            f"{label}がありません。"
+            f" {directory} に置いてください。"
             f"ファイル名は {names} のいずれかです。"
         )
     return matches[0]
+
+
+def find_face_reference(directory):
+    return _find_named_image(directory, FACE_FILENAMES, "顔の参照画像")
+
+
+def find_cat_reference(directory):
+    return _find_named_image(directory, CAT_FILENAMES, "猫の参照画像")
 
 
 def copy_control_json(cut, dest_dir):
@@ -447,12 +459,64 @@ def ffmpeg_sequence_cmd(sequence_pattern, frame_count, fps, duration_s, geo, des
     ]
 
 
-def ffmpeg_post_filter(width, height, keep_frames, fps):
+def focus_level(label):
+    name = str(label).strip().lower()
+    if name in ("near", "cat"):
+        return 0.0
+    if name in ("far", "handle"):
+        return 1.0
+    raise ValueError(f"未知の focus ラベルです: {label}")
+
+
+def focus_points(sweep):
+    if not isinstance(sweep, (list, tuple)) or len(sweep) < 2:
+        raise ValueError("focus は [時刻, ラベル] を2つ以上です")
+    points = []
+    for item in sweep:
+        if not isinstance(item, (list, tuple)) or len(item) != 2:
+            raise ValueError("focus の要素は [時刻, ラベル] です")
+        points.append((float(item[0]), focus_level(item[1])))
+    points.sort(key=lambda item: item[0])
+    return points
+
+
+def focus_weight_at(sweep, t):
+    points = focus_points(sweep)
+    t = float(t)
+    if t <= points[0][0]:
+        return points[0][1]
+    if t >= points[-1][0]:
+        return points[-1][1]
+    for (t0, v0), (t1, v1) in zip(points, points[1:]):
+        if t0 <= t <= t1:
+            if t1 == t0:
+                return v1
+            alpha = (t - t0) / (t1 - t0)
+            return v0 + (v1 - v0) * alpha
+    return points[-1][1]
+
+
+def focus_weight_expr(sweep):
+    points = focus_points(sweep)
+    expr = f"{points[-1][1]:.6f}"
+    for (t0, v0), (t1, v1) in reversed(list(zip(points, points[1:]))):
+        span = t1 - t0
+        if span <= 0:
+            piece = f"{v1:.6f}"
+        else:
+            piece = f"({v0:.6f}+({v1 - v0:.6f})*(T-{t0:.6f})/{span:.6f})"
+        expr = f"if(lt(T\\,{t1:.6f})\\,{piece}\\,{expr})"
+    t0, v0 = points[0]
+    return f"if(lt(T\\,{t0:.6f})\\,{v0:.6f}\\,{expr})"
+
+
+def ffmpeg_post_filter(width, height, keep_frames, fps, focus=None):
     keep = int(keep_frames)
     rate = float(fps)
     if keep < 1 or rate <= 0:
         raise ValueError("keep_frames と fps は正の数です")
-    duration = keep / rate
+    if focus is None:
+        focus = [(0.0, "near"), (0.25, "far"), (0.5, "near")]
     # ±2 px in x and ±1 px in y. Frame 0 sits on the center of that window.
     shake = (
         "crop=w=iw-4:h=ih-4:"
@@ -460,24 +524,30 @@ def ffmpeg_post_filter(width, height, keep_frames, fps):
         "y='2+1*sin(n*0.57)',"
         f"scale={int(width)}:{int(height)}:flags=bilinear,setsar=1"
     )
-    # One pull: weight 0 at the first frame, 1 at mid-clip, 0 at the end.
-    weight = f"max(0\\,sin(PI*T/{duration:.6f}))"
+    # Depth schedule only. Weight 0 is sharp. Weight 1 is a 4px blur, then it returns.
+    weight = f"clip({focus_weight_expr(focus)}\\,0\\,1)"
     return (
         f"[0:v]{shake},"
         "split[sharp][toblur];"
-        "[toblur]gblur=sigma=6[blurred];"
+        f"[toblur]gblur=sigma={FOCUS_BLUR_MAX:.0f}[blurred];"
         f"[sharp][blurred]blend=all_expr='A*(1-{weight})+B*{weight}'[vout]"
     )
 
 
-def ffmpeg_finish_cmd(src, dest, keep_frames, fps, geo):
+def ffmpeg_finish_cmd(src, dest, keep_frames, fps, geo, focus=None):
     return [
         "ffmpeg",
         "-y",
         "-i",
         str(src),
         "-filter_complex",
-        ffmpeg_post_filter(geo["export_width"], geo["export_height"], keep_frames, fps),
+        ffmpeg_post_filter(
+            geo["export_width"],
+            geo["export_height"],
+            keep_frames,
+            fps,
+            focus,
+        ),
         "-map",
         "[vout]",
         *ffmpeg_frame_args(keep_frames),
@@ -648,21 +718,73 @@ def assert_generated_still(output_image, control_image, reference_image=None):
 
 
 def read_first_frame(path):
+    return read_frame_index(path, 0)
+
+
+def read_frame_index(path, index):
+    index = int(index)
+    if index < 0:
+        raise ValueError("frame index")
     temp_dir = Path(tempfile.mkdtemp(prefix="h3frame_"))
     dest = temp_dir / "frame.png"
     try:
         result = subprocess.run(
-            ["ffmpeg", "-y", "-i", str(path), "-frames:v", "1", str(dest)],
+            [
+                "ffmpeg",
+                "-y",
+                "-i",
+                str(path),
+                "-vf",
+                f"select=eq(n\\,{index})",
+                "-frames:v",
+                "1",
+                str(dest),
+            ],
             capture_output=True,
             text=True,
         )
         if result.returncode != 0 or not dest.is_file():
-            raise RuntimeError(f"先頭フレームを読めません: {result.stderr[-2000:]}")
+            raise RuntimeError(f"フレーム {index} を読めません: {result.stderr[-2000:]}")
         image = Image.open(dest).convert("RGB")
         image.load()
         return image
     finally:
         shutil.rmtree(temp_dir, ignore_errors=True)
+
+
+def laplacian_variance(image, side=64):
+    gray = list(image.convert("L").resize((side, side), Image.Resampling.BOX).getdata())
+    total = 0.0
+    total_sq = 0.0
+    count = 0
+    for y in range(1, side - 1):
+        for x in range(1, side - 1):
+            center = y * side + x
+            value = (
+                gray[center - side]
+                + gray[center - 1]
+                + gray[center + 1]
+                + gray[center + side]
+                - 4 * gray[center]
+            )
+            total += value
+            total_sq += value * value
+            count += 1
+    mean = total / count
+    return total_sq / count - mean * mean
+
+
+def assert_sharpness_recovered(later, earlier, ratio=FOCUS_RECOVERY_RATIO):
+    base = laplacian_variance(earlier)
+    got = laplacian_variance(later)
+    if base <= 1e-6:
+        raise RuntimeError("先頭フレームに輪郭が無いので、ピントの戻りを測れません。")
+    if got < float(ratio) * base:
+        raise RuntimeError(
+            f"0.5秒の鮮鋭度が先頭の {got / base:.0%} です。"
+            f" {ratio:.0%} 以上が必要です。"
+        )
+    return {"earlier": base, "later": got, "ratio": got / base}
 
 
 def _lerp(samples, t, default):
@@ -1033,6 +1155,28 @@ def letterbox_face(image, width, height):
     return canvas
 
 
+def _fit_on_canvas(canvas, image, box):
+    x0, y0, x1, y1 = box
+    bound_w = max(1, int(x1) - int(x0))
+    bound_h = max(1, int(y1) - int(y0))
+    fitted = image.convert("RGB")
+    fitted.thumbnail((bound_w, bound_h), Image.Resampling.LANCZOS)
+    x = int(x0) + (bound_w - fitted.width) // 2
+    y = int(y0) + (bound_h - fitted.height) // 2
+    canvas.paste(fitted, (x, y))
+    return fitted.size
+
+
+def side_by_side_reference(cat, face, width, height):
+    """One VACE reference image. The node keeps only the first frame, so cat and face share it."""
+    canvas = Image.new("RGB", (int(width), int(height)), FACE_PAD)
+    mid = int(width) // 2
+    pad = max(2, int(width) // 64)
+    _fit_on_canvas(canvas, cat, (pad, pad, mid - pad, int(height) - pad))
+    _fit_on_canvas(canvas, face, (mid + pad, pad, int(width) - pad, int(height) - pad))
+    return canvas
+
+
 def resolve_prompts_path(directory=None):
     if directory is None:
         directory = globals().get("CONTROL_DIR")
@@ -1090,6 +1234,12 @@ def load_scene_prompts(directory=None):
         negative = spec.get("negative", "")
         if not isinstance(negative, str):
             raise ValueError(f"{path}: {cut_id} の negative は文字列です")
+        focus = spec.get("focus")
+        points = focus_points(focus)
+        if points[0][0] > 0.0:
+            raise ValueError(f"{path}: {cut_id} の focus は 0 秒から始まります")
+        if focus_weight_at(focus, 0.0) != 0.0 or focus_weight_at(focus, FOCUS_RECOVERY_SECONDS) != 0.0:
+            raise ValueError(f"{path}: {cut_id} の focus は 0.5 秒で近景に戻ります")
     return data
 
 
@@ -1117,14 +1267,25 @@ def prompt_time(data, t):
         local = 0.0
     if local > duration:
         local = duration
-    text = f"{local:.3f}".rstrip("0").rstrip(".")
+    return format_seconds(local)
+
+
+def format_seconds(t):
+    text = f"{float(t):.3f}".rstrip("0").rstrip(".")
     if "." not in text:
         text += ".0"
     return text
 
 
+def focus_prompt_line(sweep):
+    parts = []
+    for item in sweep:
+        parts.append(f"{item[1]} at {format_seconds(item[0])}s")
+    return "focus pull " + ", ".join(parts) + ", sharp again by 0.5s, blur radius at most 4px"
+
+
 def _control_lines(data, has_person):
-    lines = ["vertical 9:16 shot"]
+    lines = ["vertical 9:16 shot", "same cat as reference"]
     if has_person:
         lines.append("the person's face matches the reference image")
     lines.append("follow the OpenPose control, the depth control, and the camera move")
@@ -1181,6 +1342,7 @@ def build_prompts(data, prompts=None):
         script_parts.append(prompts["block_s"])
     script_parts.append(spec["prompt"])
     positive = ", ".join(script_parts) + ". " + ". ".join(_control_lines(data, has_person))
+    positive = positive + ". " + focus_prompt_line(spec["focus"])
     negative_parts = [prompts["negative_common"]]
     extra = spec.get("negative", "").strip()
     if extra:
