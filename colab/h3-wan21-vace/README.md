@@ -12,10 +12,18 @@
 
 ## 入力
 
-マイドライブの `ComfyUI_vace_h3/input/`。
+マイドライブの `ComfyUI_vace_h3/input/` に置くファイル:
 
-- `face_ref.png`（jpg / webp も可）。顔だけの切り抜き。ノートは縦フレームの上の方へ、比率を保って置き、周囲は灰色にする。
-- `controls/` に、このフォルダの `controls/*.json` を中身を変えずに置く。1カットずつ読む。秒数、OpenPose、Depth、カメラをその JSON の値のまま使う。
+- `face_ref.png`
+- `controls/C1_control_1b6a.json`
+- `controls/C2_control_f32a.json`
+- `controls/C3_control_88b5.json`
+- `controls/C4_control_6d2a.json`
+- `controls/prompts.json`
+
+`face_ref.jpg`、`face_ref.jpeg`、`face_ref.webp` は `face_ref.png` の代わりに1枚だけ使える。顔だけの切り抜き。ノートは縦フレームの上の方へ、比率を保って置き、周囲は灰色にする。この画像を WanVaceToVideo の reference に渡すのは C2 と C4 だけ。
+
+4つの制御 JSON は、このフォルダの同じファイルを中身を変えずに置く。秒数、OpenPose、Depth、カメラはその値のまま使う。`prompts.json` は全カットの固定語ブロック A、C2 と C4 だけのブロック S、カットごとの画の文、共通ネガティブ、C2 の口と C4 の手の追加ネガティブ。
 
 ## 出力
 

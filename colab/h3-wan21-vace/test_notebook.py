@@ -62,6 +62,51 @@ def write_cut(directory, name, payload):
     return path
 
 
+def comfy_object_info():
+    def spec(required, optional=()):
+        return {
+            "input": {
+                "required": {key: ["*"] for key in required},
+                "optional": {key: ["*"] for key in optional},
+            }
+        }
+
+    return {
+        "UNETLoader": spec(("unet_name", "weight_dtype")),
+        "CLIPLoader": spec(("clip_name", "type"), ("device",)),
+        "VAELoader": spec(("vae_name",)),
+        "CLIPTextEncode": spec(("text", "clip")),
+        "LoadImage": spec(("image",)),
+        "H3LoadFrameDir": spec(("directory",)),
+        "WanVaceToVideo": spec(
+            ("positive", "negative", "vae", "width", "height", "length", "batch_size", "strength"),
+            ("control_video", "reference_image"),
+        ),
+        "ModelSamplingSD3": spec(("model", "shift")),
+        "KSampler": spec(
+            (
+                "model",
+                "positive",
+                "negative",
+                "latent_image",
+                "seed",
+                "steps",
+                "cfg",
+                "sampler_name",
+                "scheduler",
+                "denoise",
+            ),
+            ("control_after_generate",),
+        ),
+        "TrimVideoLatent": spec(("samples", "trim_amount")),
+        "VAEDecodeTiled": spec(
+            ("samples", "vae", "tile_size"),
+            ("overlap", "temporal_size", "temporal_overlap"),
+        ),
+        "SaveImage": spec(("images", "filename_prefix")),
+    }
+
+
 def base_cut(**overrides):
     payload = {
         "cut": "T0",
@@ -112,6 +157,7 @@ def main():
             logic_src,
             (ROOT / "README.md").read_text(encoding="utf-8"),
             (ROOT / "h3_load_frames.py").read_text(encoding="utf-8"),
+            (ROOT / "controls" / "prompts.json").read_text(encoding="utf-8"),
         ]
     )
     for pattern in FORBIDDEN:
@@ -250,18 +296,112 @@ def main():
         raise SystemExit(f"C1 depth sample {(left, right, alpha)}")
     close(alpha, 0.5, "C1 depth alpha")
 
-    positive, negative = logic["build_prompts"](c2["data"])
-    if "また昨日のプール。" not in positive:
+    prompts_doc = json.loads((CONTROLS / "prompts.json").read_text(encoding="utf-8"))
+    if logic["load_scene_prompts"](CONTROLS) != prompts_doc:
+        raise SystemExit("load_scene_prompts did not return prompts.json")
+    built = {}
+    for cut in cuts:
+        built[cut["cut"]] = logic["build_prompts"](cut["data"])
+        from_file = logic["build_prompts"](cut["data"], prompts_doc)
+        if built[cut["cut"]] != from_file:
+            raise SystemExit(f"{cut['cut']} prompt lookup drifted")
+    c1_pos, c1_neg = built["C1"]
+    c2_pos, c2_neg = built["C2"]
+    c3_pos, c3_neg = built["C3"]
+    c4_pos, c4_neg = built["C4"]
+    face_line = "the person's face matches the reference image"
+    if "dreamcore liminal space" not in c1_pos:
+        raise SystemExit("C1 positive missing dreamcore liminal space")
+    if "Sakura" in c1_pos or "Sakura" in c3_pos:
+        raise SystemExit("C1 or C3 positive includes Sakura")
+    if "crimson kimono" not in c2_pos:
+        raise SystemExit("C2 positive missing crimson kimono")
+    if "suspended lane ropes with visible anchor points" not in c1_pos:
+        raise SystemExit("C1 cut prompt missing")
+    if "hands out of focus" not in c2_pos:
+        raise SystemExit("C2 cut prompt missing")
+    if "giant high-dive tower in clouds" not in c3_pos:
+        raise SystemExit("C3 cut prompt missing")
+    if "Sakura's hand from side" not in c4_pos or "crimson kimono" not in c4_pos:
+        raise SystemExit("C4 cut prompt missing")
+    if face_line in c1_pos or face_line in c3_pos:
+        raise SystemExit("face reference line on a cut with no person")
+    if face_line not in c2_pos or face_line not in c4_pos:
+        raise SystemExit("face reference line missing on C2 or C4")
+    for cut_id, (positive, negative) in built.items():
+        spec = prompts_doc["cuts"][cut_id]
+        parts = [prompts_doc["block_a"]]
+        if spec["has_person"]:
+            parts.append(prompts_doc["block_s"])
+        parts.append(spec["prompt"])
+        if not positive.startswith(", ".join(parts) + ". "):
+            raise SystemExit(f"{cut_id} positive does not start with the script text")
+        if "follow the OpenPose control, the depth control, and the camera move" not in positive:
+            raise SystemExit(f"{cut_id} dropped the control line")
+        neg_head = prompts_doc["negative_common"]
+        if spec["negative"]:
+            neg_head = neg_head + ", " + spec["negative"]
+        if not negative.startswith(neg_head + ", "):
+            raise SystemExit(f"{cut_id} negative does not start with the script text")
+        if "on-screen text" not in negative:
+            raise SystemExit(f"{cut_id} negative prompt does not suppress burned-in text")
+    if "human-like mouth, extra teeth, deformed jaw" not in c2_neg:
+        raise SystemExit("C2 mouth negative missing")
+    if "human-like mouth" in c1_neg or "extra knuckles" in c1_neg:
+        raise SystemExit("C1 negative has another cut's terms")
+    if "extra knuckles, sleeve merging with hand, deformed wrist" not in c4_neg:
+        raise SystemExit("C4 hand negative missing")
+    if "また昨日のプール。" not in c2_pos:
         raise SystemExit("C2 caption missing from prompt")
-    if "あんたが“明日から本気出す”って言った日の" not in positive:
+    if "あんたが“明日から本気出す”って言った日の" not in c2_pos:
         raise SystemExit("C2 second caption missing")
-    if "「やつ」は意図的に省略" in positive:
+    if "「やつ」は意図的に省略" in c2_pos:
         raise SystemExit("C2 production note leaked into the prompt")
-    if "on-screen text" not in negative:
-        raise SystemExit("negative prompt does not suppress burned-in text")
-    c4_positive, c4_negative = logic["build_prompts"](c4["data"])
-    if "does not touch" not in c4_positive or "hand touching" not in c4_negative:
+    if "the cat stays in place except for its jaw" not in c2_pos:
+        raise SystemExit("C2 jaw line missing")
+    if "at 0.0s cat pose back to camera" not in c1_pos:
+        raise SystemExit("C1 control line missing")
+    if "does not touch" not in c4_pos or "hand touching" not in c4_neg:
         raise SystemExit("C4 contact constraint missing from prompts")
+    for cut_id, expect in (("C1", False), ("C2", True), ("C3", False), ("C4", True)):
+        got_ref = logic["uses_face_reference"](cut_id)
+        if got_ref is not expect:
+            raise SystemExit(f"face reference flag for {cut_id} is {got_ref}")
+    gen_ns = {"_H3_LOAD_ONLY": True}
+    exec(cell_text(code_cells[1]), gen_ns)
+    exec(cell_text(code_cells[5]), gen_ns)
+    info = comfy_object_info()
+    for cut in cuts:
+        graph, positive, negative = gen_ns["prompt_for_cut"](
+            info,
+            cut,
+            f"/content/vace_work/{cut['cut']}/frames",
+            8,
+            480,
+            832,
+            "h3_test",
+        )
+        if (positive, negative) != built[cut["cut"]]:
+            raise SystemExit(f"{cut['cut']} prompt_for_cut drifted from build_prompts")
+        vace_inputs = graph["vace"]["inputs"]
+        if vace_inputs.get("control_video") != ["frames", 0]:
+            raise SystemExit(f"{cut['cut']} lost control_video")
+        if vace_inputs.get("strength") != 1.0:
+            raise SystemExit(f"{cut['cut']} strength changed")
+        has_ref = "reference_image" in vace_inputs
+        expect_ref = cut["cut"] in {"C2", "C4"}
+        if has_ref is not expect_ref:
+            raise SystemExit(f"{cut['cut']} reference_image present={has_ref}")
+        blob_graph = json.dumps(graph)
+        if expect_ref:
+            if vace_inputs["reference_image"] != ["face", 0]:
+                raise SystemExit(f"{cut['cut']} reference_image target")
+            if graph["face"]["inputs"].get("image") != "face_ref.png":
+                raise SystemExit(f"{cut['cut']} face image name")
+        elif "face" in graph or "face_ref.png" in blob_graph or "reference_image" in blob_graph:
+            raise SystemExit(f"{cut['cut']} graph still names the face reference")
+        if graph["sample"]["inputs"]["seed"] != logic["sampler_seed"](cut):
+            raise SystemExit(f"{cut['cut']} seed was not passed through")
     if logic["sampler_seed"](c1) != 10001:
         raise SystemExit("sampler seed")
 

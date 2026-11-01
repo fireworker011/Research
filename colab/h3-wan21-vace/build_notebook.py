@@ -23,7 +23,7 @@ MARKDOWN = """# Wan2.1 VACE 14B — H3 カット生成
 6. カットごとに 9:16 の mp4 と、使った制御 JSON を書く
 7. 生成が終わったらランタイムを切断して削除する
 
-入力は `マイドライブ/ComfyUI_vace_h3/input/face_ref.png` と `input/controls/*.json`。
+入力は `マイドライブ/ComfyUI_vace_h3/input/` の `face_ref.png`、`controls/C1_control_1b6a.json`、`controls/C2_control_f32a.json`、`controls/C3_control_88b5.json`、`controls/C4_control_6d2a.json`、`controls/prompts.json`。
 出力は `マイドライブ/ComfyUI_vace_h3/output/<実行時刻>/`。
 
 このノートを置いた時点では、A100 上の生成は未実施。

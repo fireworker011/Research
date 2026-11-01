@@ -1,6 +1,6 @@
 """Wan2.1 VACE 14B Colab が、カット制御 JSON をそのまま読むための関数。
 
-JSON のキーは書き換えない。描画に使う単位は次のとおり。
+JSON のキーは書き換えない。画の文は同じフォルダの prompts.json（ブロック A、人が映るカットだけのブロック S、カットの文、ネガティブ）。描画に使う単位は次のとおり。
 
 - camera_vector.translate: ピクセル。x は右、y は下、z はドリー（フレーム高さに対する倍率）。
 - camera_vector.rotate: 度。x はピッチ、y はヨー、z はロール。
@@ -20,6 +20,7 @@ from pathlib import Path
 from PIL import Image, ImageDraw, ImageFilter
 
 FACE_FILENAMES = ("face_ref.png", "face_ref.jpg", "face_ref.jpeg", "face_ref.webp")
+SCENE_PROMPTS_NAME = "prompts.json"
 EXPORT_WIDTH = 720
 EXPORT_HEIGHT = 1280
 GEN_480P = (480, 832)
@@ -259,11 +260,16 @@ def list_cuts(directory):
     if not directory.is_dir():
         raise FileNotFoundError(f"制御 JSON のフォルダがありません: {directory}")
     paths = sorted(
-        path for path in directory.iterdir() if path.is_file() and path.suffix.lower() == ".json"
+        path
+        for path in directory.iterdir()
+        if path.is_file()
+        and path.suffix.lower() == ".json"
+        and path.name != SCENE_PROMPTS_NAME
     )
     if not paths:
         raise FileNotFoundError(
             f"制御 JSON がありません。{directory} に C1 から C4 の json を、中身を変えずに置いてください。"
+            " 画の文は prompts.json です。"
         )
     cuts = [load_cut(path) for path in paths]
     seen = {}
@@ -750,13 +756,87 @@ def letterbox_face(image, width, height):
     return canvas
 
 
-def build_prompts(data):
-    lines = [
-        "vertical 9:16 shot",
-        "the person's face matches the reference image",
-        "follow the OpenPose control, the depth control, and the camera move",
-        f"duration {float(data['duration_s'])} seconds",
-    ]
+def resolve_prompts_path(directory=None):
+    if directory is None:
+        directory = globals().get("CONTROL_DIR")
+    if directory:
+        path = Path(str(directory)) / SCENE_PROMPTS_NAME
+        if not path.is_file():
+            raise FileNotFoundError(
+                "プロンプトがありません。"
+                f" {path} に固定語ブロックとカットごとの文を置いてください。"
+            )
+        return path
+    cwd = Path.cwd()
+    candidates = []
+    here = globals().get("__file__")
+    if here:
+        candidates.append(Path(here).resolve().parent / "controls" / SCENE_PROMPTS_NAME)
+    for base in (cwd, *list(cwd.parents)[:6]):
+        candidates.append(base / "controls" / SCENE_PROMPTS_NAME)
+        candidates.append(base / "colab" / "h3-wan21-vace" / "controls" / SCENE_PROMPTS_NAME)
+    seen = set()
+    for path in candidates:
+        key = str(path)
+        if key in seen:
+            continue
+        seen.add(key)
+        if path.is_file():
+            return path
+    raise FileNotFoundError(
+        "prompts.json がありません。"
+        " マイドライブ/ComfyUI_vace_h3/input/controls/prompts.json に置いてください。"
+    )
+
+
+def load_scene_prompts(directory=None):
+    path = resolve_prompts_path(directory)
+    data = json.loads(path.read_text(encoding="utf-8"))
+    if not isinstance(data, dict):
+        raise ValueError(f"{path}: プロンプトはオブジェクトです")
+    for key in ("block_a", "block_s", "negative_common"):
+        value = data.get(key)
+        if not isinstance(value, str) or not value.strip():
+            raise ValueError(f"{path}: {key} が空です")
+    cuts = data.get("cuts")
+    if not isinstance(cuts, dict) or not cuts:
+        raise ValueError(f"{path}: cuts がありません")
+    for cut_id, spec in cuts.items():
+        safe_cut_id(cut_id)
+        if not isinstance(spec, dict):
+            raise ValueError(f"{path}: {cut_id} はオブジェクトです")
+        prompt = spec.get("prompt")
+        if not isinstance(prompt, str) or not prompt.strip():
+            raise ValueError(f"{path}: {cut_id} の prompt が空です")
+        if not isinstance(spec.get("has_person"), bool):
+            raise ValueError(f"{path}: {cut_id} の has_person は true / false です")
+        negative = spec.get("negative", "")
+        if not isinstance(negative, str):
+            raise ValueError(f"{path}: {cut_id} の negative は文字列です")
+    return data
+
+
+def scene_spec(prompts, cut_id):
+    cut_id = safe_cut_id(cut_id)
+    cuts = prompts["cuts"]
+    if cut_id not in cuts:
+        known = ", ".join(sorted(cuts, key=cut_sort_key))
+        raise ValueError(f"prompts.json に {cut_id} がありません。記載: {known}")
+    return cuts[cut_id]
+
+
+def uses_face_reference(cut_id, prompts=None):
+    if prompts is None:
+        prompts = load_scene_prompts()
+    return scene_spec(prompts, cut_id)["has_person"]
+
+
+def _control_lines(data, has_person):
+    lines = ["vertical 9:16 shot"]
+    if has_person:
+        lines.append("the person's face matches the reference image")
+    lines.append("follow the OpenPose control, the depth control, and the camera move")
+    lines.append(f"duration {float(data['duration_s'])} seconds")
     if data.get("sakura") == "static":
         lines.append("the cat stays in place except for its jaw")
     for kf in data["openpose_keyframes"]:
@@ -775,8 +855,11 @@ def build_prompts(data):
         lines.append(f"{int(data['fingers_visible'])} fingers are visible")
     for cap in data.get("caption") or []:
         lines.append(f"spoken line, not written on screen: {cap['text']}")
-    positive = ". ".join(lines)
-    negative_parts = [
+    return lines
+
+
+def _stock_negatives(data):
+    parts = [
         "low quality",
         "blurry",
         "watermark",
@@ -789,8 +872,26 @@ def build_prompts(data):
         "frozen video",
     ]
     if data.get("contact") is False:
-        negative_parts.append("hand touching the handle")
-        negative_parts.append("grip")
+        parts.append("hand touching the handle")
+        parts.append("grip")
+    return parts
+
+
+def build_prompts(data, prompts=None):
+    if prompts is None:
+        prompts = load_scene_prompts()
+    spec = scene_spec(prompts, data["cut"])
+    has_person = spec["has_person"]
+    script_parts = [prompts["block_a"]]
+    if has_person:
+        script_parts.append(prompts["block_s"])
+    script_parts.append(spec["prompt"])
+    positive = ", ".join(script_parts) + ". " + ". ".join(_control_lines(data, has_person))
+    negative_parts = [prompts["negative_common"]]
+    extra = spec.get("negative", "").strip()
+    if extra:
+        negative_parts.append(extra)
+    negative_parts.extend(_stock_negatives(data))
     return positive, ", ".join(negative_parts)
 
 

@@ -9,33 +9,6 @@ from pathlib import Path
 
 from PIL import Image
 
-if not globals().get("GPU_OK"):
-    raise RuntimeError("GPU チェックを通過していません。最初のセルから実行してください。")
-for _name in (
-    "list_cuts",
-    "render_cut",
-    "generation_geometry",
-    "build_prompts",
-    "ffmpeg_vf",
-    "ffmpeg_duration_args",
-    "ffmpeg_sequence_cmd",
-    "copy_control_json",
-    "find_face_reference",
-    "safe_cut_id",
-    "summarize_cut",
-    "raw_frame_count",
-    "letterbox_face",
-    "sampler_seed",
-    "EXPORT_WIDTH",
-    "EXPORT_HEIGHT",
-):
-    if _name not in globals():
-        raise RuntimeError("制御 JSON のセルが未実行です。上から順に実行してください。")
-if "FACE_DIR" not in globals() or "CONTROL_DIR" not in globals() or "OUTPUT_ROOT" not in globals():
-    raise RuntimeError("セットアップセルが未実行です。")
-if not os.path.isdir("/content/ComfyUI"):
-    raise RuntimeError("ComfyUI がありません。セットアップセルを実行してください。")
-
 UNET_FILE = "wan2.1_vace_14B_fp16.safetensors"
 TE_FILE = "umt5_xxl_fp8_e4m3fn_scaled.safetensors"
 VAE_FILE = "wan_2.1_vae.safetensors"
@@ -77,13 +50,25 @@ def pack_inputs(info, class_type, values):
     return {key: value for key, value in values.items() if key in allowed}
 
 
-def build_prompt(info, frame_dir, length, width, height, positive, negative, seed, prefix):
+def build_prompt(info, frame_dir, length, width, height, positive, negative, seed, prefix, use_reference):
     vace_spec = info["WanVaceToVideo"]["input"]
     vace_allowed = set(vace_spec.get("required", {})) | set(vace_spec.get("optional", {}))
-    for key in ("control_video", "reference_image"):
-        if key not in vace_allowed:
-            raise RuntimeError(f"WanVaceToVideo に {key} がありません。ComfyUI を更新してください。")
-    return {
+    if "control_video" not in vace_allowed:
+        raise RuntimeError("WanVaceToVideo に control_video がありません。ComfyUI を更新してください。")
+    if use_reference and "reference_image" not in vace_allowed:
+        raise RuntimeError("WanVaceToVideo に reference_image がありません。ComfyUI を更新してください。")
+    vace_values = {
+        "positive": ["pos", 0],
+        "negative": ["neg", 0],
+        "vae": ["vae", 0],
+        "width": width,
+        "height": height,
+        "length": length,
+        "batch_size": 1,
+        "strength": 1.0,
+        "control_video": ["frames", 0],
+    }
+    graph = {
         "unet": {
             "class_type": "UNETLoader",
             "inputs": pack_inputs(info, "UNETLoader", {
@@ -111,75 +96,84 @@ def build_prompt(info, frame_dir, length, width, height, positive, negative, see
             "class_type": "CLIPTextEncode",
             "inputs": pack_inputs(info, "CLIPTextEncode", {"text": negative, "clip": ["clip", 0]}),
         },
-        "face": {
-            "class_type": "LoadImage",
-            "inputs": pack_inputs(info, "LoadImage", {"image": "face_ref.png"}),
-        },
         "frames": {
             "class_type": "H3LoadFrameDir",
             "inputs": pack_inputs(info, "H3LoadFrameDir", {"directory": frame_dir}),
         },
-        "vace": {
-            "class_type": "WanVaceToVideo",
-            "inputs": pack_inputs(info, "WanVaceToVideo", {
-                "positive": ["pos", 0],
-                "negative": ["neg", 0],
-                "vae": ["vae", 0],
-                "width": width,
-                "height": height,
-                "length": length,
-                "batch_size": 1,
-                "strength": 1.0,
-                "control_video": ["frames", 0],
-                "reference_image": ["face", 0],
-            }),
-        },
-        "shift": {
-            "class_type": "ModelSamplingSD3",
-            "inputs": pack_inputs(info, "ModelSamplingSD3", {"model": ["unet", 0], "shift": SHIFT}),
-        },
-        "sample": {
-            "class_type": "KSampler",
-            "inputs": pack_inputs(info, "KSampler", {
-                "model": ["shift", 0],
-                "positive": ["vace", 0],
-                "negative": ["vace", 1],
-                "latent_image": ["vace", 2],
-                "seed": seed,
-                "steps": STEPS,
-                "cfg": CFG,
-                "sampler_name": "uni_pc",
-                "scheduler": "simple",
-                "denoise": 1.0,
-                "control_after_generate": "fixed",
-            }),
-        },
-        "trim": {
-            "class_type": "TrimVideoLatent",
-            "inputs": pack_inputs(info, "TrimVideoLatent", {
-                "samples": ["sample", 0],
-                "trim_amount": ["vace", 3],
-            }),
-        },
-        "decode": {
-            "class_type": "VAEDecodeTiled",
-            "inputs": pack_inputs(info, "VAEDecodeTiled", {
-                "samples": ["trim", 0],
-                "vae": ["vae", 0],
-                "tile_size": 512,
-                "overlap": 64,
-                "temporal_size": 64,
-                "temporal_overlap": 4,
-            }),
-        },
-        "save": {
-            "class_type": "SaveImage",
-            "inputs": pack_inputs(info, "SaveImage", {
-                "images": ["decode", 0],
-                "filename_prefix": prefix,
-            }),
-        },
     }
+    if use_reference:
+        graph["face"] = {
+            "class_type": "LoadImage",
+            "inputs": pack_inputs(info, "LoadImage", {"image": "face_ref.png"}),
+        }
+        vace_values["reference_image"] = ["face", 0]
+    graph["vace"] = {
+        "class_type": "WanVaceToVideo",
+        "inputs": pack_inputs(info, "WanVaceToVideo", vace_values),
+    }
+    graph["shift"] = {
+        "class_type": "ModelSamplingSD3",
+        "inputs": pack_inputs(info, "ModelSamplingSD3", {"model": ["unet", 0], "shift": SHIFT}),
+    }
+    graph["sample"] = {
+        "class_type": "KSampler",
+        "inputs": pack_inputs(info, "KSampler", {
+            "model": ["shift", 0],
+            "positive": ["vace", 0],
+            "negative": ["vace", 1],
+            "latent_image": ["vace", 2],
+            "seed": seed,
+            "steps": STEPS,
+            "cfg": CFG,
+            "sampler_name": "uni_pc",
+            "scheduler": "simple",
+            "denoise": 1.0,
+            "control_after_generate": "fixed",
+        }),
+    }
+    graph["trim"] = {
+        "class_type": "TrimVideoLatent",
+        "inputs": pack_inputs(info, "TrimVideoLatent", {
+            "samples": ["sample", 0],
+            "trim_amount": ["vace", 3],
+        }),
+    }
+    graph["decode"] = {
+        "class_type": "VAEDecodeTiled",
+        "inputs": pack_inputs(info, "VAEDecodeTiled", {
+            "samples": ["trim", 0],
+            "vae": ["vae", 0],
+            "tile_size": 512,
+            "overlap": 64,
+            "temporal_size": 64,
+            "temporal_overlap": 4,
+        }),
+    }
+    graph["save"] = {
+        "class_type": "SaveImage",
+        "inputs": pack_inputs(info, "SaveImage", {
+            "images": ["decode", 0],
+            "filename_prefix": prefix,
+        }),
+    }
+    return graph
+
+
+def prompt_for_cut(info, cut, frame_dir, length, width, height, prefix):
+    positive, negative = build_prompts(cut["data"])
+    graph = build_prompt(
+        info,
+        frame_dir,
+        length,
+        width,
+        height,
+        positive,
+        negative,
+        sampler_seed(cut),
+        prefix,
+        uses_face_reference(cut["cut"]),
+    )
+    return graph, positive, negative
 
 
 def wait_for_cut(prompt_id, cut_id):
@@ -252,114 +246,146 @@ def export_mp4(image_paths, fps, duration_s, geo, dest):
         raise RuntimeError(f"書き出しサイズが {got} です。{expect} が必要です。")
 
 
-if shutil.which("ffmpeg") is None or shutil.which("ffprobe") is None:
-    raise RuntimeError("ffmpeg がありません。セットアップセルを再実行してください。")
+def run_generation():
+    global GENERATION_DONE
+    if not globals().get("GPU_OK"):
+        raise RuntimeError("GPU チェックを通過していません。最初のセルから実行してください。")
+    for _name in (
+        "list_cuts",
+        "render_cut",
+        "generation_geometry",
+        "build_prompts",
+        "uses_face_reference",
+        "ffmpeg_vf",
+        "ffmpeg_duration_args",
+        "ffmpeg_sequence_cmd",
+        "copy_control_json",
+        "find_face_reference",
+        "safe_cut_id",
+        "summarize_cut",
+        "raw_frame_count",
+        "letterbox_face",
+        "sampler_seed",
+        "EXPORT_WIDTH",
+        "EXPORT_HEIGHT",
+    ):
+        if _name not in globals():
+            raise RuntimeError("制御 JSON のセルが未実行です。上から順に実行してください。")
+    if "FACE_DIR" not in globals() or "CONTROL_DIR" not in globals() or "OUTPUT_ROOT" not in globals():
+        raise RuntimeError("セットアップセルが未実行です。")
+    if not os.path.isdir("/content/ComfyUI"):
+        raise RuntimeError("ComfyUI がありません。セットアップセルを実行してください。")
+    if shutil.which("ffmpeg") is None or shutil.which("ffprobe") is None:
+        raise RuntimeError("ffmpeg がありません。セットアップセルを再実行してください。")
 
-try:
-    comfy_call("/system_stats", timeout=5)
-except Exception as exc:
-    raise RuntimeError("ComfyUI が起動していません。起動セルを実行してください。") from exc
-
-info = comfy_call("/object_info")
-for node_name in (
-    "UNETLoader",
-    "CLIPLoader",
-    "VAELoader",
-    "CLIPTextEncode",
-    "LoadImage",
-    "WanVaceToVideo",
-    "ModelSamplingSD3",
-    "KSampler",
-    "TrimVideoLatent",
-    "VAEDecodeTiled",
-    "SaveImage",
-    "H3LoadFrameDir",
-):
-    if node_name not in info:
-        raise RuntimeError(f"ノードがありません: {node_name}。セットアップのあとランタイムを入れ直してください。")
-
-geo = generation_geometry(_GPU_VRAM, GEN_SIZE_OVERRIDE)
-print(
-    f"生成 {geo['width']}x{geo['height']} / 書き出し {geo['export_width']}x{geo['export_height']}"
-    f"（9:16{'、そのまま' if geo['native'] else '、480p をパッド'}）"
-)
-face_path = find_face_reference(FACE_DIR)
-boxed = letterbox_face(Image.open(face_path), geo["width"], geo["height"])
-os.makedirs("/content/ComfyUI/input", exist_ok=True)
-boxed.save("/content/ComfyUI/input/face_ref.png")
-print(f"顔参照: {face_path}")
-
-cuts = list_cuts(CONTROL_DIR)
-run_id = time.strftime("%Y%m%d-%H%M%S")
-run_dir = Path(OUTPUT_ROOT) / run_id
-run_dir.mkdir(parents=True, exist_ok=True)
-print(f"出力フォルダ: {run_dir}")
-
-for cut in cuts:
-    cut_id = safe_cut_id(cut["cut"])
-    count = render_cut(
-        cut,
-        f"/content/vace_work/{cut_id}/frames",
-        geo["width"],
-        geo["height"],
-    )["count"]
-    raw = raw_frame_count(cut["duration_s"], cut["fps"])
-    print(summarize_cut(cut, count))
-    if count != raw:
-        print(f"注意: {raw} フレームを VACE の制約で {count} フレームに揃えます（4n+1、最大 81）。")
-    positive, negative = build_prompts(cut["data"])
-    print(positive)
-    prefix = f"h3_{run_id}_{cut_id}"
-    out_root = Path("/content/ComfyUI/output")
-    out_root.mkdir(parents=True, exist_ok=True)
-    for old in out_root.glob(prefix + "*"):
-        if old.is_file():
-            old.unlink()
-    prompt = build_prompt(
-        info,
-        f"/content/vace_work/{cut_id}/frames",
-        count,
-        geo["width"],
-        geo["height"],
-        positive,
-        negative,
-        sampler_seed(cut),
-        prefix,
-    )
-    queued = comfy_call("/prompt", {"prompt": prompt})
-    if queued.get("node_errors") or "prompt_id" not in queued:
-        raise RuntimeError(json.dumps(queued, ensure_ascii=False)[:4000])
-    item = wait_for_cut(queued["prompt_id"], cut_id)
-    images = []
-    for node_out in item.get("outputs", {}).values():
-        images.extend(node_out.get("images") or [])
-    paths = []
-    for image in images:
-        root = "/content/ComfyUI/temp" if image.get("type") == "temp" else "/content/ComfyUI/output"
-        sub = image.get("subfolder") or ""
-        paths.append(os.path.join(root, sub, image["filename"]))
-    paths = [path for path in paths if os.path.isfile(path)]
-    paths.sort()
-    if len(paths) != count:
-        raise RuntimeError(f"{cut_id}: フレーム数が {len(paths)} でした。{count} を期待しています。")
-    local_mp4 = Path(f"/content/vace_work/{cut_id}.mp4")
-    export_mp4(paths, cut["fps"], cut["duration_s"], geo, local_mp4)
-    dest_mp4 = run_dir / f"{cut_id}.mp4"
-    shutil.copyfile(local_mp4, dest_mp4)
-    dest_json = copy_control_json(cut, run_dir)
-    if dest_mp4.stat().st_size <= 0 or dest_json.stat().st_size <= 0:
-        raise RuntimeError(f"{cut_id}: 出力が空です")
-    OUTPUT_MP4S.append(str(dest_mp4))
-    OUTPUT_JSONS.append(str(dest_json))
-    print(f"書き出し: {dest_mp4}")
-    print(f"制御 JSON: {dest_json}")
     try:
-        comfy_call("/free", {"unload_models": False, "free_memory": True})
+        comfy_call("/system_stats", timeout=5)
     except Exception as exc:
-        print(f"メモリ解放をスキップ: {exc}")
+        raise RuntimeError("ComfyUI が起動していません。起動セルを実行してください。") from exc
 
-if len(OUTPUT_MP4S) != len(cuts) or len(OUTPUT_JSONS) != len(cuts):
-    raise RuntimeError("出力本数がカット数と一致しません。")
-GENERATION_DONE = True
-print("全カットの mp4 と制御 JSON を Drive に書きました。")
-print("次のセルでランタイムを削除します。")
+    info = comfy_call("/object_info")
+    for node_name in (
+        "UNETLoader",
+        "CLIPLoader",
+        "VAELoader",
+        "CLIPTextEncode",
+        "LoadImage",
+        "WanVaceToVideo",
+        "ModelSamplingSD3",
+        "KSampler",
+        "TrimVideoLatent",
+        "VAEDecodeTiled",
+        "SaveImage",
+        "H3LoadFrameDir",
+    ):
+        if node_name not in info:
+            raise RuntimeError(f"ノードがありません: {node_name}。セットアップのあとランタイムを入れ直してください。")
+
+    geo = generation_geometry(_GPU_VRAM, GEN_SIZE_OVERRIDE)
+    print(
+        f"生成 {geo['width']}x{geo['height']} / 書き出し {geo['export_width']}x{geo['export_height']}"
+        f"（9:16{'、そのまま' if geo['native'] else '、480p をパッド'}）"
+    )
+    face_path = find_face_reference(FACE_DIR)
+    boxed = letterbox_face(Image.open(face_path), geo["width"], geo["height"])
+    os.makedirs("/content/ComfyUI/input", exist_ok=True)
+    boxed.save("/content/ComfyUI/input/face_ref.png")
+    print(f"顔参照: {face_path}")
+
+    cuts = list_cuts(CONTROL_DIR)
+    run_id = time.strftime("%Y%m%d-%H%M%S")
+    run_dir = Path(OUTPUT_ROOT) / run_id
+    run_dir.mkdir(parents=True, exist_ok=True)
+    print(f"出力フォルダ: {run_dir}")
+
+    for cut in cuts:
+        cut_id = safe_cut_id(cut["cut"])
+        count = render_cut(
+            cut,
+            f"/content/vace_work/{cut_id}/frames",
+            geo["width"],
+            geo["height"],
+        )["count"]
+        raw = raw_frame_count(cut["duration_s"], cut["fps"])
+        print(summarize_cut(cut, count))
+        if count != raw:
+            print(f"注意: {raw} フレームを VACE の制約で {count} フレームに揃えます（4n+1、最大 81）。")
+        prefix = f"h3_{run_id}_{cut_id}"
+        out_root = Path("/content/ComfyUI/output")
+        out_root.mkdir(parents=True, exist_ok=True)
+        for old in out_root.glob(prefix + "*"):
+            if old.is_file():
+                old.unlink()
+        prompt, positive, negative = prompt_for_cut(
+            info,
+            cut,
+            f"/content/vace_work/{cut_id}/frames",
+            count,
+            geo["width"],
+            geo["height"],
+            prefix,
+        )
+        print(positive)
+        print(negative)
+        queued = comfy_call("/prompt", {"prompt": prompt})
+        if queued.get("node_errors") or "prompt_id" not in queued:
+            raise RuntimeError(json.dumps(queued, ensure_ascii=False)[:4000])
+        item = wait_for_cut(queued["prompt_id"], cut_id)
+        images = []
+        for node_out in item.get("outputs", {}).values():
+            images.extend(node_out.get("images") or [])
+        paths = []
+        for image in images:
+            root = "/content/ComfyUI/temp" if image.get("type") == "temp" else "/content/ComfyUI/output"
+            sub = image.get("subfolder") or ""
+            paths.append(os.path.join(root, sub, image["filename"]))
+        paths = [path for path in paths if os.path.isfile(path)]
+        paths.sort()
+        if len(paths) != count:
+            raise RuntimeError(f"{cut_id}: フレーム数が {len(paths)} でした。{count} を期待しています。")
+        local_mp4 = Path(f"/content/vace_work/{cut_id}.mp4")
+        export_mp4(paths, cut["fps"], cut["duration_s"], geo, local_mp4)
+        dest_mp4 = run_dir / f"{cut_id}.mp4"
+        shutil.copyfile(local_mp4, dest_mp4)
+        dest_json = copy_control_json(cut, run_dir)
+        if dest_mp4.stat().st_size <= 0 or dest_json.stat().st_size <= 0:
+            raise RuntimeError(f"{cut_id}: 出力が空です")
+        OUTPUT_MP4S.append(str(dest_mp4))
+        OUTPUT_JSONS.append(str(dest_json))
+        print(f"書き出し: {dest_mp4}")
+        print(f"制御 JSON: {dest_json}")
+        try:
+            comfy_call("/free", {"unload_models": False, "free_memory": True})
+        except Exception as exc:
+            print(f"メモリ解放をスキップ: {exc}")
+
+    if len(OUTPUT_MP4S) != len(cuts) or len(OUTPUT_JSONS) != len(cuts):
+        raise RuntimeError("出力本数がカット数と一致しません。")
+    GENERATION_DONE = True
+    print("全カットの mp4 と制御 JSON を Drive に書きました。")
+    print("次のセルでランタイムを削除します。")
+
+
+# テストはこのセルを _H3_LOAD_ONLY 付きで読み、ComfyUI へは繋がない。
+if not globals().get("_H3_LOAD_ONLY"):
+    run_generation()
