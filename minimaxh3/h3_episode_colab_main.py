@@ -11,9 +11,12 @@ Env:
   H3_EPISODE_CONNECT  t2v | chain | landing（日本語: カット / 前の最終フレームから続ける / 用意した最終フレームへ着く。カットとチェーンの1本目は T2V）
   H3_EPISODE_END_CONNECT  t2v | chain | follow（日本語: シーン終わりはカット / 次のシーンへ続ける / 1番のつなぎに従う。行為のあとの歩き）
   H3_EPISODE_COMBAT   off | on（日本語: 格闘LoRAオフ / オン。オンはハイメモリ専用）
+  H3_EPISODE_MISSIONLG  off | on（日本語: 正常位LoRAオフ / オン。既定オフ。オンはM字の挿入と絶頂だけ）
+  H3_EPISODE_MESSYBLOW  off | on（日本語: フェラは今のまま / Messyに差し替え。既定オフ）
+  H3_EPISODE_CLOSEUP  off | on（日本語: 超近距離オフ / オン。既定オフ。オンは anuspussy の拍だけ）
   H3_EPISODE_STORY    accept | invite | evade | fight_win | fight_lose（日本語: 受け入れる / 誘う / 回避 / 戦って勝つ / 戦って負ける。病棟の構成）
   H3_EPISODE_INVITE_POSE  all_fours | m_open | ride | stand | nelson（日本語: 四つん這い股広げ / M字開脚仰向け / 対面M字騎乗 / 壁立ちバック / フルネルソンアナル。病棟の誘う）
-  H3_EPISODE_TOILET   off | pee | masturbate | tentacle | finger（日本語: 行かない / 小便 / オナニー / 触手 / アナル指。病棟の道中）
+  H3_EPISODE_TOILET   off | pee | masturbate | tentacle | finger | anal_finger | anal_fist（日本語: 行かない / 小便 / オナニー / 触手 / ディルド / 指アナル / アナルフィスト。病棟の道中）
   H3_EPISODE_GIN      off | taken | fuck | invite_doggy（日本語: 灰色・出ない / 犯される / 犯す / 誘う後背。病棟の追加）
   H3_EPISODE_TSUNO    off | accept_stand | invite_stand | anal_back | nelson（日本語: 角・出ない / 受け入れる立ちバック / 誘う立ちバック / 後ろアナル / フルネルソンアナル。病棟の追加）
   H3_EPISODE_DOG      off | evade | accept | invite_rear | invite_oral（日本語: 犬・出ない / 回避 / 受け入れる / 誘う伏せ / 誘う口。灰色はオフにしない）
@@ -28,9 +31,10 @@ Env:
   H3_EPISODE_REI_KISS off|on（レイ脱出のキス。顔。フェラではない）
   H3_EPISODE_REI_ORAL skip|her|rei（レイ脱出の口。フェラ / クンニ）
   H3_EPISODE_REI_POSE fours|wall|straddle|supine（レイ脱出の体位は動き）
-  H3_EPISODE_AYA_HAIR / _COLOR / _FACE / _DIRT / _SWEAT / _CLOTHES  blank keeps Aya's authored look. English only.
-  H3_EPISODE_AYA_SHAFT  今のまま | あり | なし
-  H3_EPISODE_ENEMY_LOOK  one enemy per line: miki; hair=...; color=...; face=...; dirt=...; sweat=...; clothes=...; shaft=今のまま
+  H3_EPISODE_PLACE / _TIME / _WEATHER / _DIRT / _CAMERA_DISTANCE  ward night with no weather keeps the authored nouns
+  H3_EPISODE_AYA_LOOK / H3_EPISODE_ENEMY_KIND / H3_EPISODE_ENEMY_LOOKS  country looks and human skin. Blank keeps the authored cast
+  H3_EPISODE_AYA_HAIR / _COLOR / _FACE / _BUST / _BUTT / _BUILD / _HEIGHT / _DIRT / _SWEAT / _CLOTHES / _SHAFT
+  H3_EPISODE_ENEMY_LOOK  free text only when that person's look is その他: miki; hair=...; face=...
   H3_EPISODE_FRESH=1  re-render beats that already have raw/<beat>.mp4
   H3_EPISODE_START    beat id to redraw from. Empty starts at the first beat. The beat list is the current form. An id outside that list stops the run.
   H3_DRY_RUN=1        no ComfyUI; synthetic clips through the real HUD/stitch path
@@ -85,9 +89,21 @@ def main() -> int:
             start_at=(os.environ.get("H3_EPISODE_START") or "").strip() or None,
             preset_override=(os.environ.get("H3_EPISODE_PRESET") or "").strip() or None,
             camera_pack_override=(os.environ.get("H3_EPISODE_CAMERA") or "").strip() or None,
+            camera_distance_override=(os.environ.get("H3_EPISODE_CAMERA_DISTANCE") or "").strip() or None,
+            place_override=(os.environ.get("H3_EPISODE_PLACE") or "").strip() or None,
+            time_override=(os.environ.get("H3_EPISODE_TIME") or "").strip() or None,
+            weather_override=(os.environ.get("H3_EPISODE_WEATHER") or "").strip() or None,
+            dirt_override=(os.environ.get("H3_EPISODE_DIRT") or "").strip() or None,
+            seed_override=(os.environ.get("H3_EPISODE_SEED") or "").strip() or None,
+            aya_look_override=(os.environ.get("H3_EPISODE_AYA_LOOK") or "").strip() or None,
+            enemy_kind_override=(os.environ.get("H3_EPISODE_ENEMY_KIND") or "").strip() or None,
+            enemy_looks_override=(os.environ.get("H3_EPISODE_ENEMY_LOOKS") or "").strip() or None,
             connect_override=(os.environ.get("H3_EPISODE_CONNECT") or "").strip() or None,
             end_connect_override=(os.environ.get("H3_EPISODE_END_CONNECT") or "").strip() or None,
             combat_override=(os.environ.get("H3_EPISODE_COMBAT") or "").strip() or None,
+            missionlg_override=(os.environ.get("H3_EPISODE_MISSIONLG") or "").strip() or None,
+            messyblow_override=(os.environ.get("H3_EPISODE_MESSYBLOW") or "").strip() or None,
+            closeup_override=(os.environ.get("H3_EPISODE_CLOSEUP") or "").strip() or None,
             story_override=(os.environ.get("H3_EPISODE_STORY") or "").strip() or None,
             invite_pose_override=(os.environ.get("H3_EPISODE_INVITE_POSE") or "").strip() or None,
             ride_bent_override=(os.environ.get("H3_EPISODE_RIDE_BENT") or "").strip() or None,
@@ -113,6 +129,10 @@ def main() -> int:
                     "hair": os.environ.get("H3_EPISODE_AYA_HAIR") or "",
                     "color": os.environ.get("H3_EPISODE_AYA_COLOR") or "",
                     "face": os.environ.get("H3_EPISODE_AYA_FACE") or "",
+                    "bust": os.environ.get("H3_EPISODE_AYA_BUST") or "",
+                    "butt": os.environ.get("H3_EPISODE_AYA_BUTT") or "",
+                    "build": os.environ.get("H3_EPISODE_AYA_BUILD") or "",
+                    "height": os.environ.get("H3_EPISODE_AYA_HEIGHT") or "",
                     "dirt": os.environ.get("H3_EPISODE_AYA_DIRT") or "",
                     "sweat": os.environ.get("H3_EPISODE_AYA_SWEAT") or "",
                     "clothes": os.environ.get("H3_EPISODE_AYA_CLOTHES") or "",

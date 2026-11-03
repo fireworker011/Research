@@ -18,7 +18,9 @@ description: One-shot MiniMax H3 episode render. After one explicit prompt, run 
 4. 投稿しない。ランタイムはスクリプトが `colab stop` する。
 5. 結果は slug と `episodes/<slug>/final/latest.mp4` のパスだけ。失敗なら `status.json` のエラー一行。
 
-専用 Colab: https://colab.research.google.com/github/fireworker011/Research/blob/cursor/h3-episode-oneclick-f112/minimax_h3_episode_bot.ipynb
+専用 Colab（古い汎用）: https://colab.research.google.com/github/fireworker011/Research/blob/cursor/h3-episode-oneclick-f112/minimax_h3_episode_bot.ipynb
+病棟出口の現行ノート: https://colab.research.google.com/github/fireworker011/Research/blob/cursor/h3-lora-cards-d736/minimax_h3_episode_bot.ipynb
+病棟を描くときは現行ノートと枝 `cursor/h3-lora-cards-d736`。oneclick-f112 と `h3-kasumi-adult-0402` は病棟の現行ではない。描く前に `episodes/hospital-exit-adult/HANDOFF.md` を読む。コードは直さない。
 
 `--watch` は無い。Cursor Automation（15分ごと）には登録しない。1エピソードで終わる。
 
