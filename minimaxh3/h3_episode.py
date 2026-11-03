@@ -311,9 +311,15 @@ LORA_FILES = {
     "cmst": "face_cum_000001000.safetensors",
     # Jack-O pose. No trigger word. Wash push and the horn bedroom anal. Not stacked with doggy.
     "jacko": "jackoPoseMinimaxH3V1_v1.safetensors",
-    # Cuddle Cup. Trigger SPOONLG stays on the beat trigger, not in the action.
-    # Model 2968559 version 3363705 fileId 3251540. The page URL is not the weight.
-    "spoonlg": "SPOONLG_CUDDLECUP_v1.safetensors",
+    # Spooning Sex - Leg Up. Trained sentence stays on the beat trigger, not in the action.
+    # Model 1803312 version 3444113 fileId 3342746. Cuddle Cup is no longer fetched.
+    "spoonlg": "spooning-sex-mh3-e34-az420.safetensors",
+    # Anal dildo on a rod. Trigger zy_3dcg. Toilet sit, thighs together, anus only.
+    # Model 3028491 version 3439849 fileId 3337550.
+    "analdildo": "H3_anal_dildo_ref2va_v01.safetensors",
+    # Cylindrical onahole on an upright shaft. No trained word. Gin-only row.
+    # Model 3020417 version 3429399 fileId 3324978.
+    "alizevert": "alizevert20.safetensors",
     # Audio-only moans. Trigger jpnMoans stays on the beat, not in the action.
     "jpnmoans": "minimax-jav-voice.safetensors",
     # Registered only. Do not add this key to a current beat extra, the dog overlays, or Jack-O push.
@@ -383,7 +389,9 @@ LORA_URLS = {
     "tentacles101": "https://civitai.com/api/download/models/3367732?fileId=3255755",
     "cmst": "https://civitai.com/api/download/models/3290895?fileId=3175377",
     "jacko": "https://civitai.com/api/download/models/3355328?fileId=3244536",
-    "spoonlg": "https://civitai.com/api/download/models/3363705?fileId=3251540",
+    "spoonlg": "https://civitai.com/api/download/models/3444113?fileId=3342746",
+    "analdildo": "https://civitai.com/api/download/models/3439849?fileId=3337550",
+    "alizevert": "https://civitai.com/api/download/models/3429399?fileId=3324978",
     "jpnmoans": "https://civitai.com/api/download/models/3282509?fileId=3166743",
     "doggy": "https://civitai.com/api/download/models/3317042?fileId=3202556",
     "siderear": "https://civitai.com/api/download/models/3362792?fileId=3250615",
@@ -423,6 +431,8 @@ LORA_STRENGTHS = {
     "cmst": 0.65,
     "jacko": 0.8,
     "spoonlg": 1.0,
+    "analdildo": 1.0,
+    "alizevert": 1.0,
     "jpnmoans": 0.55,
     "doggy": 0.5,
     "siderear": 0.8,
@@ -446,6 +456,10 @@ LORA_STRENGTHS = {
 # Triggers that must stay on the beat trigger, never inside action.
 CMST_TRIGGER = "cmst"
 DILDO_TRIGGER = "pumping a dildo insider her vagina"
+SPOON_TRIGGER = (
+    "lying on her left side while a man lying behind her is thrusting into her vagina from behind"
+)
+ANALDILDO_TRIGGER = "Anal, dildo, deep penetration, sex machine, anus, thrusting, zy_3dcg"
 # Civitai 3015275 version 3422679. The trained word is this whole sentence.
 FULLNELSON_TRIGGER = (
     "Full nelson anal, low POV, woman's legs held high behind her head by man's arms, looking down, deep penetration"
@@ -489,9 +503,10 @@ STOCK_ONLY_SLUGS = frozenset({"kasumi-late-desk", "bandai-district", "bandai-dis
 EROTIC_SLUG_SUFFIX = "-adult"
 EROTIC_MODELS_SUBDIR = "erotic"
 # Drive copy (Naomiichi): MyDrive/minimax-h3-comfyui/models/diffusion_models/
-# H3 Eros Max beta6 int8. Civitai 2851079 version 3393047 fileId 3283276. ~21.2GB.
-# The bf16 primary on that version is not the Colab file.
-EROS_MAX_UNET = "h3ErosMax_beta6_3283276.safetensors"
+# H3 Eros Max beta7 int8. Civitai 2851079 version 3429412 fileId 3346133.
+# 21,055,726,440 bytes. The bf16 primary (fileId 3330999) is not the Colab file.
+# The earlier int8 on this version (fileId 3329966) stays unused. beta6 does not count.
+EROS_MAX_UNET = "h3ErosMax_beta7_3346133.safetensors"
 EROS_MAX_ALIASES = (
     EROS_MAX_UNET,
     "10Eros_Max_h3_TURBO-hybrid_beta5_int8.safetensors",
@@ -511,10 +526,10 @@ CHECKPOINTS: dict[str, dict[str, Any]] = {
         "file": EROS_MAX_UNET,
         "aliases": EROS_MAX_ALIASES,
         "erotic": True,
-        "url": "https://civitai.com/api/download/models/3393047?fileId=3283276",
-        # beta6 int8 is 21,709,633,539 bytes. A 5GB truncated file must not count as ready.
+        "url": "https://civitai.com/api/download/models/3429412?fileId=3346133",
+        # beta7 int8 fileId 3346133 is 21,055,726,440 bytes. A 5GB truncated file must not count as ready.
         "min_bytes": 15_000_000_000,
-        "expected_bytes": 21_709_633_539,
+        "expected_bytes": 21_055_726_440,
     },
     # DaSiWa Hybrid v2 int8. Civitai 2877206 version 3314675 fileId 3203130. ~20GB.
     "dasiwa": {
@@ -7492,7 +7507,8 @@ _LORA_TRIGGER_TOKENS = (
     ("cmst", "cmst"),
     ("cumouf", "CUMOUF"),
     ("penis", "PENISLORA"),
-    ("spoonlg", "SPOONLG."),
+    ("spoonlg", SPOON_TRIGGER),
+    ("analdildo", "zy_3dcg"),
     ("jpnmoans", "jpnMoans"),
     ("blowjob", "bl0w_j0b"),
     ("messyblow", "ME$$Y."),

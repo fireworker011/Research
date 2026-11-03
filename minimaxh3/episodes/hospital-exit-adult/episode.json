@@ -4156,6 +4156,241 @@
           ],
           "loco": "walk"
         }
+      ],
+      "on_toilet_anal_dildo": [
+        {
+          "id": "04-toilet-toy",
+          "source": "t2v",
+          "connect": "t2v",
+          "still": "",
+          "trim": {
+            "start": 0,
+            "seconds": 6.0
+          },
+          "cast": [
+            "aya"
+          ],
+          "face_visible": false,
+          "camera_pack": "none",
+          "props": [],
+          "environment": "A filthy crumbling western hospital toilet at night. Cracked grey tiles. Peeling plaster. One stained white porcelain toilet covered in extra-viscous sticky grimy brown hospital dirt with a seat and a bowl. Brown hospital dirt on the seat, the bowl, and the tiles. A flickering broken fluorescent tube. No clocks. No readable letters. Every adult in frame is fully nude.",
+          "place": "A filthy crumbling western hospital toilet at night. Cracked grey tiles. Peeling plaster. One stained white porcelain toilet covered in extra-viscous sticky grimy brown hospital dirt with a seat and a bowl. Brown hospital dirt on the seat, the bowl, and the tiles. A flickering broken fluorescent tube. No clocks. No readable letters. Every adult in frame is fully nude.",
+          "extra_loras": [
+            [
+              "analdildo",
+              1.0
+            ],
+            [
+              "anuspussy",
+              0.4
+            ],
+            [
+              "mystic",
+              0.5
+            ]
+          ],
+          "trigger": "Anal, dildo, deep penetration, sex machine, anus, thrusting, zy_3dcg",
+          "hud": {
+            "mission": "出口に出る",
+            "mission_keyword": "出口",
+            "health": 0.9,
+            "money": "¥0",
+            "objective_bearing": 0,
+            "complete": false,
+            "hint": "次へ",
+            "stamina": 0.45,
+            "heat": 3,
+            "objective_distance": 0.5,
+            "icons_active": [
+              "隠"
+            ]
+          },
+          "sfx": "A seat on tile, fluorescent buzz, HVAC",
+          "music": "Bass holds",
+          "camera": "FROM THE STALL DOOR looking toward the filthy porcelain seat. Aya sits on the seat, knees bent, thighs pressed together, both feet on the tiles. A huge thick cylindrical pink elastic dildo with a suction-cup base is mounted horizontal on a short rigid metal rod in front of the bowl. The tip stays outside the anus. Full body including both feet. Distance stays the same.",
+          "action": "Aya is already in this stall, fully nude, full body including both feet. She SITS on the porcelain seat. Knees stay bent. Thighs stay pressed together and touching. Both feet plant on the tiles. A short rigid metal rod stands in front of the bowl. A huge thick cylindrical pink elastic dildo with a suction-cup base is mounted horizontal on that rod. The tip stays outside the anus, between the closed thighs. The hairless pussy stays a closed slit above the anus. Aya's hands rest on her thighs. Last frame: Aya seated, thighs pressed together, the dildo tip outside the anus. Both feet on the tiles.",
+          "voices": [
+            {
+              "who": "aya",
+              "line": "んっ"
+            }
+          ],
+          "loco": "planted",
+          "steps": 8,
+          "turbo": false
+        },
+        {
+          "id": "04-toilet",
+          "source": "chain",
+          "connect": "chain",
+          "still": "",
+          "trim": {
+            "start": 0,
+            "seconds": 10.0
+          },
+          "cast": [
+            "aya"
+          ],
+          "face_visible": false,
+          "camera_pack": "none",
+          "props": [],
+          "environment": "A filthy crumbling western hospital toilet at night. Cracked grey tiles. Peeling plaster. One stained white porcelain toilet covered in extra-viscous sticky grimy brown hospital dirt with a seat and a bowl. Brown hospital dirt on the seat, the bowl, and the tiles. A flickering broken fluorescent tube. No clocks. No readable letters. Every adult in frame is fully nude.",
+          "place": "A filthy crumbling western hospital toilet at night. Cracked grey tiles. Peeling plaster. One stained white porcelain toilet covered in extra-viscous sticky grimy brown hospital dirt with a seat and a bowl. Brown hospital dirt on the seat, the bowl, and the tiles. A flickering broken fluorescent tube. No clocks. No readable letters. Every adult in frame is fully nude.",
+          "extra_loras": [
+            [
+              "analdildo",
+              1.0
+            ],
+            [
+              "anuspussy",
+              0.4
+            ],
+            [
+              "mystic",
+              0.5
+            ]
+          ],
+          "trigger": "Anal, dildo, deep penetration, sex machine, anus, thrusting, zy_3dcg",
+          "hud": {
+            "mission": "出口に出る",
+            "mission_keyword": "出口",
+            "health": 0.9,
+            "money": "¥0",
+            "objective_bearing": 0,
+            "complete": false,
+            "hint": "次へ",
+            "stamina": 0.45,
+            "heat": 3,
+            "objective_distance": 0.5,
+            "icons_active": [
+              "隠"
+            ]
+          },
+          "sfx": "A wet push, HVAC",
+          "music": "Bass holds",
+          "camera": "FROM THE STALL DOOR. Aya stays seated on the porcelain seat, knees bent, thighs pressed together, both feet on the tiles. The metal rod and the pink dildo stay in front of the bowl. The anus stays at the center between the closed thighs. Full body including both feet.",
+          "action": "Aya starts already seated on the porcelain seat, knees bent, thighs pressed together, both feet on the tiles. The huge thick cylindrical pink elastic dildo stays mounted horizontal on the short rigid metal rod. The rod MOVES the dildo forward once between the closed thighs. The tip pushes the anus open and the dildo slides deep inside the anus until the base meets the buttocks. The hairless pussy stays a closed slit above the anus. Thighs stay pressed together. HOLD still joined with the dildo buried in the anus until the last frame. Aya's face opens into a pleasure-drunk smile, mouth open. Last frame: still seated, thighs together, the dildo buried in the anus. Both feet on the tiles.",
+          "voices": [
+            {
+              "who": "aya",
+              "line": "あんっ"
+            }
+          ],
+          "loco": "planted",
+          "steps": 8,
+          "turbo": false
+        },
+        {
+          "id": "04-toilet-pump",
+          "source": "chain",
+          "connect": "chain",
+          "still": "",
+          "trim": {
+            "start": 0,
+            "seconds": 8.0
+          },
+          "cast": [
+            "aya"
+          ],
+          "face_visible": false,
+          "camera_pack": "none",
+          "props": [],
+          "environment": "A filthy crumbling western hospital toilet at night. Cracked grey tiles. Peeling plaster. One stained white porcelain toilet covered in extra-viscous sticky grimy brown hospital dirt with a seat and a bowl. Brown hospital dirt on the seat, the bowl, and the tiles. A flickering broken fluorescent tube. No clocks. No readable letters. Every adult in frame is fully nude.",
+          "place": "A filthy crumbling western hospital toilet at night. Cracked grey tiles. Peeling plaster. One stained white porcelain toilet covered in extra-viscous sticky grimy brown hospital dirt with a seat and a bowl. Brown hospital dirt on the seat, the bowl, and the tiles. A flickering broken fluorescent tube. No clocks. No readable letters. Every adult in frame is fully nude.",
+          "extra_loras": [
+            [
+              "analdildo",
+              1.0
+            ],
+            [
+              "anuspussy",
+              0.4
+            ],
+            [
+              "mystic",
+              0.5
+            ],
+            [
+              "jpnmoans",
+              0.55
+            ]
+          ],
+          "trigger": "Anal, dildo, deep penetration, sex machine, anus, thrusting, zy_3dcg\njpnMoans",
+          "hud": {
+            "mission": "出口に出る",
+            "mission_keyword": "出口",
+            "health": 0.9,
+            "money": "¥0",
+            "objective_bearing": 0,
+            "complete": false,
+            "hint": "次へ",
+            "stamina": 0.45,
+            "heat": 3,
+            "objective_distance": 0.5,
+            "icons_active": [
+              "隠"
+            ]
+          },
+          "sfx": "Wet thrusts, a breath, HVAC",
+          "music": "Bass holds",
+          "camera": "FROM THE STALL DOOR, then closer on the seated crotch. Aya stays seated, knees bent, thighs pressed together. The rod keeps thrusting the pink dildo in the anus. Full body including both feet until the closer view.",
+          "action": "Aya starts already seated on the porcelain seat, knees bent, thighs pressed together, the pink dildo already buried in the anus on the metal rod. The rod thrusts the dildo fully in and out of the anus at a fast pace. Thighs stay pressed together. The hairless pussy stays a closed slit above the anus. Aya's face is an orgasm face, eyes rolled back, mouth open, breathing hard, ass and legs trembling. The dildo pumps thick WHITE lubricant inside the anus, and the lubricant flows out of the open anus toward the bowl. Last frame: still seated, thighs together, the dildo buried, thick WHITE lubricant dripping from the anus toward the bowl.",
+          "voices": [
+            {
+              "who": "aya",
+              "line": "あ、いく"
+            }
+          ],
+          "loco": "planted",
+          "steps": 8,
+          "turbo": false
+        },
+        {
+          "id": "04-toilet-out",
+          "source": "chain",
+          "connect": "chain",
+          "still": "",
+          "trim": {
+            "start": 0,
+            "seconds": 6.0
+          },
+          "cast": [
+            "aya"
+          ],
+          "face_visible": false,
+          "camera_pack": "none",
+          "props": [],
+          "environment": "A filthy crumbling western hospital toilet at night. Cracked grey tiles. Peeling plaster. One stained white porcelain toilet covered in extra-viscous sticky grimy brown hospital dirt with a seat and a bowl. Brown hospital dirt on the seat, the bowl, and the tiles. A flickering broken fluorescent tube. No clocks. No readable letters. Every adult in frame is fully nude.",
+          "place": "A filthy crumbling western hospital toilet at night. Cracked grey tiles. Peeling plaster. One stained white porcelain toilet covered in extra-viscous sticky grimy brown hospital dirt with a seat and a bowl. Brown hospital dirt on the seat, the bowl, and the tiles. A flickering broken fluorescent tube. No clocks. No readable letters. Every adult in frame is fully nude.",
+          "extra_loras": [],
+          "trigger": "",
+          "hud": {
+            "mission": "出口に出る",
+            "mission_keyword": "出口",
+            "health": 0.9,
+            "money": "¥0",
+            "objective_bearing": 0,
+            "complete": false,
+            "hint": "次へ",
+            "stamina": 0.45,
+            "heat": 3,
+            "objective_distance": 0.5,
+            "icons_active": [
+              "隠"
+            ]
+          },
+          "sfx": "A stand, footsteps, HVAC",
+          "music": "Bass holds",
+          "camera": "PROFILE side-on. Aya stands from the seat and walks RIGHT out of the stall. Full body including both feet. Last frame: only Aya walking RIGHT.",
+          "action": "The rod pulls the pink dildo out of the anus once. The anus stays a wide open ring. Thick WHITE lubricant drips from the ring toward the bowl. Then Aya STANDS from the porcelain seat and WALKS RIGHT out of the stall into the corridor, fully nude. Last frame: only Aya walking RIGHT, fully nude, female body. Brisk real-time. Consensual adult game beat",
+          "voices": [
+            {
+              "who": "aya",
+              "line": "はぁっ"
+            }
+          ],
+          "loco": "walk"
+        }
       ]
     },
     {
@@ -5979,6 +6214,168 @@
             "gin"
           ],
           "cast_lock": {}
+        }
+      ],
+      "on_gin_onahole": [
+        {
+          "id": "04-gin-ona-spot",
+          "source": "t2v",
+          "connect": "t2v",
+          "still": "",
+          "trim": {
+            "start": 0,
+            "seconds": 6.0
+          },
+          "cast": [
+            "aya",
+            "gin"
+          ],
+          "face_visible": false,
+          "props": [
+            "rail"
+          ],
+          "place": "The same crumbling old hospital corridor, peeling walls, cracked stained linoleum, flickering broken tubes, a purple fluorescent wash",
+          "extra_loras": [
+            [
+              "mystic",
+              0.5
+            ]
+          ],
+          "trigger": "",
+          "hud": {
+            "mission": "出口に出る",
+            "mission_keyword": "出口",
+            "health": 0.9,
+            "money": "¥0",
+            "objective_bearing": 0,
+            "complete": false,
+            "hint": "次へ",
+            "stamina": 0.45,
+            "heat": 4,
+            "objective_distance": 0.5,
+            "icons_active": [
+              "隠"
+            ]
+          },
+          "sfx": "Quiet corridor, fluorescent buzz, one footstep, HVAC",
+          "music": "Bass holds",
+          "camera": "PROFILE side-on. Floor runs LEFT to RIGHT. Both adults full body including both feet. Gin enters and stops a short step behind Aya.",
+          "action": "Aya is already in the corridor, fully nude, facing RIGHT. Gin ENTERS from the LEFT edge on the linoleum, a short step behind Aya, facing RIGHT, full body including both feet, and STOPS. Last frame: Aya and Gin both full body including both feet, a short step apart. Motion starts at frame one. Brisk real-time. Consensual adult game beat",
+          "voices": [
+            {
+              "who": "aya",
+              "line": "ん"
+            }
+          ],
+          "loco": "walk"
+        },
+        {
+          "id": "04-gin-ona",
+          "source": "t2v",
+          "connect": "cut",
+          "still": "",
+          "trim": {
+            "start": 0,
+            "seconds": 10.0
+          },
+          "cast": [
+            "gin"
+          ],
+          "cast_lock": {
+            "gin": "24-year-old Japanese woman, adult face, fully nude, ashen gray skin that stays ashen gray, long messy gray-white hair, slim feminine body, sunken hollow dark eye sockets, peeling skin with red muscle fiber showing, long clawed fingers, a female body with a clear erect 24cm human penis standing vertically straight up from the groin, thick human girth, straight heavy ashen-gray shaft, flushed glans, hairless female pussy at the base of the shaft, thick extra-viscous sticky grimy brown hospital dirt clinging to the intact ashen skin"
+          },
+          "face_visible": false,
+          "props": [],
+          "place": "The same crumbling old hospital corridor, peeling walls, cracked stained linoleum, flickering broken tubes, a purple fluorescent wash",
+          "extra_loras": [
+            [
+              "alizevert",
+              1.0
+            ],
+            [
+              "penis",
+              0.45
+            ],
+            [
+              "mystic",
+              0.5
+            ]
+          ],
+          "trigger": "PENISLORA",
+          "hud": {
+            "mission": "出口に出る",
+            "mission_keyword": "出口",
+            "health": 0.9,
+            "money": "¥0",
+            "objective_bearing": 0,
+            "complete": false,
+            "hint": "次へ",
+            "stamina": 0.45,
+            "heat": 4,
+            "objective_distance": 0.5,
+            "icons_active": [
+              "隠"
+            ]
+          },
+          "sfx": "A soft grip, wet slides on skin, HVAC",
+          "music": "Bass holds",
+          "camera": "PROFILE side-on. Floor runs LEFT to RIGHT. Gin stays full body including both feet. The erect 24cm stays vertical, pointing straight up. A cylindrical flesh onahole stays in her hand. Distance stays the same.",
+          "action": "Strict timeline on this same linoleum spot. Nude ashen-gray Gin stands alone, full body including both feet. The erect ashen-gray 24cm stands vertically straight up from the groin for the whole take. A soft ridged cylindrical flesh onahole, one toy, is in her free hand. From 0 to 3 seconds Gin picks the cylinder up and brings it to the erect shaft. From 3 to 7 seconds she slides the cylinder down over the glans onto the shaft and holds it vertical in her hand. From 7 to 10 seconds she slides the cylinder up and down over half the length of the shaft, then back up to the glans. The shaft stays erect and pointing straight up. Last frame: the cylinder at the glans, the shaft still straight up, Gin still standing. Brisk real-time. Consensual adult game beat",
+          "voices": [
+            {
+              "who": "gin",
+              "line": "んっ"
+            }
+          ],
+          "loco": "planted",
+          "steps": 8,
+          "turbo": false
+        },
+        {
+          "id": "04-gin-ona-walk",
+          "source": "t2v",
+          "connect": "cut",
+          "still": "",
+          "trim": {
+            "start": 0,
+            "seconds": 6.0
+          },
+          "cast": [
+            "aya"
+          ],
+          "face_visible": false,
+          "props": [
+            "rail"
+          ],
+          "place": "The same crumbling old hospital corridor, peeling walls, cracked stained linoleum, flickering broken tubes, a purple fluorescent wash",
+          "extra_loras": [],
+          "trigger": "",
+          "hud": {
+            "mission": "出口に出る",
+            "mission_keyword": "出口",
+            "health": 0.9,
+            "money": "¥0",
+            "objective_bearing": 0,
+            "complete": false,
+            "hint": "次へ",
+            "stamina": 0.45,
+            "heat": 4,
+            "objective_distance": 0.5,
+            "icons_active": [
+              "隠"
+            ]
+          },
+          "sfx": "Footsteps, HVAC",
+          "music": "Bass holds",
+          "camera": "PROFILE side-on. Floor runs LEFT to RIGHT. Only Aya walking RIGHT, full body including both feet.",
+          "action": "Only Aya WALKS RIGHT along the corridor, fully nude, female body. Ahead a T-junction fork: a corridor LEFT and a corridor RIGHT from Aya, a peeling wall dead ahead. Last frame: only Aya walking RIGHT, fully nude, female body. Brisk real-time. Consensual adult game beat",
+          "voices": [
+            {
+              "who": "aya",
+              "line": "ん"
+            }
+          ],
+          "loco": "walk"
         }
       ]
     },
@@ -8203,8 +8600,8 @@
           "trigger": "",
           "props": [],
           "place": "A fictional derelict old hospital sickroom at night. Peeling cream plaster over grey dado. One single bed built from this room: a raised rectangular platform of packed grimy brown soil, matted green grass, and thick brown feces, with a flat top and a firm edge. The soil, the grass, and the feces stay packed into that bed. A square white tiled sink panel with one metal tap on the LEFT wall. A tall sash window with a concrete sill on the FAR wall, trees outside. Debris and paper on the dark wood floor. A rusted IV pole. Flickering dim daylight from the window. No clocks. No readable letters. Every adult in frame is fully nude.",
-          "camera": "PROFILE side-on beside the bed. Both heads stay at the RIGHT of the frame. Both pairs of feet stay at the LEFT. Tsuno lies on her side on the far long edge of the soil bed. Aya lies on her side on the near half, toward the camera, hips on the same line as Tsuno's hips. Aya's upper knee rises toward the camera. Tsuno's hand holds the shaft. The glans pressed on the hairless pussy stays at the center of the frame. Distance stays the same. Both adults full body including both feet and the soil bed.",
-          "action": "They start already on their sides on this same soil bed on this same floor spot. Tsuno lies on her side on the far long edge of the soil bed, chest against Aya's back. Aya lies on her side on the near half, toward the camera, hips on the same line as Tsuno's hips, head at the RIGHT, feet at the LEFT. Two small dark horns stand at Tsuno's hairline. One large single eye stays in the center of Tsuno's face. The erect ashen-gray 24cm stays ashen gray. The mouths part. Aya's lower leg stays on the soil bed. Aya's upper knee rises toward the camera and stays up. The upper thigh opens wide toward the camera. The hairless pussy stays in that open gap. Tsuno's right hand reaches down over Aya's hip, holds the shaft, and lowers the glans onto Aya's hairless pussy. The glans presses on the pussy lips. The shaft stays outside, in the gap between the thighs. Tsuno's hand stays on the shaft. They HOLD with the glans pressed on the pussy until the last frame. Aya's face is a lewd pleasure-drunk happy smile, eyes half-closed, brows knit, cheeks flushed, mouth open, affectionate toward Tsuno. Tsuno's face is the same lewd pleasure-drunk happy smile, the single eye half-lidded, affectionate toward Aya. Last frame: both on their sides, Tsuno's hand on the shaft, the glans pressed on the hairless pussy, the shaft outside, the upper knee up. Both adults full body including both feet and the soil bed.",
+          "camera": "PROFILE side-on beside the bed. Both heads stay at the RIGHT of the frame. Both pairs of feet stay at the LEFT. Tsuno lies on her side on the far long edge of the soil bed. Aya lies on her side on the near half, toward the camera, hips on the same line as Tsuno's hips. Aya's right leg is raised, bent at the knee, toward the camera. Her left leg continues downward. Tsuno's hand holds the shaft. The glans pressed on the hairless pussy stays at the center of the frame. Distance stays the same. Both adults full body including both feet and the soil bed.",
+          "action": "They start already on their sides on this same soil bed on this same floor spot. Tsuno lies on her side on the far long edge of the soil bed, chest against Aya's back. Aya lies on her side on the near half, toward the camera, hips on the same line as Tsuno's hips, head at the RIGHT, feet at the LEFT. Two small dark horns stand at Tsuno's hairline. One large single eye stays in the center of Tsuno's face. The erect ashen-gray 24cm stays ashen gray. The mouths part. Aya lies on her left side. Her right leg is raised, bent at the knee, toward the camera. Her left leg continues downward along the soil bed. Tsuno's right hand holds the raised right leg. Tsuno's other arm stays under Aya's head. The hairless pussy stays in front of the glans. Tsuno's right hand holds the raised right leg and the glans stays pressed on Aya's hairless pussy. The glans presses on the pussy lips. The shaft stays outside, in the gap between the thighs. Tsuno's hand stays on the shaft. They HOLD with the glans pressed on the pussy until the last frame. Aya's face is a lewd pleasure-drunk happy smile, eyes half-closed, brows knit, cheeks flushed, mouth open, affectionate toward Tsuno. Tsuno's face is the same lewd pleasure-drunk happy smile, the single eye half-lidded, affectionate toward Aya. Last frame: both on their sides, Tsuno's hand on the shaft, the glans pressed on the hairless pussy, the shaft outside, the right leg raised. Both adults full body including both feet and the soil bed.",
           "voices": [
             {
               "who": "aya",
@@ -8254,11 +8651,11 @@
               0.6
             ]
           ],
-          "trigger": "SPOONLG.",
+          "trigger": "lying on her left side while a man lying behind her is thrusting into her vagina from behind",
           "props": [],
           "place": "A fictional derelict old hospital sickroom at night. Peeling cream plaster over grey dado. One single bed built from this room: a raised rectangular platform of packed grimy brown soil, matted green grass, and thick brown feces, with a flat top and a firm edge. The soil, the grass, and the feces stay packed into that bed. A square white tiled sink panel with one metal tap on the LEFT wall. A tall sash window with a concrete sill on the FAR wall, trees outside. Debris and paper on the dark wood floor. A rusted IV pole. Flickering dim daylight from the window. No clocks. No readable letters. Every adult in frame is fully nude.",
-          "camera": "PROFILE side-on beside the bed. Both heads stay at the RIGHT of the frame. Both pairs of feet stay at the LEFT. Tsuno lies on her side on the far half of the soil bed, on the far long edge of the soil bed. Aya lies on her side on the near half, toward the camera, in front of Tsuno, a short shift toward the RIGHT of the frame. Aya's side rests on the soil bed. Aya's back presses against Tsuno's chest. The join stays beside the thigh at the center of the frame. Distance stays the same. Both adults full body including both feet and the soil bed. Aya's upper knee rises toward the camera. The upper thigh opens wide toward the camera. The hairless pussy stays in that open gap, directly in front of the glans. The shaft stays in the gap.",
-          "action": "Tsuno lies on her side on the far half of the soil bed, on the far long edge of the soil bed, head at the RIGHT of the frame, feet at the LEFT, the whole body on that far strip, back toward the FAR end of the soil bed, chest against Aya's back. Tsuno stays on her side. Aya lies on her side on the near half, toward the camera, in front of Tsuno, a short shift toward the RIGHT at the shoulders, hips on the same line as Tsuno's hips, head at the RIGHT, feet at the LEFT. Aya's side rests on the soil bed. Aya's back presses against Tsuno's chest. Both are covered in a sheen of sweat. They start already on their sides on this same soil bed on this same floor spot. Two small dark horns stand at Tsuno's hairline. One large single eye stays in the center of Tsuno's face. The erect ashen-gray 24cm stays ashen gray. Aya's back stays against Tsuno's chest. Faces stay toward the camera. Aya's lower leg stays on the soil bed. Aya's upper knee rises toward the camera. The upper thigh opens wide toward the camera. The hairless pussy stays in that open gap, directly in front of the glans. The shaft stays in the gap. Tsuno's near hand rests on Aya's hip. Aya's hips stay on the same line as Tsuno's hips. The hairless pussy stays directly in front of the glans. The glans of the erect ashen-gray 24cm already meets Aya's hairless pussy and stays pressed there. The shaft stays outside, in the gap between the thighs. Tsuno's hips ROLL FORWARD once along that same line toward Aya's buttocks. The shaft TRAVELS INTO the pussy until the hips meet Aya's buttocks and the shaft reaches the BASE. Tsuno's hand lets go of the shaft and rests on Aya's hip. The whole shaft is hidden inside the pussy. The glans stays hidden inside at the root of the pussy. Mouths stay close. HOLD still joined at the BASE until the last frame. Aya's face is a lewd pleasure-drunk happy smile, eyes half-closed, brows knit, cheeks flushed, mouth open, thick saliva dripping, drowning in pleasure, affectionate toward Tsuno. Tsuno's face is the same lewd pleasure-drunk happy smile, the single eye half-lidded, mouth open, thick saliva dripping, affectionate toward Aya. Both stay lost in that thick pleasure together. Last frame: both still on their sides, Tsuno on the far long edge, Aya on the near half, her side on the soil bed, hips flush, the shaft buried to the root, the glans hidden inside at the root of the pussy, the whole shaft hidden. Both adults full body including both feet and the soil bed.",
+          "camera": "PROFILE side-on beside the bed. Both heads stay at the RIGHT of the frame. Both pairs of feet stay at the LEFT. Tsuno lies on her side on the far half of the soil bed, on the far long edge of the soil bed. Aya lies on her side on the near half, toward the camera, in front of Tsuno, a short shift toward the RIGHT of the frame. Aya's side rests on the soil bed. Aya's back presses against Tsuno's chest. The join stays beside the thigh at the center of the frame. Distance stays the same. Both adults full body including both feet and the soil bed. Aya's right leg is raised, bent at the knee, toward the camera. Her left leg continues downward. The hairless pussy stays in that open gap, directly in front of the glans. The shaft stays in the gap.",
+          "action": "Tsuno lies on her side on the far half of the soil bed, on the far long edge of the soil bed, head at the RIGHT of the frame, feet at the LEFT, the whole body on that far strip, back toward the FAR end of the soil bed, chest against Aya's back. Tsuno stays on her side. Aya lies on her side on the near half, toward the camera, in front of Tsuno, a short shift toward the RIGHT at the shoulders, hips on the same line as Tsuno's hips, head at the RIGHT, feet at the LEFT. Aya's side rests on the soil bed. Aya's back presses against Tsuno's chest. Both are covered in a sheen of sweat. They start already on their sides on this same soil bed on this same floor spot. Two small dark horns stand at Tsuno's hairline. One large single eye stays in the center of Tsuno's face. The erect ashen-gray 24cm stays ashen gray. Aya's back stays against Tsuno's chest. Faces stay toward the camera. Aya lies on her left side. Her right leg is raised, bent at the knee, toward the camera. Her left leg continues downward along the soil bed. Tsuno's right hand holds the raised right leg. Tsuno's other arm stays under Aya's head. The hairless pussy stays directly in front of the glans. The shaft stays in the gap. Aya's hips stay on the same line as Tsuno's hips. The hairless pussy stays directly in front of the glans. The glans of the erect ashen-gray 24cm already meets Aya's hairless pussy and stays pressed there. The shaft stays outside, in the gap between the thighs. Tsuno's hips ROLL FORWARD once along that same line toward Aya's buttocks. The shaft TRAVELS INTO the pussy until the hips meet Aya's buttocks and the shaft reaches the BASE. Tsuno's right hand keeps holding the raised right leg. The whole shaft is hidden inside the pussy. The glans stays hidden inside at the root of the pussy. Mouths stay close. HOLD still joined at the BASE until the last frame. Aya's face is a lewd pleasure-drunk happy smile, eyes half-closed, brows knit, cheeks flushed, mouth open, thick saliva dripping, drowning in pleasure, affectionate toward Tsuno. Tsuno's face is the same lewd pleasure-drunk happy smile, the single eye half-lidded, mouth open, thick saliva dripping, affectionate toward Aya. Both stay lost in that thick pleasure together. Last frame: both still on their sides, Tsuno on the far long edge, Aya on the near half, her side on the soil bed, hips flush, the shaft buried to the root, the glans hidden inside at the root of the pussy, the whole shaft hidden. Both adults full body including both feet and the soil bed.",
           "voices": [
             {
               "who": "aya",
@@ -8324,11 +8721,11 @@
               0.55
             ]
           ],
-          "trigger": "SPOONLG.\nTsuno penetrates her pussy from behind. Tsuno gyrates the hips in a circular, rolling motion as Tsuno thrusts into her. Tsuno holds her raised knee.\nThis video depicts part of sexual intercourse climax. The adult already lying on her side keeps the shaft inside Aya and cums inside of her. Aya and Tsuno stay the same two adults.\nPENISLORA\njpnMoans",
+          "trigger": "lying on her left side while a man lying behind her is thrusting into her vagina from behind\nThis video depicts part of sexual intercourse climax. The adult already lying on her side keeps the shaft inside Aya and cums inside of her. Aya and Tsuno stay the same two adults.\nPENISLORA\njpnMoans",
           "props": [],
           "place": "A fictional derelict old hospital sickroom at night. Peeling cream plaster over grey dado. One single bed built from this room: a raised rectangular platform of packed grimy brown soil, matted green grass, and thick brown feces, with a flat top and a firm edge. The soil, the grass, and the feces stay packed into that bed. A square white tiled sink panel with one metal tap on the LEFT wall. A tall sash window with a concrete sill on the FAR wall, trees outside. Debris and paper on the dark wood floor. A rusted IV pole. Flickering dim daylight from the window. No clocks. No readable letters. Every adult in frame is fully nude.",
-          "camera": "PROFILE side-on beside the bed. Both are covered in a sheen of sweat. Both heads stay at the RIGHT of the frame. Both pairs of feet stay at the LEFT. Tsuno lies on her side on the far half of the soil bed, on the far long edge of the soil bed. Aya lies on her side on the near half, toward the camera, in front of Tsuno, a short shift toward the RIGHT of the frame. Aya's side rests on the soil bed. Aya's back presses against Tsuno's chest. Aya's pelvis stays pushed back against Tsuno's midsection. The join stays beside the thigh at the center of the frame. The shaft travels in and out beside the thigh. Distance stays the same. Both adults full body including both feet and the soil bed. Aya's upper knee rises toward the camera. The upper thigh opens wide toward the camera. The hairless pussy stays in that open gap, directly in front of the glans. The shaft stays in the gap.",
-          "action": "Tsuno lies on her side on the far half of the soil bed, on the far long edge of the soil bed, head at the RIGHT of the frame, feet at the LEFT, the whole body on that far strip, back toward the FAR end of the soil bed, chest against Aya's back. Tsuno stays on her side. Aya lies on her side on the near half, toward the camera, in front of Tsuno, a short shift toward the RIGHT at the shoulders, hips on the same line as Tsuno's hips, head at the RIGHT, feet at the LEFT. Aya's side rests on the soil bed. Aya's back presses against Tsuno's chest. They start already joined on their sides on this same soil bed. Two small dark horns stand at Tsuno's hairline. One large single eye stays in the center of Tsuno's face. The erect ashen-gray 24cm stays ashen gray. Aya's lower leg stays on the soil bed. Aya's upper knee rises toward the camera. The upper thigh stays open toward the camera. The hairless pussy stays in that open gap. Both are covered in a sheen of sweat. Aya's pelvis stays pushed back and pressed against Tsuno's midsection. Tsuno's near hand holds Aya's raised knee. Tsuno penetrates Aya's pussy from behind. Tsuno gyrates the hips fast in a circular, rolling motion and thrusts. The erect ashen-gray 24cm slides deeply in and out of Aya's pussy. Aya moans on every thrust, then turns her head back over her shoulder toward Tsuno. Then the hips meet flush. Tsuno finishes INSIDE Aya. Thick WHITE goo OVERFLOWS from the join down the buried shaft and over the groin. HOLD still joined at the BASE until the last frame. The shaft stays buried to the root until the last frame. Aya says 「あ、いく」. Aya's face is a lewd pleasure-drunk happy smile, eyes half-closed, brows knit, cheeks flushed, mouth open, thick saliva dripping, drowning in pleasure, affectionate toward Tsuno. Tsuno's face is the same lewd pleasure-drunk happy smile, the single eye half-lidded, mouth open, thick saliva dripping, affectionate toward Aya. Both stay lost in that thick pleasure together. Last frame: still on their sides, still buried to the root, WHITE goo pooled at the join and running down. Both adults full body including both feet and the soil bed. Both faces stay that lewd pleasure-drunk expression until the last frame.",
+          "camera": "PROFILE side-on beside the bed. Both are covered in a sheen of sweat. Both heads stay at the RIGHT of the frame. Both pairs of feet stay at the LEFT. Tsuno lies on her side on the far half of the soil bed, on the far long edge of the soil bed. Aya lies on her side on the near half, toward the camera, in front of Tsuno, a short shift toward the RIGHT of the frame. Aya's side rests on the soil bed. Aya's back presses against Tsuno's chest. Aya's pelvis stays pushed back against Tsuno's midsection. The join stays beside the thigh at the center of the frame. The shaft travels in and out beside the thigh. Distance stays the same. Both adults full body including both feet and the soil bed. Aya's right leg is raised, bent at the knee, toward the camera. Her left leg continues downward. The hairless pussy stays in that open gap, directly in front of the glans. The shaft stays in the gap.",
+          "action": "Tsuno lies on her side on the far half of the soil bed, on the far long edge of the soil bed, head at the RIGHT of the frame, feet at the LEFT, the whole body on that far strip, back toward the FAR end of the soil bed, chest against Aya's back. Tsuno stays on her side. Aya lies on her side on the near half, toward the camera, in front of Tsuno, a short shift toward the RIGHT at the shoulders, hips on the same line as Tsuno's hips, head at the RIGHT, feet at the LEFT. Aya's side rests on the soil bed. Aya's back presses against Tsuno's chest. They start already joined on their sides on this same soil bed. Two small dark horns stand at Tsuno's hairline. One large single eye stays in the center of Tsuno's face. The erect ashen-gray 24cm stays ashen gray. Aya lies on her left side. Her right leg is raised, bent at the knee, toward the camera. Her left leg continues downward along the soil bed. Tsuno's right hand holds the raised right leg. Tsuno's other arm stays under Aya's head. The hairless pussy stays in front of the glans. Both are covered in a sheen of sweat. Aya's pelvis stays pushed back and pressed against Tsuno's midsection. Tsuno's right hand holds Aya's raised right leg. Tsuno thrusts into Aya's vagina from behind. The erect ashen-gray 24cm slides deeply in and out of Aya's pussy. Aya moans on every thrust, then turns her head back over her shoulder toward Tsuno. Then the hips meet flush. Tsuno finishes INSIDE Aya. Thick WHITE goo OVERFLOWS from the join down the buried shaft and over the groin. HOLD still joined at the BASE until the last frame. The shaft stays buried to the root until the last frame. Aya says 「あ、いく」. Aya's face is a lewd pleasure-drunk happy smile, eyes half-closed, brows knit, cheeks flushed, mouth open, thick saliva dripping, drowning in pleasure, affectionate toward Tsuno. Tsuno's face is the same lewd pleasure-drunk happy smile, the single eye half-lidded, mouth open, thick saliva dripping, affectionate toward Aya. Both stay lost in that thick pleasure together. Last frame: still on their sides, still buried to the root, WHITE goo pooled at the join and running down. Both adults full body including both feet and the soil bed. Both faces stay that lewd pleasure-drunk expression until the last frame.",
           "voices": [
             {
               "who": "aya",

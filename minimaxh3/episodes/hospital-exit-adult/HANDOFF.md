@@ -29,9 +29,13 @@ LoRA スタジオのスキルは病棟の指アナルに使わない。指アナ
 
 ## 残課題（2026-10-24）
 
-pytest は 123 通過。開いたときのフォームは変えていない。生成ボタンは人間。ランタイムを再起動して Run all。同じカーネルは古いエンジンのまま。
+pytest は 124 通過。開いたときのフォームは変えていない。生成ボタンは人間。ランタイムを再起動して Run all。同じカーネルは古いエンジンのまま。
 
-- beta6 は TURBO-hybrid。スピードの 4step LoRA は積めない。4 step のまま描くと体が溶ける。スピードで steps の無い拍は euler 8 に上がる。バランスは元から 8。質は 12。拍に書いた steps は優先する。`03-kiss-peak` と `03-kiss-close` は 8 のまま。`04-gin-lick`、`04-gin-jupo`、`04-gin-wait` は steps が無かったので、スピードだと 4 だった。今は 8。
+- チェックポイントは Eros Max beta7 int8。ファイル `h3ErosMax_beta7_3346133.safetensors`。Civitai 2851079、version 3429412、fileId 3346133。21,055,726,440 bytes。同じ版の bf16（fileId 3330999）と、先の int8（fileId 3329966）は使わない。beta6 も beta5 も、このファイルの代わりにならない。古いファイルは消さない。公開サンプルは euler 8。CFG は BasicGuider のまま。質の未指定拍は 12 のまま。
+- beta7 も TURBO-hybrid。スピードの 4step LoRA は積めない。4 step のまま描くと体が溶ける。スピードで steps の無い拍は euler 8 に上がる。バランスは元から 8。質は 12。拍に書いた steps は優先する。`03-kiss-peak` と `03-kiss-close` は 8 のまま。`04-gin-lick`、`04-gin-jupo`、`04-gin-wait` は steps が無かったので、スピードだと 4 だった。今は 8。
+- トイレに「トイレ・アナルディルド」を足した。便座に座り、膝は曲げ、太ももは閉じたまま。極太のピンクの円筒ディルドは金属の棒に付き、肛門へ入る。トリガーは `zy_3dcg`。ファイル `H3_anal_dildo_ref2va_v01.safetensors`。Civitai 3028491、version 3439849、fileId 3337550。強度 1.0。`anuspussy` 0.40 も積む。膣の「トイレ・ディルド」は残す。開いたときの選択はトイレ触手のまま。
+- 角の横は Spooning Sex - Leg Up に差し替えた。ファイル `spooning-sex-mh3-e34-az420.safetensors`。Civitai 1803312、version 3444113、fileId 3342746。Cuddle Cup `SPOONLG_CUDDLECUP_v1.safetensors` はもう取らない。学習文はトリガーに残す。その文には a man がある。動作文は角のまま。あやは左を下にして横になり、右足を曲げて上げ、角の右手がその足を持つ。頭はフレームの右。円を描く腰は外した。
+- ギンに「灰色・触手オナホ」を足した。ギン一人。直立の 24cm へ円筒のオナホを通し、半分まで上下してから亀頭へ戻す。ファイル `alizevert20.safetensors`。Civitai 3020417、version 3429399、fileId 3324978。強度 1.0。竿は `penis` 0.45。既定の騎乗は変えていない。
 - 二人の病棟拍から `nothing new enters` を外した。その文は三人目を描く。代わりに同じ二人。犬の拍は変えていない。
 - キャスト欄で no / never から始まる句はプロンプトに出さない。JSON の lock は残す。ギンの lock の `no penis` は残る。舐めの動作文は `hairless pussy`。`no eyeballs` と `no fifth finger` はプロンプトに出さない。
 - `Each adult keeps one head, two arms, and two legs` は `Each adult stays one whole body`。数えた手足は余分に生える。

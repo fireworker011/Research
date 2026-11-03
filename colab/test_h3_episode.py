@@ -45,6 +45,7 @@ from h3_episode import (  # noqa: E402
     NELSON_PLANTED_CLAUSE,
     GAMEPLAY_PACE_CLAUSE,
     SIDERIDE_TRIGGER,
+    SPOON_TRIGGER,
     PRESET_ALIASES,
     PRESET_CANON,
     PRESETS,
@@ -468,8 +469,8 @@ def test_notebook_is_one_cell_and_isolated():
     assert "cursor/h3-lora-cards-d736" in md
     assert "kasumi-late-desk-adult" in md
     assert "10Eros Max は Drive" in md
-    assert "h3ErosMax_beta6_3283276.safetensors" in md
-    assert "3393047" in md
+    assert "h3ErosMax_beta7_3346133.safetensors" in md
+    assert "3429412" in md
     assert "迷ったら" in md
     assert "5. 構成" in md
     assert "6. 誘うポーズ" in md
@@ -916,9 +917,10 @@ def test_kasumi_adult_is_erotic_eros_max_and_stock_kasumi_cannot_use_it():
     assert episode_checkpoint(adult) == "eros-max"
     assert CHECKPOINTS["eros-max"]["erotic"] is True
     assert CHECKPOINTS["eros-max"]["file"] == EROS_MAX_UNET
-    assert EROS_MAX_UNET == "h3ErosMax_beta6_3283276.safetensors"
-    assert "3393047" in CHECKPOINTS["eros-max"]["url"]
-    assert "fileId=3283276" in CHECKPOINTS["eros-max"]["url"]
+    assert EROS_MAX_UNET == "h3ErosMax_beta7_3346133.safetensors"
+    assert "3429412" in CHECKPOINTS["eros-max"]["url"]
+    assert "fileId=3346133" in CHECKPOINTS["eros-max"]["url"]
+    assert CHECKPOINTS["eros-max"]["expected_bytes"] == 21_055_726_440
     assert is_turbo_hybrid_unet(EROS_MAX_UNET)
     assert is_erotic_unet_name(EROS_MAX_UNET)
     assert episode_lane(stock) == "stock"
@@ -3150,7 +3152,7 @@ def test_hospital_shino_stays_35cm_and_horn_prefix_beats_stay():
     assert side_ids.index("04-tsuno-aim") < side_ids.index("04-tsuno-ride")
     side_aim = next(b for b in side["beats"] if b["id"] == "04-tsuno-aim")
     assert "far long edge" in side_aim["action"].lower()
-    assert "upper knee rises toward the camera" in side_aim["action"].lower()
+    assert "right leg is raised, bent at the knee" in side_aim["action"].lower()
     assert "glans presses on the pussy lips" in side_aim["action"].lower()
     assert "shaft stays outside" in side_aim["action"].lower()
 
@@ -4526,7 +4528,7 @@ def test_eros_alias_does_not_block_beta6(tmp_path, monkeypatch):
     payload = _sparse_eros(tmp_path / "diffusion_models" / "Eros Max.safetensors")
 
     def fake_resume(url: str, dest_path: Path, *, min_bytes: int, expected_bytes: int = 0, tries: int = 4) -> bool:
-        assert "3393047" in url and "fileId=3283276" in url
+        assert "3429412" in url and "fileId=3346133" in url
         assert dest_path.name == EROS_MAX_UNET
         _sparse_eros(dest_path)
         return True
@@ -6691,7 +6693,11 @@ def test_hospital_tsuno_ride_and_stall_are_new_stories():
     assert "heads stay at the left" not in seat["camera"].lower()
     assert "sheen of sweat" in seat["action"].lower()
     assert extra_lora_entries(peak)[0] == ("spoonlg", 1.0)
-    assert "gyrates the hips fast in a circular" in peak["action"].lower()
+    assert "thrusts into aya's vagina from behind" in peak["action"].lower()
+    assert "right leg is raised" in peak["action"].lower()
+    assert "gyrates" not in peak["action"].lower()
+    assert "daddy" not in peak["action"].lower()
+    assert " a man " not in peak["action"].lower()
     assert "over her shoulder" in peak["action"].lower()
     assert "heads stay at the right" in peak["camera"].lower()
     assert peak["trim"]["seconds"] == 10.0
@@ -7005,6 +7011,49 @@ def test_hospital_anal_drip_stays_on_the_rim_and_the_pair_stays_two():
     ride_peak = next(b for b in ride["beats"] if b["id"] == "03-kiss-peak")
     assert "down the buried shaft" in ride_peak["action"].lower()
     assert "nothing new enters" not in build_beat_prompt(ride, ride_peak).lower()
+
+
+def test_hospital_anal_dildo_sit_and_gin_onahole_and_spoon_leg():
+    raw = load_episode(HOSPITAL_DIR / "episode.json")
+    assert LORA_FILES["spoonlg"] == "spooning-sex-mh3-e34-az420.safetensors"
+    assert "3444113" in LORA_URLS["spoonlg"]
+    assert "SPOONLG_CUDDLECUP" not in LORA_FILES["spoonlg"]
+    stall = prepare_episode(raw, story_override="受け入れる", toilet_override="トイレ・アナルディルド")
+    ids = [b["id"] for b in stall["beats"] if str(b["id"]).startswith("04-toilet")]
+    assert ids == ["04-toilet-toy", "04-toilet", "04-toilet-pump", "04-toilet-out"]
+    toy = next(b for b in stall["beats"] if b["id"] == "04-toilet-toy")
+    entered = next(b for b in stall["beats"] if b["id"] == "04-toilet")
+    pumped = next(b for b in stall["beats"] if b["id"] == "04-toilet-pump")
+    assert extra_lora_entries(entered)[0] == ("analdildo", 1.0)
+    assert ("anuspussy", 0.4) in extra_lora_entries(entered)
+    assert "solodildo" not in extra_keys(entered)
+    assert "penis" not in extra_keys(entered)
+    assert toy.get("steps") == 8 and entered.get("steps") == 8 and pumped.get("steps") == 8
+    assert "thighs pressed together" in entered["action"].lower()
+    assert "sits on the porcelain seat" in toy["action"].lower()
+    assert "into the anus" in entered["action"].lower() or "inside the anus" in entered["action"].lower()
+    assert "vagina" not in entered["action"].lower()
+    prompt = build_beat_prompt(stall, entered, trigger=merge_trigger("", entered))
+    assert "zy_3dcg" in prompt
+    assert "sex machine" in prompt.lower()
+    gin = prepare_episode(raw, gin_override="灰色・触手オナホ")
+    ona = next(b for b in gin["beats"] if b["id"] == "04-gin-ona")
+    assert ona["cast"] == ["gin"]
+    assert extra_lora_entries(ona)[0] == ("alizevert", 1.0)
+    assert ("penis", 0.45) in extra_lora_entries(ona)
+    assert ona.get("steps") == 8
+    assert "straight up" in ona["action"].lower()
+    assert "cylindrical flesh onahole" in ona["action"].lower()
+    assert "24cm" in ona["action"]
+    walk = next(b for b in gin["beats"] if b["id"] == "04-gin-ona-walk")
+    assert walk["cast"] == ["aya"]
+    assert beat_source(walk) == "t2v"
+    horn = prepare_episode(raw, tsuno_override="角・病室で横になって挿入")
+    seat = next(b for b in horn["beats"] if b["id"] == "04-tsuno-ride")
+    assert SPOON_TRIGGER in merge_trigger("", seat)
+    assert " a man " not in seat["action"].lower()
+    assert validate_episode(stall, root=HOSPITAL_DIR) == []
+    assert validate_episode(gin, root=HOSPITAL_DIR) == []
 
 
 def test_hospital_siderear_keeps_the_join_visible():

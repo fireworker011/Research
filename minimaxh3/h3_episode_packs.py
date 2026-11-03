@@ -513,6 +513,12 @@ TOILET_MODES: dict[str, dict[str, Any]] = {
         "when_ja": "洋式汚物まみれ。座って右手の極太ディルドを膣へ。根元、出し入れ、抜いて開く。触手はこの便器に出ない",
         "hint_ja": "汚れた白い洋式。便座の横のディルドを右手で膣へ",
     },
+    "anal_dildo": {
+        "label_ja": "アナルディルド",
+        "choice_ja": "トイレ・アナルディルド",
+        "when_ja": "洋式汚物まみれ。座って膝を曲げ、太ももを閉じたまま、棒に付いた極太ディルドを肛門へ。膣のディルド行とは別。触手はこの便器に出ない",
+        "hint_ja": "便座に座る。太ももは閉じたまま。ディルドは肛門。zy_3dcg",
+    },
     "anal_finger": {
         "label_ja": "指アナル",
         "choice_ja": "トイレ・指アナル",
@@ -544,6 +550,7 @@ TOILET_OVERLAY_KEYS: dict[str, str] = {
     "masturbate": "on_toilet_masturbate",
     "tentacle": "on_toilet_tentacle",
     "finger": "on_toilet_finger",
+    "anal_dildo": "on_toilet_anal_dildo",
     "anal_finger": "on_toilet_anal_finger",
     "anal_fist": "on_toilet_anal_fist",
     "wash": "on_toilet_wash",
@@ -575,6 +582,8 @@ TOILET_ALIASES: dict[str, str] = _label_aliases(
         "anal fisting": "anal_fist",
         "finger": "finger",
         "ディルド": "finger",
+        "アナルディルド": "anal_dildo",
+        "anal dildo": "anal_dildo",
         "和式": "wash",
         "和式排出": "wash",
         "wash": "wash",
@@ -624,6 +633,12 @@ GIN_MODES: dict[str, dict[str, Any]] = {
         "when_ja": "ギンが受け。顔と胸が床、腰は高い。あやの grown erect 24cm が上から肛門。犯す枝は残す",
         "hint_ja": "尻がカメラ。set と behind は未挿入。anal で根元。中出し、開き、口。犯すは別",
     },
+    "onahole": {
+        "label_ja": "触手オナホ",
+        "choice_ja": "灰色・触手オナホ",
+        "when_ja": "ギン一人。直立の竿へ円筒のオナホを通し、半分まで上下してから亀頭へ戻す。騎乗とは別",
+        "hint_ja": "竿は上を向いたまま。円筒のオナホ。既定の騎乗は変えない",
+    },
 }
 
 GIN_OVERLAY_KEYS: dict[str, str] = {
@@ -632,6 +647,7 @@ GIN_OVERLAY_KEYS: dict[str, str] = {
     "fuck": "on_gin_fuck",
     "invite_doggy": "on_gin_invite_doggy",
     "jacko": "on_gin_jacko",
+    "onahole": "on_gin_onahole",
 }
 
 GIN_ALIASES: dict[str, str] = _label_aliases(
@@ -651,6 +667,9 @@ GIN_ALIASES: dict[str, str] = _label_aliases(
         "後背": "invite_doggy",
         "灰色・後ろアナル": "jacko",
         "後ろアナル": "jacko",
+        "触手オナホ": "onahole",
+        "オナホ": "onahole",
+        "onahole": "onahole",
     },
 )
 
