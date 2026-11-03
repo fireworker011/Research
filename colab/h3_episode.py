@@ -503,10 +503,9 @@ STOCK_ONLY_SLUGS = frozenset({"kasumi-late-desk", "bandai-district", "bandai-dis
 EROTIC_SLUG_SUFFIX = "-adult"
 EROTIC_MODELS_SUBDIR = "erotic"
 # Drive copy (Naomiichi): MyDrive/minimax-h3-comfyui/models/diffusion_models/
-# H3 Eros Max beta7 int8. Civitai 2851079 version 3429412 fileId 3346133.
-# 21,055,726,440 bytes. The bf16 primary (fileId 3330999) is not the Colab file.
-# The earlier int8 on this version (fileId 3329966) stays unused. beta6 does not count.
-EROS_MAX_UNET = "h3ErosMax_beta7_3346133.safetensors"
+# H3 Eros Max beta7 bf16. AIR civitai:2851079@3429412+3330999.
+# 40,222,934,448 bytes. The int8 files on this version stay unused. beta6 does not count.
+EROS_MAX_UNET = "h3ErosMax_beta7_3330999.safetensors"
 EROS_MAX_ALIASES = (
     EROS_MAX_UNET,
     "10Eros_Max_h3_TURBO-hybrid_beta5_int8.safetensors",
@@ -526,10 +525,10 @@ CHECKPOINTS: dict[str, dict[str, Any]] = {
         "file": EROS_MAX_UNET,
         "aliases": EROS_MAX_ALIASES,
         "erotic": True,
-        "url": "https://civitai.com/api/download/models/3429412?fileId=3346133",
-        # beta7 int8 fileId 3346133 is 21,055,726,440 bytes. A 5GB truncated file must not count as ready.
+        "url": "https://civitai.com/api/download/models/3429412?fileId=3330999",
+        # beta7 bf16 fileId 3330999 is 40,222,934,448 bytes. A truncated file must not count as ready.
         "min_bytes": 15_000_000_000,
-        "expected_bytes": 21_055_726_440,
+        "expected_bytes": 40_222_934_448,
     },
     # DaSiWa Hybrid v2 int8. Civitai 2877206 version 3314675 fileId 3203130. ~20GB.
     "dasiwa": {
@@ -7921,7 +7920,7 @@ def ensure_episode_checkpoint(ep: dict[str, Any], models_root: Path | str) -> li
     url = str(spec.get("url") or "")
     if not url:
         raise EpisodeError(f"erotic checkpoint missing and no url: {spec['file']}")
-    print("fetch checkpoint", spec["file"], "(resume ok, ~21GB, keep Run all if it stops)")
+    print("fetch checkpoint", spec["file"], "(resume ok, ~40GB, keep Run all if it stops)")
     if fetch_resumable(url, dest, min_bytes=min_bytes, expected_bytes=expected):
         notes.append(f"fetched {spec['file']}")
         return notes
@@ -8279,12 +8278,53 @@ def _open_civitai(url: str, headers: dict[str, str], *, timeout: int = 120):
     raise RuntimeError("download redirect failed")
 
 
-def _resolve_civitai_download_url(url: str, *, token: str = "", timeout: int = 60) -> str:
-    """Return the signed weight URL. Do not download the body.
+def _response_header(resp: object, name: str) -> str:
+    headers = getattr(resp, "headers", None)
+    if headers is None:
+        return ""
+    return str(headers.get(name) or headers.get(name.lower()) or "")
 
-    Bearer is sent only while the hop stays on civitai.com. The returned URL is
-    the first Location on another host. wget and curl resume that URL with no
-    Authorization header. A signed URL expires, so each resume pass resolves again.
+
+def _content_length(resp: object) -> int:
+    raw = _response_header(resp, "Content-Length")
+    try:
+        return int(raw or 0)
+    except ValueError:
+        return 0
+
+
+def _looks_like_weight(resp: object) -> bool:
+    """True when this response is the weight itself, not a page or a JSON pointer."""
+    ctype = _response_header(resp, "Content-Type").lower()
+    disp = _response_header(resp, "Content-Disposition").lower()
+    if "html" in ctype or "json" in ctype or ctype.startswith("text/"):
+        return False
+    if _content_length(resp) >= 1_000_000 or "attachment" in disp or "octet-stream" in ctype:
+        return True
+    return "safetensors" in disp
+
+
+def _json_download_url(body: bytes) -> str:
+    try:
+        data = json.loads(body.decode("utf-8", errors="replace"))
+    except (UnicodeError, json.JSONDecodeError, ValueError):
+        return ""
+    if not isinstance(data, dict):
+        return ""
+    for key in ("downloadUrl", "url", "signedUrl"):
+        value = data.get(key)
+        if isinstance(value, str) and value.startswith("http"):
+            return _quote_http_url(value)
+    return ""
+
+
+def _resolve_civitai_download_url(url: str, *, token: str = "", timeout: int = 60) -> str:
+    """Return the URL whose body is the weight. Do not download that body here.
+
+    A redirect off civitai.com is the signed CDN URL. wget resumes it with no
+    Authorization header. A 200 on civitai.com can be the weight itself, or a
+    JSON body that names the signed URL. A signed URL expires, so each resume
+    pass resolves again.
     """
     current = _quote_http_url(url)
     headers = _civitai_headers(token)
@@ -8302,9 +8342,23 @@ def _resolve_civitai_download_url(url: str, *, token: str = "", timeout: int = 6
                 return nxt
             current = nxt
             continue
-        else:
-            resp.close()
+        if resp is None:
             raise OSError("civitai download has no signed url")
+        if _looks_like_weight(resp):
+            resp.close()
+            return current
+        ctype = _response_header(resp, "Content-Type") or "no content-type"
+        try:
+            raw = resp.read(8192)
+        finally:
+            resp.close()
+        found = _json_download_url(raw)
+        if found:
+            if not _civitai_host(urllib.parse.urlsplit(found).netloc):
+                return found
+            current = found
+            continue
+        raise OSError(f"civitai download has no signed url ({ctype}, {len(raw)} bytes)")
     if last_exc is not None:
         raise last_exc
     raise RuntimeError("download redirect failed")
@@ -8349,16 +8403,37 @@ def fetch_text(url: str, dest: Path, *, min_bytes: int = 100, token: str = "", a
         return False
 
 
+def _resume_civitai_body(url: str, part: Path) -> None:
+    """Resume a weight that Civitai serves on its own host. Bearer stays on that host."""
+    existing = part.stat().st_size if part.is_file() else 0
+    headers = _civitai_headers()
+    if existing:
+        headers["Range"] = f"bytes={existing}-"
+    with _open_civitai(url, headers, timeout=120) as resp:
+        status = int(getattr(resp, "status", 200) or 200)
+        mode = "ab" if existing and status == 206 else "wb"
+        with open(part, mode) as out:
+            while True:
+                chunk = resp.read(1024 * 1024)
+                if not chunk:
+                    break
+                out.write(chunk)
+
+
 def _resume_download_once(url: str, part: Path) -> None:
     """One pass with wget/curl Range resume. Partial file is kept on failure.
 
     A civitai.com URL is resolved first. The API token stays on that hop.
-    wget and curl receive the signed URL and no Authorization header.
+    wget and curl receive an off-site signed URL and no Authorization header.
+    A weight served on civitai.com itself is resumed with Bearer.
     """
     part.parent.mkdir(parents=True, exist_ok=True)
     fetch_url = url
     if _civitai_host(urllib.parse.urlsplit(str(url)).netloc):
         fetch_url = _resolve_civitai_download_url(url)
+    if _civitai_host(urllib.parse.urlsplit(str(fetch_url)).netloc):
+        _resume_civitai_body(fetch_url, part)
+        return
     wget = shutil.which("wget")
     if wget:
         r = subprocess.run(

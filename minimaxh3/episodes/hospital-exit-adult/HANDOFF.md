@@ -29,9 +29,9 @@ LoRA スタジオのスキルは病棟の指アナルに使わない。指アナ
 
 ## 残課題（2026-10-24）
 
-pytest は 124 通過。開いたときのフォームは変えていない。生成ボタンは人間。ランタイムを再起動して Run all。同じカーネルは古いエンジンのまま。
+pytest は 126 通過。開いたときのフォームは変えていない。生成ボタンは人間。ランタイムを再起動して Run all。同じカーネルは古いエンジンのまま。
 
-- チェックポイントは Eros Max beta7 int8。ファイル `h3ErosMax_beta7_3346133.safetensors`。Civitai 2851079、version 3429412、fileId 3346133。21,055,726,440 bytes。同じ版の bf16（fileId 3330999）と、先の int8（fileId 3329966）は使わない。beta6 も beta5 も、このファイルの代わりにならない。古いファイルは消さない。公開サンプルは euler 8。CFG は BasicGuider のまま。質の未指定拍は 12 のまま。
+- チェックポイントは Eros Max beta7 bf16。AIR `civitai:2851079@3429412+3330999`。ファイル `h3ErosMax_beta7_3330999.safetensors`。40,222,934,448 bytes。同じ版の int8（fileId 3346133 と 3329966）は取らない。beta6 もこのファイルの代わりにならない。古いファイルは消さない。Civitai が署名 URL ではなく本体を 200 で返すときは、その応答を Bearer のまま続ける。公開サンプルは euler 8。CFG は BasicGuider のまま。質の未指定拍は 12 のまま。
 - beta7 も TURBO-hybrid。スピードの 4step LoRA は積めない。4 step のまま描くと体が溶ける。スピードで steps の無い拍は euler 8 に上がる。バランスは元から 8。質は 12。拍に書いた steps は優先する。`03-kiss-peak` と `03-kiss-close` は 8 のまま。`04-gin-lick`、`04-gin-jupo`、`04-gin-wait` は steps が無かったので、スピードだと 4 だった。今は 8。
 - トイレに「トイレ・アナルディルド」を足した。便座に座り、膝は曲げ、太ももは閉じたまま。極太のピンクの円筒ディルドは金属の棒に付き、肛門へ入る。トリガーは `zy_3dcg`。ファイル `H3_anal_dildo_ref2va_v01.safetensors`。Civitai 3028491、version 3439849、fileId 3337550。強度 1.0。`anuspussy` 0.40 も積む。膣の「トイレ・ディルド」は残す。開いたときの選択はトイレ触手のまま。
 - 角の横は Spooning Sex - Leg Up に差し替えた。ファイル `spooning-sex-mh3-e34-az420.safetensors`。Civitai 1803312、version 3444113、fileId 3342746。Cuddle Cup `SPOONLG_CUDDLECUP_v1.safetensors` はもう取らない。学習文はトリガーに残す。その文には a man がある。動作文は角のまま。あやは左を下にして横になり、右足を曲げて上げ、角の右手がその足を持つ。頭はフレームの右。円を描く腰は外した。
