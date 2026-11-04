@@ -224,4 +224,83 @@ else
   say M12 1 "最小の文字の高さは${text_min}px"
 fi
 
+# M13: 腕の比率。図の領域で、細長さが5.5倍を超えるかたまりが1コマでもあればFAIL。
+# M14: 塗りのかたまりが2つ以上で、頭の形でないかたまりがあればFAIL。
+read -r arm_fail head_fail < <(python3 - "$FILE" << 'PY'
+import subprocess, sys
+path = sys.argv[1]
+probe = subprocess.check_output([
+    "ffprobe", "-v", "error", "-select_streams", "v:0",
+    "-show_entries", "format=duration", "-of", "csv=p=0", path,
+], text=True).strip()
+duration = float(probe or "10.5")
+times = [duration * i / 7 for i in range(8)]
+arm_fail = 0
+head_fail = 0
+for ss in times:
+    raw = subprocess.check_output([
+        "ffmpeg", "-hide_banner", "-loglevel", "error",
+        "-ss", f"{ss:.3f}", "-i", path, "-frames:v", "1",
+        "-f", "rawvideo", "-pix_fmt", "rgb24", "-",
+    ])
+    width, height = 1080, 1920
+    if len(raw) != width * height * 3:
+        continue
+    br, bg, bb = raw[0], raw[1], raw[2]
+    y0, y1 = int(0.18 * height), int(0.82 * height)
+    step = 6
+    cols = list(range(0, width, step))
+    rows = list(range(y0, y1, step))
+    mask = []
+    for y in rows:
+        row = []
+        for x in cols:
+            i = (y * width + x) * 3
+            r, g, b = raw[i], raw[i + 1], raw[i + 2]
+            row.append(abs(r - br) > 28 or abs(g - bg) > 28 or abs(b - bb) > 28)
+        mask.append(row)
+    hh, ww = len(mask), len(mask[0])
+    seen = [[False] * ww for _ in range(hh)]
+    blobs = []
+    for y in range(hh):
+        for x in range(ww):
+            if not mask[y][x] or seen[y][x]:
+                continue
+            stack = [(y, x)]
+            seen[y][x] = True
+            pts = []
+            while stack:
+                cy, cx = stack.pop()
+                pts.append((cy, cx))
+                for dy, dx in ((1, 0), (-1, 0), (0, 1), (0, -1)):
+                    ny, nx = cy + dy, cx + dx
+                    if 0 <= ny < hh and 0 <= nx < ww and mask[ny][nx] and not seen[ny][nx]:
+                        seen[ny][nx] = True
+                        stack.append((ny, nx))
+            if len(pts) < 12:
+                continue
+            ys = [p[0] for p in pts]
+            xs = [p[1] for p in pts]
+            bh = max(ys) - min(ys) + 1
+            bw = max(xs) - min(xs) + 1
+            ratio = max(bw, bh) / max(1, min(bw, bh))
+            blobs.append(ratio)
+    if any(ratio >= 5.5 for ratio in blobs):
+        arm_fail = 1
+    if len(blobs) >= 2 and any(ratio >= 2.2 for ratio in blobs):
+        head_fail = 1
+print(f"{arm_fail} {head_fail}")
+PY
+)
+if [[ "$arm_fail" == "1" ]]; then
+  say M13 0 "腕の比率の外れ値が1コマ以上"
+else
+  say M13 1 "腕の比率の外れ値なし"
+fi
+if [[ "$head_fail" == "1" ]]; then
+  say M14 0 "塗りのかたまりが2つ以上で、頭のないかたまりがある"
+else
+  say M14 1 "頭のない塗りのかたまりなし"
+fi
+
 exit "$fail"
