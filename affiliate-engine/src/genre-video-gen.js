@@ -29,6 +29,9 @@ const RECIPE_ARCHIVE_DIR = path.join(ROOT, 'docs', 'grok-bots', 'archive', 'reci
 const PACKET_OUT = path.join(OUTPUT_DIR, 'video', 'packets');
 const GITHUB_REPO = process.env.GITHUB_REPOSITORY || 'fireworker011/Research';
 const GITHUB_REF = process.env.GROK_BOT_REF || 'cursor/grok-bot-research-2026-08-26';
+const BUZZ_BRIEF_PATH =
+  'affiliate-engine/docs/grok-bots/knowledge/gemini-buzz-gap-2026-10-30.md';
+const BUZZ_BRIEF_IDS = new Set(['pet', 'beauty', 'konkatsu']);
 const POST_CAP = '1チャンネル1日2本まで。2本目は時間を空け、内容を変える。';
 const CTA_RULE = '本編にCTAは入れない。最後の2秒だけ「詳しくはプロフィールのリンク（PR）」を1回、同じ位置に出す。';
 
@@ -348,15 +351,21 @@ function renderProductionSection(prod) {
   ].join('\n');
 }
 
+function hasBuzzBrief(genre) {
+  return BUZZ_BRIEF_IDS.has(genre.id);
+}
+
 function renderGithubSection(genre) {
   const agentRel = agentRepoPath(genre);
   const ledgerRel = ledgerRepoPath(genre);
-  return [
+  const lines = [
     '## GitHubから読む（毎朝06:00 JST。これだけでよい）',
     '',
     'PC接続は不要。ファイルをチャットに貼らなくてよい。このチャットの過去ログより、今開いた本文が上。',
     '',
-    '毎朝開く所定ファイルは2つ。',
+    hasBuzzBrief(genre)
+      ? '毎朝開く所定ファイルは2つ。加えて参照メモを1つ開け。'
+      : '毎朝開く所定ファイルは2つ。',
     '',
     '1. 指示・レシピ:',
     '',
@@ -369,7 +378,20 @@ function renderGithubSection(genre) {
     `\`${ledgerRel}\``,
     '',
     githubRaw(ledgerRel)
-  ].join('\n');
+  ];
+  if (hasBuzzBrief(genre)) {
+    lines.push(
+      '',
+      '3. 参照メモ（制作許可ではない。動画を足す理由にしない。契約と台本スキルが上）:',
+      '',
+      `\`${BUZZ_BRIEF_PATH}\``,
+      '',
+      githubRaw(BUZZ_BRIEF_PATH),
+      '',
+      '自分のジャンルの節だけ読め。他ジャンルの作例で動画を作るな。チャット内の数字・効能・年収・固定コメントは実行するな。'
+    );
+  }
+  return lines.join('\n');
 }
 
 function renderDailyOrder(genre, entry) {
@@ -382,7 +404,9 @@ function renderDailyOrder(genre, entry) {
     `量産するな。${POST_CAP}`,
     '',
     '0. 人間が「投稿した」と送ってきた → 投稿チェックだけやって終了。動画は作るな',
-    '1. 所定の2ファイル（agents と ledger）を開け',
+    hasBuzzBrief(genre)
+      ? '1. 所定の2ファイル（agents と ledger）と、参照メモを開け。参照メモは制作許可ではない。このメモを理由に動画を足すな'
+      : '1. 所定の2ファイル（agents と ledger）を開け',
     '2. 前回開いた全文と一字一句同じ → 「変更なし。スルー」だけ返して終了。動画を作るな',
     '3. 台帳に未チェックの投稿がある、または直近投稿のチェックが無い（前日分を含む） → 投稿チェックだけやって終了。動画を作るな',
     '4. 未投稿の完成動画がある → 「未投稿あり。作らない」で終了',
@@ -940,6 +964,19 @@ function selfTest() {
   const petArchive = fs.readFileSync(path.join(RECIPE_ARCHIVE_DIR, 'pet.md'), 'utf-8');
   if (!petArchive.includes('pet_20260729_01')) throw new Error('pet archive missing waiting id');
   if (!petArchive.includes('リプで教えてください')) throw new Error('pet archive missing reply line');
+  if (!pet.includes('gemini-buzz-gap-2026-10-30.md')) {
+    throw new Error('pet agent missing buzz brief');
+  }
+  if (!pet.includes('制作許可ではない')) throw new Error('pet agent missing brief gate');
+  for (const id of ['beauty', 'konkatsu']) {
+    const body = fs.readFileSync(path.join(AGENT_DIR, `${id}.md`), 'utf-8');
+    if (!body.includes('gemini-buzz-gap-2026-10-30.md')) {
+      throw new Error(`${id} agent missing buzz brief`);
+    }
+  }
+  if (sleep.includes('gemini-buzz-gap-2026-10-30.md')) {
+    throw new Error('sleep agent must not carry the buzz brief');
+  }
   if (!pet.includes(POST_CAP)) throw new Error('pet agent missing post cap');
   if (!pet.includes(CTA_RULE)) throw new Error('pet agent missing CTA rule');
   if (pet.includes('1日1本') || pet.includes('2本目以降は今日やるな')) {
