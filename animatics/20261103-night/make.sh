@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # 2026-11-04: 尺は10.5秒。秒は0.5刻み。
-# この下書きの指示は音なし。音声は足さない。この修正では mp4 を書き出していない。
-# 下書き動画（灰色の静止カード＋SRT焼き込み）。音は入れない。絵は描かない。生成AIは使わない。
+# 音なしは取り消した。narrate.py が字幕の台詞を aac で読む。
+# 下書き動画（灰色の静止カード＋SRT焼き込み＋女性AIのナレーション）。絵は描かない。
 # 字幕は同じフォルダの subs/（入力のSRTをそのまま）。台本ファイルはコミットしない。
 # 使い方: bash animatics/20261103-night/make.sh
 # 1本だけ: ONLY=<名前> bash animatics/20261103-night/make.sh
@@ -130,11 +130,16 @@ EOF
     cat "$BUILD/${name}.overlay" >> "$filter"
   fi
   printf 'subtitles=%s:fontsdir=%s\n' "$ass" "$FONTDIR" >> "$filter"
+  python3 "$ROOT/narrate.py" "$SUBS/${name}.srt" "$BUILD/${name}.m4a" "$dur"
   ffmpeg -y -hide_banner -loglevel error \
     -f lavfi -i "color=c=0x6A6A6A:s=1080x1920:r=24:d=${dur}" \
+    -i "$BUILD/${name}.m4a" \
     -filter_script:v "$filter" \
     -frames:v "$frames" \
-    -c:v libx264 -pix_fmt yuv420p -r 24 -fps_mode cfr -an \
+    -map 0:v:0 -map 1:a:0 \
+    -c:v libx264 -pix_fmt yuv420p -r 24 -fps_mode cfr \
+    -c:a aac -b:a 160k -ar 48000 \
+    -t "$dur" \
     -movflags +faststart \
     "$outdir/draft.mp4"
   extract "$outdir/draft.mp4" 0 "$outdir/frames/0.0.png"
@@ -185,13 +190,13 @@ write_card "$BUILD/zai-foot.txt" \
   "65万円は令和8年度の額。毎年度改定"
 write_card "$BUILD/zai-foot25.txt" "2万5千円はPDFの2.5（単位：万円）"
 write_card "$BUILD/zai-src.txt" "出典：日本年金機構"
-write_card "$BUILD/zai-credit.txt" "VOICEVOX:冥鳴ひまり"
+write_card "$BUILD/zai-credit.txt" "声：女性AI"
 add_text "$OV" "$BUILD/zai-right-big.txt" 40 white "w-text_w-80" 860 'lt(t\,3)'
 add_text "$OV" "$BUILD/zai-right-small.txt" 26 white "w-text_w-80" 916 'lt(t\,3)'
 add_text "$OV" "$BUILD/zai-head.txt" 28 white 40 660 'gte(t\,0.5)'
-add_text "$OV" "$BUILD/zai-row65.txt" 26 white 40 740 'gte(t\,0.5)*lt(t\,3.0)'
-add_text "$OV" "$BUILD/zai-row65.txt" 26 0xBDBDBD 40 740 'gte(t\,3.0)'
-add_text "$OV" "$BUILD/zai-row46.txt" 26 white 40 840 'gte(t\,3.0)*lt(t\,5.5)'
+add_text "$OV" "$BUILD/zai-row65.txt" 26 white 40 740 'gte(t\,0.0)*lt(t\,2.5)'
+add_text "$OV" "$BUILD/zai-row65.txt" 26 0xBDBDBD 40 740 'gte(t\,2.5)'
+add_text "$OV" "$BUILD/zai-row46.txt" 26 white 40 840 'gte(t\,2.5)*lt(t\,5.5)'
 add_text "$OV" "$BUILD/zai-row46.txt" 26 0xBDBDBD 40 840 'gte(t\,5.5)'
 add_text "$OV" "$BUILD/zai-row25.txt" 26 white 40 960 'gte(t\,5.5)*lt(t\,8.5)'
 add_text "$OV" "$BUILD/zai-row25.txt" 26 0xBDBDBD 40 960 'gte(t\,8.5)'
@@ -247,7 +252,7 @@ write_card "$BUILD/mai-foot.txt" \
   "給付ページの表は「家族埋葬費」" \
   "同じページの導入は「家族埋葬料」とも書いている"
 write_card "$BUILD/mai-src.txt" "出典：協会けんぽ"
-write_card "$BUILD/mai-credit.txt" "VOICEVOX:冥鳴ひまり"
+write_card "$BUILD/mai-credit.txt" "声：女性AI"
 add_text "$OV" "$BUILD/mai-right-big.txt" 40 white "w-text_w-80" 860 'lt(t\,3)'
 add_text "$OV" "$BUILD/mai-right-small.txt" 26 white "w-text_w-80" 916 'lt(t\,3)'
 add_text "$OV" "$BUILD/mai-head.txt" 28 white 40 660 'gte(t\,0.5)'
@@ -255,9 +260,9 @@ add_text "$OV" "$BUILD/mai-row1.txt" 26 white 40 740 'gte(t\,0.5)*lt(t\,3.0)'
 add_text "$OV" "$BUILD/mai-row1.txt" 26 0xBDBDBD 40 740 'gte(t\,3.0)'
 add_text "$OV" "$BUILD/mai-row2.txt" 26 white 40 860 'gte(t\,3.0)*lt(t\,5.5)'
 add_text "$OV" "$BUILD/mai-row2.txt" 26 0xBDBDBD 40 860 'gte(t\,5.5)'
-add_text "$OV" "$BUILD/mai-row3.txt" 26 white 40 1020 'gte(t\,5.5)*lt(t\,8.5)'
-add_text "$OV" "$BUILD/mai-row3.txt" 26 0xBDBDBD 40 1020 'gte(t\,8.5)'
-add_text "$OV" "$BUILD/mai-note.txt" 26 white 40 1160 'gte(t\,8.5)'
+add_text "$OV" "$BUILD/mai-row3.txt" 26 white 40 1020 'gte(t\,5.5)*lt(t\,8.0)'
+add_text "$OV" "$BUILD/mai-row3.txt" 26 0xBDBDBD 40 1020 'gte(t\,8.0)'
+add_text "$OV" "$BUILD/mai-note.txt" 26 white 40 1160 'gte(t\,8.0)'
 add_text "$OV" "$BUILD/mai-foot.txt" 22 0xE6E6E6 40 1260 'gte(t\,0.5)'
 add_text "$OV" "$BUILD/mai-credit.txt" 24 white 40 1848 'gte(t\,0)'
 add_text "$OV" "$BUILD/mai-src.txt" 24 white "w-text_w-40" 1848 'gte(t\,0)'
@@ -307,17 +312,17 @@ write_card "$BUILD/iku-foot.txt" \
   "最低限度額以下の月は、その月は不支給" \
   "限度額の円は、開いた本文と支給率の画像に無かった"
 write_card "$BUILD/iku-src.txt" "出典：厚生労働省"
-write_card "$BUILD/iku-credit.txt" "VOICEVOX:冥鳴ひまり"
+write_card "$BUILD/iku-credit.txt" "声：女性AI"
 add_text "$OV" "$BUILD/iku-right-big.txt" 40 white "w-text_w-80" 860 'lt(t\,3)'
 add_text "$OV" "$BUILD/iku-right-small.txt" 26 white "w-text_w-80" 916 'lt(t\,3)'
 add_text "$OV" "$BUILD/iku-head.txt" 28 white 40 660 'gte(t\,0.5)'
-add_text "$OV" "$BUILD/iku-row20.txt" 26 white 40 740 'gte(t\,0.5)*lt(t\,5.5)'
-add_text "$OV" "$BUILD/iku-row20.txt" 26 0xBDBDBD 40 740 'gte(t\,5.5)'
-add_text "$OV" "$BUILD/iku-row30.txt" 26 white 40 860 'gte(t\,3.0)*lt(t\,5.5)'
+add_text "$OV" "$BUILD/iku-row20.txt" 26 white 40 740 'gte(t\,0.0)*lt(t\,2.0)'
+add_text "$OV" "$BUILD/iku-row20.txt" 26 0xBDBDBD 40 740 'gte(t\,2.0)'
+add_text "$OV" "$BUILD/iku-row30.txt" 26 white 40 860 'gte(t\,2.0)*lt(t\,5.5)'
 add_text "$OV" "$BUILD/iku-row30.txt" 26 0xBDBDBD 40 860 'gte(t\,5.5)'
-add_text "$OV" "$BUILD/iku-row27.txt" 26 white 40 980 'gte(t\,5.5)*lt(t\,8.5)'
-add_text "$OV" "$BUILD/iku-row27.txt" 26 0xBDBDBD 40 980 'gte(t\,8.5)'
-add_text "$OV" "$BUILD/iku-note.txt" 26 white 40 1100 'gte(t\,8.5)'
+add_text "$OV" "$BUILD/iku-row27.txt" 26 white 40 980 'gte(t\,5.5)*lt(t\,8.0)'
+add_text "$OV" "$BUILD/iku-row27.txt" 26 0xBDBDBD 40 980 'gte(t\,8.0)'
+add_text "$OV" "$BUILD/iku-note.txt" 26 white 40 1100 'gte(t\,8.0)'
 add_text "$OV" "$BUILD/iku-foot.txt" 22 0xE6E6E6 40 1200 'gte(t\,0.5)'
 add_text "$OV" "$BUILD/iku-credit.txt" 24 white 40 1848 'gte(t\,0)'
 add_text "$OV" "$BUILD/iku-src.txt" 24 white "w-text_w-40" 1848 'gte(t\,0)'
