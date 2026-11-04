@@ -8,7 +8,7 @@ mp4 とフレームは削除した。成果物は `cuts-for-pc.md`。`make.sh` �
 
 黄字は灰色カードの説明（カット番号と、台本の「映っているもの」）。白字は入力のSRTを焼いたもの。金メモの表・右の金額・出典・クレジットは、台本が「編集で載せる（SRTには入れない）」と書いた画面文字。カードと字幕は別。
 
-ペットの台本とSRTは、ブランチ `cursor/pet-kuroneko-scripts-20261103`（`9836ed1c`）の `shorts-scripts/2026-11-14-pet/` から読んだ。金メモは、ブランチ `cursor/kanememo-scripts-20261103`（`6a16a20b`）の `shorts-scripts/2026-11-15-kane/` から読んだ。6本とも同名のSRTがあった。SRTなしで飛ばした本は0。`subs/` のSRTは入力とバイト列が一致した。時刻も文言も変えていない。台本の md はこのPRに入れていない。
+ペットの台本とSRTは、ブランチ `cursor/pet-kuroneko-scripts-20261103`（`9836ed1c`）の `shorts-scripts/2026-11-14-pet/` から読んだ。金メモは、ブランチ `cursor/kanememo-scripts-20261103`（`6a16a20b`）の `shorts-scripts/2026-11-15-kane/` から読んだ。6本とも同名のSRTがあった。SRTなしで飛ばした本は0。`subs/` のSRTは入力とバイト列が一致した。その後、Imagine を字幕の秒に合わせ、6.0〜8.5秒は猫が器の粒を食べる文にした。台本の md はこのフォルダの scripts/ にある。
 
 添付の tar は作業フォルダの外（`/tmp/inputs`）に展開した。このPRには入れていない。決まりごとはその中の `common/QC-5rules.md`、`common/video-done-checklist.md`、`common/check_video.sh`。この6本の台本は添付の `video/scripts` には無く、上のブランチにある。チェッカーはブランチ `cursor/script-lint-20261028-c032`（`f517a405`）の `tools/script_lint.py` を、中身を変えずに `/tmp/script_lint.py` として実行した。前回の作り方は `cursor/animatic-drafts-20261103-night`（先端 `947d3fd1`、PR #297）を読んだ。先端の make.sh はナレーション付きになっている。この指示書は音なしなので、同じブランチの音なしの書き出し（`b7f0a057`）と、その前の `cursor/animatic-drafts-20261102-night`（PR #292）のカード・字幕・字体のやり方にそろえた。フォルダは `animatics/20261104-night/`。
 
@@ -54,56 +54,65 @@ mp4 とフレームは削除した。成果物は `cuts-for-pc.md`。`make.sh` �
 
 ## script_lint.py
 
-終了コード 1。対象は入力の台本6本と、同じ名前のSRT。チェッカーは `f517a405` の `tools/script_lint.py`。
+終了コード 0。対象はこのフォルダ（scripts/ と subs/）。旧表記は出ていない。
 
-| 本 | SRT書式 | 字幕の間 | PR | 禁止語 | 見出し | 自己採点 | a8 | 結果 |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| 2026-11-14-ペット-kuroneko-bane | PASS | PASS（最大0.5秒） | FAIL（0.000秒の右上PRが無い） | PASS | PASS | PASS（86） | なし | FAIL |
-| 2026-11-15-ペット-kuroneko-matto | PASS | PASS（最大0.5秒） | FAIL（0.000秒の右上PRが無い） | PASS | PASS | PASS（86） | なし | FAIL |
-| 2026-11-15-金メモ-kakyu-nenkin | PASS | PASS（最大0.5秒） | PASS（PRなし） | PASS | PASS | PASS（90） | なし | PASS |
-| 2026-11-16-ペット-kuroneko-kyujiki | PASS | PASS（最大0.5秒） | FAIL（0.000秒の右上PRが無い） | PASS | PASS | PASS（86） | なし | FAIL |
-| 2026-11-16-金メモ-kougaku-kaigo | PASS | PASS（最大0.5秒） | PASS（PRなし） | PASS | PASS | PASS（90） | なし | PASS |
-| 2026-11-17-金メモ-ginou-shutoku | PASS | PASS（最大0.5秒） | PASS（PRなし） | PASS | PASS | PASS（90） | なし | PASS |
+| 本 | SRT書式 | 字幕の間 | PR | 禁止語 | 見出し | 自己採点 | 表 | 尺 | プロンプト | フック | 速度 | 誘導 | a8 | 結果 |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| 2026-11-14-ペット-kuroneko-bane | PASS | PASS（最大0.5秒） | PASS | PASS | PASS | PASS（86） | PASS（表なし） | PASS（10.5秒） | PASS | PASS | PASS | PASS（対象外） | なし | PASS |
+| 2026-11-15-ペット-kuroneko-matto | PASS | PASS（最大0.5秒） | PASS | PASS | PASS | PASS（86） | PASS（表なし） | PASS（10.5秒） | PASS | PASS | PASS | PASS（対象外） | なし | PASS |
+| 2026-11-15-金メモ-kakyu-nenkin | PASS | PASS（最大0.5秒） | PASS（PRなし） | PASS | PASS | PASS（90） | PASS | PASS（10.5秒） | PASS | PASS | PASS | PASS | なし | PASS |
+| 2026-11-16-ペット-kuroneko-kyujiki | PASS | PASS（最大0.5秒） | PASS | PASS | PASS | PASS（86） | PASS（表なし） | PASS（10.5秒） | PASS | PASS | PASS | PASS（対象外） | なし | PASS |
+| 2026-11-16-金メモ-kougaku-kaigo | PASS | PASS（最大0.5秒） | PASS（PRなし） | PASS | PASS | PASS（90） | PASS | PASS（10.5秒） | PASS | PASS | PASS | PASS | なし | PASS |
+| 2026-11-17-金メモ-ginou-shutoku | PASS | PASS（最大0.5秒） | PASS（PRなし） | PASS | PASS | PASS（90） | PASS | PASS（10.5秒） | PASS | PASS | PASS | PASS | なし | PASS |
 
-合計 6本: PASS 3 / FAIL 3 / WARN 0
-
-チェッカーは、PR行とフック行を除いた字幕の間を見る。最大は6本とも0.5秒。台本が書いている間と同じ。自己採点は台本の最後の合計（ペット86、金メモ90）。ペットのFAILは、0.000秒の `{\an9}PR` がSRTに無いこと。最後2秒の `#PR` はチェッカー上は通っている（FAILの理由は右上だけ）。台本は直していない。
+合計 6本: PASS 6 / FAIL 0 / WARN 0
 
 ## check_video.sh
 
-入力の `common/check_video.sh`。ペットは `pet`、金メモは `kane`。ペット3本は終了コード1（M6・M8）。金メモ3本は終了コード1（M5・M6・M8）。
+このフォルダに mp4 は無い。下書きの確認は `check_cuts.py`。FAIL は 0。
 
-ペット3本は同じ結果:
+```
+PASS	mp4は書き出していない
+PASS	文字の高さは40px以上
+PASS	尺が8.0〜10.5秒
+PASS	カットは10.5秒以内
+PASS	プロンプトがある
+PASS	声は等倍
+PASS	ペット 2026-11-14-ペット-kuroneko-bane の猫の描写
+PASS	ペット 2026-11-14-ペット-kuroneko-bane の最後の広告
+PASS	ペット 2026-11-14-ペット-kuroneko-bane の商品カット
+PASS	ペット 2026-11-15-ペット-kuroneko-matto の猫の描写
+PASS	ペット 2026-11-15-ペット-kuroneko-matto の最後の広告
+PASS	ペット 2026-11-15-ペット-kuroneko-matto の商品カット
+PASS	金メモ 2026-11-15-金メモ-kakyu-nenkin にPR表記なし
+PASS	ペット 2026-11-16-ペット-kuroneko-kyujiki の猫の描写
+PASS	ペット 2026-11-16-ペット-kuroneko-kyujiki の最後の広告
+PASS	ペット 2026-11-16-ペット-kuroneko-kyujiki の商品カット
+PASS	金メモ 2026-11-16-金メモ-kougaku-kaigo にPR表記なし
+PASS	金メモ 2026-11-17-金メモ-ginou-shutoku にPR表記なし
+PASS	ペットの節がある
+PASS	金メモの節がある
+```
 
-| ID | 判定 | 根拠 |
-|---|---|---|
-| M1 | PASS | コンテナ=mov,mp4,m4a,3gp,3g2,mj2（mp4系） |
-| M2 | PASS | 映像コーデック=h264（許可: h264） |
-| M3 | PASS | 解像度=1080x1920 |
-| M4 | PASS | fps=24.00 |
-| M5 | PASS | 長さ=10.500000秒（8〜50秒） |
-| M6 | FAIL | 音声=なし（aac必須） |
-| M7 | PASS | pix_fmt=yuv420p |
-| M8 | FAIL | 音声トラックが無いので測れない |
-| M9 | PASS | 冒頭1秒に0.5秒以上の黒画面なし |
-| M10 | PASS | 縦長（9:16） |
+音声の無い 1080x1920・10.5秒・24fps の mp4 で、`--final` の有無を確認した。
 
-金メモ3本は M5 だけペットと違う。他は上と同じ。
+`--final` なし（終了コード 0。M6 と M8 は合格）:
 
-| 本 | M5 |
-|---|---|
-| 加給年金 | FAIL 長さ=10.500000秒（規格 12〜60秒） |
-| 高額介護 | FAIL 長さ=10.500000秒（規格 12〜60秒） |
-| 技能習得手当 | FAIL 長さ=10.500000秒（規格 12〜60秒） |
+```
+M6	PASS	音声なし（下書きは音を入れない）
+M8	PASS	音声トラックなし（等倍の声はPCで付ける）
+M12	SKIP	字幕と表の領域に文字の帯が無い
+```
 
-### 行の決まり違い
+`--final` あり（終了コード 1。M6 と M8 は不合格）:
 
-- M6・M8: 指示書はこの下書きを音なしと指定している。`check_video.sh` は aac と、無音でないことを要求する。音を足すと指示書に反するので直していない。直し回数には数えていない。
-- M5（金メモ）: 台本の尺は10.5秒。`check_video.sh` の kane は12〜60秒。台本の秒を伸ばしていない。直し回数には数えていない。
-- 金メモの G3: 画面に「VOICEVOX:冥鳴ひまり」はある。いらすとやの画像は使っていない（灰色カード）ので、「イラスト：いらすとや」は載せていない。
-- 金メモの G4（BGM）と声: この下書きは音なし。BGMもVOICEVOXの声も入っていない。画面の「VOICEVOX:冥鳴ひまり」は台本の画面文字。PASSにはしていない。
-- G1: 使った画像は0。G2: 口の絵は無い。G5: 最後の静止画に「プロフィールのリンク」は無い。G6: 画面の円は台本の表。足した円は無い。公式ページは今回開いていない。
-- 声・BGM・Drive・本人の試聴OKは、この静止カードの範囲外。PASSにはしていない。
+```
+M6	FAIL	音声=なし（完成はaac必須）
+M8	FAIL	音声トラックが無い（完成mp4は --final 必須）
+M12	SKIP	字幕と表の領域に文字の帯が無い
+```
+
+完成mp4は --final 必須。M12 は、字幕と表の領域に文字の帯が無いとき SKIP。
 
 ## 1秒目のフックとPR
 
