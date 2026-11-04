@@ -44,6 +44,7 @@ COLUMNS = (
     "禁止語",
     "見出し",
     "自己採点",
+    "表",
     "a8",
     "結果",
 )
@@ -73,6 +74,7 @@ class Row:
     banned: str
     headings: str
     score: str
+    table: str
     a8: str
     result: str
 
@@ -333,8 +335,43 @@ def join_status(parts: list[str]) -> str:
     return "FAIL（" + "、".join(parts) + "）"
 
 
+def check_table(md: str) -> str:
+    """早見表は1画面3行まで。数字の行は1行につき2秒以上。"""
+    sections = parse_sections(md)
+    blocks = [section for section in sections if "早見表" in section.title]
+    if not blocks:
+        return "PASS（表なし）"
+    rows: list[str] = []
+    for line in blocks[0].body.splitlines():
+        stripped = line.strip()
+        if not stripped.startswith("|"):
+            continue
+        if "---" in stripped:
+            continue
+        head = stripped.strip("|").split("|")[0].strip()
+        if head in ("行", "区分", "表示"):
+            continue
+        rows.append(stripped)
+    if len(rows) > 3:
+        return f"FAIL（表が{len(rows)}行）"
+    reasons: list[str] = []
+    for index, line in enumerate(rows, start=1):
+        if re.search(r"\d", line) is None:
+            continue
+        matched = re.search(r"(\d+\.\d+)\s*[-–]\s*(\d+\.\d+)", line)
+        if matched is None:
+            reasons.append(f"{index}行目に秒が無い")
+            continue
+        span = float(matched.group(2)) - float(matched.group(1))
+        if span < 2.0:
+            reasons.append(f"{index}行目が{span:.3f}秒")
+    if reasons:
+        return "FAIL（" + "、".join(reasons) + "）"
+    return "PASS"
+
+
 def overall_of(row: Row) -> str:
-    hard = (row.srt_format, row.gap, row.pr, row.banned, row.headings, row.score)
+    hard = (row.srt_format, row.gap, row.pr, row.banned, row.headings, row.score, row.table)
     if any(not item.startswith("PASS") for item in hard):
         return "FAIL"
     if row.a8.startswith("WARN"):
@@ -374,8 +411,9 @@ def lint_texts(name: str, md: str | None, srt: str | None) -> Row:
             pr = "FAIL（字幕を読めない）"
 
     banned = check_banned(spoken, None if srt is None else srt_body)
+    table = check_table("" if md is None else md_body)
     a8 = check_a8(md_body + "\n" + srt_body)
-    row = Row(name, srt_format, gap, pr, banned, headings, score, a8, "FAIL")
+    row = Row(name, srt_format, gap, pr, banned, headings, score, table, a8, "FAIL")
     return Row(
         row.name,
         row.srt_format,
@@ -384,6 +422,7 @@ def lint_texts(name: str, md: str | None, srt: str | None) -> Row:
         row.banned,
         row.headings,
         row.score,
+        row.table,
         row.a8,
         overall_of(row),
     )
@@ -425,6 +464,7 @@ def render(rows: list[Row]) -> str:
             row.banned,
             row.headings,
             row.score,
+            row.table,
             row.a8,
             row.result,
         )
