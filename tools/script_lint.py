@@ -5,8 +5,13 @@
 - SRT の番号、時刻（HH:MM:SS,mmm）、開始 < 終了
 - セリフ字幕どうしの空きが 1.5 秒以内
   （PR 行とフック行は除く。フック行は {\\an8}、PR 行は {\\an9}PR / #PR / PR｜）
-- ペット・美容・婚活は 0.000 秒から右上 PR があり、SRT 終端の最後 2 秒に #PR がある
-- ゆあ・金メモは PR が無い
+- ペットと金メモの尺は 8.0〜10.5秒。字幕の端は 0.5秒刻み（24fps の区切り）
+- ペットは PR を最後の 2 秒だけにする。右上に常時出すのは NG
+- 美容・婚活は 0.000 秒から右上 PR があり、SRT 終端の最後 2 秒に #PR がある
+- ゆあ・金メモは PR が無い。金メモの概要欄に「アフィリエイト広告を含みます」は無い
+- 早見表は 3行まで。数字の行は 2秒以上。秒を行に書いた表は文字の高さ 40px 以上
+- Imagine のプロンプトは、フック以外の字幕 1本につき 1本。秒は字幕と揃える
+- ペットの猫の描写は全カットで同じ文。商品（器と袋）のカットが 1つある
 - 禁止語が台詞・字幕に無い（根拠メモや PR 注記は見ない）
 - 見出し「0〜1秒フック」「brief」「自己採点」があり、自己採点の最後の合計が 80 以上
 - アフィリエイト URL の断片があれば警告（結果は WARN。他が落ちていれば FAIL が優先）
@@ -26,6 +31,11 @@ from pathlib import Path
 
 GAP_LIMIT_MS = 1500
 PR_TAIL_MS = 2000
+DURATION_LO_MS = 8000
+DURATION_HI_MS = 10500
+HALF_MS = 500
+CAT_SENTENCE = "黒い短毛で、目は黄色、耳は立っている。"
+AFFILIATE_LINE = "アフィリエイト広告を含みます"
 HOOK_MARKS = ("0\u301c1秒フック", "0\uff5e1秒フック")
 BANNED_WORDS = ("必ず稼げる", "若返る", "治る", "絶対", "必ず")
 OPEN_PR = "{\\an9}PR"
@@ -43,6 +53,9 @@ COLUMNS = (
     "禁止語",
     "見出し",
     "自己採点",
+    "表",
+    "尺",
+    "プロンプト",
     "a8",
     "結果",
 )
@@ -72,6 +85,9 @@ class Row:
     banned: str
     headings: str
     score: str
+    table: str
+    timing: str
+    prompts: str
     a8: str
     result: str
 
@@ -255,9 +271,31 @@ def check_gap(cues: list[Cue]) -> str:
     return f"PASS（最大{fmt_sec(max(worst, 0))}）"
 
 
-def check_pr(cues: list[Cue], lane: str) -> str:
+def check_pet_pr(cues: list[Cue]) -> str:
+    """ペットは最後の2秒だけ。それより前のPR（右上の常時表示を含む）はNG。"""
+    duration = max(cue.end for cue in cues)
+    tail_begin = duration - PR_TAIL_MS
+    reasons: list[str] = []
+    early = [cue for cue in cues if is_pr_cue(cue.text) and cue.start < tail_begin]
+    if any(OPEN_PR in cue.text for cue in early):
+        reasons.append("右上PRが最後の2秒より前にある")
+    elif early:
+        reasons.append("最後の2秒より前にPRがある")
+    tail = any(
+        "#PR" in cue.text and cue.start >= tail_begin and cue.end >= duration for cue in cues
+    )
+    if not tail:
+        reasons.append("最後2秒の#PRが無い")
+    if reasons:
+        return "FAIL（" + "、".join(reasons) + "）"
+    return "PASS"
+
+
+def check_pr(cues: list[Cue], lane: str, name: str = "") -> str:
     if lane == "unknown":
         return "FAIL（レーン不明）"
+    if lane == "pr" and "ペット" in name:
+        return check_pet_pr(cues)
     opening = any(cue.start == 0 and OPEN_PR in cue.text for cue in cues)
     duration = max(cue.end for cue in cues)
     tail_begin = duration - PR_TAIL_MS
@@ -310,8 +348,140 @@ def join_status(parts: list[str]) -> str:
     return "FAIL（" + "、".join(parts) + "）"
 
 
+def _spans_in(text: str) -> list[tuple[float, float]]:
+    found: list[tuple[float, float]] = []
+    for matched in re.finditer(r"(\d+\.\d+)\s*[-–]\s*(\d+\.\d+)", text):
+        found.append((float(matched.group(1)), float(matched.group(2))))
+    return found
+
+
+def check_table(md: str) -> str:
+    """早見表は1画面3行まで。数字の行は1行につき2秒以上。
+
+    行の中に秒が書いてあれば、その幅を見る。書いていなければ、
+    節内の「N.N秒」の開始時刻の間隔と、尺の2秒前までを見る。
+    秒を行に書いた表は、文字の高さ40px以上の指定も要る。
+    """
+    sections = parse_sections(md)
+    blocks = [section for section in sections if "早見表" in section.title]
+    if not blocks:
+        return "PASS（表なし）"
+    body = blocks[0].body
+    table_lines = [line.strip() for line in body.splitlines() if line.strip().startswith("|")]
+    separator = next((index for index, line in enumerate(table_lines) if "---" in line), None)
+    if separator is None:
+        return "FAIL（表の区切りが無い）"
+    rows = table_lines[separator + 1 :]
+    if len(rows) > 3:
+        return f"FAIL（表が{len(rows)}行）"
+    reasons: list[str] = []
+    explicit = False
+    missing: list[int] = []
+    for index, line in enumerate(rows, start=1):
+        if re.search(r"\d", line) is None:
+            continue
+        matched = re.search(r"(\d+\.\d+)\s*[-–]\s*(\d+\.\d+)", line)
+        if matched is None:
+            missing.append(index)
+            continue
+        explicit = True
+        span = float(matched.group(2)) - float(matched.group(1))
+        if span < 2.0:
+            reasons.append(f"{index}行目が{span:.3f}秒")
+    if missing:
+        starts = [float(item) for item in re.findall(r"(\d+\.\d+)秒", body)]
+        unique: list[float] = []
+        for start in starts:
+            if start not in unique:
+                unique.append(start)
+        duration_match = re.search(r"尺[:：]\s*(\d+\.\d+)", md)
+        content_end = None
+        if duration_match is not None:
+            content_end = float(duration_match.group(1)) - 2.0
+        if len(unique) < len(missing) or content_end is None:
+            reasons.append("数字の行に2秒以上の幅が無い")
+        else:
+            points = unique[: len(missing)] + [content_end]
+            for index, start, end in zip(missing, points, points[1:]):
+                if end - start < 2.0:
+                    reasons.append(f"{index}行目が{end - start:.3f}秒")
+    if explicit and "40px" not in body:
+        reasons.append("文字の高さが40px以上でない")
+    if reasons:
+        return "FAIL（" + "、".join(reasons) + "）"
+    return "PASS"
+
+
+def check_timing(cues: list[Cue], name: str) -> str:
+    """ペットと金メモだけ。8.0〜10.5秒、端は0.5秒刻み。"""
+    if "ペット" not in name and "金メモ" not in name:
+        return "PASS（対象外）"
+    if not cues:
+        return "FAIL（字幕が無い）"
+    reasons: list[str] = []
+    if any(cue.start % HALF_MS or cue.end % HALF_MS for cue in cues):
+        reasons.append("0.5秒刻みでない")
+    duration = max(cue.end for cue in cues)
+    if duration < DURATION_LO_MS or duration > DURATION_HI_MS:
+        reasons.append(f"尺{fmt_sec(duration)}（8.0〜10.5秒）")
+    if reasons:
+        return "FAIL（" + "、".join(reasons) + "）"
+    return f"PASS（{fmt_sec(duration)}）"
+
+
+def overview_body(md: str) -> str:
+    return "\n".join(section.body for section in parse_sections(md) if "概要欄" in section.title)
+
+
+def check_prompts(md: str, cues: list[Cue], name: str) -> str:
+    """プロンプト節があるときだけ。フック以外の字幕と秒を揃える。"""
+    if "プロンプト" not in md:
+        return "PASS（プロンプトなし）"
+    headings = re.findall(
+        r"^###\s+プロンプト[^\n]*?(\d+\.\d+)\s*[-–]\s*(\d+\.\d+)",
+        md,
+        flags=re.MULTILINE,
+    )
+    blocks = re.split(r"(?m)^### ", md)
+    prompt_blocks = [block for block in blocks if block.startswith("プロンプト")]
+    if not headings:
+        if prompt_blocks:
+            return "PASS（旧表記）"
+        return "FAIL（プロンプトの秒が無い）"
+    if len(headings) != len(prompt_blocks):
+        return "FAIL（プロンプトの秒が無い）"
+    reasons: list[str] = []
+    ranges = [(float(start), float(end)) for start, end in headings]
+    needed = [cue for cue in cues if not is_hook_cue(cue.text)]
+    for cue in needed:
+        start = cue.start / 1000
+        end = cue.end / 1000
+        if not any(abs(start - left) < 0.001 and abs(end - right) < 0.001 for left, right in ranges):
+            reasons.append(f"{start:.3f}-{end:.3f}のプロンプトが無い")
+    if len(ranges) != len(needed):
+        reasons.append(f"プロンプト{len(ranges)}本（字幕{len(needed)}本）")
+    if "ペット" in name:
+        if any(CAT_SENTENCE not in block for block in prompt_blocks):
+            reasons.append("猫の描写が揃っていない")
+        if not any("袋" in block and "器" in block for block in prompt_blocks):
+            reasons.append("商品のカットが無い")
+    if reasons:
+        return "FAIL（" + "、".join(reasons) + "）"
+    return "PASS"
+
+
 def overall_of(row: Row) -> str:
-    hard = (row.srt_format, row.gap, row.pr, row.banned, row.headings, row.score)
+    hard = (
+        row.srt_format,
+        row.gap,
+        row.pr,
+        row.banned,
+        row.headings,
+        row.score,
+        row.table,
+        row.timing,
+        row.prompts,
+    )
     if any(not item.startswith("PASS") for item in hard):
         return "FAIL"
     if row.a8.startswith("WARN"):
@@ -334,6 +504,7 @@ def lint_texts(name: str, md: str | None, srt: str | None) -> Row:
         score = check_score(sections)
         spoken = spoken_text(sections)
 
+    cues: list[Cue] = []
     if srt is None:
         srt_format = "FAIL（SRTファイルなし）"
         gap = "FAIL（SRTファイルなし）"
@@ -345,14 +516,19 @@ def lint_texts(name: str, md: str | None, srt: str | None) -> Row:
         srt_format = join_status(errors)
         if cues:
             gap = check_gap(cues)
-            pr = check_pr(cues, lane)
+            pr = check_pr(cues, lane, name)
         else:
             gap = "FAIL（字幕を読めない）"
             pr = "FAIL（字幕を読めない）"
+    if pr.startswith("PASS") and "金メモ" in name and AFFILIATE_LINE in overview_body(md_body):
+        pr = "FAIL（アフィリエイト広告を含みます）"
 
     banned = check_banned(spoken, None if srt is None else srt_body)
+    table = check_table("" if md is None else md_body)
+    timing = check_timing(cues, name)
+    prompts = check_prompts("" if md is None else md_body, cues, name)
     a8 = check_a8(md_body + "\n" + srt_body)
-    row = Row(name, srt_format, gap, pr, banned, headings, score, a8, "FAIL")
+    row = Row(name, srt_format, gap, pr, banned, headings, score, table, timing, prompts, a8, "FAIL")
     return Row(
         row.name,
         row.srt_format,
@@ -361,6 +537,9 @@ def lint_texts(name: str, md: str | None, srt: str | None) -> Row:
         row.banned,
         row.headings,
         row.score,
+        row.table,
+        row.timing,
+        row.prompts,
         row.a8,
         overall_of(row),
     )
@@ -402,6 +581,9 @@ def render(rows: list[Row]) -> str:
             row.banned,
             row.headings,
             row.score,
+            row.table,
+            row.timing,
+            row.prompts,
             row.a8,
             row.result,
         )
@@ -503,11 +685,16 @@ def self_test(fixtures: Path, repo: Path) -> bool:
     pet_ok = lint_texts(
         "2026-10-28-ペット-positive",
         minimal_md("- 合計 80/100"),
-        "1\n00:00:00,000 --> 00:00:10,000\n"
-        + OPEN_PR
-        + "\n\n2\n00:00:00,000 --> 00:00:01,500\n"
+        "1\n00:00:00,000 --> 00:00:01,000\n"
         + HOOK_TAG
-        + "寝てる？\n\n3\n00:00:10,000 --> 00:00:12,000\nPR｜広告を含みます\n#PR\n",
+        + "寝てる？\n\n2\n00:00:08,500 --> 00:00:10,500\n広告 #PR\n",
+    )
+    pet_corner = lint_texts(
+        "2026-10-28-ペット-corner",
+        minimal_md("- 合計 80/100"),
+        "1\n00:00:00,000 --> 00:00:12,000\n"
+        + OPEN_PR
+        + "\n\n2\n00:00:10,000 --> 00:00:12,000\n広告 #PR\n",
     )
     yua_pr = lint_texts(
         "2026-10-28-ゆあ-has-pr",
@@ -520,8 +707,13 @@ def self_test(fixtures: Path, repo: Path) -> bool:
     ok = expect(same_time.srt_format.startswith("FAIL"), "開始と終了が同じ", same_time.srt_format) and ok
     ok = expect(
         pet_ok.result == "PASS" and pet_ok.gap == "PASS（セリフ字幕なし）" and pet_ok.pr == "PASS",
-        "PR行とフック行は間隔に入れない",
+        "ペットは最後の2秒だけ。フックは間隔に入れない",
         pet_ok.gap + " / " + pet_ok.pr,
+    ) and ok
+    ok = expect(
+        pet_corner.pr.startswith("FAIL") and "右上" in pet_corner.pr,
+        "ペットの右上常時PRはNG",
+        pet_corner.pr,
     ) and ok
     ok = expect(yua_pr.pr.startswith("FAIL"), "ゆあにPRがあるとFAIL", yua_pr.pr) and ok
     ok = expect(find_banned("必ず稼げる") == ["必ず稼げる"], "必ず稼げるは必ずと二重に数えない", "") and ok
@@ -537,9 +729,9 @@ def self_test(fixtures: Path, repo: Path) -> bool:
         kasa = real.get("2026-10-28-ゆあ-kasa-hairu")
         san = real.get("2026-10-28-婚活-sanoufuku")
         ok = expect(
-            pet is not None and pet.result == "PASS" and pet.pr == "PASS" and "セリフ字幕なし" in pet.gap,
-            "ペット実ファイル",
-            "" if pet is None else pet.result + " / " + pet.pr + " / " + pet.gap,
+            pet is not None and pet.result == "FAIL" and "右上" in pet.pr,
+            "古い右上PRのペットは不合格",
+            "" if pet is None else pet.result + " / " + pet.pr + " / " + pet.timing,
         ) and ok
         ok = expect(
             kasa is not None and kasa.gap == "PASS（最大1.5秒）" and kasa.pr == "PASS（PRなし）",
