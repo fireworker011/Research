@@ -1,4 +1,6 @@
 #!/usr/bin/env bash
+# 2026-11-04: 尺は10.5秒。秒は0.5刻み。
+# この下書きの指示は音なし。音声は足さない。この修正では mp4 を書き出していない。
 # 下書き動画（灰色の静止カード＋SRT焼き込み）。音は入れない。絵は描かない。生成AIは使わない。
 # 字幕は同じフォルダの subs/（入力のSRTをそのまま）。台本ファイルはコミットしない。
 # 使い方: bash animatics/20261103-night/make.sh
@@ -156,9 +158,9 @@ extract() {
     -vf "select=eq(n\\,${n})" -frames:v 1 -update 1 "$dst"
 }
 
-# 金メモ 在職老齢年金（台本: 0.0-3.0 / 3.0-9.0 / 9.0-15.0。PRなし。尺15.0秒）
-# 右の金額は 0.0-3.0。基準の行は 3.0、例の行は 6.0、60万円のマスは 9.2、注記は 12.4。
-# 2万5千円は 9.2 まで出さない。円は台本の表のまま。式から作った円は出さない。
+# 金メモ 在職老齢年金（台本: 0.0-3.0 / 3.0-8.5 / 8.5-10.5。PRなし。尺10.5秒）
+# 右の金額は 0.0-3.0。基準の行は 0.5、例の行は 3.0、60万円のマスは 5.5、注記は 8.5。
+# 2万5千円は 5.5 まで出さない。円は台本の表のまま。式から作った円は出さない。
 NAME="2026-11-12-金メモ-zaishoku-rourei"
 OV="$BUILD/${NAME}.overlay"
 : > "$OV"
@@ -186,16 +188,16 @@ write_card "$BUILD/zai-src.txt" "出典：日本年金機構"
 write_card "$BUILD/zai-credit.txt" "VOICEVOX:冥鳴ひまり"
 add_text "$OV" "$BUILD/zai-right-big.txt" 40 white "w-text_w-80" 860 'lt(t\,3)'
 add_text "$OV" "$BUILD/zai-right-small.txt" 26 white "w-text_w-80" 916 'lt(t\,3)'
-add_text "$OV" "$BUILD/zai-head.txt" 28 white 40 660 'gte(t\,3)'
-add_text "$OV" "$BUILD/zai-row65.txt" 26 white 40 740 'gte(t\,3)*lt(t\,6)'
-add_text "$OV" "$BUILD/zai-row65.txt" 26 0xBDBDBD 40 740 'gte(t\,6)'
-add_text "$OV" "$BUILD/zai-row46.txt" 26 white 40 840 'gte(t\,6)*lt(t\,9.2)'
-add_text "$OV" "$BUILD/zai-row46.txt" 26 0xBDBDBD 40 840 'gte(t\,9.2)'
-add_text "$OV" "$BUILD/zai-row25.txt" 26 white 40 960 'gte(t\,9.2)*lt(t\,12.4)'
-add_text "$OV" "$BUILD/zai-row25.txt" 26 0xBDBDBD 40 960 'gte(t\,12.4)'
-add_text "$OV" "$BUILD/zai-note.txt" 26 white 40 1080 'gte(t\,12.4)'
-add_text "$OV" "$BUILD/zai-foot.txt" 22 0xE6E6E6 40 1180 'gte(t\,3)'
-add_text "$OV" "$BUILD/zai-foot25.txt" 22 0xE6E6E6 40 1360 'gte(t\,9.2)'
+add_text "$OV" "$BUILD/zai-head.txt" 28 white 40 660 'gte(t\,0.5)'
+add_text "$OV" "$BUILD/zai-row65.txt" 26 white 40 740 'gte(t\,0.5)*lt(t\,3.0)'
+add_text "$OV" "$BUILD/zai-row65.txt" 26 0xBDBDBD 40 740 'gte(t\,3.0)'
+add_text "$OV" "$BUILD/zai-row46.txt" 26 white 40 840 'gte(t\,3.0)*lt(t\,5.5)'
+add_text "$OV" "$BUILD/zai-row46.txt" 26 0xBDBDBD 40 840 'gte(t\,5.5)'
+add_text "$OV" "$BUILD/zai-row25.txt" 26 white 40 960 'gte(t\,5.5)*lt(t\,8.5)'
+add_text "$OV" "$BUILD/zai-row25.txt" 26 0xBDBDBD 40 960 'gte(t\,8.5)'
+add_text "$OV" "$BUILD/zai-note.txt" 26 white 40 1080 'gte(t\,8.5)'
+add_text "$OV" "$BUILD/zai-foot.txt" 22 0xE6E6E6 40 1180 'gte(t\,0.5)'
+add_text "$OV" "$BUILD/zai-foot25.txt" 22 0xE6E6E6 40 1360 'gte(t\,5.5)'
 add_text "$OV" "$BUILD/zai-credit.txt" 24 white 40 1848 'gte(t\,0)'
 add_text "$OV" "$BUILD/zai-src.txt" 24 white "w-text_w-40" 1848 'gte(t\,0)'
 write_card "$BUILD/zai-1.txt" \
@@ -204,22 +206,22 @@ write_card "$BUILD/zai-1.txt" \
   "目を丸くして止まっている" \
   "右に65万円。人物は成人だけ"
 write_card "$BUILD/zai-2.txt" \
-  "カット2　3.0-9.0秒" \
+  "カット2　3.0-8.5秒" \
   "同じ成人が左下でタイムカードを机に置く" \
   "中央に早見表" \
   "人物は成人だけ"
 write_card "$BUILD/zai-3.txt" \
-  "カット3　9.0-15.0秒" \
+  "カット3　8.5-10.5秒" \
   "同じ成人がタイムカードを横に置く" \
   "うなずく。指はささない" \
   "表は上に残す。人物は成人だけ"
-render "$NAME" 15 360 336 "" \
+render "$NAME" 10.5 252 228 "" \
   0 3 "$BUILD/zai-1.txt" \
-  3 9 "$BUILD/zai-2.txt" \
-  9 - "$BUILD/zai-3.txt"
+  3 8.5 "$BUILD/zai-2.txt" \
+  8.5 - "$BUILD/zai-3.txt"
 
-# 金メモ 埋葬料（台本: 0.0-3.0 / 3.0-9.0 / 9.0-15.0。PRなし。尺15.0秒）
-# 行は 3.0、6.2、9.2。注記は 12.4。円は台本の表の50,000円だけ。
+# 金メモ 埋葬料（台本: 0.0-3.0 / 3.0-8.5 / 8.5-10.5。PRなし。尺10.5秒）
+# 行は 0.5、3.0、5.5。注記は 8.5。円は台本の表の50,000円だけ。
 # 埋葬費の行は「50,000円の範囲内」。費目ごとの円は出さない。
 NAME="2026-11-13-金メモ-maisou-ryo"
 OV="$BUILD/${NAME}.overlay"
@@ -248,15 +250,15 @@ write_card "$BUILD/mai-src.txt" "出典：協会けんぽ"
 write_card "$BUILD/mai-credit.txt" "VOICEVOX:冥鳴ひまり"
 add_text "$OV" "$BUILD/mai-right-big.txt" 40 white "w-text_w-80" 860 'lt(t\,3)'
 add_text "$OV" "$BUILD/mai-right-small.txt" 26 white "w-text_w-80" 916 'lt(t\,3)'
-add_text "$OV" "$BUILD/mai-head.txt" 28 white 40 660 'gte(t\,3)'
-add_text "$OV" "$BUILD/mai-row1.txt" 26 white 40 740 'gte(t\,3)*lt(t\,6.2)'
-add_text "$OV" "$BUILD/mai-row1.txt" 26 0xBDBDBD 40 740 'gte(t\,6.2)'
-add_text "$OV" "$BUILD/mai-row2.txt" 26 white 40 860 'gte(t\,6.2)*lt(t\,9.2)'
-add_text "$OV" "$BUILD/mai-row2.txt" 26 0xBDBDBD 40 860 'gte(t\,9.2)'
-add_text "$OV" "$BUILD/mai-row3.txt" 26 white 40 1020 'gte(t\,9.2)*lt(t\,12.4)'
-add_text "$OV" "$BUILD/mai-row3.txt" 26 0xBDBDBD 40 1020 'gte(t\,12.4)'
-add_text "$OV" "$BUILD/mai-note.txt" 26 white 40 1160 'gte(t\,12.4)'
-add_text "$OV" "$BUILD/mai-foot.txt" 22 0xE6E6E6 40 1260 'gte(t\,3)'
+add_text "$OV" "$BUILD/mai-head.txt" 28 white 40 660 'gte(t\,0.5)'
+add_text "$OV" "$BUILD/mai-row1.txt" 26 white 40 740 'gte(t\,0.5)*lt(t\,3.0)'
+add_text "$OV" "$BUILD/mai-row1.txt" 26 0xBDBDBD 40 740 'gte(t\,3.0)'
+add_text "$OV" "$BUILD/mai-row2.txt" 26 white 40 860 'gte(t\,3.0)*lt(t\,5.5)'
+add_text "$OV" "$BUILD/mai-row2.txt" 26 0xBDBDBD 40 860 'gte(t\,5.5)'
+add_text "$OV" "$BUILD/mai-row3.txt" 26 white 40 1020 'gte(t\,5.5)*lt(t\,8.5)'
+add_text "$OV" "$BUILD/mai-row3.txt" 26 0xBDBDBD 40 1020 'gte(t\,8.5)'
+add_text "$OV" "$BUILD/mai-note.txt" 26 white 40 1160 'gte(t\,8.5)'
+add_text "$OV" "$BUILD/mai-foot.txt" 22 0xE6E6E6 40 1260 'gte(t\,0.5)'
 add_text "$OV" "$BUILD/mai-credit.txt" 24 white 40 1848 'gte(t\,0)'
 add_text "$OV" "$BUILD/mai-src.txt" 24 white "w-text_w-40" 1848 'gte(t\,0)'
 write_card "$BUILD/mai-1.txt" \
@@ -265,23 +267,23 @@ write_card "$BUILD/mai-1.txt" \
   "目を丸くして止まっている" \
   "右に50,000円。人物は成人だけ。子どもの絵は無い"
 write_card "$BUILD/mai-2.txt" \
-  "カット2　3.0-9.0秒" \
+  "カット2　3.0-8.5秒" \
   "同じ成人が左下で花を机に置く" \
   "中央に早見表" \
   "人物は成人だけ"
 write_card "$BUILD/mai-3.txt" \
-  "カット3　9.0-15.0秒" \
+  "カット3　8.5-10.5秒" \
   "同じ成人が花を横に置く" \
   "うなずく。指はささない" \
   "表は上に残す。人物は成人だけ"
-render "$NAME" 15 360 336 "" \
+render "$NAME" 10.5 252 228 "" \
   0 3 "$BUILD/mai-1.txt" \
-  3 9 "$BUILD/mai-2.txt" \
-  9 - "$BUILD/mai-3.txt"
+  3 8.5 "$BUILD/mai-2.txt" \
+  8.5 - "$BUILD/mai-3.txt"
 
-# 金メモ 育児時短就業給付（台本: 0.0-3.0 / 3.0-9.0 / 9.0-15.0。PRなし。尺15.0秒）
-# 20,000円の行は 3.0。開始時300,000円とその月200,000円は 5.8 で明るい。
-# 270,000円は 9.2 まで出さない。注記は 12.4。Q74の例（2）の円は出さない。子どもの絵は出さない。
+# 金メモ 育児時短就業給付（台本: 0.0-3.0 / 3.0-8.5 / 8.5-10.5。PRなし。尺10.5秒）
+# 20,000円の行は 0.5。開始時300,000円とその月200,000円は 3.0 で明るい。
+# 270,000円は 5.5 まで出さない。注記は 8.5。Q74の例（2）の円は出さない。子どもの絵は出さない。
 NAME="2026-11-14-金メモ-ikuji-jitan"
 OV="$BUILD/${NAME}.overlay"
 : > "$OV"
@@ -308,15 +310,15 @@ write_card "$BUILD/iku-src.txt" "出典：厚生労働省"
 write_card "$BUILD/iku-credit.txt" "VOICEVOX:冥鳴ひまり"
 add_text "$OV" "$BUILD/iku-right-big.txt" 40 white "w-text_w-80" 860 'lt(t\,3)'
 add_text "$OV" "$BUILD/iku-right-small.txt" 26 white "w-text_w-80" 916 'lt(t\,3)'
-add_text "$OV" "$BUILD/iku-head.txt" 28 white 40 660 'gte(t\,3)'
-add_text "$OV" "$BUILD/iku-row20.txt" 26 white 40 740 'gte(t\,3)*lt(t\,9.2)'
-add_text "$OV" "$BUILD/iku-row20.txt" 26 0xBDBDBD 40 740 'gte(t\,9.2)'
-add_text "$OV" "$BUILD/iku-row30.txt" 26 white 40 860 'gte(t\,5.8)*lt(t\,9.2)'
-add_text "$OV" "$BUILD/iku-row30.txt" 26 0xBDBDBD 40 860 'gte(t\,9.2)'
-add_text "$OV" "$BUILD/iku-row27.txt" 26 white 40 980 'gte(t\,9.2)*lt(t\,12.4)'
-add_text "$OV" "$BUILD/iku-row27.txt" 26 0xBDBDBD 40 980 'gte(t\,12.4)'
-add_text "$OV" "$BUILD/iku-note.txt" 26 white 40 1100 'gte(t\,12.4)'
-add_text "$OV" "$BUILD/iku-foot.txt" 22 0xE6E6E6 40 1200 'gte(t\,3)'
+add_text "$OV" "$BUILD/iku-head.txt" 28 white 40 660 'gte(t\,0.5)'
+add_text "$OV" "$BUILD/iku-row20.txt" 26 white 40 740 'gte(t\,0.5)*lt(t\,5.5)'
+add_text "$OV" "$BUILD/iku-row20.txt" 26 0xBDBDBD 40 740 'gte(t\,5.5)'
+add_text "$OV" "$BUILD/iku-row30.txt" 26 white 40 860 'gte(t\,3.0)*lt(t\,5.5)'
+add_text "$OV" "$BUILD/iku-row30.txt" 26 0xBDBDBD 40 860 'gte(t\,5.5)'
+add_text "$OV" "$BUILD/iku-row27.txt" 26 white 40 980 'gte(t\,5.5)*lt(t\,8.5)'
+add_text "$OV" "$BUILD/iku-row27.txt" 26 0xBDBDBD 40 980 'gte(t\,8.5)'
+add_text "$OV" "$BUILD/iku-note.txt" 26 white 40 1100 'gte(t\,8.5)'
+add_text "$OV" "$BUILD/iku-foot.txt" 22 0xE6E6E6 40 1200 'gte(t\,0.5)'
 add_text "$OV" "$BUILD/iku-credit.txt" 24 white 40 1848 'gte(t\,0)'
 add_text "$OV" "$BUILD/iku-src.txt" 24 white "w-text_w-40" 1848 'gte(t\,0)'
 write_card "$BUILD/iku-1.txt" \
@@ -325,18 +327,18 @@ write_card "$BUILD/iku-1.txt" \
   "目を丸くして止まっている" \
   "右に20,000円。人物は成人だけ。子どもの絵は無い"
 write_card "$BUILD/iku-2.txt" \
-  "カット2　3.0-9.0秒" \
+  "カット2　3.0-8.5秒" \
   "同じ成人が左下で時計を机に置く" \
   "中央に早見表" \
   "人物は成人だけ"
 write_card "$BUILD/iku-3.txt" \
-  "カット3　9.0-15.0秒" \
+  "カット3　8.5-10.5秒" \
   "同じ成人が時計を横に置く" \
   "うなずく。指はささない" \
   "表は上に残す。人物は成人だけ。子どもの絵は無い"
-render "$NAME" 15 360 336 "" \
+render "$NAME" 10.5 252 228 "" \
   0 3 "$BUILD/iku-1.txt" \
-  3 9 "$BUILD/iku-2.txt" \
-  9 - "$BUILD/iku-3.txt"
+  3 8.5 "$BUILD/iku-2.txt" \
+  8.5 - "$BUILD/iku-3.txt"
 
 echo "完了"
