@@ -2,8 +2,8 @@
 """字幕の台詞を女性の話し言葉で読み、その秒に合わせて m4a を作る。
 
 フック（{\\an8}）と広告（#PR）は読まない。
-声は ja-JP-NanamiNeural。読みの速さは +80%（高さは変えない）。
-行が字幕の枠より長いときだけ、その枠に収まるまで速める。
+声は ja-JP-NanamiNeural。読みの速さは +15%まで。早回しはしない。
+行末の無音だけを切る。枠より長いときは失敗させる。
 """
 
 from __future__ import annotations
@@ -18,7 +18,7 @@ from pathlib import Path
 import edge_tts
 
 VOICE = "ja-JP-NanamiNeural"
-RATE = "+80%"
+RATE = "+15%"
 SAMPLE_RATE = 48000
 
 
@@ -67,28 +67,12 @@ def to_seconds(stamp: str) -> float:
     return int(hh) * 3600 + int(mm) * 60 + int(ss) + int(ms) / 1000
 
 
-def atempo_filter(ratio: float) -> str:
-    if ratio <= 1.001:
-        return ""
-    parts: list[str] = []
-    remaining = ratio
-    while remaining > 2.0:
-        parts.append("atempo=2.0")
-        remaining /= 2.0
-    parts.append(f"atempo={remaining:.5f}")
-    return ",".join(parts)
-
-
 async def synthesize(text: str, dest: Path) -> None:
     await edge_tts.Communicate(text, VOICE, rate=RATE).save(str(dest))
 
 
 def fit_clip(src: Path, dest: Path, slot: float) -> float:
-    raw = probe_duration(src)
-    ratio = raw / slot if raw > slot - 0.03 else 1.0
-    tempo = atempo_filter(ratio)
-    chain = f"{tempo}," if tempo else ""
-    chain += f"atrim=0:{slot:.3f},apad=whole_dur={slot:.3f},aresample={SAMPLE_RATE},aformat=channel_layouts=mono"
+    trimmed = dest.with_suffix(".trim.wav")
     run(
         [
             "ffmpeg",
@@ -98,8 +82,28 @@ def fit_clip(src: Path, dest: Path, slot: float) -> float:
             "error",
             "-i",
             str(src),
+            "-af",
+            "silenceremove=start_periods=1:start_threshold=-35dB:start_silence=0.02,"
+            "areverse,silenceremove=start_periods=1:start_threshold=-35dB:start_silence=0.02,areverse",
+            "-c:a",
+            "pcm_s16le",
+            str(trimmed),
+        ]
+    )
+    spoken = probe_duration(trimmed)
+    if spoken > slot + 0.02:
+        raise SystemExit(f"枠 {slot:.3f} 秒に対して読みが {spoken:.3f} 秒: 早回しはしない")
+    run(
+        [
+            "ffmpeg",
+            "-y",
+            "-hide_banner",
+            "-loglevel",
+            "error",
+            "-i",
+            str(trimmed),
             "-filter:a",
-            chain,
+            f"apad=whole_dur={slot:.3f},aresample={SAMPLE_RATE},aformat=channel_layouts=mono",
             "-t",
             f"{slot:.3f}",
             "-c:a",
@@ -107,7 +111,7 @@ def fit_clip(src: Path, dest: Path, slot: float) -> float:
             str(dest),
         ]
     )
-    return ratio
+    return spoken
 
 
 def silence(dest: Path, seconds: float) -> None:
@@ -154,8 +158,8 @@ async def build(srt_path: Path, m4a_path: Path, duration: float) -> None:
             raw = work / f"raw{index}.mp3"
             fitted = work / f"fit{index}.wav"
             await synthesize(text, raw)
-            ratio = fit_clip(raw, fitted, slot)
-            print(f"  {start:.1f}-{end:.1f} x{ratio:.2f} {text}")
+            spoken = fit_clip(raw, fitted, slot)
+            print(f"  {start:.3f}-{end:.3f} +15% {spoken:.2f}秒 {text}")
             pieces.append(fitted)
             cursor = end
         if duration > cursor + 0.001:

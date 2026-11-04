@@ -190,10 +190,10 @@ write_card "$BUILD/kaaten-5.txt" \
   "中央「広告 #PR」" \
   "右上の記号は出さない。人は映っていない"
 render "2026-11-11-ペット-kuroneko-kaaten" 10.5 252 228 8.5 \
-  0 2.0 "$BUILD/kaaten-1.txt" \
-  2.0 4.0 "$BUILD/kaaten-2.txt" \
-  4.0 6.5 "$BUILD/kaaten-3.txt" \
-  6.5 8.5 "$BUILD/kaaten-4.txt" \
+  0 1.75 "$BUILD/kaaten-1.txt" \
+  1.75 3.75 "$BUILD/kaaten-2.txt" \
+  3.75 6.625 "$BUILD/kaaten-3.txt" \
+  6.625 8.5 "$BUILD/kaaten-4.txt" \
   8.5 - "$BUILD/kaaten-5.txt"
 
 # ペット 猫草（台本: 0.0-2.0 / 2.0-4.0 / 4.0-6.0 / 6.0-8.5。8.5-10.5は少し暗くする。尺10.5秒）
@@ -223,10 +223,10 @@ write_card "$BUILD/kusa-5.txt" \
   "中央「広告 #PR」" \
   "右上の記号は出さない。口は閉じている"
 render "2026-11-12-ペット-kuroneko-nekokusa" 10.5 252 228 8.5 \
-  0 2.0 "$BUILD/kusa-1.txt" \
-  2.0 4.0 "$BUILD/kusa-2.txt" \
-  4.0 6.0 "$BUILD/kusa-3.txt" \
-  6.0 8.5 "$BUILD/kusa-4.txt" \
+  0 2.375 "$BUILD/kusa-1.txt" \
+  2.375 4.25 "$BUILD/kusa-2.txt" \
+  4.25 6.375 "$BUILD/kusa-3.txt" \
+  6.375 8.5 "$BUILD/kusa-4.txt" \
   8.5 - "$BUILD/kusa-5.txt"
 
 # ペット ブラシ（台本: 0.0-2.5 / 2.5-4.5 / 4.5-6.5 / 6.5-8.5。8.5-10.5は少し暗くする。尺10.5秒）
@@ -256,10 +256,10 @@ write_card "$BUILD/brush-5.txt" \
   "中央「広告 #PR」" \
   "右上の記号は出さない。前足は隠さない"
 render "2026-11-13-ペット-kuroneko-burashi" 10.5 252 228 8.5 \
-  0 2.5 "$BUILD/brush-1.txt" \
-  2.5 4.5 "$BUILD/brush-2.txt" \
-  4.5 6.5 "$BUILD/brush-3.txt" \
-  6.5 8.5 "$BUILD/brush-4.txt" \
+  0 2.125 "$BUILD/brush-1.txt" \
+  2.125 4 "$BUILD/brush-2.txt" \
+  4 6.25 "$BUILD/brush-3.txt" \
+  6.25 8.5 "$BUILD/brush-4.txt" \
   8.5 - "$BUILD/brush-5.txt"
 
 # 金メモ 障害年金（台本: 0.0-3.0 / 3.0-8.5 / 8.5-10.5。PRなし。尺10.5秒）
@@ -291,14 +291,14 @@ write_card "$BUILD/sho-credit.txt" "声：女性AI"
 add_text "$OV" "$BUILD/sho-right-big.txt" 40 white "w-text_w-80" 860 'lt(t\,3)'
 add_text "$OV" "$BUILD/sho-right-small.txt" 26 white "w-text_w-80" 916 'lt(t\,3)'
 add_text "$OV" "$BUILD/sho-head.txt" 28 white 40 660 'gte(t\,0.5)'
-add_text "$OV" "$BUILD/sho-born.txt" 28 0xBDBDBD 40 708 'gte(t\,0.0)*lt(t\,8.0)'
-add_text "$OV" "$BUILD/sho-born.txt" 28 white 40 708 'gte(t\,8.0)'
-add_text "$OV" "$BUILD/sho-row1.txt" 28 white 40 780 'gte(t\,0.0)*lt(t\,2.5)'
-add_text "$OV" "$BUILD/sho-row1.txt" 28 0xBDBDBD 40 780 'gte(t\,2.5)'
-add_text "$OV" "$BUILD/sho-row2.txt" 28 white 40 900 'gte(t\,2.5)*lt(t\,5.0)'
-add_text "$OV" "$BUILD/sho-row2.txt" 28 0xBDBDBD 40 900 'gte(t\,5.0)'
-add_text "$OV" "$BUILD/sho-row3.txt" 28 white 40 1020 'gte(t\,5.0)*lt(t\,8.0)'
-add_text "$OV" "$BUILD/sho-row3.txt" 28 0xBDBDBD 40 1020 'gte(t\,8.0)'
+add_text "$OV" "$BUILD/sho-born.txt" 28 0xBDBDBD 40 708 'gte(t\,0.0)*lt(t\,8.125)'
+add_text "$OV" "$BUILD/sho-born.txt" 28 white 40 708 'gte(t\,8.125)'
+add_text "$OV" "$BUILD/sho-row1.txt" 28 white 40 780 'gte(t\,0.0)*lt(t\,2.75)'
+add_text "$OV" "$BUILD/sho-row1.txt" 28 0xBDBDBD 40 780 'gte(t\,2.75)'
+add_text "$OV" "$BUILD/sho-row2.txt" 28 white 40 900 'gte(t\,2.75)*lt(t\,5.375)'
+add_text "$OV" "$BUILD/sho-row2.txt" 28 0xBDBDBD 40 900 'gte(t\,5.375)'
+add_text "$OV" "$BUILD/sho-row3.txt" 28 white 40 1020 'gte(t\,5.375)*lt(t\,8.125)'
+add_text "$OV" "$BUILD/sho-row3.txt" 28 0xBDBDBD 40 1020 'gte(t\,8.125)'
 add_text "$OV" "$BUILD/sho-foot.txt" 24 0xE6E6E6 40 1180 'gte(t\,0.5)'
 add_text "$OV" "$BUILD/sho-credit.txt" 24 white 40 1848 'gte(t\,0)'
 add_text "$OV" "$BUILD/sho-src.txt" 24 white "w-text_w-40" 1848 'gte(t\,0)'
@@ -357,13 +357,13 @@ write_card "$BUILD/sai-credit.txt" "声：女性AI"
 add_text "$OV" "$BUILD/sai-right-big.txt" 40 white "w-text_w-80" 860 'lt(t\,3)'
 add_text "$OV" "$BUILD/sai-right-small.txt" 26 white "w-text_w-80" 916 'lt(t\,3)'
 add_text "$OV" "$BUILD/sai-head.txt" 28 white 40 640 'gte(t\,0.5)'
-add_text "$OV" "$BUILD/sai-row90.txt" 26 white 40 720 'gte(t\,0.0)*lt(t\,2.5)'
-add_text "$OV" "$BUILD/sai-row90.txt" 26 0xBDBDBD 40 720 'gte(t\,2.5)'
-add_text "$OV" "$BUILD/sai-row228.txt" 26 white 40 860 'gte(t\,2.5)*lt(t\,5.5)'
-add_text "$OV" "$BUILD/sai-row228.txt" 26 0xBDBDBD 40 860 'gte(t\,5.5)'
-add_text "$OV" "$BUILD/sai-row178.txt" 26 white 40 1020 'gte(t\,5.5)*lt(t\,8.0)'
-add_text "$OV" "$BUILD/sai-row178.txt" 26 0xBDBDBD 40 1020 'gte(t\,8.0)'
-add_text "$OV" "$BUILD/sai-row-cap.txt" 26 white 40 1180 'gte(t\,8.0)'
+add_text "$OV" "$BUILD/sai-row90.txt" 26 white 40 720 'gte(t\,0.0)*lt(t\,5.25)'
+add_text "$OV" "$BUILD/sai-row90.txt" 26 0xBDBDBD 40 720 'gte(t\,5.25)'
+add_text "$OV" "$BUILD/sai-row228.txt" 26 white 40 860 'lt(t\,0)'
+add_text "$OV" "$BUILD/sai-row228.txt" 26 0xBDBDBD 40 860 'gte(t\,0.0)'
+add_text "$OV" "$BUILD/sai-row178.txt" 26 white 40 1020 'lt(t\,0)'
+add_text "$OV" "$BUILD/sai-row178.txt" 26 0xBDBDBD 40 1020 'gte(t\,0.0)'
+add_text "$OV" "$BUILD/sai-row-cap.txt" 26 white 40 1180 'gte(t\,5.25)'
 add_text "$OV" "$BUILD/sai-foot.txt" 22 0xE6E6E6 40 1360 'gte(t\,0.5)'
 add_text "$OV" "$BUILD/sai-credit.txt" 24 white 40 1848 'gte(t\,0)'
 add_text "$OV" "$BUILD/sai-src.txt" 24 white "w-text_w-40" 1848 'gte(t\,0)'
@@ -417,13 +417,13 @@ write_card "$BUILD/kyo-credit.txt" "声：女性AI"
 add_text "$OV" "$BUILD/kyo-right-big.txt" 42 white "w-text_w-80" 860 'lt(t\,3)'
 add_text "$OV" "$BUILD/kyo-right-small.txt" 28 white "w-text_w-80" 916 'lt(t\,3)'
 add_text "$OV" "$BUILD/kyo-head.txt" 28 white 40 660 'gte(t\,0.5)'
-add_text "$OV" "$BUILD/kyo-row20.txt" 28 white 40 760 'gte(t\,0.0)*lt(t\,2.5)'
-add_text "$OV" "$BUILD/kyo-row20.txt" 28 0xBDBDBD 40 760 'gte(t\,2.5)'
-add_text "$OV" "$BUILD/kyo-row40.txt" 28 white 40 880 'gte(t\,2.5)*lt(t\,5.0)'
-add_text "$OV" "$BUILD/kyo-row40.txt" 28 0xBDBDBD 40 880 'gte(t\,5.0)'
-add_text "$OV" "$BUILD/kyo-row50.txt" 28 white 40 1000 'gte(t\,5.0)*lt(t\,7.5)'
-add_text "$OV" "$BUILD/kyo-row50.txt" 28 0xBDBDBD 40 1000 'gte(t\,7.5)'
-add_text "$OV" "$BUILD/kyo-row80.txt" 28 white 40 1120 'gte(t\,7.5)'
+add_text "$OV" "$BUILD/kyo-row20.txt" 28 white 40 760 'gte(t\,0.0)*lt(t\,3.125)'
+add_text "$OV" "$BUILD/kyo-row20.txt" 28 0xBDBDBD 40 760 'gte(t\,3.125)'
+add_text "$OV" "$BUILD/kyo-row40.txt" 28 white 40 880 'gte(t\,3.125)*lt(t\,6.75)'
+add_text "$OV" "$BUILD/kyo-row40.txt" 28 0xBDBDBD 40 880 'gte(t\,6.75)'
+add_text "$OV" "$BUILD/kyo-row50.txt" 28 white 40 1000 'gte(t\,6.75)'
+add_text "$OV" "$BUILD/kyo-row50.txt" 28 0xBDBDBD 40 1000 'lt(t\,0)'
+add_text "$OV" "$BUILD/kyo-row80.txt" 28 0xBDBDBD 40 1120 'gte(t\,0.0)'
 add_text "$OV" "$BUILD/kyo-foot.txt" 24 0xE6E6E6 40 1280 'gte(t\,0.5)'
 add_text "$OV" "$BUILD/kyo-credit.txt" 24 white 40 1848 'gte(t\,0)'
 add_text "$OV" "$BUILD/kyo-src.txt" 24 white "w-text_w-40" 1848 'gte(t\,0)'
