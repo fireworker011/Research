@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
-# M1〜M10。使い方: check_video.sh <mp4> <pet|kane>
+# M1〜M12。使い方: check_video.sh <mp4> <pet|kane>
+# M11: 灰色の単色背景のフレームが50%を超えたらFAIL。
+# M12: 最小の文字の高さが40px未満ならFAIL。
 # ペットの長さは 8〜50秒。金メモの長さは 8〜60秒。
 # 2026-11-02の記録では金メモは 12〜60秒だった。
 # 2026-11-04の指示は書き出しを 10.5秒にする。12秒未満を落とすと、その指示と同時に PASS にならない。
@@ -129,6 +131,97 @@ if [[ "$height" -gt "$width" ]]; then
   say M10 1 "縦長（9:16）"
 else
   say M10 0 "縦長ではない ${width}x${height}"
+fi
+
+# M11: 灰色の単色背景のフレームが全体の50%を超えたらFAIL
+# M12: 見つけた文字の最小の高さが40px未満ならFAIL
+read -r gray_fail text_min < <(python3 - "$FILE" << 'PY'
+import subprocess
+import sys
+
+path = sys.argv[1]
+nb = subprocess.check_output(
+    [
+        "ffprobe", "-v", "error", "-select_streams", "v:0",
+        "-show_entries", "stream=nb_frames", "-of", "csv=p=0", path,
+    ],
+    text=True,
+).strip()
+try:
+    total = int(nb)
+except ValueError:
+    total = 252
+if total < 1:
+    total = 1
+indexes = [int(i * (total - 1) / 7) for i in range(8)]
+gray_frames = 0
+heights = []
+for index in indexes:
+    raw = subprocess.check_output(
+        [
+            "ffmpeg", "-hide_banner", "-loglevel", "error",
+            "-i", path, "-vf", f"select=eq(n\\,{index})", "-frames:v", "1",
+            "-f", "rawvideo", "-pix_fmt", "rgb24", "-",
+        ]
+    )
+    width = 1080
+    height = 1920
+    if len(raw) != width * height * 3:
+        width = int(subprocess.check_output(
+            ["ffprobe", "-v", "error", "-select_streams", "v:0",
+             "-show_entries", "stream=width", "-of", "csv=p=0", path],
+            text=True,
+        ))
+        height = int(subprocess.check_output(
+            ["ffprobe", "-v", "error", "-select_streams", "v:0",
+             "-show_entries", "stream=height", "-of", "csv=p=0", path],
+            text=True,
+        ))
+    step = 4
+    gray = 0
+    seen = 0
+    text_rows = []
+    for y in range(height):
+        row_text = 0
+        for x in range(0, width, step):
+            i = (y * width + x) * 3
+            r, g, b = raw[i], raw[i + 1], raw[i + 2]
+            seen += 1
+            if abs(r - g) < 15 and abs(g - b) < 15 and 60 <= r <= 170:
+                gray += 1
+            else:
+                row_text += 1
+        if row_text > 4:
+            text_rows.append(y)
+    if seen and gray / seen > 0.90:
+        gray_frames += 1
+    if text_rows:
+        start = prev = text_rows[0]
+        bands = []
+        for y in text_rows[1:]:
+            if y <= prev + 3:
+                prev = y
+            else:
+                bands.append(prev - start + 1)
+                start = prev = y
+        bands.append(prev - start + 1)
+        heights.extend(band for band in bands if 8 <= band <= 200)
+gray_fail = 1 if gray_frames / len(indexes) > 0.50 else 0
+text_min = min(heights) if heights else 0
+print(f"{gray_fail} {text_min}")
+PY
+)
+
+if [[ "$gray_fail" == "1" ]]; then
+  say M11 0 "灰色の単色背景のフレームが50%を超える"
+else
+  say M11 1 "灰色の単色背景のフレームは50%以下"
+fi
+
+if [[ "$text_min" -lt 40 ]]; then
+  say M12 0 "最小の文字の高さが${text_min}px（40px未満）"
+else
+  say M12 1 "最小の文字の高さは${text_min}px"
 fi
 
 exit "$fail"
