@@ -1,0 +1,61 @@
+{
+ "cut": "C3",
+ "source_seconds": [
+  5.0,
+  8.0
+ ],
+ "aspect": "9:16",
+ "fps": 24,
+ "openpose_keyframes": [
+  {
+   "t": 5.0,
+   "cat": "front"
+  },
+  {
+   "t": 6.5,
+   "cat": "forepaw_to_mouth"
+  },
+  {
+   "t": 8.0,
+   "cat": "paw_returned"
+  }
+ ],
+ "depth": {
+  "focus_sweep": [
+   [
+    5.0,
+    "near"
+   ],
+   [
+    5.25,
+    "far"
+   ],
+   [
+    5.5,
+    "near"
+   ]
+  ]
+ },
+ "camera_vector": {
+  "translate": [
+   0,
+   0,
+   0
+  ],
+  "rotate": [
+   0,
+   0,
+   0
+  ],
+  "shake": {
+   "type": "handheld",
+   "amp_px": [
+    1,
+    2
+   ],
+   "irregular": true,
+   "seed": 3
+  }
+ },
+ "duration_s": 3.0
+}

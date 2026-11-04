@@ -1,0 +1,57 @@
+{
+ "cut": "C1",
+ "source_seconds": [
+  0.0,
+  1.5
+ ],
+ "aspect": "9:16",
+ "fps": 24,
+ "openpose_keyframes": [
+  {
+   "t": 0.0,
+   "cat": "back_to_camera"
+  },
+  {
+   "t": 1.0,
+   "cat": "face_to_camera"
+  }
+ ],
+ "depth": {
+  "focus_sweep": [
+   [
+    0.0,
+    "near"
+   ],
+   [
+    0.25,
+    "far"
+   ],
+   [
+    0.5,
+    "near"
+   ]
+  ]
+ },
+ "camera_vector": {
+  "translate": [
+   0,
+   0,
+   0
+  ],
+  "rotate": [
+   0,
+   0,
+   0
+  ],
+  "shake": {
+   "type": "handheld",
+   "amp_px": [
+    1,
+    2
+   ],
+   "irregular": true,
+   "seed": 1
+  }
+ },
+ "duration_s": 1.5
+}

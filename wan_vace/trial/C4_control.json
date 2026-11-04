@@ -1,0 +1,64 @@
+{
+ "cut": "C4",
+ "source_seconds": [
+  8.0,
+  9.6
+ ],
+ "aspect": "9:16",
+ "fps": 24,
+ "openpose_keyframes": [
+  {
+   "t": 8.0,
+   "wrist_to_handle_cm": 10
+  },
+  {
+   "t": 8.8,
+   "wrist_to_handle_cm": 4
+  },
+  {
+   "t": 9.6,
+   "wrist_to_handle_cm": 1
+  }
+ ],
+ "depth": {
+  "focus_sweep": [
+   [
+    8.0,
+    "cat"
+   ],
+   [
+    8.25,
+    "handle"
+   ],
+   [
+    8.5,
+    "cat"
+   ]
+  ]
+ },
+ "camera_vector": {
+  "translate": [
+   0,
+   0,
+   0
+  ],
+  "rotate": [
+   0,
+   0,
+   0
+  ],
+  "shake": {
+   "type": "handheld",
+   "amp_px": [
+    1,
+    2
+   ],
+   "irregular": true,
+   "seed": 4
+  }
+ },
+ "contact": false,
+ "hard_cut_before_touch": true,
+ "fingers_visible": 4,
+ "duration_s": 1.6
+}
