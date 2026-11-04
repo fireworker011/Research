@@ -54,14 +54,24 @@ class SakuraClipTests(unittest.TestCase):
         self.assertIn("生成: しない", text)
         self.assertIn("落とさない", text)
 
-    def test_notebook_cell_does_not_queue_or_download(self) -> None:
+    def test_notebook_plan_cell_does_not_queue(self) -> None:
         notebook = json.loads(NOTEBOOK.read_text(encoding="utf-8"))
         cells = ["".join(cell.get("source", [])) for cell in notebook["cells"]]
-        clip = [text for text in cells if "sakura_clip" in text]
-        self.assertEqual(len(clip), 1)
-        self.assertNotIn("post_prompt", clip[0])
-        self.assertNotIn("civitai.com", clip[0])
-        self.assertIn("生成ボタンは押していない。", clip[0])
+        plan_cells = [text for text in cells if "sakura_clip" in text and "post_prompt" not in text]
+        queue_cells = [text for text in cells if "さくら刀を1本投入" in text]
+        self.assertEqual(len(plan_cells), 1)
+        self.assertEqual(len(queue_cells), 1)
+        self.assertNotIn("post_prompt", plan_cells[0])
+        self.assertNotIn("civitai.com", plan_cells[0])
+        self.assertNotIn("huggingface.co", plan_cells[0])
+        self.assertIn("生成ボタンは押していない。", plan_cells[0])
+        self.assertIn("cursor/sakura-five-stills-80fd", plan_cells[0])
+        self.assertIn("post_prompt", queue_cells[0])
+        self.assertLess(queue_cells[0].index("output_paths"), queue_cells[0].index("post_prompt"))
+        self.assertIn("無いので止めた", queue_cells[0])
+        self.assertIn("落とさない", queue_cells[0])
+        self.assertNotIn("civitai.com", queue_cells[0])
+        self.assertNotIn("huggingface.co", queue_cells[0])
 
 
 if __name__ == "__main__":
