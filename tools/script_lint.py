@@ -522,6 +522,15 @@ def check_prompts(md: str, cues: list[Cue], name: str) -> str:
         ]
         if not product or any(word not in product[0] for word in ("器", "袋", "食べ")):
             reasons.append("商品のカットが無い")
+        tail = max((cue.end for cue in cues), default=0) / 1000 - 2.0
+        for block, (_start, end) in zip(prompt_blocks, ranges):
+            if all(word in block for word in ("器", "袋", "食べ")) and end > tail + 0.001:
+                reasons.append("商品カットが最後の2秒にかかる")
+                break
+        for cue in cues:
+            if "食べ" in cue.text and cue.end / 1000 > tail + 0.001:
+                reasons.append("商品の字幕が最後の2秒にかかる")
+                break
     if reasons:
         return "FAIL（" + "、".join(reasons) + "）"
     return "PASS"
@@ -866,6 +875,31 @@ def self_test(fixtures: Path, repo: Path) -> bool:
         no_frame.prompts.startswith("FAIL") and "9:16" in no_frame.prompts,
         "1f 9:16と画面文字",
         no_frame.prompts,
+    ) and ok
+    overlap_still = (
+        "縦9:16。画面に文字を出さない。" + CAT_SENTENCE + "無地の器。袋。顔を器に入れて粒を食べる。"
+    )
+    overlap_md = (
+        minimal_md("- 合計 80/100")
+        + "\n## Imagine\n"
+        + "### プロンプト1（カット1・6.000-9.000）\n"
+        + overlap_still
+        + "\n### プロンプト2（カット2・8.500-10.500）\n9:16。画面に文字を出さない。\n"
+        + CAT_SENTENCE
+        + "\n"
+    )
+    overlap = lint_texts(
+        "2026-11-04-ペット-product-overlap",
+        overlap_md,
+        "1\n00:00:00,000 --> 00:00:01,000\n"
+        + HOOK_TAG
+        + "寝てる？\n\n2\n00:00:06,000 --> 00:00:09,000\n器の粒を、食べてる。\n\n"
+        "3\n00:00:08,500 --> 00:00:10,500\n広告 #PR\n",
+    )
+    ok = expect(
+        overlap.prompts.startswith("FAIL") and "最後の2秒" in overlap.prompts,
+        "商品カットが最後の2秒にかかる",
+        overlap.prompts,
     ) and ok
 
     empty = Path("/tmp/script-lint-empty-1e")
