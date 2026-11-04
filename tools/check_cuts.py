@@ -49,7 +49,9 @@ def main() -> int:
             saw_pet = True
             say(CAT in section, head + " の猫の描写")
             say("広告 #PR" in section, head + " の最後の広告")
-            say("袋" in section and "器" in section and "食べ" in section, head + " の商品カット")
+            say("切り抜き・白いふちどり・合成はしない" in section, head + " の切り抜き禁止")
+            say("しっぽは体につながった1本" in section, head + " のしっぽ")
+            say(not ("袋" in section and "器" in section and "食べ" in section), head + " に食事カットが無い")
     if lane in ("pet", "both"):
         say(saw_pet, "ペットの節がある")
     if lane in ("kane", "both"):

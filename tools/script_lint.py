@@ -11,7 +11,7 @@
 - ゆあ・金メモは PR が無い。金メモの概要欄に「アフィリエイト広告を含みます」は無い
 - 早見表は 3行まで。数字の行は 2秒以上。秒を行に書いた表は文字の高さ 40px 以上
 - Imagine のプロンプトは、フック以外の字幕 1本につき 1本。秒は字幕と揃える
-- ペットの猫の描写は全カットで同じ文。商品（器と袋）のカットが 1つある
+- ペットの猫の描写は全カットで同じ文。使い回しの食事カットは不合格。結論は最後の1.5秒より前
 - 禁止語が台詞・字幕に無い（根拠メモや PR 注記は見ない）
 - 見出し「0〜1秒フック」「brief」「自己採点」があり、自己採点の最後の合計が 80 以上
 - アフィリエイト URL の断片があれば警告（結果は WARN。他が落ちていれば FAIL が優先）
@@ -35,6 +35,8 @@ DURATION_LO_MS = 8000
 DURATION_HI_MS = 10500
 HALF_MS = 500
 CAT_SENTENCE = "黒い短毛で、目は黄色、耳は立っている。"
+BAN_SENTENCE = "切り抜き・白いふちどり・合成はしない。"
+TAIL_SENTENCE = "しっぽは体につながった1本。"
 AFFILIATE_LINE = "アフィリエイト広告を含みます"
 HOOK_MARKS = ("0\u301c1秒フック", "0\uff5e1秒フック")
 BANNED_WORDS = ("必ず稼げる", "若返る", "治る", "絶対", "必ず")
@@ -515,13 +517,12 @@ def check_prompts(md: str, cues: list[Cue], name: str) -> str:
     if "ペット" in name:
         if any(CAT_SENTENCE not in block for block in prompt_blocks):
             reasons.append("猫の描写が揃っていない")
-        product = [
-            block
-            for block, (start, end) in zip(prompt_blocks, ranges)
-            if abs(start - 6.0) < 0.001 and abs(end - 8.5) < 0.001
-        ]
-        if not product or any(word not in product[0] for word in ("器", "袋", "食べ")):
-            reasons.append("商品のカットが無い")
+        if any(BAN_SENTENCE not in block for block in prompt_blocks):
+            reasons.append("切り抜き・白いふちどり・合成の禁止が無い")
+        if any(TAIL_SENTENCE not in block for block in prompt_blocks):
+            reasons.append("しっぽが体につながった1本でない")
+        if any(all(word in block for word in ("器", "袋", "食べ")) for block in prompt_blocks):
+            reasons.append("使い回しの食事カット")
         tail = max((cue.end for cue in cues), default=0) / 1000 - 2.0
         for block, (_start, end) in zip(prompt_blocks, ranges):
             if all(word in block for word in ("器", "袋", "食べ")) and end > tail + 0.001:
@@ -531,6 +532,9 @@ def check_prompts(md: str, cues: list[Cue], name: str) -> str:
             if "食べ" in cue.text and cue.end / 1000 > tail + 0.001:
                 reasons.append("商品の字幕が最後の2秒にかかる")
                 break
+        spoken = dialogue_cues(cues)
+        if spoken and spoken[-1].end > max(cue.end for cue in cues) - 1500:
+            reasons.append("結論が最後の1.5秒にかかる")
     if reasons:
         return "FAIL（" + "、".join(reasons) + "）"
     return "PASS"
@@ -900,6 +904,35 @@ def self_test(fixtures: Path, repo: Path) -> bool:
         overlap.prompts.startswith("FAIL") and "最後の2秒" in overlap.prompts,
         "商品カットが最後の2秒にかかる",
         overlap.prompts,
+    ) and ok
+    ok = expect(
+        "使い回しの食事カット" in overlap.prompts,
+        "使い回しの食事カット",
+        overlap.prompts,
+    ) and ok
+    late_still = (
+        "9:16。画面に文字を出さない。"
+        + CAT_SENTENCE
+        + TAIL_SENTENCE
+        + BAN_SENTENCE
+    )
+    late_conclusion = lint_texts(
+        "2026-11-05-ペット-late-conclusion",
+        minimal_md("- 合計 80/100")
+        + "\n## Imagine\n### プロンプト1（カット1・7.000-9.500）\n"
+        + late_still
+        + "\n### プロンプト2（カット2・8.500-10.500）\n"
+        + late_still
+        + "\n",
+        "1\n00:00:00,000 --> 00:00:01,000\n"
+        + HOOK_TAG
+        + "寝てる？\n\n2\n00:00:07,000 --> 00:00:09,500\nまた、裾に触ってる。\n\n"
+        "3\n00:00:08,500 --> 00:00:10,500\n広告 #PR\n",
+    )
+    ok = expect(
+        late_conclusion.prompts.startswith("FAIL") and "最後の1.5秒" in late_conclusion.prompts,
+        "結論が最後の1.5秒にかかる",
+        late_conclusion.prompts,
     ) and ok
 
     empty = Path("/tmp/script-lint-empty-1e")
