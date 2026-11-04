@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
-# 下書き動画（灰色の静止カード＋SRT焼き込み）。音は入れない。絵は描かない。生成AIは使わない。
+# 下書き動画（灰色の静止カード＋SRT焼き込み＋女性AIのナレーション）。絵は描かない。
 # 字幕は同じフォルダの subs/。台本ファイルはコミットしない。
 # 2026-11-04: 尺は10.5秒。秒は0.5刻み。ペットの右上の記号は出さない。
-# この下書きの指示は音なし。音声は足さない。この修正では mp4 を書き出していない。
+# 音なしは取り消した。narrate.py が字幕の台詞を aac で読む。
 # 使い方: bash animatics/20261102-night/make.sh
 # 1本だけ: ONLY=<名前> bash animatics/20261102-night/make.sh
 #
@@ -130,11 +130,16 @@ EOF
     cat "$BUILD/${name}.overlay" >> "$filter"
   fi
   printf 'subtitles=%s:fontsdir=%s\n' "$ass" "$FONTDIR" >> "$filter"
+  python3 "$ROOT/narrate.py" "$SUBS/${name}.srt" "$BUILD/${name}.m4a" "$dur"
   ffmpeg -y -hide_banner -loglevel error \
     -f lavfi -i "color=c=0x6A6A6A:s=1080x1920:r=24:d=${dur}" \
+    -i "$BUILD/${name}.m4a" \
     -filter_script:v "$filter" \
     -frames:v "$frames" \
-    -c:v libx264 -pix_fmt yuv420p -r 24 -fps_mode cfr -an \
+    -map 0:v:0 -map 1:a:0 \
+    -c:v libx264 -pix_fmt yuv420p -r 24 -fps_mode cfr \
+    -c:a aac -b:a 160k -ar 48000 \
+    -t "$dur" \
     -movflags +faststart \
     "$outdir/draft.mp4"
   extract "$outdir/draft.mp4" 0 "$outdir/frames/0.0.png"
@@ -158,19 +163,19 @@ extract() {
     -vf "select=eq(n\\,${n})" -frames:v 1 -update 1 "$dst"
 }
 
-# ペット カーテン（台本: 0.0-2.5 / 2.5-4.5 / 4.5-6.5 / 6.5-8.5。8.5-10.5は少し暗くする。尺10.5秒）
+# ペット カーテン（台本: 0.0-2.0 / 2.0-4.0 / 4.0-6.5 / 6.5-8.5。8.5-10.5は少し暗くする。尺10.5秒）
 write_card "$BUILD/kaaten-1.txt" \
-  "カット1　0.0-2.5秒" \
+  "カット1　0.0-2.0秒" \
   "生成りのカーテンの裾の横" \
   "黒猫が座って止まっている" \
   "まばたき1回。前足は床。人は映っていない"
 write_card "$BUILD/kaaten-2.txt" \
-  "カット2　2.5-4.5秒" \
+  "カット2　2.0-4.0秒" \
   "同じ画角" \
   "しっぽの先が1回揺れて止まる" \
   "体と前足は動かない。布には触れない"
 write_card "$BUILD/kaaten-3.txt" \
-  "カット3　4.5-6.5秒" \
+  "カット3　4.0-6.5秒" \
   "同じ画角。頭の位置はそのまま" \
   "視線だけが裾へ1回向く" \
   "前足は床。しっぽの先は止まっている"
@@ -185,30 +190,30 @@ write_card "$BUILD/kaaten-5.txt" \
   "中央「広告 #PR」" \
   "右上の記号は出さない。人は映っていない"
 render "2026-11-11-ペット-kuroneko-kaaten" 10.5 252 228 8.5 \
-  0 2.5 "$BUILD/kaaten-1.txt" \
-  2.5 4.5 "$BUILD/kaaten-2.txt" \
-  4.5 6.5 "$BUILD/kaaten-3.txt" \
+  0 2.0 "$BUILD/kaaten-1.txt" \
+  2.0 4.0 "$BUILD/kaaten-2.txt" \
+  4.0 6.5 "$BUILD/kaaten-3.txt" \
   6.5 8.5 "$BUILD/kaaten-4.txt" \
   8.5 - "$BUILD/kaaten-5.txt"
 
-# ペット 猫草（台本: 0.0-2.5 / 2.5-4.5 / 4.5-6.5 / 6.5-8.5。8.5-10.5は少し暗くする。尺10.5秒）
+# ペット 猫草（台本: 0.0-2.0 / 2.0-4.0 / 4.0-6.0 / 6.0-8.5。8.5-10.5は少し暗くする。尺10.5秒）
 write_card "$BUILD/kusa-1.txt" \
-  "カット1　0.0-2.5秒" \
+  "カット1　0.0-2.0秒" \
   "白い鉢の猫草の横" \
   "黒猫が座って止まっている" \
   "まばたき1回。顔は草の外。口は閉じている"
 write_card "$BUILD/kusa-2.txt" \
-  "カット2　2.5-4.5秒" \
+  "カット2　2.0-4.0秒" \
   "同じ画角。頭の位置はそのまま" \
   "視線だけが猫草の方へ1回向く" \
   "口は閉じている。顔は草に入っていない"
 write_card "$BUILD/kusa-3.txt" \
-  "カット3　4.5-6.5秒" \
+  "カット3　4.0-6.0秒" \
   "同じ画角" \
   "耳が1回、猫草の方へ向く" \
   "体と前足は動かない。草には触れない"
 write_card "$BUILD/kusa-4.txt" \
-  "カット4　6.5-8.5秒" \
+  "カット4　6.0-8.5秒" \
   "同じ画角" \
   "まばたき1回のあと、目を開ける" \
   "口は閉じたまま。顔は草の外"
@@ -218,10 +223,10 @@ write_card "$BUILD/kusa-5.txt" \
   "中央「広告 #PR」" \
   "右上の記号は出さない。口は閉じている"
 render "2026-11-12-ペット-kuroneko-nekokusa" 10.5 252 228 8.5 \
-  0 2.5 "$BUILD/kusa-1.txt" \
-  2.5 4.5 "$BUILD/kusa-2.txt" \
-  4.5 6.5 "$BUILD/kusa-3.txt" \
-  6.5 8.5 "$BUILD/kusa-4.txt" \
+  0 2.0 "$BUILD/kusa-1.txt" \
+  2.0 4.0 "$BUILD/kusa-2.txt" \
+  4.0 6.0 "$BUILD/kusa-3.txt" \
+  6.0 8.5 "$BUILD/kusa-4.txt" \
   8.5 - "$BUILD/kusa-5.txt"
 
 # ペット ブラシ（台本: 0.0-2.5 / 2.5-4.5 / 4.5-6.5 / 6.5-8.5。8.5-10.5は少し暗くする。尺10.5秒）
@@ -282,18 +287,18 @@ write_card "$BUILD/sho-foot.txt" \
   "子の加算・配偶者の加給" \
   "報酬比例の円は、この表に無い"
 write_card "$BUILD/sho-src.txt" "出典：日本年金機構"
-write_card "$BUILD/sho-credit.txt" "VOICEVOX:冥鳴ひまり"
+write_card "$BUILD/sho-credit.txt" "声：女性AI"
 add_text "$OV" "$BUILD/sho-right-big.txt" 40 white "w-text_w-80" 860 'lt(t\,3)'
 add_text "$OV" "$BUILD/sho-right-small.txt" 26 white "w-text_w-80" 916 'lt(t\,3)'
 add_text "$OV" "$BUILD/sho-head.txt" 28 white 40 660 'gte(t\,0.5)'
-add_text "$OV" "$BUILD/sho-born.txt" 28 0xBDBDBD 40 708 'gte(t\,0.5)*lt(t\,8.5)'
-add_text "$OV" "$BUILD/sho-born.txt" 28 white 40 708 'gte(t\,8.5)'
-add_text "$OV" "$BUILD/sho-row1.txt" 28 white 40 780 'gte(t\,0.5)*lt(t\,3.0)'
-add_text "$OV" "$BUILD/sho-row1.txt" 28 0xBDBDBD 40 780 'gte(t\,3.0)'
-add_text "$OV" "$BUILD/sho-row2.txt" 28 white 40 900 'gte(t\,3.0)*lt(t\,5.5)'
-add_text "$OV" "$BUILD/sho-row2.txt" 28 0xBDBDBD 40 900 'gte(t\,5.5)'
-add_text "$OV" "$BUILD/sho-row3.txt" 28 white 40 1020 'gte(t\,5.5)*lt(t\,8.5)'
-add_text "$OV" "$BUILD/sho-row3.txt" 28 0xBDBDBD 40 1020 'gte(t\,8.5)'
+add_text "$OV" "$BUILD/sho-born.txt" 28 0xBDBDBD 40 708 'gte(t\,0.0)*lt(t\,8.0)'
+add_text "$OV" "$BUILD/sho-born.txt" 28 white 40 708 'gte(t\,8.0)'
+add_text "$OV" "$BUILD/sho-row1.txt" 28 white 40 780 'gte(t\,0.0)*lt(t\,2.5)'
+add_text "$OV" "$BUILD/sho-row1.txt" 28 0xBDBDBD 40 780 'gte(t\,2.5)'
+add_text "$OV" "$BUILD/sho-row2.txt" 28 white 40 900 'gte(t\,2.5)*lt(t\,5.0)'
+add_text "$OV" "$BUILD/sho-row2.txt" 28 0xBDBDBD 40 900 'gte(t\,5.0)'
+add_text "$OV" "$BUILD/sho-row3.txt" 28 white 40 1020 'gte(t\,5.0)*lt(t\,8.0)'
+add_text "$OV" "$BUILD/sho-row3.txt" 28 0xBDBDBD 40 1020 'gte(t\,8.0)'
 add_text "$OV" "$BUILD/sho-foot.txt" 24 0xE6E6E6 40 1180 'gte(t\,0.5)'
 add_text "$OV" "$BUILD/sho-credit.txt" 24 white 40 1848 'gte(t\,0)'
 add_text "$OV" "$BUILD/sho-src.txt" 24 white "w-text_w-40" 1848 'gte(t\,0)'
@@ -348,17 +353,17 @@ write_card "$BUILD/sai-foot.txt" \
   "3分の1以上で60%" \
   "4,000円は上限ではない"
 write_card "$BUILD/sai-src.txt" "出典：ハローワーク"
-write_card "$BUILD/sai-credit.txt" "VOICEVOX:冥鳴ひまり"
+write_card "$BUILD/sai-credit.txt" "声：女性AI"
 add_text "$OV" "$BUILD/sai-right-big.txt" 40 white "w-text_w-80" 860 'lt(t\,3)'
 add_text "$OV" "$BUILD/sai-right-small.txt" 26 white "w-text_w-80" 916 'lt(t\,3)'
 add_text "$OV" "$BUILD/sai-head.txt" 28 white 40 640 'gte(t\,0.5)'
-add_text "$OV" "$BUILD/sai-row90.txt" 26 white 40 720 'gte(t\,0.5)*lt(t\,3.0)'
-add_text "$OV" "$BUILD/sai-row90.txt" 26 0xBDBDBD 40 720 'gte(t\,3.0)'
-add_text "$OV" "$BUILD/sai-row228.txt" 26 white 40 860 'gte(t\,3.0)*lt(t\,5.5)'
+add_text "$OV" "$BUILD/sai-row90.txt" 26 white 40 720 'gte(t\,0.0)*lt(t\,2.5)'
+add_text "$OV" "$BUILD/sai-row90.txt" 26 0xBDBDBD 40 720 'gte(t\,2.5)'
+add_text "$OV" "$BUILD/sai-row228.txt" 26 white 40 860 'gte(t\,2.5)*lt(t\,5.5)'
 add_text "$OV" "$BUILD/sai-row228.txt" 26 0xBDBDBD 40 860 'gte(t\,5.5)'
-add_text "$OV" "$BUILD/sai-row178.txt" 26 white 40 1020 'gte(t\,5.5)*lt(t\,8.5)'
-add_text "$OV" "$BUILD/sai-row178.txt" 26 0xBDBDBD 40 1020 'gte(t\,8.5)'
-add_text "$OV" "$BUILD/sai-row-cap.txt" 26 white 40 1180 'gte(t\,8.5)'
+add_text "$OV" "$BUILD/sai-row178.txt" 26 white 40 1020 'gte(t\,5.5)*lt(t\,8.0)'
+add_text "$OV" "$BUILD/sai-row178.txt" 26 0xBDBDBD 40 1020 'gte(t\,8.0)'
+add_text "$OV" "$BUILD/sai-row-cap.txt" 26 white 40 1180 'gte(t\,8.0)'
 add_text "$OV" "$BUILD/sai-foot.txt" 22 0xE6E6E6 40 1360 'gte(t\,0.5)'
 add_text "$OV" "$BUILD/sai-credit.txt" 24 white 40 1848 'gte(t\,0)'
 add_text "$OV" "$BUILD/sai-src.txt" 24 white "w-text_w-40" 1848 'gte(t\,0)'
@@ -408,17 +413,17 @@ write_card "$BUILD/kyo-foot.txt" \
   "20%・40%・50%は" \
   "計算額が4千円を超えないときは出ない"
 write_card "$BUILD/kyo-src.txt" "出典：ハローワーク"
-write_card "$BUILD/kyo-credit.txt" "VOICEVOX:冥鳴ひまり"
+write_card "$BUILD/kyo-credit.txt" "声：女性AI"
 add_text "$OV" "$BUILD/kyo-right-big.txt" 42 white "w-text_w-80" 860 'lt(t\,3)'
 add_text "$OV" "$BUILD/kyo-right-small.txt" 28 white "w-text_w-80" 916 'lt(t\,3)'
 add_text "$OV" "$BUILD/kyo-head.txt" 28 white 40 660 'gte(t\,0.5)'
-add_text "$OV" "$BUILD/kyo-row20.txt" 28 white 40 760 'gte(t\,0.5)*lt(t\,3.0)'
-add_text "$OV" "$BUILD/kyo-row20.txt" 28 0xBDBDBD 40 760 'gte(t\,3.0)'
-add_text "$OV" "$BUILD/kyo-row40.txt" 28 white 40 880 'gte(t\,3.0)*lt(t\,5.5)'
-add_text "$OV" "$BUILD/kyo-row40.txt" 28 0xBDBDBD 40 880 'gte(t\,5.5)'
-add_text "$OV" "$BUILD/kyo-row50.txt" 28 white 40 1000 'gte(t\,5.5)*lt(t\,8.5)'
-add_text "$OV" "$BUILD/kyo-row50.txt" 28 0xBDBDBD 40 1000 'gte(t\,8.5)'
-add_text "$OV" "$BUILD/kyo-row80.txt" 28 white 40 1120 'gte(t\,8.5)'
+add_text "$OV" "$BUILD/kyo-row20.txt" 28 white 40 760 'gte(t\,0.0)*lt(t\,2.5)'
+add_text "$OV" "$BUILD/kyo-row20.txt" 28 0xBDBDBD 40 760 'gte(t\,2.5)'
+add_text "$OV" "$BUILD/kyo-row40.txt" 28 white 40 880 'gte(t\,2.5)*lt(t\,5.0)'
+add_text "$OV" "$BUILD/kyo-row40.txt" 28 0xBDBDBD 40 880 'gte(t\,5.0)'
+add_text "$OV" "$BUILD/kyo-row50.txt" 28 white 40 1000 'gte(t\,5.0)*lt(t\,7.5)'
+add_text "$OV" "$BUILD/kyo-row50.txt" 28 0xBDBDBD 40 1000 'gte(t\,7.5)'
+add_text "$OV" "$BUILD/kyo-row80.txt" 28 white 40 1120 'gte(t\,7.5)'
 add_text "$OV" "$BUILD/kyo-foot.txt" 24 0xE6E6E6 40 1280 'gte(t\,0.5)'
 add_text "$OV" "$BUILD/kyo-credit.txt" 24 white 40 1848 'gte(t\,0)'
 add_text "$OV" "$BUILD/kyo-src.txt" 24 white "w-text_w-40" 1848 'gte(t\,0)'
