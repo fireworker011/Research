@@ -49,7 +49,7 @@ def main() -> int:
             saw_pet = True
             say(CAT in section, head + " の猫の描写")
             say("広告 #PR" in section, head + " の最後の広告")
-            say("袋" in section and "器" in section, head + " の商品カット")
+            say("袋" in section and "器" in section and "食べ" in section, head + " の商品カット")
     if lane in ("pet", "both"):
         say(saw_pet, "ペットの節がある")
     if lane in ("kane", "both"):

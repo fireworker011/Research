@@ -1,14 +1,18 @@
 #!/usr/bin/env bash
 # M1〜M12。使い方: check_video.sh <mp4> <pet|kane>
 # M11: 灰色の単色背景のフレームが50%を超えたらFAIL。
-# M12: 最小の文字の高さが40px未満ならFAIL。
+# M12: 字幕と表の領域だけを見る。帯が無いときは SKIP。40px未満はFAIL。
 # ペットも金メモも長さは 8.0〜10.5秒。
-# 下書きは mp4 を書き出さない。音声が無いことは FAIL にしない。
+# 下書き（--final なし）は音声が無くても M6 と M8 を不合格にしない。
+# 完成mp4は --final 必須。--final のとき音声が無い、aac でない、mean_volume が -45dB 以下なら不合格。
 # 引数が .md のときは cuts-for-pc.md を見る（tools/check_cuts.py）。
 set -euo pipefail
 
-if [[ $# -ne 2 ]]; then
-  echo "usage: check_video.sh <mp4> <pet|kane>" >&2
+FINAL=0
+if [[ $# -eq 3 && "$3" == "--final" ]]; then
+  FINAL=1
+elif [[ $# -ne 2 ]]; then
+  echo "usage: check_video.sh <mp4> <pet|kane> [--final]" >&2
   exit 2
 fi
 FILE="$1"
@@ -95,7 +99,13 @@ else
   say M5 0 "長さ=${duration}秒（${label}）"
 fi
 
-if [[ -z "$acodec" ]]; then
+if [[ "$FINAL" == "1" ]]; then
+  if [[ "$acodec" == "aac" ]]; then
+    say M6 1 "音声=aac"
+  else
+    say M6 0 "音声=${acodec:-なし}（完成はaac必須）"
+  fi
+elif [[ -z "$acodec" ]]; then
   say M6 1 "音声なし（下書きは音を入れない）"
 elif [[ "$acodec" == "aac" ]]; then
   say M6 1 "音声=aac"
@@ -110,7 +120,11 @@ else
 fi
 
 if [[ -z "$acodec" ]]; then
-  say M8 1 "音声トラックなし（等倍の声はPCで付ける）"
+  if [[ "$FINAL" == "1" ]]; then
+    say M8 0 "音声トラックが無い（完成mp4は --final 必須）"
+  else
+    say M8 1 "音声トラックなし（等倍の声はPCで付ける）"
+  fi
 else
   vol=$(ffmpeg -hide_banner -i "$FILE" -af volumedetect -f null - 2>&1 | sed -n 's/.*mean_volume: //p' | tail -1)
   mean=${vol% dB}
@@ -196,7 +210,9 @@ for index in indexes:
                 gray += 1
             else:
                 row_text += 1
-        if row_text > 4:
+        table = 0.25 * height <= y < 0.73 * height
+        subtitle = 0.78 * height <= y < 0.98 * height
+        if row_text > 4 and (table or subtitle):
             text_rows.append(y)
     if seen and gray / seen > 0.90:
         gray_frames += 1
@@ -212,7 +228,7 @@ for index in indexes:
         bands.append(prev - start + 1)
         heights.extend(band for band in bands if 8 <= band <= 200)
 gray_fail = 1 if gray_frames / len(indexes) > 0.50 else 0
-text_min = min(heights) if heights else 0
+text_min = str(min(heights)) if heights else "skip"
 print(f"{gray_fail} {text_min}")
 PY
 )
@@ -223,7 +239,9 @@ else
   say M11 1 "灰色の単色背景のフレームは50%以下"
 fi
 
-if [[ "$text_min" -lt 40 ]]; then
+if [[ "$text_min" == "skip" ]]; then
+  printf 'M12\tSKIP\t字幕と表の領域に文字の帯が無い\n'
+elif [[ "$text_min" -lt 40 ]]; then
   say M12 0 "最小の文字の高さが${text_min}px（40px未満）"
 else
   say M12 1 "最小の文字の高さは${text_min}px"

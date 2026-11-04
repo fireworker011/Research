@@ -40,6 +40,16 @@ HOOK_MARKS = ("0\u301c1秒フック", "0\uff5e1秒フック")
 BANNED_WORDS = ("必ず稼げる", "若返る", "治る", "絶対", "必ず")
 OPEN_PR = "{\\an9}PR"
 HOOK_TAG = "{\\an8}"
+SPEED_MARK = "等倍（+0%）"
+CTA_WORDS = ("プロフィール", "リンク", "概要欄から", "買って", "申し込んで", "フォロー")
+PRODUCT_NAMES = ("毎日腎活",)
+SKIP_MD = frozenset({"REPORT.md", "cuts-for-pc.md"})
+BAD_SPEED_RE = re.compile(
+    r"早回し\s*[=:]?\s*([0-9]+(?:\.[0-9]+)?)|"
+    r"([0-9]+(?:\.[0-9]+)?)\s*倍速|"
+    r"倍速\s*[=:]?\s*([0-9]+(?:\.[0-9]+)?)|"
+    r"atempo\s*[=:]?\s*([0-9]+(?:\.[0-9]+)?)"
+)
 TIMESTAMP_RE = re.compile(
     r"(\d{2}):(\d{2}):(\d{2}),(\d{3})\s*-->\s*(\d{2}):(\d{2}):(\d{2}),(\d{3})"
 )
@@ -56,6 +66,9 @@ COLUMNS = (
     "表",
     "尺",
     "プロンプト",
+    "フック",
+    "速度",
+    "誘導",
     "a8",
     "結果",
 )
@@ -88,6 +101,9 @@ class Row:
     table: str
     timing: str
     prompts: str
+    hook: str
+    speed: str
+    cta: str
     a8: str
     result: str
 
@@ -433,8 +449,44 @@ def overview_body(md: str) -> str:
     return "\n".join(section.body for section in parse_sections(md) if "概要欄" in section.title)
 
 
+def check_hook(cues: list[Cue]) -> str:
+    """{\\an8} は 0.000 開始、終了は 1.000 秒まで。"""
+    hooks = [cue for cue in cues if is_hook_cue(cue.text)]
+    if not hooks:
+        return "PASS（フックなし）"
+    late = [cue for cue in hooks if cue.start != 0 or cue.end > 1000]
+    if late:
+        return "FAIL（フックは0.000から1.000秒まで）"
+    return "PASS"
+
+
+def check_speed(md: str) -> str:
+    """等倍（+0%）が無い、または 1.0 以外の早回し・倍速・atempo は不合格。"""
+    if SPEED_MARK not in md:
+        return "FAIL（等倍（+0%）が無い）"
+    bad: list[str] = []
+    for match in BAD_SPEED_RE.finditer(md):
+        raw = next(group for group in match.groups() if group is not None)
+        if abs(float(raw) - 1.0) > 0.001:
+            bad.append(match.group(0))
+    if bad:
+        return "FAIL（" + "、".join(bad) + "）"
+    return "PASS"
+
+
+def check_cta(name: str, spoken: str, srt: str, md: str) -> str:
+    """金メモの台詞・字幕・概要欄に、誘導か商品名がある。"""
+    if "金メモ" not in name:
+        return "PASS（対象外）"
+    blob = "\n".join((spoken, srt, overview_body(md)))
+    hits = [word for word in CTA_WORDS + PRODUCT_NAMES if word in blob]
+    if hits:
+        return "FAIL（" + "・".join(hits) + "）"
+    return "PASS"
+
+
 def check_prompts(md: str, cues: list[Cue], name: str) -> str:
-    """プロンプト節があるときだけ。フック以外の字幕と秒を揃える。"""
+    """プロンプト節があるときだけ。フック以外の字幕と秒を揃える。秒の無い見出しは不合格。"""
     if "プロンプト" not in md:
         return "PASS（プロンプトなし）"
     headings = re.findall(
@@ -444,11 +496,7 @@ def check_prompts(md: str, cues: list[Cue], name: str) -> str:
     )
     blocks = re.split(r"(?m)^### ", md)
     prompt_blocks = [block for block in blocks if block.startswith("プロンプト")]
-    if not headings:
-        if prompt_blocks:
-            return "PASS（旧表記）"
-        return "FAIL（プロンプトの秒が無い）"
-    if len(headings) != len(prompt_blocks):
+    if not headings or len(headings) != len(prompt_blocks):
         return "FAIL（プロンプトの秒が無い）"
     reasons: list[str] = []
     ranges = [(float(start), float(end)) for start, end in headings]
@@ -460,10 +508,19 @@ def check_prompts(md: str, cues: list[Cue], name: str) -> str:
             reasons.append(f"{start:.3f}-{end:.3f}のプロンプトが無い")
     if len(ranges) != len(needed):
         reasons.append(f"プロンプト{len(ranges)}本（字幕{len(needed)}本）")
+    for block in prompt_blocks:
+        if "9:16" not in block or "画面に文字を出さない" not in block:
+            reasons.append("9:16か画面文字の指定が無い")
+            break
     if "ペット" in name:
         if any(CAT_SENTENCE not in block for block in prompt_blocks):
             reasons.append("猫の描写が揃っていない")
-        if not any("袋" in block and "器" in block for block in prompt_blocks):
+        product = [
+            block
+            for block, (start, end) in zip(prompt_blocks, ranges)
+            if abs(start - 6.0) < 0.001 and abs(end - 8.5) < 0.001
+        ]
+        if not product or any(word not in product[0] for word in ("器", "袋", "食べ")):
             reasons.append("商品のカットが無い")
     if reasons:
         return "FAIL（" + "、".join(reasons) + "）"
@@ -481,6 +538,9 @@ def overall_of(row: Row) -> str:
         row.table,
         row.timing,
         row.prompts,
+        row.hook,
+        row.speed,
+        row.cta,
     )
     if any(not item.startswith("PASS") for item in hard):
         return "FAIL"
@@ -527,8 +587,13 @@ def lint_texts(name: str, md: str | None, srt: str | None) -> Row:
     table = check_table("" if md is None else md_body)
     timing = check_timing(cues, name)
     prompts = check_prompts("" if md is None else md_body, cues, name)
+    hook = check_hook(cues)
+    speed = check_speed(md_body)
+    cta = check_cta(name, spoken, srt_body, md_body)
     a8 = check_a8(md_body + "\n" + srt_body)
-    row = Row(name, srt_format, gap, pr, banned, headings, score, table, timing, prompts, a8, "FAIL")
+    row = Row(
+        name, srt_format, gap, pr, banned, headings, score, table, timing, prompts, hook, speed, cta, a8, "FAIL"
+    )
     return Row(
         row.name,
         row.srt_format,
@@ -540,6 +605,9 @@ def lint_texts(name: str, md: str | None, srt: str | None) -> Row:
         row.table,
         row.timing,
         row.prompts,
+        row.hook,
+        row.speed,
+        row.cta,
         row.a8,
         overall_of(row),
     )
@@ -550,12 +618,15 @@ def read_text(path: Path) -> str:
 
 
 def collect(root: Path) -> list[tuple[str, str | None, str | None]]:
+    """scripts/+subs/ と、同じフォルダに md と srt が並ぶ形の両方。"""
     scripts = root / "scripts"
     subs = root / "subs"
-    if not scripts.is_dir():
-        raise FileNotFoundError(f"scripts がありません: {scripts}")
-    md_paths = {path.stem: path for path in scripts.glob("*.md")}
-    srt_paths = {path.stem: path for path in subs.glob("*.srt")} if subs.is_dir() else {}
+    if scripts.is_dir():
+        md_paths = {path.stem: path for path in scripts.glob("*.md") if path.name not in SKIP_MD}
+        srt_paths = {path.stem: path for path in subs.glob("*.srt")} if subs.is_dir() else {}
+    else:
+        md_paths = {path.stem: path for path in root.glob("*.md") if path.name not in SKIP_MD}
+        srt_paths = {path.stem: path for path in root.glob("*.srt")}
     items: list[tuple[str, str | None, str | None]] = []
     for stem in sorted(set(md_paths) | set(srt_paths)):
         md = read_text(md_paths[stem]) if stem in md_paths else None
@@ -584,6 +655,9 @@ def render(rows: list[Row]) -> str:
             row.table,
             row.timing,
             row.prompts,
+            row.hook,
+            row.speed,
+            row.cta,
             row.a8,
             row.result,
         )
@@ -603,7 +677,8 @@ def minimal_md(score_body: str, extra: str = "") -> str:
         f"## {hook}（画＋文字）\n"
         f"- テキストフック: 「テスト」\n\n"
         f"## brief\n"
-        f"- 尺: 4秒\n\n"
+        f"- 尺: 4秒\n"
+        f"- 声: {SPEED_MARK}\n\n"
         f"## 台詞\n"
         f"テストの台詞。\n\n"
         f"## 字幕\n"
@@ -720,6 +795,102 @@ def self_test(fixtures: Path, repo: Path) -> bool:
     ok = expect(find_banned("必ず") == ["必ず"], "必ず単体", "") and ok
     ok = expect(find_banned("絶対に治る") == ["治る", "絶対"], "治ると絶対", "") and ok
 
+    print()
+    print("2026-11-04 の追加:")
+    no_seconds = lint_texts(
+        "2026-11-04-ペット-no-seconds",
+        minimal_md("- 合計 80/100") + "\n## Imagine\n### プロンプト1（カット1）\n9:16。画面に文字を出さない。\n",
+        "1\n00:00:00,000 --> 00:00:01,000\n" + HOOK_TAG + "寝てる？\n\n"
+        "2\n00:00:08,500 --> 00:00:10,500\n広告 #PR\n",
+    )
+    late_hook = lint_texts(
+        "2026-11-04-ペット-late-hook",
+        minimal_md("- 合計 80/100"),
+        "1\n00:00:00,000 --> 00:00:01,500\n" + HOOK_TAG + "寝てる？\n\n"
+        "2\n00:00:08,500 --> 00:00:10,500\n広告 #PR\n",
+    )
+    cta_md = (
+        minimal_md("- 合計 80/100")
+        + "\n## 台詞\nプロフィールを見て。\n\n## 概要欄\n説明。\n"
+    )
+    cta_hit = lint_texts(
+        "2026-11-04-金メモ-cta",
+        cta_md,
+        "1\n00:00:00,000 --> 00:00:01,000\n" + HOOK_TAG + "いくら？\n\n"
+        "2\n00:00:00,500 --> 00:00:10,500\nプロフィールを見て。\n",
+    )
+    goods_md = minimal_md("- 合計 80/100") + "\n## 台詞\n毎日腎活を置く。\n\n## 概要欄\n説明。\n"
+    goods_hit = lint_texts(
+        "2026-11-04-金メモ-goods",
+        goods_md,
+        "1\n00:00:00,000 --> 00:00:01,000\n" + HOOK_TAG + "いくら？\n\n"
+        "2\n00:00:00,500 --> 00:00:10,500\nただの説明。\n",
+    )
+    slow_md = (
+        "# テスト\n\n## 0〜1秒フック（画＋文字）\n- テキストフック: 「テスト」\n\n"
+        "## brief\n- 尺: 4秒\n\n## 台詞\nテスト。\n\n## 字幕\nテスト\n\n## 自己採点\n- 合計 80/100\n"
+    )
+    slow = lint_texts(
+        "2026-11-04-ペット-no-speed",
+        slow_md,
+        "1\n00:00:00,000 --> 00:00:01,000\n" + HOOK_TAG + "寝てる？\n\n"
+        "2\n00:00:08,500 --> 00:00:10,500\n広告 #PR\n",
+    )
+    fast = lint_texts(
+        "2026-11-04-ペット-fast",
+        minimal_md("- 合計 80/100") + "\natempo=1.2\n",
+        "1\n00:00:00,000 --> 00:00:01,000\n" + HOOK_TAG + "寝てる？\n\n"
+        "2\n00:00:08,500 --> 00:00:10,500\n広告 #PR\n",
+    )
+    plain = (
+        minimal_md("- 合計 80/100")
+        + "\n## Imagine\n### プロンプト1（カット1・8.500-10.500）\n文字あり。\n"
+    )
+    no_frame = lint_texts(
+        "2026-11-04-ペット-no-frame",
+        plain,
+        "1\n00:00:00,000 --> 00:00:01,000\n" + HOOK_TAG + "寝てる？\n\n"
+        "2\n00:00:08,500 --> 00:00:10,500\n広告 #PR\n",
+    )
+    ok = expect(
+        no_seconds.prompts.startswith("FAIL") and "旧表記" not in no_seconds.prompts,
+        "1a 秒の無いプロンプトはFAIL",
+        no_seconds.prompts,
+    ) and ok
+    ok = expect(late_hook.hook.startswith("FAIL"), "1b フックが1秒を超える", late_hook.hook) and ok
+    ok = expect(cta_hit.cta.startswith("FAIL") and "プロフィール" in cta_hit.cta, "1c 誘導", cta_hit.cta) and ok
+    ok = expect(goods_hit.cta.startswith("FAIL") and "毎日腎活" in goods_hit.cta, "1c 商品名", goods_hit.cta) and ok
+    ok = expect(slow.speed.startswith("FAIL"), "1d 等倍が無い", slow.speed) and ok
+    ok = expect(fast.speed.startswith("FAIL") and "1.2" in fast.speed, "1d 1.0以外", fast.speed) and ok
+    ok = expect(
+        no_frame.prompts.startswith("FAIL") and "9:16" in no_frame.prompts,
+        "1f 9:16と画面文字",
+        no_frame.prompts,
+    ) and ok
+
+    empty = Path("/tmp/script-lint-empty-1e")
+    if empty.exists():
+        for child in empty.iterdir():
+            child.unlink()
+    else:
+        empty.mkdir()
+    empty_code = main([str(empty)])
+    ok = expect(empty_code != 0, "1e 台本が無いフォルダは0以外", str(empty_code)) and ok
+    lonely = Path("/tmp/script-lint-nocuts-1e")
+    (lonely / "scripts").mkdir(parents=True, exist_ok=True)
+    (lonely / "subs").mkdir(parents=True, exist_ok=True)
+    (lonely / "scripts" / "2026-11-04-ペット-lonely.md").write_text(minimal_md("- 合計 80/100"), encoding="utf-8")
+    (lonely / "subs" / "2026-11-04-ペット-lonely.srt").write_text(
+        "1\n00:00:00,000 --> 00:00:01,000\n" + HOOK_TAG + "寝てる？\n\n"
+        "2\n00:00:08,500 --> 00:00:10,500\n広告 #PR\n",
+        encoding="utf-8",
+    )
+    cuts = lonely / "cuts-for-pc.md"
+    if cuts.exists():
+        cuts.unlink()
+    lonely_code = main([str(lonely)])
+    ok = expect(lonely_code != 0, "1e cuts-for-pc.md が無い", str(lonely_code)) and ok
+
     inputs = repo / "inputs" / "20261028"
     if inputs.is_dir():
         print()
@@ -774,6 +945,9 @@ def main(argv: list[str] | None = None) -> int:
             print("台本が0件", file=sys.stderr)
             return 2
         print(render(rows))
+        if not (root / "cuts-for-pc.md").is_file():
+            print("FAIL\tcuts-for-pc.md が無い", file=sys.stderr)
+            exit_code = max(exit_code, 1)
         if any(row.result != "PASS" for row in rows):
             exit_code = max(exit_code, 1)
     elif not args.self_test:
