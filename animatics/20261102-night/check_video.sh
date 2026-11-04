@@ -224,9 +224,9 @@ else
   say M12 1 "最小の文字の高さは${text_min}px"
 fi
 
-# M13: 腕の比率。図の領域で、細長さが5.5倍を超えるかたまりが1コマでもあればFAIL。
-# M14: 塗りのかたまりが2つ以上で、頭の形でないかたまりがあればFAIL。
-read -r arm_fail head_fail < <(python3 - "$FILE" << 'PY'
+# M13: 腕の比率。猫しか映っていない動画は対象外。
+# M14: 頭のない塗り、または体の外の黒い塊があればFAIL。
+read -r arm_fail head_fail black_fail cat_only < <(python3 - "$FILE" << 'PY'
 import subprocess, sys
 path = sys.argv[1]
 probe = subprocess.check_output([
@@ -237,6 +237,33 @@ duration = float(probe or "10.5")
 times = [duration * i / 7 for i in range(8)]
 arm_fail = 0
 head_fail = 0
+black_fail = 0
+cat_frames = 0
+frames = 0
+
+def component_sizes(grid, minimum):
+    hh, ww = len(grid), len(grid[0])
+    seen = [[False] * ww for _ in range(hh)]
+    sizes = []
+    for y in range(hh):
+        for x in range(ww):
+            if not grid[y][x] or seen[y][x]:
+                continue
+            stack = [(y, x)]
+            seen[y][x] = True
+            count = 0
+            while stack:
+                cy, cx = stack.pop()
+                count += 1
+                for dy, dx in ((1, 0), (-1, 0), (0, 1), (0, -1)):
+                    ny, nx = cy + dy, cx + dx
+                    if 0 <= ny < hh and 0 <= nx < ww and grid[ny][nx] and not seen[ny][nx]:
+                        seen[ny][nx] = True
+                        stack.append((ny, nx))
+            if count >= minimum:
+                sizes.append(count)
+    return sizes
+
 for ss in times:
     raw = subprocess.check_output([
         "ffmpeg", "-hide_banner", "-loglevel", "error",
@@ -246,22 +273,40 @@ for ss in times:
     width, height = 1080, 1920
     if len(raw) != width * height * 3:
         continue
+    frames += 1
     br, bg, bb = raw[0], raw[1], raw[2]
     y0, y1 = int(0.18 * height), int(0.82 * height)
     step = 6
     cols = list(range(0, width, step))
     rows = list(range(y0, y1, step))
     mask = []
+    dark = []
+    fg_n = 0
+    dark_n = 0
+    skin_n = 0
     for y in rows:
         row = []
+        drow = []
         for x in cols:
             i = (y * width + x) * 3
             r, g, b = raw[i], raw[i + 1], raw[i + 2]
-            row.append(abs(r - br) > 28 or abs(g - bg) > 28 or abs(b - bb) > 28)
+            fg = abs(r - br) > 28 or abs(g - bg) > 28 or abs(b - bb) > 28
+            is_dark = max(r, g, b) < 40
+            row.append(fg)
+            drow.append(fg and is_dark)
+            if fg:
+                fg_n += 1
+                if is_dark:
+                    dark_n += 1
+                if r > 150 and g > 90 and b < 130 and r > g + 15:
+                    skin_n += 1
         mask.append(row)
+        dark.append(drow)
+    if fg_n >= 30 and dark_n / fg_n >= 0.62 and skin_n < 6:
+        cat_frames += 1
+    blobs = []
     hh, ww = len(mask), len(mask[0])
     seen = [[False] * ww for _ in range(hh)]
-    blobs = []
     for y in range(hh):
         for x in range(ww):
             if not mask[y][x] or seen[y][x]:
@@ -289,15 +334,25 @@ for ss in times:
         arm_fail = 1
     if len(blobs) >= 2 and any(ratio >= 2.2 for ratio in blobs):
         head_fail = 1
-print(f"{arm_fail} {head_fail}")
+    dark_sizes = component_sizes(dark, 8)
+    if dark_sizes:
+        body = max(dark_sizes)
+        if body < 40 or len(dark_sizes) > 1:
+            black_fail = 1
+cat_only = 1 if frames and cat_frames == frames else 0
+print(f"{arm_fail} {head_fail} {black_fail} {cat_only}")
 PY
 )
-if [[ "$arm_fail" == "1" ]]; then
+if [[ "$cat_only" == "1" ]]; then
+  printf 'M13\tSKIP\t猫だけの映像は対象外\n'
+elif [[ "$arm_fail" == "1" ]]; then
   say M13 0 "腕の比率の外れ値が1コマ以上"
 else
   say M13 1 "腕の比率の外れ値なし"
 fi
-if [[ "$head_fail" == "1" ]]; then
+if [[ "$black_fail" == "1" ]]; then
+  say M14 0 "体の外に黒い塊がある"
+elif [[ "$head_fail" == "1" ]]; then
   say M14 0 "塗りのかたまりが2つ以上で、頭のないかたまりがある"
 else
   say M14 1 "頭のない塗りのかたまりなし"
