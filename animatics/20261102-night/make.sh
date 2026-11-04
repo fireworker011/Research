@@ -1,10 +1,12 @@
 #!/usr/bin/env bash
 # 下書き動画（灰色の静止カード＋SRT焼き込み）。音は入れない。絵は描かない。生成AIは使わない。
-# 字幕は同じフォルダの subs/（入力のSRTをそのまま）。台本ファイルはコミットしない。
+# 字幕は同じフォルダの subs/。台本ファイルはコミットしない。
+# 2026-11-04: 尺は10.5秒。秒は0.5刻み。ペットの右上の記号は出さない。
+# この下書きの指示は音なし。音声は足さない。この修正では mp4 を書き出していない。
 # 使い方: bash animatics/20261102-night/make.sh
 # 1本だけ: ONLY=<名前> bash animatics/20261102-night/make.sh
 #
-# カードの秒は台本のカットどおり。字幕の文言と時刻は変えない。
+# カードの秒は10.5秒のカットどおり。字幕の時刻は0.5刻み。
 # ffmpeg が SRT を ASS にすると PlayRes が 384x288 になり、9:16 では字が縦に伸びる。
 # 直すのは PlayRes と字体だけ（1080x1920、文泉驛微米黑、画面上で約40px）。
 # 金メモの台詞行には位置タグが無い。焼き込み時だけ下（{\an2}）にする。文言と時刻はそのまま。
@@ -156,108 +158,108 @@ extract() {
     -vf "select=eq(n\\,${n})" -frames:v 1 -update 1 "$dst"
 }
 
-# ペット カーテン（台本: 0.0-3.6 / 3.6-7.0 / 7.0-10.2 / 10.2-15.0。13.0-15.0は少し暗くする。尺15.0秒）
+# ペット カーテン（台本: 0.0-2.5 / 2.5-4.5 / 4.5-6.5 / 6.5-8.5。8.5-10.5は少し暗くする。尺10.5秒）
 write_card "$BUILD/kaaten-1.txt" \
-  "カット1　0.0-3.6秒" \
+  "カット1　0.0-2.5秒" \
   "生成りのカーテンの裾の横" \
   "黒猫が座って止まっている" \
   "まばたき1回。前足は床。人は映っていない"
 write_card "$BUILD/kaaten-2.txt" \
-  "カット2　3.6-7.0秒" \
+  "カット2　2.5-4.5秒" \
   "同じ画角" \
   "しっぽの先が1回揺れて止まる" \
   "体と前足は動かない。布には触れない"
 write_card "$BUILD/kaaten-3.txt" \
-  "カット3　7.0-10.2秒" \
+  "カット3　4.5-6.5秒" \
   "同じ画角。頭の位置はそのまま" \
   "視線だけが裾へ1回向く" \
   "前足は床。しっぽの先は止まっている"
 write_card "$BUILD/kaaten-4.txt" \
-  "カット4　10.2-13.0秒" \
+  "カット4　6.5-8.5秒" \
   "同じ画角" \
   "腹が息で1回ふくらんで戻る" \
   "座ったまま。裾には触れない"
 write_card "$BUILD/kaaten-5.txt" \
-  "カット4のまま　13.0-15.0秒" \
+  "カット4のまま　8.5-10.5秒" \
   "少し暗い" \
   "中央「広告 #PR」" \
-  "右上のPRは残す。人は映っていない"
-render "2026-11-11-ペット-kuroneko-kaaten" 15 360 336 13 \
-  0 3.6 "$BUILD/kaaten-1.txt" \
-  3.6 7.0 "$BUILD/kaaten-2.txt" \
-  7.0 10.2 "$BUILD/kaaten-3.txt" \
-  10.2 13 "$BUILD/kaaten-4.txt" \
-  13 - "$BUILD/kaaten-5.txt"
+  "右上の記号は出さない。人は映っていない"
+render "2026-11-11-ペット-kuroneko-kaaten" 10.5 252 228 8.5 \
+  0 2.5 "$BUILD/kaaten-1.txt" \
+  2.5 4.5 "$BUILD/kaaten-2.txt" \
+  4.5 6.5 "$BUILD/kaaten-3.txt" \
+  6.5 8.5 "$BUILD/kaaten-4.txt" \
+  8.5 - "$BUILD/kaaten-5.txt"
 
-# ペット 猫草（台本: 0.0-3.6 / 3.6-7.0 / 7.0-10.2 / 10.2-15.0。13.0-15.0は少し暗くする。尺15.0秒）
+# ペット 猫草（台本: 0.0-2.5 / 2.5-4.5 / 4.5-6.5 / 6.5-8.5。8.5-10.5は少し暗くする。尺10.5秒）
 write_card "$BUILD/kusa-1.txt" \
-  "カット1　0.0-3.6秒" \
+  "カット1　0.0-2.5秒" \
   "白い鉢の猫草の横" \
   "黒猫が座って止まっている" \
   "まばたき1回。顔は草の外。口は閉じている"
 write_card "$BUILD/kusa-2.txt" \
-  "カット2　3.6-7.0秒" \
+  "カット2　2.5-4.5秒" \
   "同じ画角。頭の位置はそのまま" \
   "視線だけが猫草の方へ1回向く" \
   "口は閉じている。顔は草に入っていない"
 write_card "$BUILD/kusa-3.txt" \
-  "カット3　7.0-10.2秒" \
+  "カット3　4.5-6.5秒" \
   "同じ画角" \
   "耳が1回、猫草の方へ向く" \
   "体と前足は動かない。草には触れない"
 write_card "$BUILD/kusa-4.txt" \
-  "カット4　10.2-13.0秒" \
+  "カット4　6.5-8.5秒" \
   "同じ画角" \
   "まばたき1回のあと、目を開ける" \
   "口は閉じたまま。顔は草の外"
 write_card "$BUILD/kusa-5.txt" \
-  "カット4のまま　13.0-15.0秒" \
+  "カット4のまま　8.5-10.5秒" \
   "少し暗い" \
   "中央「広告 #PR」" \
-  "右上のPRは残す。口は閉じている"
-render "2026-11-12-ペット-kuroneko-nekokusa" 15 360 336 13 \
-  0 3.6 "$BUILD/kusa-1.txt" \
-  3.6 7.0 "$BUILD/kusa-2.txt" \
-  7.0 10.2 "$BUILD/kusa-3.txt" \
-  10.2 13 "$BUILD/kusa-4.txt" \
-  13 - "$BUILD/kusa-5.txt"
+  "右上の記号は出さない。口は閉じている"
+render "2026-11-12-ペット-kuroneko-nekokusa" 10.5 252 228 8.5 \
+  0 2.5 "$BUILD/kusa-1.txt" \
+  2.5 4.5 "$BUILD/kusa-2.txt" \
+  4.5 6.5 "$BUILD/kusa-3.txt" \
+  6.5 8.5 "$BUILD/kusa-4.txt" \
+  8.5 - "$BUILD/kusa-5.txt"
 
-# ペット ブラシ（台本: 0.0-3.6 / 3.6-7.0 / 7.0-10.2 / 10.2-15.0。13.0-15.0は少し暗くする。尺15.0秒）
+# ペット ブラシ（台本: 0.0-2.5 / 2.5-4.5 / 4.5-6.5 / 6.5-8.5。8.5-10.5は少し暗くする。尺10.5秒）
 write_card "$BUILD/brush-1.txt" \
-  "カット1　0.0-3.6秒" \
+  "カット1　0.0-2.5秒" \
   "ピンクのアーチの横" \
   "黒猫が座って止まっている" \
   "体はアーチの外。まばたき1回。前足は床"
 write_card "$BUILD/brush-2.txt" \
-  "カット2　3.6-7.0秒" \
+  "カット2　2.5-4.5秒" \
   "同じ画角" \
   "耳が1回、アーチの方へ向く" \
   "体は外のまま。前足は動かない"
 write_card "$BUILD/brush-3.txt" \
-  "カット3　7.0-10.2秒" \
+  "カット3　4.5-6.5秒" \
   "同じ画角" \
   "目を少し細める" \
   "体は起きたまま。アーチに入らない"
 write_card "$BUILD/brush-4.txt" \
-  "カット4　10.2-13.0秒" \
+  "カット4　6.5-8.5秒" \
   "同じ画角" \
   "腹が息で1回ふくらんで戻る" \
   "座ったまま。こすらない。前足は床"
 write_card "$BUILD/brush-5.txt" \
-  "カット4のまま　13.0-15.0秒" \
+  "カット4のまま　8.5-10.5秒" \
   "少し暗い" \
   "中央「広告 #PR」" \
-  "右上のPRは残す。前足は隠さない"
-render "2026-11-13-ペット-kuroneko-burashi" 15 360 336 13 \
-  0 3.6 "$BUILD/brush-1.txt" \
-  3.6 7.0 "$BUILD/brush-2.txt" \
-  7.0 10.2 "$BUILD/brush-3.txt" \
-  10.2 13 "$BUILD/brush-4.txt" \
-  13 - "$BUILD/brush-5.txt"
+  "右上の記号は出さない。前足は隠さない"
+render "2026-11-13-ペット-kuroneko-burashi" 10.5 252 228 8.5 \
+  0 2.5 "$BUILD/brush-1.txt" \
+  2.5 4.5 "$BUILD/brush-2.txt" \
+  4.5 6.5 "$BUILD/brush-3.txt" \
+  6.5 8.5 "$BUILD/brush-4.txt" \
+  8.5 - "$BUILD/brush-5.txt"
 
-# 金メモ 障害年金（台本: 0.0-3.0 / 3.0-9.0 / 9.0-15.0。PRなし。尺15.0秒）
-# 右の金額は 0.0-3.0。1級の行は 3.0、2級の行は 6.2、3級の行は 9.2。
-# 635,500円は 9.2 まで出さない。12.4 で見出しの生年月日を明るくする。円は台本の表のまま。
+# 金メモ 障害年金（台本: 0.0-3.0 / 3.0-8.5 / 8.5-10.5。PRなし。尺10.5秒）
+# 右の金額は 0.0-3.0。1級の行は 0.5、2級の行は 3.0、3級の行は 5.5。
+# 635,500円は 5.5 まで出さない。8.5 で見出しの生年月日を明るくする。円は台本の表のまま。
 NAME="2026-11-09-金メモ-shogai-nenkin"
 OV="$BUILD/${NAME}.overlay"
 : > "$OV"
@@ -283,16 +285,16 @@ write_card "$BUILD/sho-src.txt" "出典：日本年金機構"
 write_card "$BUILD/sho-credit.txt" "VOICEVOX:冥鳴ひまり"
 add_text "$OV" "$BUILD/sho-right-big.txt" 40 white "w-text_w-80" 860 'lt(t\,3)'
 add_text "$OV" "$BUILD/sho-right-small.txt" 26 white "w-text_w-80" 916 'lt(t\,3)'
-add_text "$OV" "$BUILD/sho-head.txt" 28 white 40 660 'gte(t\,3)'
-add_text "$OV" "$BUILD/sho-born.txt" 28 0xBDBDBD 40 708 'gte(t\,3)*lt(t\,12.4)'
-add_text "$OV" "$BUILD/sho-born.txt" 28 white 40 708 'gte(t\,12.4)'
-add_text "$OV" "$BUILD/sho-row1.txt" 28 white 40 780 'gte(t\,3)*lt(t\,6.2)'
-add_text "$OV" "$BUILD/sho-row1.txt" 28 0xBDBDBD 40 780 'gte(t\,6.2)'
-add_text "$OV" "$BUILD/sho-row2.txt" 28 white 40 900 'gte(t\,6.2)*lt(t\,9.2)'
-add_text "$OV" "$BUILD/sho-row2.txt" 28 0xBDBDBD 40 900 'gte(t\,9.2)'
-add_text "$OV" "$BUILD/sho-row3.txt" 28 white 40 1020 'gte(t\,9.2)*lt(t\,12.4)'
-add_text "$OV" "$BUILD/sho-row3.txt" 28 0xBDBDBD 40 1020 'gte(t\,12.4)'
-add_text "$OV" "$BUILD/sho-foot.txt" 24 0xE6E6E6 40 1180 'gte(t\,3)'
+add_text "$OV" "$BUILD/sho-head.txt" 28 white 40 660 'gte(t\,0.5)'
+add_text "$OV" "$BUILD/sho-born.txt" 28 0xBDBDBD 40 708 'gte(t\,0.5)*lt(t\,8.5)'
+add_text "$OV" "$BUILD/sho-born.txt" 28 white 40 708 'gte(t\,8.5)'
+add_text "$OV" "$BUILD/sho-row1.txt" 28 white 40 780 'gte(t\,0.5)*lt(t\,3.0)'
+add_text "$OV" "$BUILD/sho-row1.txt" 28 0xBDBDBD 40 780 'gte(t\,3.0)'
+add_text "$OV" "$BUILD/sho-row2.txt" 28 white 40 900 'gte(t\,3.0)*lt(t\,5.5)'
+add_text "$OV" "$BUILD/sho-row2.txt" 28 0xBDBDBD 40 900 'gte(t\,5.5)'
+add_text "$OV" "$BUILD/sho-row3.txt" 28 white 40 1020 'gte(t\,5.5)*lt(t\,8.5)'
+add_text "$OV" "$BUILD/sho-row3.txt" 28 0xBDBDBD 40 1020 'gte(t\,8.5)'
+add_text "$OV" "$BUILD/sho-foot.txt" 24 0xE6E6E6 40 1180 'gte(t\,0.5)'
 add_text "$OV" "$BUILD/sho-credit.txt" 24 white 40 1848 'gte(t\,0)'
 add_text "$OV" "$BUILD/sho-src.txt" 24 white "w-text_w-40" 1848 'gte(t\,0)'
 write_card "$BUILD/sho-1.txt" \
@@ -301,22 +303,22 @@ write_card "$BUILD/sho-1.txt" \
   "目を丸くして止まっている" \
   "右に1,059,125円。人物は成人だけ"
 write_card "$BUILD/sho-2.txt" \
-  "カット2　3.0-9.0秒" \
+  "カット2　3.0-8.5秒" \
   "同じ成人が左下で冊子を机に置く" \
   "中央に早見表" \
   "人物は成人だけ"
 write_card "$BUILD/sho-3.txt" \
-  "カット3　9.0-15.0秒" \
+  "カット3　8.5-10.5秒" \
   "同じ成人が冊子を横に置く" \
   "うなずく。指はささない" \
   "表は上に残す。人物は成人だけ"
-render "$NAME" 15 360 336 "" \
+render "$NAME" 10.5 252 228 "" \
   0 3 "$BUILD/sho-1.txt" \
-  3 9 "$BUILD/sho-2.txt" \
-  9 - "$BUILD/sho-3.txt"
+  3 8.5 "$BUILD/sho-2.txt" \
+  8.5 - "$BUILD/sho-3.txt"
 
-# 金メモ 再就職手当（台本: 0.0-3.0 / 3.0-9.0 / 9.0-15.0。PRなし。尺15.0秒）
-# 行は 3.0、6.4、9.6、12.6。638,400円は 6.4 まで、427,200円は 9.6 まで、6,745円は 12.6 まで出さない。
+# 金メモ 再就職手当（台本: 0.0-3.0 / 3.0-8.5 / 8.5-10.5。PRなし。尺10.5秒）
+# 行は 0.5、3.0、5.5、8.5。638,400円は 3.0 まで、427,200円は 5.5 まで、6,745円は 8.5 まで出さない。
 # 円は台本の表のまま。6,745円に日数を掛けた円は出さない。
 NAME="2026-11-10-金メモ-saishushoku-teate"
 OV="$BUILD/${NAME}.overlay"
@@ -349,15 +351,15 @@ write_card "$BUILD/sai-src.txt" "出典：ハローワーク"
 write_card "$BUILD/sai-credit.txt" "VOICEVOX:冥鳴ひまり"
 add_text "$OV" "$BUILD/sai-right-big.txt" 40 white "w-text_w-80" 860 'lt(t\,3)'
 add_text "$OV" "$BUILD/sai-right-small.txt" 26 white "w-text_w-80" 916 'lt(t\,3)'
-add_text "$OV" "$BUILD/sai-head.txt" 28 white 40 640 'gte(t\,3)'
-add_text "$OV" "$BUILD/sai-row90.txt" 26 white 40 720 'gte(t\,3)*lt(t\,6.4)'
-add_text "$OV" "$BUILD/sai-row90.txt" 26 0xBDBDBD 40 720 'gte(t\,6.4)'
-add_text "$OV" "$BUILD/sai-row228.txt" 26 white 40 860 'gte(t\,6.4)*lt(t\,9.6)'
-add_text "$OV" "$BUILD/sai-row228.txt" 26 0xBDBDBD 40 860 'gte(t\,9.6)'
-add_text "$OV" "$BUILD/sai-row178.txt" 26 white 40 1020 'gte(t\,9.6)*lt(t\,12.6)'
-add_text "$OV" "$BUILD/sai-row178.txt" 26 0xBDBDBD 40 1020 'gte(t\,12.6)'
-add_text "$OV" "$BUILD/sai-row-cap.txt" 26 white 40 1180 'gte(t\,12.6)'
-add_text "$OV" "$BUILD/sai-foot.txt" 22 0xE6E6E6 40 1360 'gte(t\,3)'
+add_text "$OV" "$BUILD/sai-head.txt" 28 white 40 640 'gte(t\,0.5)'
+add_text "$OV" "$BUILD/sai-row90.txt" 26 white 40 720 'gte(t\,0.5)*lt(t\,3.0)'
+add_text "$OV" "$BUILD/sai-row90.txt" 26 0xBDBDBD 40 720 'gte(t\,3.0)'
+add_text "$OV" "$BUILD/sai-row228.txt" 26 white 40 860 'gte(t\,3.0)*lt(t\,5.5)'
+add_text "$OV" "$BUILD/sai-row228.txt" 26 0xBDBDBD 40 860 'gte(t\,5.5)'
+add_text "$OV" "$BUILD/sai-row178.txt" 26 white 40 1020 'gte(t\,5.5)*lt(t\,8.5)'
+add_text "$OV" "$BUILD/sai-row178.txt" 26 0xBDBDBD 40 1020 'gte(t\,8.5)'
+add_text "$OV" "$BUILD/sai-row-cap.txt" 26 white 40 1180 'gte(t\,8.5)'
+add_text "$OV" "$BUILD/sai-foot.txt" 22 0xE6E6E6 40 1360 'gte(t\,0.5)'
 add_text "$OV" "$BUILD/sai-credit.txt" 24 white 40 1848 'gte(t\,0)'
 add_text "$OV" "$BUILD/sai-src.txt" 24 white "w-text_w-40" 1848 'gte(t\,0)'
 write_card "$BUILD/sai-1.txt" \
@@ -366,22 +368,22 @@ write_card "$BUILD/sai-1.txt" \
   "目を丸くして止まっている" \
   "右に252,000円。人物は成人だけ"
 write_card "$BUILD/sai-2.txt" \
-  "カット2　3.0-9.0秒" \
+  "カット2　3.0-8.5秒" \
   "同じ成人が左下でカバンを机に置く" \
   "中央に早見表" \
   "人物は成人だけ"
 write_card "$BUILD/sai-3.txt" \
-  "カット3　9.0-15.0秒" \
+  "カット3　8.5-10.5秒" \
   "同じ成人がカバンを横に置く" \
   "うなずく。指はささない" \
   "表は上に残す。人物は成人だけ"
-render "$NAME" 15 360 336 "" \
+render "$NAME" 10.5 252 228 "" \
   0 3 "$BUILD/sai-1.txt" \
-  3 9 "$BUILD/sai-2.txt" \
-  9 - "$BUILD/sai-3.txt"
+  3 8.5 "$BUILD/sai-2.txt" \
+  8.5 - "$BUILD/sai-3.txt"
 
-# 金メモ 教育訓練（台本: 0.0-3.0 / 3.0-9.0 / 9.0-15.0。PRなし。尺15.0秒）
-# 行は 3.0、6.2、9.2、12.2。20万円は 6.2 まで、40万円は 9.2 まで、64万円は 12.2 まで出さない。
+# 金メモ 教育訓練（台本: 0.0-3.0 / 3.0-8.5 / 8.5-10.5。PRなし。尺10.5秒）
+# 行は 0.5、3.0、5.5、8.5。20万円は 3.0 まで、40万円は 5.5 まで、64万円は 8.5 まで出さない。
 # 56万円・25万円・192万円は画面に出さない。円は台本の表のまま。
 NAME="2026-11-11-金メモ-kyoiku-kunren"
 OV="$BUILD/${NAME}.overlay"
@@ -409,15 +411,15 @@ write_card "$BUILD/kyo-src.txt" "出典：ハローワーク"
 write_card "$BUILD/kyo-credit.txt" "VOICEVOX:冥鳴ひまり"
 add_text "$OV" "$BUILD/kyo-right-big.txt" 42 white "w-text_w-80" 860 'lt(t\,3)'
 add_text "$OV" "$BUILD/kyo-right-small.txt" 28 white "w-text_w-80" 916 'lt(t\,3)'
-add_text "$OV" "$BUILD/kyo-head.txt" 28 white 40 660 'gte(t\,3)'
-add_text "$OV" "$BUILD/kyo-row20.txt" 28 white 40 760 'gte(t\,3)*lt(t\,6.2)'
-add_text "$OV" "$BUILD/kyo-row20.txt" 28 0xBDBDBD 40 760 'gte(t\,6.2)'
-add_text "$OV" "$BUILD/kyo-row40.txt" 28 white 40 880 'gte(t\,6.2)*lt(t\,9.2)'
-add_text "$OV" "$BUILD/kyo-row40.txt" 28 0xBDBDBD 40 880 'gte(t\,9.2)'
-add_text "$OV" "$BUILD/kyo-row50.txt" 28 white 40 1000 'gte(t\,9.2)*lt(t\,12.2)'
-add_text "$OV" "$BUILD/kyo-row50.txt" 28 0xBDBDBD 40 1000 'gte(t\,12.2)'
-add_text "$OV" "$BUILD/kyo-row80.txt" 28 white 40 1120 'gte(t\,12.2)'
-add_text "$OV" "$BUILD/kyo-foot.txt" 24 0xE6E6E6 40 1280 'gte(t\,3)'
+add_text "$OV" "$BUILD/kyo-head.txt" 28 white 40 660 'gte(t\,0.5)'
+add_text "$OV" "$BUILD/kyo-row20.txt" 28 white 40 760 'gte(t\,0.5)*lt(t\,3.0)'
+add_text "$OV" "$BUILD/kyo-row20.txt" 28 0xBDBDBD 40 760 'gte(t\,3.0)'
+add_text "$OV" "$BUILD/kyo-row40.txt" 28 white 40 880 'gte(t\,3.0)*lt(t\,5.5)'
+add_text "$OV" "$BUILD/kyo-row40.txt" 28 0xBDBDBD 40 880 'gte(t\,5.5)'
+add_text "$OV" "$BUILD/kyo-row50.txt" 28 white 40 1000 'gte(t\,5.5)*lt(t\,8.5)'
+add_text "$OV" "$BUILD/kyo-row50.txt" 28 0xBDBDBD 40 1000 'gte(t\,8.5)'
+add_text "$OV" "$BUILD/kyo-row80.txt" 28 white 40 1120 'gte(t\,8.5)'
+add_text "$OV" "$BUILD/kyo-foot.txt" 24 0xE6E6E6 40 1280 'gte(t\,0.5)'
 add_text "$OV" "$BUILD/kyo-credit.txt" 24 white 40 1848 'gte(t\,0)'
 add_text "$OV" "$BUILD/kyo-src.txt" 24 white "w-text_w-40" 1848 'gte(t\,0)'
 write_card "$BUILD/kyo-1.txt" \
@@ -426,18 +428,18 @@ write_card "$BUILD/kyo-1.txt" \
   "目を丸くして止まっている" \
   "右に10万円。人物は成人だけ"
 write_card "$BUILD/kyo-2.txt" \
-  "カット2　3.0-9.0秒" \
+  "カット2　3.0-8.5秒" \
   "同じ成人が左下でパンフレットを伏せる" \
   "中央に早見表" \
   "人物は成人だけ"
 write_card "$BUILD/kyo-3.txt" \
-  "カット3　9.0-15.0秒" \
+  "カット3　8.5-10.5秒" \
   "同じ成人がパンフレットを横に置く" \
   "うなずく。指はささない" \
   "表は上に残す。人物は成人だけ"
-render "$NAME" 15 360 336 "" \
+render "$NAME" 10.5 252 228 "" \
   0 3 "$BUILD/kyo-1.txt" \
-  3 9 "$BUILD/kyo-2.txt" \
-  9 - "$BUILD/kyo-3.txt"
+  3 8.5 "$BUILD/kyo-2.txt" \
+  8.5 - "$BUILD/kyo-3.txt"
 
 echo "完了"
