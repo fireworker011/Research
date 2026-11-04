@@ -2,7 +2,7 @@
 """字幕の台詞を女性の話し言葉で読み、その秒に合わせて m4a を作る。
 
 フック（{\\an8}）と広告（#PR）は読まない。
-声は ja-JP-NanamiNeural。読みの速さは +15%まで。早回しはしない。
+声は ja-JP-NanamiNeural。読みは等倍（+0%）。早回しはしない。
 行末の無音だけを切る。枠より長いときは失敗させる。
 """
 
@@ -18,7 +18,7 @@ from pathlib import Path
 import edge_tts
 
 VOICE = "ja-JP-NanamiNeural"
-RATE = "+15%"
+RATE = "+0%"
 SAMPLE_RATE = 48000
 
 
@@ -159,7 +159,7 @@ async def build(srt_path: Path, m4a_path: Path, duration: float) -> None:
             fitted = work / f"fit{index}.wav"
             await synthesize(text, raw)
             spoken = fit_clip(raw, fitted, slot)
-            print(f"  {start:.3f}-{end:.3f} +15% {spoken:.2f}秒 {text}")
+            print(f"  {start:.3f}-{end:.3f} 等倍 {spoken:.2f}秒 {text}")
             pieces.append(fitted)
             cursor = end
         if duration > cursor + 0.001:
