@@ -1,0 +1,10 @@
+secrets/
+tokens/
+.env
+posted.csv
+stats.csv
+*.tmp
+client_secret*.json
+token.json
+__pycache__/
+*.pyc

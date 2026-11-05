@@ -1,0 +1,138 @@
+[
+  {
+    "platform": "youtube",
+    "key": "pet_story_select",
+    "title": "pet_story_select",
+    "handle": "pet_story_select",
+    "login_label": "fireworker01",
+    "status": "excluded",
+    "client_secret_dir": "C:/Users/hp/Downloads/youtube/fireworker01",
+    "note": "2026-10-26 ナオミチ決定: ペットYouTubeのAPI投稿先は pet_kurasu_monogatari（naomichi235）。このチャンネルはAPI投稿に使わない。fireworker01のトークンは夜の棚のものが他フォルダにコピーされた疑いあり、確認まで使わない。"
+  },
+  {
+    "platform": "youtube",
+    "key": "yoru_neko_camera",
+    "title": "よるのねこカメラ日記",
+    "handle": "",
+    "login_label": "fireworker06",
+    "status": "active",
+    "client_secret_dir": "C:/Users/hp/Downloads/youtube/fireworker06",
+    "note": ""
+  },
+  {
+    "platform": "youtube",
+    "key": "sonae_30",
+    "title": "30秒そなえ帳",
+    "handle": "",
+    "login_label": "fireworker04",
+    "status": "active",
+    "client_secret_dir": "C:/Users/hp/Downloads/youtube/fireworker04",
+    "note": ""
+  },
+  {
+    "platform": "youtube",
+    "key": "yoru_no_tana",
+    "title": "よるの棚",
+    "handle": "夜の棚",
+    "login_label": "",
+    "status": "hold",
+    "note": "YouTubeのGoogleアカウントは未定。許可しない。メールアドレスは書かない。"
+  },
+  {
+    "platform": "youtube",
+    "key": "nemuri_no_tana",
+    "title": "ねむりの棚",
+    "handle": "",
+    "login_label": "fireworker011",
+    "status": "active",
+    "client_secret_dir": "C:/Users/hp/Downloads/youtube/fireworker011",
+    "note": ""
+  },
+  {
+    "platform": "youtube",
+    "key": "pet_kurasu_monogatari",
+    "title": "ペットと暮らす小さな物語",
+    "handle": "",
+    "login_label": "naomichi235",
+    "status": "active",
+    "client_secret_dir": "C:/Users/hp/Downloads/youtube/naomichi235",
+    "note": "2026-10-26 ナオミチ決定: ペットYouTubeのAPI投稿先はここ。TikTokのペットと暮らす小さな物語り（pet_chiisana_monogatari）とは別。同意画面ではこのチャンネルを選ぶ。トークンの有無とチャンネルは次のPC起動時に読むだけで確認。"
+  },
+  {
+    "platform": "youtube",
+    "key": "fireworker012_reserved",
+    "title": "",
+    "handle": "",
+    "login_label": "fireworker012",
+    "status": "reserved",
+    "client_secret_dir": "C:/Users/hp/Downloads/youtube/fireworker012",
+    "note": "将来の新規YouTube用。チャンネル名が決まるまで許可しない。TikTokのゆあ（key yua）とは別。"
+  },
+  {
+    "platform": "youtube",
+    "key": "kaishain_kane",
+    "title": "会社員の金メモ",
+    "handle": "kaishain_kane",
+    "login_label": "fireworker01",
+    "status": "hold",
+    "client_secret_dir": "C:/Users/hp/Downloads/youtube/fireworker01",
+    "note": "2026-10-26 追加。fireworker01 には夜の棚と会社員の金メモの2チャンネルがあり、OAuth承認時に選んだチャンネルでトークンの行き先が変わる。トークンごとにチャンネルIDを記録して夜の棚用と金メモ用を分ける。混ざっていたらどちらも使わない。確認まで hold。"
+  },
+  {
+    "platform": "youtube",
+    "key": "mikukonkatsu",
+    "title": "元婚活難民ミキ",
+    "handle": "みくこんかつ",
+    "login_label": "miki.konkatsu.life",
+    "status": "hold",
+    "note": "2026-10-26 ナオミチのスマホ画面で確認: Googleアカウントは miki.konkatsu.life。OAuthクライアントJSONがまだ無い（今の6アカウント分に含まれない）。OAuth JSONが必要。用意できるまで許可しない。"
+  },
+  {
+    "platform": "tiktok",
+    "key": "yoru_no_tana",
+    "title": "夜の棚",
+    "handle": "",
+    "login_label": "fireworker013",
+    "note": "title はTikTokの表示名と一致させる。"
+  },
+  {
+    "platform": "tiktok",
+    "key": "uchi_no_fukuro",
+    "title": "うちの袋",
+    "handle": "",
+    "login_label": "fireworker04",
+    "note": "YouTubeの30秒そなえ帳と同じ目印。許可はTikTok側で別に取る。"
+  },
+  {
+    "platform": "tiktok",
+    "key": "pet_chiisana_monogatari",
+    "title": "ペットと暮らす小さな物語り",
+    "handle": "",
+    "login_label": "okadatakeshi510",
+    "note": ""
+  },
+  {
+    "platform": "tiktok",
+    "key": "yua",
+    "title": "ゆあ",
+    "handle": "",
+    "login_label": "fireworker012",
+    "note": "YouTubeの fireworker012 はチャンネル名未定の別枠。TikTokの許可はこちら。"
+  },
+  {
+    "platform": "tiktok",
+    "key": "moto_konkatsu_miki",
+    "title": "元婚活難民ミキ",
+    "handle": "",
+    "login_label": "fireworker01",
+    "note": "YouTubeのpet_story_selectと同じ目印。許可はTikTok側で別に取る。"
+  },
+  {
+    "platform": "tiktok",
+    "key": "kane_memo",
+    "title": "金メモ",
+    "handle": "",
+    "login_label": "fireworker02",
+    "note": ""
+  }
+]
