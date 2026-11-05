@@ -1,0 +1,82 @@
+{
+  "work_no": 28,
+  "date": "2026-10-14",
+  "title_short": "布の上から、ゆっくり…個人契約のあと、30歳の指導者が乳首だけを言葉で責めてくれる",
+  "title_dlsite_fanza": "【乳首責め×言葉／本番なし】布の上から、ゆっくり～ヨガの指導者(30歳)が、レッスン後に「いいですか」と聞いてから乳首だけを責めてくれる～【合成音声】",
+  "price_jpy": 1056,
+  "price_tax_excluded_jpy_calc": 960,
+  "price_note": "税込1,056円は、2026-10-12 05:24 UTC に見えた RJ01733590 の表示価格。定価は1,320円。7日間・販売数順15位。期間販売数871。隣のジャンルとして RJ01705975 は表示1,386円/定価1,980円、30日間・販売数順5位、期間販売数5,890、人数は3人。この企画は1人なので1,386円は置いていない。この作品の販売本数は測っていない。税抜960円は1056を1.1で割った計算。割引は作っていない。",
+  "price_sources": [
+    {
+      "rj": "RJ01733590",
+      "seen": "表示1,056円/定価1,320円",
+      "where": "7日間・販売数順15位。期間販売数871。",
+      "url": "https://www.dlsite.com/maniax/work/=/product_id/RJ01733590.html"
+    },
+    {
+      "rj": "RJ01705975",
+      "seen": "表示1,386円/定価1,980円",
+      "where": "30日間・販売数順5位。期間販売数5,890。ジャンルに乳首責め、ナース、本番なし。人数は3人。この1,386円は置いていない。",
+      "url": "https://www.dlsite.com/maniax/work/=/product_id/RJ01705975.html"
+    }
+  ],
+  "publish": false,
+  "booth_listing": true,
+  "dlsite_exclusive": false,
+  "stores_planned": ["DLsite", "BOOTH"],
+  "original": true,
+  "all_characters_adult": true,
+  "real_people": false,
+  "penetration": false,
+  "heroine": {
+    "name": "相沢玲",
+    "reading": "あいざわ れい",
+    "age": 30,
+    "job": "個人契約のヨガ指導者。指導8年目の成人。この回は運動の指導をしない"
+  },
+  "listener": "個人の時間を予約した成人の客。台本では年齢を下に置かない",
+  "voice": {
+    "engine": "COEIROINK",
+    "speaker": "アンジーさん",
+    "style_normal": "のーまる。トラック1のささやき指示より前",
+    "style_whisper": "ささやき。指示以降と後日談",
+    "style_unused": "セクシーは使わない",
+    "not_used": ["VOICEVOX"]
+  },
+  "booth": {
+    "category": "ボイス",
+    "adult": true,
+    "tags": ["ASMR", "ASMR男性向け", "ASMR音声", "音声作品", "乳首責め", "言葉責め", "ささやき", "お姉さん", "本番なし"]
+  },
+  "dlsite": {
+    "age": "R-18",
+    "ai_option": "AI一部利用",
+    "ai_option_note": "表紙を画像生成AIにする場合。声は市販のCOEIROINK。フラグを付けた方が売れる、とは2026-10-12の取得には書いていない。",
+    "genres": ["乳首責め", "言葉責め", "ささやき", "お姉さん", "本番なし", "女性優位", "ラブラブ/あまあま", "ASMR"]
+  },
+  "planned_tracks": [
+    {"file": "part01", "title": "マットを巻いたあと", "planned_minutes": 5, "measured_seconds": 184.266168},
+    {"file": "part02", "title": "肩と、服の上", "planned_minutes": 8, "measured_seconds": 314.153946},
+    {"file": "part03", "title": "布の上の、乳首", "planned_minutes": 12, "measured_seconds": 568.49576},
+    {"file": "part04", "title": "聞いてから、布の下", "planned_minutes": 12, "measured_seconds": 549.98288},
+    {"file": "part05", "title": "数えて、最後まで", "planned_minutes": 10, "measured_seconds": 458.296757},
+    {"file": "part06", "title": "タオルと水分", "planned_minutes": 5, "measured_seconds": 115.869773}
+  ],
+  "bonus": {"file": "bonus", "title": "翌日の予約確認", "planned_minutes": 4, "measured_seconds": 77.761633, "sexual": false},
+  "planned_minutes_note": "planned_minutes は企画の長さです。本編の実測は 2191.065284 秒、時計は 36:31 です。ファイルごとの秒は audio-measure.md です。",
+  "export_plan": {
+    "wav": ["part01.wav", "part02.wav", "part03.wav", "part04.wav", "part05.wav", "part06.wav", "bonus.wav", "sample.wav"],
+    "mp3": ["part01.mp3", "part02.mp3", "part03.mp3", "part04.mp3", "part05.mp3", "part06.mp3", "bonus.mp3", "sample.mp3"]
+  },
+  "audio_measure": {
+    "target_lufs": -16.0,
+    "main_seconds": 2191.065284,
+    "main_clock": "36:31",
+    "sample_seconds": 117.137279,
+    "sample_clock": "1:57",
+    "bonus_seconds": 77.761633,
+    "bonus_clock": "1:18",
+    "source": "2026-10-14 の ffprobe と ebur128。I と TP は audio-measure.md。"
+  },
+  "audio_generated": true
+}
