@@ -1,0 +1,85 @@
+{
+  "id": "sample-adult-adv-001",
+  "title": "終電後の事務所",
+  "rating": "adult_18",
+  "start": "n1",
+  "ai_disclosure": {
+    "category": "ai_generated",
+    "where": "シナリオ本文・構成・プレビュー用HTMLはAIパイプラインで生成。立ち絵・音声は未収録。販売時はAI生成フロア申告が必要。"
+  },
+  "characters": [
+    {
+      "id": "aya",
+      "name": "青山 綾",
+      "age": 29,
+      "appearance_adult": true,
+      "real_person": false,
+      "role": "同僚のデザイナー。成人"
+    },
+    {
+      "id": "ken",
+      "name": "森 健太",
+      "age": 32,
+      "appearance_adult": true,
+      "real_person": false,
+      "role": "主人公。社会人"
+    }
+  ],
+  "nodes": [
+    {
+      "id": "n1",
+      "type": "say",
+      "speaker": "ken",
+      "text": "終電を逃した。事務所の蛍光灯だけが残っている。",
+      "goto": "n2"
+    },
+    {
+      "id": "n2",
+      "type": "say",
+      "speaker": "aya",
+      "text": "私も。タクシー割り勘にする？ それとも、もう少し残る？",
+      "goto": "n3"
+    },
+    {
+      "id": "n3",
+      "type": "choice",
+      "text": "どうする",
+      "options": [
+        {
+          "label": "タクシーで帰る",
+          "goto": "end_soft"
+        },
+        {
+          "label": "残る（成人向けルート）",
+          "goto": "h1"
+        }
+      ]
+    },
+    {
+      "id": "h1",
+      "type": "hscene",
+      "participants": [
+        "aya",
+        "ken"
+      ],
+      "text": "二人は合意のうえで近づく。具体的な描写はアセット工程で差し込む。ここでは『成人・合意・職場の同僚』だけがロックされる。",
+      "goto": "end_h"
+    },
+    {
+      "id": "end_soft",
+      "type": "end",
+      "text": "雨の車内。売れる作品にするなら、このルートは短い。需要検証用の分岐。"
+    },
+    {
+      "id": "end_h",
+      "type": "end",
+      "text": "朝。これは最小のウディタ向けADV骨格であり、戦闘RPGではない。"
+    }
+  ],
+  "generated_at": "2026-08-22T12:11:45.564Z",
+  "pipeline": "doujin-game-factory/0.1",
+  "compile_targets": [
+    "html_preview",
+    "woditor_command_text"
+  ]
+}
