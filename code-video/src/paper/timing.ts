@@ -1,0 +1,19 @@
+export const PAPER_FPS = 24;
+export const PAPER_WIDTH = 1920;
+export const PAPER_HEIGHT = 1080;
+
+export const DRAW_FROM = 0;
+export const DRAW_DURATION = 180;
+export const RED_FROM = 180;
+export const RED_DURATION = 66;
+export const ISLAND_FROM = 246;
+export const ISLAND_DURATION = 192;
+export const NIGHT_FROM = 438;
+export const NIGHT_DURATION = 120;
+export const CITY_FROM = 558;
+export const CITY_DURATION = 144;
+export const PAIR_FROM = 702;
+export const PAIR_DURATION = 120;
+export const PALM_FROM = 822;
+export const PALM_DURATION = 144;
+export const PAPER_DURATION = PALM_FROM + PALM_DURATION;
