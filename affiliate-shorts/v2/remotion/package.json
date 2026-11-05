@@ -1,0 +1,22 @@
+{
+  "name": "kane-v2-remotion",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "studio": "remotion studio",
+    "render:01": "remotion render src/index.ts Kane01 ../kane/01/video_noaudio.mp4 --muted",
+    "render:02": "remotion render src/index.ts Kane02 ../kane/02/video_noaudio.mp4 --muted",
+    "render:03": "remotion render src/index.ts Kane03 ../kane/03/video_noaudio.mp4 --muted"
+  },
+  "dependencies": {
+    "@remotion/cli": "4.0.533",
+    "@remotion/google-fonts": "4.0.533",
+    "react": "18.3.1",
+    "react-dom": "18.3.1",
+    "remotion": "4.0.533"
+  },
+  "devDependencies": {
+    "@types/react": "18.3.18",
+    "typescript": "5.8.2"
+  }
+}
