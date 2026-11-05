@@ -1,0 +1,6 @@
+output/*
+!output/.gitkeep
+refs/*
+!refs/README.md
+!refs/sakura-face.jpg
+!refs/sakura-face-2.jpg

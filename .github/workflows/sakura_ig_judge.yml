@@ -1,0 +1,33 @@
+name: サクラ判定（台帳が更新されたら）
+
+# A が日曜に data/reel_log.csv へ行を足して push すると動く。cron 不要。
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'sakura-ig/data/reel_log.csv'
+      - 'sakura-ig/src/judge.js'
+      - '.github/workflows/sakura_ig_judge.yml'
+
+concurrency:
+  group: sakura-ig-judge
+  cancel-in-progress: false
+
+jobs:
+  judge:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      issues: write
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683  # v4.2.2
+
+      - name: 自己テスト
+        run: node sakura-ig/src/judge.js --self-test
+
+      - name: 判定して Issue に書く
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          node sakura-ig/src/judge.js --issue
+          cat sakura-ig/output/JUDGE.md >> "$GITHUB_STEP_SUMMARY"
