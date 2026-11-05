@@ -1,0 +1,46 @@
+{
+  "work_no": 23,
+  "title": "【言葉責め・本番なし】残業のあと、26歳の同期がカウントだけで抜く～10まで、我慢できますか～【合成音声】",
+  "price_jpy": 990,
+  "price_note": "PR #186 の企画で置いた表示価格。この作品の販売本数は測っていない。",
+  "publish": false,
+  "original": true,
+  "all_characters_adult": true,
+  "real_people": false,
+  "penetration": false,
+  "heroine": {
+    "name": "青葉律",
+    "reading": "あおば りつ",
+    "age": 26,
+    "job": "同じ会社の同期。社会人。入社4年目の成人"
+  },
+  "listener": "同じ年に入った同期の社会人。台本では年齢を下に置かない",
+  "voice": {
+    "engine": "COEIROINK",
+    "speaker": "アンジーさん",
+    "style_hint": "ふつうの大きさ。甘く、少しだけ急かす"
+  },
+  "booth": {
+    "category": "ボイス",
+    "adult": true,
+    "tags": ["ASMR", "ASMR男性向け", "ASMR音声", "音声作品", "言葉責め", "ささやき", "お姉さん", "本番なし", "手コキ"]
+  },
+  "dlsite": {
+    "age": "R-18",
+    "ai_option": "AI一部利用",
+    "ai_option_note": "表紙が画像生成AIのため。声は市販のCOEIROINK。",
+    "genres": ["淫語", "言葉責め", "女性優位", "本番なし", "手コキ", "ラブラブ/あまあま", "ささやき", "お姉さん"]
+  },
+  "planned_tracks": [
+    {"file": "part01", "title": "施錠と、ルールの説明", "planned_minutes": 6},
+    {"file": "part02", "title": "10まで我慢", "planned_minutes": 12},
+    {"file": "part03", "title": "一度止めて、水", "planned_minutes": 10},
+    {"file": "part04", "title": "短いカウントをもう一度", "planned_minutes": 15},
+    {"file": "part05", "title": "終わりと、明日の出勤", "planned_minutes": 12}
+  ],
+  "planned_minutes_note": "配分は企画の長さ。ファイルを測った時間ではない。",
+  "export": {
+    "wav": ["part01.wav", "part02.wav", "part03.wav", "part04.wav", "part05.wav"],
+    "mp3": ["part01.mp3", "part02.mp3", "part03.mp3", "part04.mp3", "part05.mp3", "full.mp3"]
+  }
+}
