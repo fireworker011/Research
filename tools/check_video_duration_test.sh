@@ -14,6 +14,30 @@ if grep -E '^[[:space:]]*[^#].*abs\([^)]*10\.5' "$CHECK" >/dev/null; then
   exit 1
 fi
 
+expect_m12() {
+  local raw=$1 want=$2 want_exit=$3
+  local out code got
+  set +e
+  out=$(bash "$CHECK" --m12-fixture "$raw" 2>&1)
+  code=$?
+  set -e
+  got=$(printf '%s\n' "$out" | awk '$1=="M12"{print $2}')
+  if [[ "$got" == "$want" && "$code" == "$want_exit" ]] && ! printf '%s\n' "$out" | grep -q 'syntax error'; then
+    printf 'PASS\tm12\tM12=%s\texit=%s\n' "$got" "$code"
+  else
+    printf 'FAIL\tm12\tgot=%s(want %s)\texit=%s(want %s)\n' "$got" "$want" "$code" "$want_exit" >&2
+    printf '%s\n' "$out" >&2
+    fail=1
+  fi
+}
+
+expect_m12 skip SKIP 0
+expect_m12 $'skip\r' SKIP 0
+expect_m12 $'skip\n' SKIP 0
+expect_m12 $'skip\r\n' SKIP 0
+expect_m12 39 FAIL 1
+expect_m12 40 PASS 0
+
 make_mp4() {
   local frames="$1" audio="$2" out="$3"
   local dur
@@ -57,10 +81,11 @@ run_case() {
   out=$("${args[@]}" 2>&1)
   code=$?
   set -e
-  local got got_m6 got_m8
+  local got got_m6 got_m8 got_m12
   got=$(m5_of "$out")
   got_m6=$(field_of "$out" M6)
   got_m8=$(field_of "$out" M8)
+  got_m12=$(field_of "$out" M12)
   local ids_ok=1
   local id
   for id in M1 M2 M3 M4 M5 M6 M7 M8 M9 M10 M11 M12 M13 M14; do
@@ -75,11 +100,15 @@ run_case() {
   if [[ -n "$want_m8" && "$got_m8" != "$want_m8" ]]; then
     audio_ok=0
   fi
-  if [[ "$got" == "$want_m5" && "$code" == "$want_exit" && "$ids_ok" == "1" && "$audio_ok" == "1" ]]; then
-    printf 'PASS\t%s\tprobe=%s\tM5=%s\tM6=%s\tM8=%s\texit=%s\n' "$name" "$probe" "$got" "$got_m6" "$got_m8" "$code"
+  local m12_ok=1
+  if [[ "$got_m12" != "SKIP" ]] || printf '%s\n' "$out" | grep -q 'syntax error'; then
+    m12_ok=0
+  fi
+  if [[ "$got" == "$want_m5" && "$code" == "$want_exit" && "$ids_ok" == "1" && "$audio_ok" == "1" && "$m12_ok" == "1" ]]; then
+    printf 'PASS\t%s\tprobe=%s\tM5=%s\tM6=%s\tM8=%s\tM12=%s\texit=%s\n' "$name" "$probe" "$got" "$got_m6" "$got_m8" "$got_m12" "$code"
   else
-    printf 'FAIL\t%s\tprobe=%s\tM5=%s(want %s)\tM6=%s(want %s)\tM8=%s(want %s)\texit=%s(want %s)\tids=%s\n' \
-      "$name" "$probe" "$got" "$want_m5" "$got_m6" "${want_m6:-any}" "$got_m8" "${want_m8:-any}" "$code" "$want_exit" "$ids_ok" >&2
+    printf 'FAIL\t%s\tprobe=%s\tM5=%s(want %s)\tM6=%s(want %s)\tM8=%s(want %s)\tM12=%s(want SKIP)\texit=%s(want %s)\tids=%s\n' \
+      "$name" "$probe" "$got" "$want_m5" "$got_m6" "${want_m6:-any}" "$got_m8" "${want_m8:-any}" "$got_m12" "$code" "$want_exit" "$ids_ok" >&2
     printf '%s\n' "$out" >&2
     fail=1
   fi

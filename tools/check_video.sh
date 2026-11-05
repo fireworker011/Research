@@ -9,6 +9,38 @@
 # 引数が .md のときは cuts-for-pc.md を見る（tools/check_cuts.py）。
 set -euo pipefail
 
+say() {
+  local id="$1" ok="$2" detail="$3"
+  if [[ "$ok" == "1" ]]; then
+    printf '%s\tPASS\t%s\n' "$id" "$detail"
+  else
+    printf '%s\tFAIL\t%s\n' "$id" "$detail"
+    fail=1
+  fi
+}
+
+# Cygwin の read は最後のフィールドに \r を残す。skip のまま -lt すると算術エラーになり、M12 が PASS になる。
+emit_m12() {
+  local text_min=$1
+  text_min=${text_min//$'\r'/}
+  text_min=${text_min//$'\n'/}
+  if [[ "$text_min" == "skip" ]]; then
+    printf 'M12\tSKIP\t字幕と表の領域に文字の帯が無い\n'
+  elif [[ -z "$text_min" || "$text_min" == *[!0-9]* ]]; then
+    say M12 0 "文字の高さが数値でない（${text_min}）"
+  elif [[ "$text_min" -lt 40 ]]; then
+    say M12 0 "最小の文字の高さが${text_min}px（40px未満）"
+  else
+    say M12 1 "最小の文字の高さは${text_min}px"
+  fi
+}
+
+if [[ "${1:-}" == "--m12-fixture" ]]; then
+  fail=0
+  emit_m12 "${2-}"
+  exit "$fail"
+fi
+
 FINAL=0
 if [[ $# -eq 3 && "$3" == "--final" ]]; then
   FINAL=1
@@ -24,16 +56,6 @@ if [[ "$FILE" == *.md ]]; then
   python3 "$(dirname "$0")/check_cuts.py" "$FILE" "$LANE"
   exit $?
 fi
-
-say() {
-  local id="$1" ok="$2" detail="$3"
-  if [[ "$ok" == "1" ]]; then
-    printf '%s\tPASS\t%s\n' "$id" "$detail"
-  else
-    printf '%s\tFAIL\t%s\n' "$id" "$detail"
-    fail=1
-  fi
-}
 
 fmt=$(ffprobe -v error -show_entries format=format_name,duration -of default=nw=1:nk=1 "$FILE" | tr '\n' ' ')
 format_name=$(ffprobe -v error -show_entries format=format_name -of csv=p=0 "$FILE" | tr -d '"')
@@ -245,13 +267,7 @@ else
   say M11 1 "灰色の単色背景のフレームは50%以下"
 fi
 
-if [[ "$text_min" == "skip" ]]; then
-  printf 'M12\tSKIP\t字幕と表の領域に文字の帯が無い\n'
-elif [[ "$text_min" -lt 40 ]]; then
-  say M12 0 "最小の文字の高さが${text_min}px（40px未満）"
-else
-  say M12 1 "最小の文字の高さは${text_min}px"
-fi
+emit_m12 "$text_min"
 
 # M13: 腕の比率。猫しか映っていない動画は対象外。
 # M14: 頭のない塗り、または体の外の黒い塊があればFAIL。
