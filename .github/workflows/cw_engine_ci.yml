@@ -1,0 +1,41 @@
+name: CW Engine CI（応募しない・Issue に書かない）
+
+on:
+  pull_request:
+    paths:
+      - 'cw-engine/**'
+      - '.github/workflows/cw_engine_ci.yml'
+      - '.cursor/rules/cw-engine.mdc'
+  push:
+    paths:
+      - 'cw-engine/**'
+      - '.github/workflows/cw_engine_ci.yml'
+      - '.cursor/rules/cw-engine.mdc'
+
+concurrency:
+  group: cw-engine-ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  self-test:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683  # v4.2.2
+
+      - name: node --check と self-test（LLM なし・トークンなし）
+        run: |
+          set -euo pipefail
+          cd cw-engine
+          for f in src/*.js; do node --check "$f"; done
+          node src/self-test.js
+          node src/apply-commander-comment.js --dry-run --comment "CW: DESK" > /dev/null
+          if grep -RInE 'crowdworks\.jp/login|puppeteer|playwright|selenium' src private-repo/cw.yml; then
+            echo 'login automation must not land'
+            exit 1
+          fi
+          if git ls-files | grep -E '^cw-engine/(output|config/facts\.json)'; then
+            echo 'runtime state or facts must not be committed to the public repo'
+            exit 1
+          fi
