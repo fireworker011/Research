@@ -2,7 +2,8 @@
 # M1〜M12。使い方: check_video.sh <mp4> <pet|kane>
 # M11: 灰色の単色背景のフレームが50%を超えたらFAIL。
 # M12: 字幕と表の領域だけを見る。帯が無いときは SKIP。40px未満はFAIL。
-# ペットも金メモも長さは 8.0〜10.5秒。
+# ペットも金メモも長さは 8.0〜10.5秒。下書きも完成（--final）も同じ範囲。
+# 完成だけ 10.500±0.050 にする等値判定は使わない。
 # 下書き（--final なし）は音声が無くても M6 と M8 を不合格にしない。
 # 完成mp4は --final 必須。--final のとき音声が無い、aac でない、mean_volume が -45dB 以下なら不合格。
 # 引数が .md のときは cuts-for-pc.md を見る（tools/check_cuts.py）。
@@ -85,9 +86,14 @@ if [[ "$LANE" != "pet" && "$LANE" != "kane" ]]; then
   echo "lane は pet か kane: $LANE" >&2
   exit 2
 fi
+# M5 は下書きも --final も 8.0〜10.5秒。ペットと金メモで範囲を分けない。
 lo=8.0
 hi=10.5
-label="8.0〜10.5秒"
+if [[ "$FINAL" == "1" ]]; then
+  label="8.0〜10.5秒（完成）"
+else
+  label="8.0〜10.5秒"
+fi
 if python3 - "$duration" "$lo" "$hi" << 'PY'
 import sys
 d, lo, hi = float(sys.argv[1]), float(sys.argv[2]), float(sys.argv[3])
