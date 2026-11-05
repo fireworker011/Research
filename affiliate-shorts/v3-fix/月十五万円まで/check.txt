@@ -1,0 +1,12 @@
+{
+  "title": "月十五万円まで",
+  "duration": 12.567,
+  "width": 1080,
+  "height": 1920,
+  "audio_streams": 1,
+  "silence_over_1_5s": 0,
+  "freeze_over_1s": 0,
+  "sync_max_abs": 0.045,
+  "voice_gap_max": 0.234,
+  "source_audio_mapped": false
+}

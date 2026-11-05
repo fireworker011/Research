@@ -1,0 +1,12 @@
+{
+  "title": "仮交際が、終わった夜",
+  "duration": 32.133,
+  "width": 1080,
+  "height": 1920,
+  "audio_streams": 1,
+  "silence_over_1_5s": 0,
+  "freeze_over_1s": 0,
+  "sync_max_abs": 0.065,
+  "voice_gap_max": 2.422,
+  "source_audio_mapped": false
+}

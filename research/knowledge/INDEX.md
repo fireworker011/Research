@@ -82,3 +82,7 @@
 - [電力乗り換え](affi-genres/electricity-switch.md)
 
 <!-- affi-genres 2026-10-12 end -->
+
+## 2026-10-18 縦型動画の仕上げ
+
+出力は基本品質で却下された。書き出しは、台本が映像に合うまで再開しない。必ず守る 5 項目は [video-finish.md](video-finish.md)。

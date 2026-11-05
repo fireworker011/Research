@@ -1,0 +1,12 @@
+{
+  "title": "返信が遅い人を、好きになった理由",
+  "duration": 44.233,
+  "width": 1080,
+  "height": 1920,
+  "audio_streams": 1,
+  "silence_over_1_5s": 0,
+  "freeze_over_1s": 0,
+  "sync_max_abs": 0.1,
+  "voice_gap_max": 2.574,
+  "source_audio_mapped": false
+}
