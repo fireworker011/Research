@@ -5,7 +5,8 @@
 - base: `claude/setup-colab-comfyui-Eb9Lh`（リポジトリ既定。PR #309 の base と同じ）
 - 指示書: 07-cursor-takasou-script-shorten。sha256 `0f15921cf241327b992b3185d5425120131663e34d459bc0c6be5a32a4817d2c`（添付と一致）
 - 速度は上げない。無音は足さない。実URLは置かない
-- チェッカーは1回。不合格は仕様衝突の1項。直しは0回。60分の上限で止めた作業ではない
+- 2026-11-07 の決定: PRは8.5〜10.5秒のみ。右上PRは戻していない
+- チェッカーに婚活レーンを足した。takasou の script_lint と check_cuts は全項PASS。ペットと金メモの結果は変えていない。直しは0回
 
 ## 原本
 
@@ -85,25 +86,31 @@ PRは旧が0秒からの右上と、終端2秒の「広告 #PR」。新は8.500�
 
 `{\an8}` のフックは間に入れない。セリフ字幕の境は 1.500、4.500、7.000 で、空きは 0秒。端は 0.5秒刻み。設計の尺は 10.500秒。24fps では 0.5秒が12フレーム、10.5秒が252フレーム。
 
-## script_lint.py
+## 婚活レーン
 
-チェッカーは branch `cursor/script-lint-20261028-c032` の commit `1b05871dd66e0c57eeba4d33ea06467e60bcb5eb` の `tools/script_lint.py`。この branch の base には置いていない。md と srt が同じフォルダにあるので、そのフォルダを引数にした。`cuts-for-pc.md` は同じフォルダにある。終了コード 1。
+決定は「PRは8.5〜10.5秒のみ。右上PRは0秒から戻さない」。`tools/script_lint.py` と `tools/check_cuts.py` に婚活だけを足した。元にしたチェッカーは `cursor/script-lint-20261028-c032` の `1b05871dd66e0c57eeba4d33ea06467e60bcb5eb`。
+
+婚活のPR判定は、SRTのPR字幕が 8.500〜10.500 秒の外にあれば不合格、その窓の `#PR` が無ければ不合格。ペットは従来どおり「最後の2秒だけ」。金メモは従来どおりPRなし。美容は従来どおり「0.000秒の右上PR」と「最後の2秒の `#PR`」。`check_cuts.py` の `pet` / `kane` / `both` の出力は変えていない。婚活は引数 `konkatsu` のときだけ見る。
+
+自己テスト `python3 tools/script_lint.py --self-test` は終了コード 0。ペットの合格例と右上PRの不合格、美容の右上PR、金メモの禁止語は、従来の期待のまま通った。
+
+## script_lint.py（takasou）
+
+`python3 tools/script_lint.py shorts-scripts/2026-11-01-婚活`。終了コード 0。全項PASS。
 
 ```
 | 本 | SRT書式 | 字幕の間 | PR | 禁止語 | 見出し | 自己採点 | 表 | 尺 | プロンプト | フック | 速度 | 誘導 | a8 | 結果 |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| 2026-11-01-婚活-takasou | PASS | PASS（最大0秒） | FAIL（0.000秒の右上PRが無い） | PASS | PASS | PASS（86） | PASS（表なし） | PASS（対象外） | PASS | PASS | PASS | PASS（対象外） | なし | FAIL |
+| 2026-11-01-婚活-takasou | PASS | PASS（最大0秒） | PASS | PASS | PASS | PASS（86） | PASS（表なし） | PASS（対象外） | PASS | PASS | PASS | PASS（対象外） | なし | PASS |
 
-合計 1本: PASS 0 / FAIL 1 / WARN 0
+合計 1本: PASS 1 / FAIL 0 / WARN 0
 ```
 
-不合格は PR の1項だけ。チェッカーの婚活は、0.000秒の右上 `{\an9}PR` と、終端2秒の `#PR` を両方要求する。終端の `#PR` は 8.500〜10.500 にあり、メッセージは右上だけを指している。指示書は「10.5秒設計でPR8.5〜10.5秒のみ」。右上を足すと指示書に反する。速度や無音では埋まらない。直しはしていない。全PASSとは記録しない。
+レーンを足す前の同じ台本は、PR項だけ `FAIL（0.000秒の右上PRが無い）`、結果は FAIL だった。右上PRは足していない。尺の列が「対象外」なのは、8.0〜10.5秒の刻み検査がペットと金メモだけのままだから。設計尺は 10.500秒。
 
-尺の列が「対象外」なのは、このチェッカーが 8.0〜10.5秒をペットと金メモだけに適用するため。台本の設計尺は 10.500秒。
+## check_cuts.py（takasou）
 
-## check_cuts.py
-
-同じ commit の `tools/check_cuts.py`。引数のレーンは `pet|kane|both` だけで、婚活は無い。`both` で1回実行した。終了コード 1。
+`python3 tools/check_cuts.py shorts-scripts/2026-11-01-婚活/cuts-for-pc.md konkatsu`。終了コード 0。全項PASS。
 
 ```
 PASS	mp4は書き出していない
@@ -112,11 +119,68 @@ PASS	尺が8.0〜10.5秒
 PASS	カットは10.5秒以内
 PASS	プロンプトがある
 PASS	声は等倍
-FAIL	ペットの節がある
-FAIL	金メモの節がある
+PASS	婚活 2026-11-01-婚活-takasou のPRは8.5〜10.5秒のみ
+PASS	婚活の節がある
 ```
 
-通った6項は、このファイルに書いてある内容。落ちた2項は、婚活の節をペットや金メモの節として数えないため。通すために別レーンの節は足していない。全PASSとは記録しない。
+レーンを足す前は `both` で実行し、共通6項はPASS、ペットの節と金メモの節がFAIL、終了コード 1 だった。
+
+## ペットと金メモの script_lint（前後）
+
+比較したチェッカーは、変更前が `1b05871d` の `tools/script_lint.py`、変更後がこの branch の `tools/script_lint.py`。台本は各 branch から取り出した。全列（結果だけでなくPR・尺・禁止語など）が一致したのは 21本。差分は 0。
+
+| 本 | 前 | 後 |
+|---|---|---|
+| 20261028/2026-10-28-ペット-kuroneko-hidamari | FAIL | FAIL |
+| 20261028/2026-10-28-金メモ-hoken-hagaki | FAIL | FAIL |
+| 2026-11-04-kane-kihon-teate-v2/2026-11-04-金メモ-kihon-teate | PASS | PASS |
+| 2026-11-14-pet/2026-11-14-ペット-kuroneko-bane | FAIL | FAIL |
+| 2026-11-14-pet/2026-11-15-ペット-kuroneko-matto | FAIL | FAIL |
+| 2026-11-14-pet/2026-11-16-ペット-kuroneko-kyujiki | FAIL | FAIL |
+| 2026-11-15-kane/2026-11-15-金メモ-kakyu-nenkin | PASS | PASS |
+| 2026-11-15-kane/2026-11-16-金メモ-kougaku-kaigo | PASS | PASS |
+| 2026-11-15-kane/2026-11-17-金メモ-ginou-shutoku | PASS | PASS |
+| 2026-11-17-pet/2026-11-17-ペット-kuroneko-dansa | PASS | PASS |
+| 2026-11-17-pet/2026-11-18-ペット-kuroneko-hammokku | PASS | PASS |
+| 2026-11-17-pet/2026-11-19-ペット-kuroneko-kanzume | PASS | PASS |
+| 2026-11-18-kane/2026-11-18-金メモ-shussan-teate | PASS | PASS |
+| 2026-11-18-kane/2026-11-19-金メモ-shien-kyufu | PASS | PASS |
+| 2026-11-18-kane/2026-11-20-金メモ-furikae-kasan | PASS | PASS |
+| 2026-11-20-pet/2026-11-20-ペット-kuroneko-jarashi | PASS | PASS |
+| 2026-11-20-pet/2026-11-21-ペット-kuroneko-makura | PASS | PASS |
+| 2026-11-20-pet/2026-11-22-ペット-kuroneko-sutikku | PASS | PASS |
+| 2026-11-21-kane/2026-11-21-金メモ-shibou-ichijikin | PASS | PASS |
+| 2026-11-21-kane/2026-11-22-金メモ-teichaku-teate | PASS | PASS |
+| 2026-11-21-kane/2026-11-23-金メモ-kaigo-gassan | PASS | PASS |
+
+同じ inputs/20261028 の美容1本とゆあ3本も、全列が一致した。
+
+10/28の婚活3本は、このPRの台本ではない。結果の列は前後とも FAIL。PRの列だけ、右上PRがあるため PASS から FAIL に変わった。右上を残す規則には戻していない。
+
+| 本 | 前の結果 | 後の結果 | 前のPR | 後のPR |
+|---|---|---|---|---|
+| 2026-10-28-婚活-konkatsu12-miru-dake | FAIL | FAIL | PASS | FAIL（8.5〜10.5秒以外に右上PRがある、8.5〜10.5秒の#PRが無い） |
+| 2026-10-28-婚活-sanoufuku | FAIL | FAIL | PASS | FAIL（8.5〜10.5秒以外に右上PRがある、8.5〜10.5秒の#PRが無い） |
+| 2026-10-28-婚活-senmenjo-photo | FAIL | FAIL | PASS | FAIL（8.5〜10.5秒以外に右上PRがある、8.5〜10.5秒の#PRが無い） |
+
+## ペットと金メモの check_cuts（前後）
+
+変更前と変更後の `check_cuts.py` を、同じファイルへ同じレーンで実行した。標準出力、標準エラー、終了コードは 19回とも一致。差分は 0。下は内容が別の12ファイル。残りの7回は、同じ cuts を branch の作業コピーで再実行したもの。
+
+| ファイル | レーン | 終了 | PASS | FAIL | 前後 |
+|---|---|---:|---:|---:|---|
+| animatics/20261102-night/cuts-for-pc.md | both | 0 | 26 | 0 | 同じ |
+| animatics/20261103-night/cuts-for-pc.md | kane | 0 | 10 | 0 | 同じ |
+| animatics/20261104-night/cuts-for-pc.md | both | 1 | 17 | 9 | 同じ |
+| video/templates/cuts-for-pc.md（final-check-8-10-5） | both | 1 | 6 | 2 | 同じ |
+| video/templates/cuts-for-pc.md（script-lint-20261028） | both | 1 | 6 | 2 | 同じ |
+| shorts-scripts/2026-11-04-kane-kihon-teate-v2/cuts-for-pc.md | kane | 0 | 8 | 0 | 同じ |
+| shorts-scripts/2026-11-15-kane/cuts-for-pc.md | kane | 0 | 10 | 0 | 同じ |
+| shorts-scripts/2026-11-18-kane/cuts-for-pc.md | kane | 0 | 10 | 0 | 同じ |
+| shorts-scripts/2026-11-21-kane/cuts-for-pc.md | kane | 0 | 10 | 0 | 同じ |
+| shorts-scripts/2026-11-14-pet/cuts-for-pc.md | both | 1 | 5 | 3 | 同じ |
+| shorts-scripts/2026-11-17-pet/cuts-for-pc.md | pet | 0 | 22 | 0 | 同じ |
+| shorts-scripts/2026-11-20-pet/cuts-for-pc.md | pet | 0 | 22 | 0 | 同じ |
 
 ## 検索
 
@@ -151,5 +215,7 @@ FAIL	金メモの節がある
 | 2026-11-01-婚活-takasou.md | `a3ce93265954fd70825607202ad999a337bbfda8c7974b7afb4b386774017d06` |
 | 2026-11-01-婚活-takasou.srt | `d01e599b99a4930866ed90c2d660231c471115ca59c468697ce2837bd5e533d8` |
 | cuts-for-pc.md | `7c551f9025665a489c795ce63eaab1c40e77bd9e1f14cd43d76db9ce71e529a9` |
+| tools/script_lint.py | `750076adba43977dc7b9b0fef49194d1c85ee77a716f7902fd585577d40ccc1b` |
+| tools/check_cuts.py | `b94fa4eb6620809b34b15601138e4ed8e2eeecbb3e325472b0ad69e9eb684ee0` |
 
 HANDOFF の sha256 は、この表を書いたあとに HANDOFF 側へ記す。

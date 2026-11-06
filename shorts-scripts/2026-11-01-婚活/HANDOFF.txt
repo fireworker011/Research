@@ -1,46 +1,49 @@
 # HANDOFF
 
-婚活 takasou の台本短縮。投稿・外部送信・支払いはしていない。マージしない。
+婚活 takasou の台本短縮と、チェッカーの婚活レーン。投稿・外部送信・支払いはしていない。マージしない。mp4は作っていない。
 
-ファイル名は HANDOFF.txt。script_lint.py は REPORT.md と cuts-for-pc.md 以外の md を台本として読む。この記録を md にすると、台本の行と別の不合格が増える。
+ファイル名は HANDOFF.txt。script_lint.py は REPORT.md と cuts-for-pc.md 以外の md を台本として読む。
 
 ## 完了 / 未完
 
-- 完了: 原本の特定、短縮台本、SRT、cuts-for-pc、REPORT。対象フォルダは `shorts-scripts/2026-11-01-婚活/`
-- 未完: script_lint の全PASS、check_cuts の全PASS。mp4 は作っていない。check_video.sh の M1〜M14 と --final は未実施で、PASSとは呼ばない
+- 完了: 原本の特定。短縮台本、SRT、cuts-for-pc、REPORT。対象フォルダは `shorts-scripts/2026-11-01-婚活/`
+- 完了: PRは8.5〜10.5秒のみ。右上PRは戻していない
+- 完了: `tools/script_lint.py` と `tools/check_cuts.py` に婚活レーンを足した。takasou は両チェッカーとも全項PASS。終了コード 0
+- 完了: ペットと金メモの既存台本は、script_lint 21本の全列が前後一致。check_cuts は19回の出力が前後一致。差分は 0
+- 未完: Konomi の wav 実測はしていない。check_video.sh の M1〜M14 と --final は mp4 が無いので未実施。PASSとは呼ばない
 
 ## 推定 / 実測
 
 - 推定: 新4行の発話。モーラ式で 6.748秒、上限 7.468秒。余白込みの上限 7.918秒。約7字では 6.143秒。指令書の11.2秒を旧73字で割った係数では 6.597秒。どれも発話9.0秒未満。全体の設計は 10.500秒
 - 実測: なし。Konomi の wav も、PC の尺も、この作業では測っていない
-- 指令書の等倍読み 11.2秒は、旧台本の値として受け取った。同じ式では旧4行が推定 11.946秒になり、11.2秒とは一致しない。11.2秒は測り直していない
+- 指令書の等倍読み 11.2秒は、旧台本の値として受け取った。同じ式では旧4行が推定 11.946秒。11.2秒は測り直していない
 
 ## 試行回数
 
-- 台本は1稿。script_lint は1回。check_cuts は1回
-- 直しは0回。上限の3回には入っていない。60分では止めていない
-- 止めた理由: 仕様衝突。指示書は PR を 8.5〜10.5秒のみ。script_lint の婚活は 0.000秒の右上PRを必須にする。右上を足す直しは指示書に反する。check_cuts に婚活レーンは無く、ペット節や金メモ節を足す直しはしない
+- 台本は1稿のまま。セリフは直していない
+- チェッカーは1稿。自己テストは終了コード 0。takasou の不合格は出なかった。不合格による直しは0回
+- 40分では止めていない
 
 ## 変更対象
 
-- 追加: `shorts-scripts/2026-11-01-婚活/2026-11-01-婚活-takasou.md`
-- 追加: `shorts-scripts/2026-11-01-婚活/2026-11-01-婚活-takasou.srt`
-- 追加: `shorts-scripts/2026-11-01-婚活/cuts-for-pc.md`
-- 追加: `shorts-scripts/2026-11-01-婚活/REPORT.md`
-- 追加: `shorts-scripts/2026-11-01-婚活/HANDOFF.txt`
-- 変更していない: base 上の他の原稿。PR #269 の 11/02 台本。チェッカー本体
+- 変更: `tools/script_lint.py`
+- 変更: `tools/check_cuts.py`
+- 追加: `tools/script_lint_fixtures/`（自己テスト用。中身は既存の3本）
+- 変更: `shorts-scripts/2026-11-01-婚活/REPORT.md`
+- 変更: `shorts-scripts/2026-11-01-婚活/HANDOFF.txt`
+- 変更していない: takasou の台本、SRT、cuts-for-pc.md。ペット、金メモ、美容の判定。10/28の婚活3本
 
 ## 残件
 
-- 右上PRを 0秒から戻すか、チェッカーの婚活規則を「PRは8.5〜10.5秒のみ」に変えるか。未決
+- 10/28の婚活3本（konkatsu12、sanoufuku、senmenjo-photo）は右上PRのまま。新しい規則ではPR項がFAIL。結果の列は前後ともFAIL。このPRでは直していない
 - Konomi 等倍の wav で、発話が9.0秒未満かつ問いが1.5秒に収まるかの実測
 - 実測が超えたら、速度は上げずに言葉を削る
-- mp4 は別指令。M1〜M14 と --final は未実施
+- mp4 は作っていない。M1〜M14 と --final は未実施
 - 概要欄の実URLは、このリポジトリには置かない
 
 ## 次の1手
 
-人間が PR の置き場所を決める。決まるまで、右上PRは戻さない。速度は上げない。mp4は作らない。投稿しない。
+PC制作は別指示。速度は上げない。mp4は作らない。投稿しない。10/28の婚活3本を新しいPR規則へ直すかは、別の指示で決める。
 
 ## SHA256
 
@@ -51,9 +54,11 @@
 - 新台本: `a3ce93265954fd70825607202ad999a337bbfda8c7974b7afb4b386774017d06`
 - 新SRT: `d01e599b99a4930866ed90c2d660231c471115ca59c468697ce2837bd5e533d8`
 - cuts-for-pc.md: `7c551f9025665a489c795ce63eaab1c40e77bd9e1f14cd43d76db9ce71e529a9`
-- REPORT.md: `53ccc76229a709c45526a25ba275bb16348317cb9f3f884a9261cb9365be48e7`
+- tools/script_lint.py: `750076adba43977dc7b9b0fef49194d1c85ee77a716f7902fd585577d40ccc1b`
+- tools/check_cuts.py: `b94fa4eb6620809b34b15601138e4ed8e2eeecbb3e325472b0ad69e9eb684ee0`
+- REPORT.md: `08397775ce2272a8023bfd9eda2955fc9b3cd6273dde8e77ff82ce46fb9cdd32`
 - この HANDOFF.txt 自身の sha256 は、本文に書くと値が変わるので、PR本文に記す
 
 ## JST
 
-2026-11-07 08:04:15 JST
+2026-11-07 08:12:12 JST
