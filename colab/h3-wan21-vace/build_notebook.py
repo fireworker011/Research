@@ -1,0 +1,77 @@
+#!/usr/bin/env python3
+"""Rebuild wan21_vace_14b_colab.ipynb from the cell sources."""
+
+import nbformat
+from nbformat.v4 import new_code_cell, new_markdown_cell, new_notebook
+from pathlib import Path
+
+ROOT = Path(__file__).resolve().parent
+
+MARKDOWN = """# Wan2.1 VACE 14B — H3 カット生成
+
+生成本体は Wan2.1 VACE 14B。有料 API は使わない。Drive にある重みは使い、無い重みは Colab のディスクに取得する。
+
+ランタイムは **A100 以上**。最初のコードセルで、それより小さい GPU は停止する。
+
+上から順に実行する。起動手順とライセンスは同じフォルダの `README.md`。
+
+1. GPU チェック
+2. 制御 JSON の読み込みと、OpenPose / Depth / カメラ制御の作成
+3. Drive をマウントし、ComfyUI を入れる
+4. モデル取得（Drive にあればそれを使う。無ければ Colab のディスクへ）
+5. ComfyUI 起動
+6. カットごとに 9:16 の mp4 と、使った制御 JSON を書く。mp4 はサンプラーと VAE の出力だけ。終わっても最大 30 分はランタイムを残す
+7. 直すカットだけ再生成する（`CUTS = ["C2"]`）。Drive の `prompts.json` を読み直す
+8. 合格なら切断セルを実行する。操作が 30 分無いときも自動で切断する。失敗したときはすぐ切断する
+
+入力は `マイドライブ/ComfyUI_vace_h3/input/` の `face_ref.png`、`controls/C1_control_1b6a.json`、`controls/C2_control_f32a.json`、`controls/C3_control_88b5.json`、`controls/C4_control_6d2a.json`、`controls/prompts.json`。
+出力は `マイドライブ/ComfyUI_vace_h3/output/<実行時刻>/`。
+
+このノートを置いた時点では、A100 上の生成は未実施。
+"""
+
+
+def _read(name):
+    return (ROOT / name).read_text(encoding="utf-8")
+
+
+def install_source():
+    install = _read("cells/03_install.py")
+    node = _read("h3_load_frames.py")
+    needle = "from pathlib import Path\n"
+    if needle not in install:
+        raise RuntimeError("install cell is missing the pathlib import")
+    assignment = "NODE_SOURCE = " + repr(node) + "\n"
+    return install.replace(needle, needle + "\n" + assignment, 1)
+
+
+def build():
+    sources = [
+        ("markdown", MARKDOWN),
+        ("code", _read("cells/01_gpu.py")),
+        ("code", _read("logic.py")),
+        ("code", install_source()),
+        ("code", _read("cells/04_download.py")),
+        ("code", _read("cells/05_launch.py")),
+        ("code", _read("cells/06_generate.py")),
+        ("code", _read("cells/07_regenerate.py")),
+        ("code", _read("cells/08_disconnect.py")),
+    ]
+    cells = []
+    for kind, source in sources:
+        if kind == "markdown":
+            cells.append(new_markdown_cell(source))
+        else:
+            cells.append(new_code_cell(source))
+    notebook = new_notebook(cells=cells)
+    notebook.metadata["colab"] = {"provenance": [], "gpuType": "A100"}
+    notebook.metadata["kernelspec"] = {"display_name": "Python 3", "name": "python3"}
+    notebook.metadata["language_info"] = {"name": "python"}
+    notebook.metadata["accelerator"] = "GPU"
+    path = ROOT / "wan21_vace_14b_colab.ipynb"
+    nbformat.write(notebook, path)
+    return path
+
+
+if __name__ == "__main__":
+    print(build())
