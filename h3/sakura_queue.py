@@ -15,15 +15,17 @@ from h3.live_remake import (
     CLIP_FILE,
     CLIP_TYPE,
     DENOISE,
+    FPS,
     MODEL_FILE,
     REF_IMAGE_SIZE,
     SAMPLER,
     SCHEDULER,
     STEPS,
     RemakeError,
+    align_frames,
     conform_argv,
 )
-from h3.sakura_clip import SOURCE_FRAMES
+from h3.sakura_clip import SOURCE_FRAMES, scaled_marks
 
 VIDEO_NAME = "sakura-sword.mp4"
 AUDIO_NAME = "sakura-sword_with-audio.mp4"
@@ -31,11 +33,13 @@ FL2VA_UNET = "minimax_h3_fl2va_pruned_int8_convrot.safetensors"
 TURBO_FILE = "minimax_h3_fl2v_turbo_8step_v1.0_768p_comfyui_bf16.safetensors"
 TURBO_STRENGTH = 1.0
 TURBO_STEPS = 8
-FL2VA_FRAMES = 124
+# 244 frames is the measured source. H3 accepts 17k+5, so the next legal length is 260.
+FL2VA_FRAMES = align_frames(SOURCE_FRAMES)
 FL2VA_WIDTH = 768
 FL2VA_HEIGHT = 1344
 FL2VA_STILL = "sakura-04-sword.jpg"
-FL2VA_NAME = "sakura-fl2va.mp4"
+FL2VA_STEM = "sakura-fl2va-260"
+FL2VA_NAME = f"{FL2VA_STEM}.mp4"
 STILL_DIR = "/content/drive/MyDrive/動画倉庫/ネタBOX"
 MODELS_DIR = "/content/drive/MyDrive/minimax-h3-comfyui/models"
 
@@ -182,21 +186,55 @@ def build_sakura_prompt(
 
 
 def fl2va_prompt() -> str:
-    """Shot text for the still. The source video is not a reference."""
-    return "\n".join(
+    """Shot text on the measured clock. The source video is not a reference."""
+    marks = scaled_marks()
+    end = FL2VA_FRAMES / FPS
+    shots = (
+        (
+            marks[0],
+            marks[1],
+            "She bursts from the opening stance into a dash and draws the tachi. A crimson edge lights the blade.",
+        ),
+        (
+            marks[1],
+            marks[2],
+            "Three tachi cuts follow: a horizontal slash, an upward thrust, and a spinning cut. Red sword light throws sparks.",
+        ),
+        (
+            marks[2],
+            marks[3],
+            "She leaves the ground. The tachi cuts downward and the impact hits the stone path.",
+        ),
+        (
+            marks[3],
+            marks[4],
+            "The camera circles her once. She turns in the air and thrusts. Red sword-light afterimages cross the temple garden.",
+        ),
+        (
+            marks[4],
+            marks[5],
+            "She blocks a heavy strike and answers with one tachi thrust, then swings one crescent of red sword light.",
+        ),
+        (
+            marks[5],
+            end,
+            "She lands in the stance of the first frame, tachi raised, looking toward the temple gate. Cherry petals move.",
+        ),
+    )
+    lines = [
+        "Photorealistic live-action of the woman in the first frame.",
+        "She wears the red and gold floral kimono and flower hairpin from that frame, and she holds a tachi.",
+        "The place is the Japanese temple garden in that frame: wooden buildings, cherry trees, a stone path, and daylight.",
+        "Timeline:",
+    ]
+    lines.extend(f"[{start:.3f}s-{stop:.3f}s] {text}" for start, stop, text in shots)
+    lines.extend(
         [
-            "Photorealistic live-action of the woman in the first frame.",
-            "She wears the red and gold floral kimono and flower hairpin from that frame, and she holds a tachi.",
-            "The place is the Japanese temple garden in that frame: wooden buildings, cherry trees, a stone path, and daylight.",
-            "Timeline:",
-            "[0.0s-1.0s] She bursts from the opening stance into a dash and draws the tachi. A crimson edge lights the blade.",
-            "[1.0s-2.5s] Three tachi cuts follow: a horizontal slash, an upward thrust, and a spinning cut. Red sword light throws sparks.",
-            "[2.5s-4.0s] She leaves the ground. The tachi cuts downward and the impact hits the stone path.",
-            "[4.0s-5.2s] She lands in the stance of the first frame, with the tachi raised, looking toward the temple gate. Cherry petals move.",
             "The weapon is a tachi in every moment. No on-screen text, subtitles, logos, or watermarks.",
             "Audio: steel draws and clashes, sword-light tearing air, and low impacts on stone. No music.",
         ]
     )
+    return "\n".join(lines)
 
 
 def fl2va_still() -> Path:
@@ -283,7 +321,7 @@ def build_fl2va_prompt(*, image_file: str, video_vae: str, seed: int = 1) -> dic
             "class_type": "SaveVideo",
             "inputs": {
                 "video": ["18", 0],
-                "filename_prefix": "video/sakura-fl2va",
+                "filename_prefix": f"video/{FL2VA_STEM}",
                 "format": "mp4",
                 "codec": "auto",
             },
