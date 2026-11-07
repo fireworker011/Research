@@ -42,7 +42,7 @@ FL2VA_FIRST = "sakura-16x9-open.jpg"
 FL2VA_LAST = "sakura-16x9-yokai-end.jpg"
 FL2VA_FAST = "速い 8step"
 FL2VA_QUALITY = "きれい 20step"
-FL2VA_STEM = "sakura-fl2va-fly8"
+FL2VA_STEM = "sakura-fl2va-speed8"
 FL2VA_NAME = f"{FL2VA_STEM}.mp4"
 STILL_DIR = "/content/drive/MyDrive/動画倉庫/ネタBOX"
 MODELS_DIR = "/content/drive/MyDrive/minimax-h3-comfyui/models"
@@ -199,42 +199,43 @@ def fl2va_prompt() -> str:
             marks[1],
             "Extreme low angle on the stone path. Within the first moment she bursts from a still stance into a fast dash. "
             "The path cracks under her feet and debris kicks outward. Her hair and the red and gold kimono stream backward. "
-            "She draws the tachi. The camera closes on the blade and a crimson edge lights the steel. "
+            "She draws the tachi at the same speed. The camera snaps across the blade and a crimson edge lights the steel. "
             "Ahead of her is the giant horned yokai from the last frame, taller than the temple gate.",
         ),
         (
             marks[1],
             marks[2],
-            "The camera tracks. Close strikes pass her with no pause, then the pace doubles. She stays low and leaves afterimages. "
-            "Three tachi cuts hit the yokai: a horizontal slash, an upward thrust, and a spinning cut. "
+            "The camera tracks at speed. Close strikes pass her with no pause, and the pace stays doubled. She stays low and leaves afterimages. "
+            "Three tachi cuts hit the yokai at that same speed: a horizontal slash, an upward thrust, and a spinning cut. "
             "The blade weaves a net of red light and throws sparks.",
         ),
         (
             marks[2],
             marks[3],
-            "Wide low angle. She leaves the ground in one motion and stays in the air. "
+            "Wide low angle. She leaves the ground in one fast motion and stays in the air. "
             "The tachi cuts a scarlet arc and releases a cone of red sword light downward onto the yokai. "
-            "The impact hits. The camera shakes. The weapon remains the tachi.",
+            "The impact lands and the camera shakes, while her motion does not pause. The weapon remains the tachi.",
         ),
         (
             marks[3],
             marks[4],
-            "The camera circles her once while she is airborne, then comes close. "
-            "She turns, changes direction in the air, and thrusts at the yokai. "
+            "The camera keeps tracking fast. It does not circle slowly and it does not hold a close view. "
+            "She turns, changes direction in the air, and thrusts at the yokai in one continuous motion. "
             "Red sword-light afterimages cross the temple garden. She does not land.",
         ),
         (
             marks[4],
             marks[5],
-            "She is still in the air. A vertical fall starts. She blocks a heavy strike from the yokai and answers with one tachi thrust. "
+            "She is still in the air. The vertical fall is a fast dive, not a slow drop, and it does not stop on the impact. "
+            "She blocks a heavy strike from the yokai and answers with one tachi thrust without a pause. "
             "She breaks through the blow and keeps the tachi raised.",
         ),
         (
             marks[5],
             end,
-            "The camera pulls wide and drops to the last frame: cherry trees on both sides, lanterns, and the giant white-maned horned yokai filling the courtyard. "
-            "She comes down through that frame and cuts the yokai down with one full slash of the tachi. "
-            "The yokai falls into the pose of the last frame. She finishes small in front of it, tachi raised into its body. "
+            "The camera widens during the dive and stays fast: cherry trees on both sides, lanterns, and the giant white-maned horned yokai filling the courtyard. "
+            "She cuts the yokai down with one full slash of the tachi at the same high speed. "
+            "Only the final instant matches the last frame. The yokai is in that pose, and she is small in front of it with the tachi raised into its body. "
             "The golden characters 祝千三百 stand in the sky as in the last frame.",
         ),
     )
@@ -244,6 +245,7 @@ def fl2va_prompt() -> str:
         "She wears the red and gold floral kimono and flower hairpin from the first frame, and she holds a tachi.",
         "The place is that Japanese temple garden, wide 16:9.",
         "She is airborne from the wide low-angle takeoff through the vertical fall. She meets the ground only on the final slash.",
+        "Speed stays high from the first dash through the final slash. No slow motion, no hit-stop, no freeze, and no pause.",
         "Timeline:",
     ]
     lines.extend(f"[{start:.3f}s-{stop:.3f}s] {text}" for start, stop, text in shots)
@@ -276,8 +278,8 @@ def fl2va_choice(mode: str = FL2VA_FAST) -> dict[str, Any]:
             "steps": STEPS,
             "lora": None,
             "strength": 0.0,
-            "stem": "sakura-fl2va-fly20",
-            "name": "sakura-fl2va-fly20.mp4",
+            "stem": "sakura-fl2va-speed20",
+            "name": "sakura-fl2va-speed20.mp4",
             "wait_minutes": 90 * STEPS // TURBO_STEPS,
         },
     }

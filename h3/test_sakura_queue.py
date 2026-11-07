@@ -99,6 +99,7 @@ class SakuraQueueTests(unittest.TestCase):
         self.assertIn("leaves the ground", prompt["8"]["inputs"]["prompt"])
         self.assertIn("changes direction in the air", prompt["8"]["inputs"]["prompt"])
         self.assertIn("vertical fall", prompt["8"]["inputs"]["prompt"])
+        self.assertIn("No slow motion", prompt["8"]["inputs"]["prompt"])
         self.assertIn("祝千三百", prompt["8"]["inputs"]["prompt"])
         self.assertEqual(prompt["8"]["inputs"]["width"], 1344)
         self.assertEqual(prompt["8"]["inputs"]["height"], 768)
@@ -117,7 +118,7 @@ class SakuraQueueTests(unittest.TestCase):
         self.assertNotIn("LoraLoaderModelOnly", kinds)
         self.assertEqual(prompt["6"]["inputs"]["steps"], STEPS)
         self.assertEqual(prompt["6"]["inputs"]["model"], ["4", 0])
-        self.assertEqual(prompt["19"]["inputs"]["filename_prefix"], "video/sakura-fl2va-fly20")
+        self.assertEqual(prompt["19"]["inputs"]["filename_prefix"], "video/sakura-fl2va-speed20")
         self.assertEqual(fl2va_choice(FL2VA_FAST)["steps"], TURBO_STEPS)
         self.assertEqual(fl2va_choice(FL2VA_QUALITY)["wait_minutes"], 90 * STEPS // TURBO_STEPS)
         with self.assertRaises(RemakeError):
