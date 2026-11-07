@@ -91,8 +91,9 @@ class SakuraQueueTests(unittest.TestCase):
         self.assertEqual(prompt["8"]["inputs"]["first_frame"], ["20", 0])
         self.assertEqual(prompt["8"]["inputs"]["last_frame"], ["20", 0])
         self.assertEqual(prompt["20"]["inputs"]["image"], "sakura-04-sword.jpg")
-        self.assertEqual(prompt["8"]["inputs"]["width"], 768)
-        self.assertEqual(prompt["8"]["inputs"]["height"], 1344)
+        self.assertEqual(prompt["8"]["inputs"]["width"], 1344)
+        self.assertEqual(prompt["8"]["inputs"]["height"], 768)
+        self.assertIn("16:9", prompt["8"]["inputs"]["prompt"])
         self.assertNotIn("<Video 1>", prompt["8"]["inputs"]["prompt"])
 
 

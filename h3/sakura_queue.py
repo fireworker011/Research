@@ -23,9 +23,10 @@ from h3.live_remake import (
     STEPS,
     RemakeError,
     align_frames,
+    canvas_for,
     conform_argv,
 )
-from h3.sakura_clip import SOURCE_FRAMES, scaled_marks
+from h3.sakura_clip import SOURCE_FRAMES, SOURCE_HEIGHT, SOURCE_WIDTH, scaled_marks
 
 VIDEO_NAME = "sakura-sword.mp4"
 AUDIO_NAME = "sakura-sword_with-audio.mp4"
@@ -35,10 +36,10 @@ TURBO_STRENGTH = 1.0
 TURBO_STEPS = 8
 # 244 frames is the measured source. H3 accepts 17k+5, so the next legal length is 260.
 FL2VA_FRAMES = align_frames(SOURCE_FRAMES)
-FL2VA_WIDTH = 768
-FL2VA_HEIGHT = 1344
+# Source is 1280x714. H3's wide canvas is 1344x768, the 16:9 768P size.
+FL2VA_WIDTH, FL2VA_HEIGHT = canvas_for(SOURCE_WIDTH, SOURCE_HEIGHT)
 FL2VA_STILL = "sakura-04-sword.jpg"
-FL2VA_STEM = "sakura-fl2va-260"
+FL2VA_STEM = "sakura-fl2va-169"
 FL2VA_NAME = f"{FL2VA_STEM}.mp4"
 STILL_DIR = "/content/drive/MyDrive/動画倉庫/ネタBOX"
 MODELS_DIR = "/content/drive/MyDrive/minimax-h3-comfyui/models"
@@ -225,6 +226,7 @@ def fl2va_prompt() -> str:
         "Photorealistic live-action of the woman in the first frame.",
         "She wears the red and gold floral kimono and flower hairpin from that frame, and she holds a tachi.",
         "The place is the Japanese temple garden in that frame: wooden buildings, cherry trees, a stone path, and daylight.",
+        "The frame is wide 16:9. The temple buildings and the stone path continue to both sides of the woman.",
         "Timeline:",
     ]
     lines.extend(f"[{start:.3f}s-{stop:.3f}s] {text}" for start, stop, text in shots)
