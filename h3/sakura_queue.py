@@ -27,6 +27,17 @@ from h3.sakura_clip import SOURCE_FRAMES
 
 VIDEO_NAME = "sakura-sword.mp4"
 AUDIO_NAME = "sakura-sword_with-audio.mp4"
+FL2VA_UNET = "minimax_h3_fl2va_pruned_int8_convrot.safetensors"
+TURBO_FILE = "minimax_h3_fl2v_turbo_8step_v1.0_768p_comfyui_bf16.safetensors"
+TURBO_STRENGTH = 1.0
+TURBO_STEPS = 8
+FL2VA_FRAMES = 124
+FL2VA_WIDTH = 768
+FL2VA_HEIGHT = 1344
+FL2VA_STILL = "sakura-04-sword.jpg"
+FL2VA_NAME = "sakura-fl2va.mp4"
+STILL_DIR = "/content/drive/MyDrive/動画倉庫/ネタBOX"
+MODELS_DIR = "/content/drive/MyDrive/minimax-h3-comfyui/models"
 
 
 def output_paths(out_dir: str | Path) -> tuple[Path, Path]:
@@ -168,3 +179,122 @@ def build_sakura_prompt(
         nodes[node_id] = {"class_type": "LoadImage", "inputs": {"image": name}}
         nodes["8"]["inputs"][f"ref_images.ref_image_{number}"] = [node_id, 0]
     return nodes
+
+
+def fl2va_prompt() -> str:
+    """Shot text for the still. The source video is not a reference."""
+    return "\n".join(
+        [
+            "Photorealistic live-action of the woman in the first frame.",
+            "She wears the red and gold floral kimono and flower hairpin from that frame, and she holds a tachi.",
+            "The place is the Japanese temple garden in that frame: wooden buildings, cherry trees, a stone path, and daylight.",
+            "Timeline:",
+            "[0.0s-1.0s] She bursts from the opening stance into a dash and draws the tachi. A crimson edge lights the blade.",
+            "[1.0s-2.5s] Three tachi cuts follow: a horizontal slash, an upward thrust, and a spinning cut. Red sword light throws sparks.",
+            "[2.5s-4.0s] She leaves the ground. The tachi cuts downward and the impact hits the stone path.",
+            "[4.0s-5.2s] She lands in the stance of the first frame, with the tachi raised, looking toward the temple gate. Cherry petals move.",
+            "The weapon is a tachi in every moment. No on-screen text, subtitles, logos, or watermarks.",
+            "Audio: steel draws and clashes, sword-light tearing air, and low impacts on stone. No music.",
+        ]
+    )
+
+
+def fl2va_still() -> Path:
+    return Path(STILL_DIR) / FL2VA_STILL
+
+
+def missing_fl2va() -> list[str]:
+    """The still, the FL2VA weight, and the 8-step LoRA. Nothing is downloaded."""
+    paths = [
+        fl2va_still(),
+        Path(MODELS_DIR) / "diffusion_models" / FL2VA_UNET,
+        Path(MODELS_DIR) / "loras" / TURBO_FILE,
+    ]
+    return [str(path) for path in paths if not path.is_file()]
+
+
+def fl2va_output_path(out_dir: str | Path) -> Path:
+    """Destination for the stills clip. An existing file is left where it is."""
+    video = Path(out_dir) / FL2VA_NAME
+    if video.exists():
+        raise RemakeError(f"既にあるので上書きしない: {video}")
+    return video
+
+
+def build_fl2va_prompt(*, image_file: str, video_vae: str, seed: int = 1) -> dict[str, dict[str, Any]]:
+    """First and last frame are the sword still. No reference video."""
+    model_ref: list[object] = ["30", 0]
+    return {
+        "1": {
+            "class_type": "CLIPLoader",
+            "inputs": {"clip_name": CLIP_FILE, "type": CLIP_TYPE, "device": "default"},
+        },
+        "2": {"class_type": "VAELoader", "inputs": {"vae_name": video_vae}},
+        "3": {"class_type": "VAELoader", "inputs": {"vae_name": AUDIO_VAE}},
+        "4": {
+            "class_type": "UNETLoader",
+            "inputs": {"unet_name": FL2VA_UNET, "weight_dtype": "default"},
+        },
+        "5": {"class_type": "KSamplerSelect", "inputs": {"sampler_name": SAMPLER}},
+        "6": {
+            "class_type": "BasicScheduler",
+            "inputs": {
+                "model": model_ref,
+                "scheduler": SCHEDULER,
+                "steps": TURBO_STEPS,
+                "denoise": DENOISE,
+            },
+        },
+        "7": {"class_type": "RandomNoise", "inputs": {"noise_seed": int(seed)}},
+        "8": {
+            "class_type": "MiniMaxH3ImageToVideo",
+            "inputs": {
+                "clip": ["1", 0],
+                "vae": ["2", 0],
+                "first_frame": ["20", 0],
+                "last_frame": ["20", 0],
+                "prompt": fl2va_prompt(),
+                "width": FL2VA_WIDTH,
+                "height": FL2VA_HEIGHT,
+                "length": FL2VA_FRAMES,
+            },
+        },
+        "14": {
+            "class_type": "BasicGuider",
+            "inputs": {"model": model_ref, "conditioning": ["8", 0]},
+        },
+        "15": {
+            "class_type": "SamplerCustomAdvanced",
+            "inputs": {
+                "noise": ["7", 0],
+                "guider": ["14", 0],
+                "sampler": ["5", 0],
+                "sigmas": ["6", 0],
+                "latent_image": ["8", 1],
+            },
+        },
+        "16": {"class_type": "VAEDecode", "inputs": {"samples": ["15", 0], "vae": ["2", 0]}},
+        "17": {"class_type": "VAEDecodeAudio", "inputs": {"samples": ["15", 0], "vae": ["3", 0]}},
+        "18": {
+            "class_type": "CreateVideo",
+            "inputs": {"images": ["16", 0], "fps": 24, "audio": ["17", 0]},
+        },
+        "19": {
+            "class_type": "SaveVideo",
+            "inputs": {
+                "video": ["18", 0],
+                "filename_prefix": "video/sakura-fl2va",
+                "format": "mp4",
+                "codec": "auto",
+            },
+        },
+        "20": {"class_type": "LoadImage", "inputs": {"image": image_file}},
+        "30": {
+            "class_type": "LoraLoaderModelOnly",
+            "inputs": {
+                "model": ["4", 0],
+                "lora_name": TURBO_FILE,
+                "strength_model": TURBO_STRENGTH,
+            },
+        },
+    }

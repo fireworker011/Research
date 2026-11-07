@@ -8,7 +8,17 @@ from pathlib import Path
 
 from h3.live_remake import RemakeError
 from h3.sakura_clip import SOURCE_FRAMES, build_plan
-from h3.sakura_queue import build_sakura_prompt, missing_paths, output_paths, reference_argv
+from h3.sakura_queue import (
+    FL2VA_FRAMES,
+    FL2VA_UNET,
+    TURBO_FILE,
+    TURBO_STEPS,
+    build_fl2va_prompt,
+    build_sakura_prompt,
+    missing_paths,
+    output_paths,
+    reference_argv,
+)
 
 
 class SakuraQueueTests(unittest.TestCase):
@@ -60,6 +70,27 @@ class SakuraQueueTests(unittest.TestCase):
         self.assertIn(plan["pictures"][0]["path"], absent)
         self.assertIn(plan["video"], absent)
         self.assertTrue(any(item.endswith("H3_Combat_V2.safetensors") for item in absent))
+
+    def test_fl2va_uses_the_sword_still_and_the_8_step_lora(self) -> None:
+        prompt = build_fl2va_prompt(
+            image_file="sakura-04-sword.jpg",
+            video_vae="minimax_h3_video_vae_fp16.safetensors",
+            seed=8,
+        )
+        kinds = [item["class_type"] for item in prompt.values()]
+        self.assertIn("MiniMaxH3ImageToVideo", kinds)
+        self.assertNotIn("LoadVideo", kinds)
+        self.assertEqual(prompt["4"]["inputs"]["unet_name"], FL2VA_UNET)
+        self.assertEqual(prompt["30"]["inputs"]["lora_name"], TURBO_FILE)
+        self.assertEqual(prompt["30"]["inputs"]["strength_model"], 1.0)
+        self.assertEqual(prompt["6"]["inputs"]["steps"], TURBO_STEPS)
+        self.assertEqual(prompt["8"]["inputs"]["length"], FL2VA_FRAMES)
+        self.assertEqual(prompt["8"]["inputs"]["first_frame"], ["20", 0])
+        self.assertEqual(prompt["8"]["inputs"]["last_frame"], ["20", 0])
+        self.assertEqual(prompt["20"]["inputs"]["image"], "sakura-04-sword.jpg")
+        self.assertEqual(prompt["8"]["inputs"]["width"], 768)
+        self.assertEqual(prompt["8"]["inputs"]["height"], 1344)
+        self.assertNotIn("<Video 1>", prompt["8"]["inputs"]["prompt"])
 
 
 if __name__ == "__main__":
