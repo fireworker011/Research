@@ -195,7 +195,8 @@ def mux_source_audio_argv(video: str, source: str, start_s: float, frames: int, 
 
 
 def history_video(history_item: Mapping[str, Any]) -> str | None:
-    """Filename of the first mp4 recorded on a Comfy history item."""
+    """Saved mp4 from a Comfy history item. An input video is left out."""
+    found: list[Mapping[str, Any]] = []
     for node in (history_item.get("outputs") or {}).values():
         if not isinstance(node, Mapping):
             continue
@@ -204,8 +205,15 @@ def history_video(history_item: Mapping[str, Any]) -> str | None:
                 continue
             for item in value:
                 if isinstance(item, Mapping) and str(item.get("filename") or "").endswith(".mp4"):
-                    return str(item["filename"])
-    return None
+                    found.append(item)
+    outputs = [item for item in found if item.get("type") == "output"]
+    chosen = outputs or [item for item in found if item.get("type") != "input"]
+    if not chosen:
+        return None
+    item = chosen[-1]
+    name = str(item["filename"])
+    subfolder = str(item.get("subfolder") or "").strip("/\\")
+    return f"{subfolder}/{name}" if subfolder else name
 
 
 def finished_history(body: Mapping[str, Any], prompt_id: str) -> dict[str, Any] | None:
