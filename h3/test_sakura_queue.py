@@ -76,7 +76,8 @@ class SakuraQueueTests(unittest.TestCase):
 
     def test_fl2va_uses_the_sword_still_and_the_8_step_lora(self) -> None:
         prompt = build_fl2va_prompt(
-            image_file="sakura-04-sword.jpg",
+            first_file="sakura-16x9-open.jpg",
+            last_file="sakura-16x9-yokai-end.jpg",
             video_vae="minimax_h3_video_vae_fp16.safetensors",
             seed=8,
         )
@@ -92,17 +93,23 @@ class SakuraQueueTests(unittest.TestCase):
         self.assertIn("[0.000s-0.678s]", prompt["8"]["inputs"]["prompt"])
         self.assertIn("[8.133s-10.833s]", prompt["8"]["inputs"]["prompt"])
         self.assertEqual(prompt["8"]["inputs"]["first_frame"], ["20", 0])
-        self.assertEqual(prompt["8"]["inputs"]["last_frame"], ["20", 0])
-        self.assertEqual(prompt["20"]["inputs"]["image"], "sakura-04-sword.jpg")
+        self.assertEqual(prompt["8"]["inputs"]["last_frame"], ["21", 0])
+        self.assertEqual(prompt["20"]["inputs"]["image"], "sakura-16x9-open.jpg")
+        self.assertEqual(prompt["21"]["inputs"]["image"], "sakura-16x9-yokai-end.jpg")
+        self.assertIn("leaves the ground", prompt["8"]["inputs"]["prompt"])
+        self.assertIn("changes direction in the air", prompt["8"]["inputs"]["prompt"])
+        self.assertIn("vertical fall", prompt["8"]["inputs"]["prompt"])
+        self.assertIn("祝千三百", prompt["8"]["inputs"]["prompt"])
         self.assertEqual(prompt["8"]["inputs"]["width"], 1344)
         self.assertEqual(prompt["8"]["inputs"]["height"], 768)
         self.assertIn("16:9", prompt["8"]["inputs"]["prompt"])
-        self.assertIn("giant yokai", prompt["8"]["inputs"]["prompt"])
+        self.assertIn("horned yokai", prompt["8"]["inputs"]["prompt"])
         self.assertNotIn("<Video 1>", prompt["8"]["inputs"]["prompt"])
 
     def test_quality_mode_drops_the_turbo_lora(self) -> None:
         prompt = build_fl2va_prompt(
-            image_file="sakura-04-sword.jpg",
+            first_file="sakura-16x9-open.jpg",
+            last_file="sakura-16x9-yokai-end.jpg",
             video_vae="minimax_h3_video_vae_fp16.safetensors",
             mode=FL2VA_QUALITY,
         )
@@ -110,7 +117,7 @@ class SakuraQueueTests(unittest.TestCase):
         self.assertNotIn("LoraLoaderModelOnly", kinds)
         self.assertEqual(prompt["6"]["inputs"]["steps"], STEPS)
         self.assertEqual(prompt["6"]["inputs"]["model"], ["4", 0])
-        self.assertEqual(prompt["19"]["inputs"]["filename_prefix"], "video/sakura-fl2va-yokai20")
+        self.assertEqual(prompt["19"]["inputs"]["filename_prefix"], "video/sakura-fl2va-fly20")
         self.assertEqual(fl2va_choice(FL2VA_FAST)["steps"], TURBO_STEPS)
         self.assertEqual(fl2va_choice(FL2VA_QUALITY)["wait_minutes"], 90 * STEPS // TURBO_STEPS)
         with self.assertRaises(RemakeError):

@@ -38,10 +38,11 @@ TURBO_STEPS = 8
 FL2VA_FRAMES = align_frames(SOURCE_FRAMES)
 # Source is 1280x714. H3's wide canvas is 1344x768, the 16:9 768P size.
 FL2VA_WIDTH, FL2VA_HEIGHT = canvas_for(SOURCE_WIDTH, SOURCE_HEIGHT)
-FL2VA_STILL = "sakura-04-sword.jpg"
+FL2VA_FIRST = "sakura-16x9-open.jpg"
+FL2VA_LAST = "sakura-16x9-yokai-end.jpg"
 FL2VA_FAST = "速い 8step"
 FL2VA_QUALITY = "きれい 20step"
-FL2VA_STEM = "sakura-fl2va-yokai8"
+FL2VA_STEM = "sakura-fl2va-fly8"
 FL2VA_NAME = f"{FL2VA_STEM}.mp4"
 STILL_DIR = "/content/drive/MyDrive/動画倉庫/ネタBOX"
 MODELS_DIR = "/content/drive/MyDrive/minimax-h3-comfyui/models"
@@ -189,60 +190,75 @@ def build_sakura_prompt(
 
 
 def fl2va_prompt() -> str:
-    """Shot text on the measured clock. The source video is not a reference."""
+    """The measured sword beats, aimed at the yokai, ending on the last frame."""
     marks = scaled_marks()
     end = FL2VA_FRAMES / FPS
     shots = (
         (
             marks[0],
             marks[1],
-            "A giant yokai, taller than the temple gate, looms on the stone path. She bursts from the opening stance, dashes in, and draws the tachi. A crimson edge lights the blade.",
+            "Extreme low angle on the stone path. Within the first moment she bursts from a still stance into a fast dash. "
+            "The path cracks under her feet and debris kicks outward. Her hair and the red and gold kimono stream backward. "
+            "She draws the tachi. The camera closes on the blade and a crimson edge lights the steel. "
+            "Ahead of her is the giant horned yokai from the last frame, taller than the temple gate.",
         ),
         (
             marks[1],
             marks[2],
-            "Three tachi cuts land on the giant yokai: a horizontal slash across its body, an upward thrust, and a spinning cut. Red sword light and sparks burst from each hit.",
+            "The camera tracks. Close strikes pass her with no pause, then the pace doubles. She stays low and leaves afterimages. "
+            "Three tachi cuts hit the yokai: a horizontal slash, an upward thrust, and a spinning cut. "
+            "The blade weaves a net of red light and throws sparks.",
         ),
         (
             marks[2],
             marks[3],
-            "She leaves the ground and brings the tachi down onto the giant yokai. The impact drives the yokai toward the stone path.",
+            "Wide low angle. She leaves the ground in one motion and stays in the air. "
+            "The tachi cuts a scarlet arc and releases a cone of red sword light downward onto the yokai. "
+            "The impact hits. The camera shakes. The weapon remains the tachi.",
         ),
         (
             marks[3],
             marks[4],
-            "The giant yokai swings back. She turns in the air and thrusts the tachi through that swing. Red sword-light afterimages cross the temple garden.",
+            "The camera circles her once while she is airborne, then comes close. "
+            "She turns, changes direction in the air, and thrusts at the yokai. "
+            "Red sword-light afterimages cross the temple garden. She does not land.",
         ),
         (
             marks[4],
             marks[5],
-            "She blocks a heavy blow from the giant yokai and answers with one tachi thrust, then one crescent of red sword light that cuts the yokai down.",
+            "She is still in the air. A vertical fall starts. She blocks a heavy strike from the yokai and answers with one tachi thrust. "
+            "She breaks through the blow and keeps the tachi raised.",
         ),
         (
             marks[5],
             end,
-            "The giant yokai falls and is still. She lands in the stance of the first frame, tachi raised, looking toward the temple gate. Cherry petals move.",
+            "The camera pulls wide and drops to the last frame: cherry trees on both sides, lanterns, and the giant white-maned horned yokai filling the courtyard. "
+            "She comes down through that frame and cuts the yokai down with one full slash of the tachi. "
+            "The yokai falls into the pose of the last frame. She finishes small in front of it, tachi raised into its body. "
+            "The golden characters 祝千三百 stand in the sky as in the last frame.",
         ),
     )
     lines = [
-        "Photorealistic live-action of the woman in the first frame.",
-        "She wears the red and gold floral kimono and flower hairpin from that frame, and she holds a tachi.",
-        "The place is the Japanese temple garden in that frame: wooden buildings, cherry trees, a stone path, and daylight.",
-        "The frame is wide 16:9. The temple buildings and the stone path continue to both sides of the woman.",
+        "Photorealistic live-action. The woman, the tachi, and the temple corridor are the first frame.",
+        "The giant yokai and the final wide view are the last frame.",
+        "She wears the red and gold floral kimono and flower hairpin from the first frame, and she holds a tachi.",
+        "The place is that Japanese temple garden, wide 16:9.",
+        "She is airborne from the wide low-angle takeoff through the vertical fall. She meets the ground only on the final slash.",
         "Timeline:",
     ]
     lines.extend(f"[{start:.3f}s-{stop:.3f}s] {text}" for start, stop, text in shots)
     lines.extend(
         [
-            "The weapon is a tachi in every moment. No on-screen text, subtitles, logos, or watermarks.",
+            "The weapon is a tachi in every moment. The last moment matches the last frame, including the golden characters 祝千三百.",
+            "No other subtitles, logos, or watermarks.",
             "Audio: steel draws and clashes, sword-light tearing air, and low impacts on stone. No music.",
         ]
     )
     return "\n".join(lines)
 
 
-def fl2va_still() -> Path:
-    return Path(STILL_DIR) / FL2VA_STILL
+def fl2va_still_names() -> tuple[str, str]:
+    return (FL2VA_FIRST, FL2VA_LAST)
 
 
 def fl2va_choice(mode: str = FL2VA_FAST) -> dict[str, Any]:
@@ -260,8 +276,8 @@ def fl2va_choice(mode: str = FL2VA_FAST) -> dict[str, Any]:
             "steps": STEPS,
             "lora": None,
             "strength": 0.0,
-            "stem": "sakura-fl2va-yokai20",
-            "name": "sakura-fl2va-yokai20.mp4",
+            "stem": "sakura-fl2va-fly20",
+            "name": "sakura-fl2va-fly20.mp4",
             "wait_minutes": 90 * STEPS // TURBO_STEPS,
         },
     }
@@ -271,11 +287,13 @@ def fl2va_choice(mode: str = FL2VA_FAST) -> dict[str, Any]:
         raise RemakeError(f"画質の選択が違う: {mode}") from exc
 
 
-def missing_fl2va(mode: str = FL2VA_FAST) -> list[str]:
-    """The still, the FL2VA weight, and the 8-step LoRA when that mode is selected."""
+def missing_fl2va(mode: str = FL2VA_FAST, still_dir: str | Path | None = None) -> list[str]:
+    """Both stills, the FL2VA weight, and the 8-step LoRA when that mode is selected."""
     choice = fl2va_choice(mode)
+    folder = Path(still_dir) if still_dir is not None else Path(STILL_DIR)
     paths = [
-        fl2va_still(),
+        folder / FL2VA_FIRST,
+        folder / FL2VA_LAST,
         Path(MODELS_DIR) / "diffusion_models" / FL2VA_UNET,
     ]
     if choice["lora"]:
@@ -292,9 +310,14 @@ def fl2va_output_path(out_dir: str | Path, mode: str = FL2VA_FAST) -> Path:
 
 
 def build_fl2va_prompt(
-    *, image_file: str, video_vae: str, seed: int = 1, mode: str = FL2VA_FAST
+    *,
+    first_file: str,
+    last_file: str,
+    video_vae: str,
+    seed: int = 1,
+    mode: str = FL2VA_FAST,
 ) -> dict[str, dict[str, Any]]:
-    """First and last frame are the sword still. No reference video."""
+    """The open still starts the clip. The yokai still is the last frame."""
     choice = fl2va_choice(mode)
     model_ref: list[object] = ["30", 0] if choice["lora"] else ["4", 0]
     nodes = {
@@ -325,7 +348,7 @@ def build_fl2va_prompt(
                 "clip": ["1", 0],
                 "vae": ["2", 0],
                 "first_frame": ["20", 0],
-                "last_frame": ["20", 0],
+                "last_frame": ["21", 0],
                 "prompt": fl2va_prompt(),
                 "width": FL2VA_WIDTH,
                 "height": FL2VA_HEIGHT,
@@ -361,7 +384,8 @@ def build_fl2va_prompt(
                 "codec": "auto",
             },
         },
-        "20": {"class_type": "LoadImage", "inputs": {"image": image_file}},
+        "20": {"class_type": "LoadImage", "inputs": {"image": first_file}},
+        "21": {"class_type": "LoadImage", "inputs": {"image": last_file}},
     }
     if choice["lora"]:
         nodes["30"] = {
