@@ -6,15 +6,18 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from h3.live_remake import RemakeError
+from h3.live_remake import STEPS, RemakeError
 from h3.sakura_clip import SOURCE_FRAMES, build_plan
 from h3.sakura_queue import (
+    FL2VA_FAST,
     FL2VA_FRAMES,
+    FL2VA_QUALITY,
     FL2VA_UNET,
     TURBO_FILE,
     TURBO_STEPS,
     build_fl2va_prompt,
     build_sakura_prompt,
+    fl2va_choice,
     missing_paths,
     output_paths,
     reference_argv,
@@ -94,7 +97,24 @@ class SakuraQueueTests(unittest.TestCase):
         self.assertEqual(prompt["8"]["inputs"]["width"], 1344)
         self.assertEqual(prompt["8"]["inputs"]["height"], 768)
         self.assertIn("16:9", prompt["8"]["inputs"]["prompt"])
+        self.assertIn("giant yokai", prompt["8"]["inputs"]["prompt"])
         self.assertNotIn("<Video 1>", prompt["8"]["inputs"]["prompt"])
+
+    def test_quality_mode_drops_the_turbo_lora(self) -> None:
+        prompt = build_fl2va_prompt(
+            image_file="sakura-04-sword.jpg",
+            video_vae="minimax_h3_video_vae_fp16.safetensors",
+            mode=FL2VA_QUALITY,
+        )
+        kinds = [item["class_type"] for item in prompt.values()]
+        self.assertNotIn("LoraLoaderModelOnly", kinds)
+        self.assertEqual(prompt["6"]["inputs"]["steps"], STEPS)
+        self.assertEqual(prompt["6"]["inputs"]["model"], ["4", 0])
+        self.assertEqual(prompt["19"]["inputs"]["filename_prefix"], "video/sakura-fl2va-yokai20")
+        self.assertEqual(fl2va_choice(FL2VA_FAST)["steps"], TURBO_STEPS)
+        self.assertEqual(fl2va_choice(FL2VA_QUALITY)["wait_minutes"], 90 * STEPS // TURBO_STEPS)
+        with self.assertRaises(RemakeError):
+            fl2va_choice("other")
 
 
 if __name__ == "__main__":

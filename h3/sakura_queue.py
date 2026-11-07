@@ -39,7 +39,9 @@ FL2VA_FRAMES = align_frames(SOURCE_FRAMES)
 # Source is 1280x714. H3's wide canvas is 1344x768, the 16:9 768P size.
 FL2VA_WIDTH, FL2VA_HEIGHT = canvas_for(SOURCE_WIDTH, SOURCE_HEIGHT)
 FL2VA_STILL = "sakura-04-sword.jpg"
-FL2VA_STEM = "sakura-fl2va-169"
+FL2VA_FAST = "速い 8step"
+FL2VA_QUALITY = "きれい 20step"
+FL2VA_STEM = "sakura-fl2va-yokai8"
 FL2VA_NAME = f"{FL2VA_STEM}.mp4"
 STILL_DIR = "/content/drive/MyDrive/動画倉庫/ネタBOX"
 MODELS_DIR = "/content/drive/MyDrive/minimax-h3-comfyui/models"
@@ -194,32 +196,32 @@ def fl2va_prompt() -> str:
         (
             marks[0],
             marks[1],
-            "She bursts from the opening stance into a dash and draws the tachi. A crimson edge lights the blade.",
+            "A giant yokai, taller than the temple gate, looms on the stone path. She bursts from the opening stance, dashes in, and draws the tachi. A crimson edge lights the blade.",
         ),
         (
             marks[1],
             marks[2],
-            "Three tachi cuts follow: a horizontal slash, an upward thrust, and a spinning cut. Red sword light throws sparks.",
+            "Three tachi cuts land on the giant yokai: a horizontal slash across its body, an upward thrust, and a spinning cut. Red sword light and sparks burst from each hit.",
         ),
         (
             marks[2],
             marks[3],
-            "She leaves the ground. The tachi cuts downward and the impact hits the stone path.",
+            "She leaves the ground and brings the tachi down onto the giant yokai. The impact drives the yokai toward the stone path.",
         ),
         (
             marks[3],
             marks[4],
-            "The camera circles her once. She turns in the air and thrusts. Red sword-light afterimages cross the temple garden.",
+            "The giant yokai swings back. She turns in the air and thrusts the tachi through that swing. Red sword-light afterimages cross the temple garden.",
         ),
         (
             marks[4],
             marks[5],
-            "She blocks a heavy strike and answers with one tachi thrust, then swings one crescent of red sword light.",
+            "She blocks a heavy blow from the giant yokai and answers with one tachi thrust, then one crescent of red sword light that cuts the yokai down.",
         ),
         (
             marks[5],
             end,
-            "She lands in the stance of the first frame, tachi raised, looking toward the temple gate. Cherry petals move.",
+            "The giant yokai falls and is still. She lands in the stance of the first frame, tachi raised, looking toward the temple gate. Cherry petals move.",
         ),
     )
     lines = [
@@ -243,28 +245,59 @@ def fl2va_still() -> Path:
     return Path(STILL_DIR) / FL2VA_STILL
 
 
-def missing_fl2va() -> list[str]:
-    """The still, the FL2VA weight, and the 8-step LoRA. Nothing is downloaded."""
+def fl2va_choice(mode: str = FL2VA_FAST) -> dict[str, Any]:
+    """Fast keeps the 8-step LoRA. Quality is the official 20 steps with that LoRA off."""
+    table = {
+        FL2VA_FAST: {
+            "steps": TURBO_STEPS,
+            "lora": TURBO_FILE,
+            "strength": TURBO_STRENGTH,
+            "stem": FL2VA_STEM,
+            "name": FL2VA_NAME,
+            "wait_minutes": 90,
+        },
+        FL2VA_QUALITY: {
+            "steps": STEPS,
+            "lora": None,
+            "strength": 0.0,
+            "stem": "sakura-fl2va-yokai20",
+            "name": "sakura-fl2va-yokai20.mp4",
+            "wait_minutes": 90 * STEPS // TURBO_STEPS,
+        },
+    }
+    try:
+        return table[mode]
+    except KeyError as exc:
+        raise RemakeError(f"画質の選択が違う: {mode}") from exc
+
+
+def missing_fl2va(mode: str = FL2VA_FAST) -> list[str]:
+    """The still, the FL2VA weight, and the 8-step LoRA when that mode is selected."""
+    choice = fl2va_choice(mode)
     paths = [
         fl2va_still(),
         Path(MODELS_DIR) / "diffusion_models" / FL2VA_UNET,
-        Path(MODELS_DIR) / "loras" / TURBO_FILE,
     ]
+    if choice["lora"]:
+        paths.append(Path(MODELS_DIR) / "loras" / str(choice["lora"]))
     return [str(path) for path in paths if not path.is_file()]
 
 
-def fl2va_output_path(out_dir: str | Path) -> Path:
-    """Destination for the stills clip. An existing file is left where it is."""
-    video = Path(out_dir) / FL2VA_NAME
+def fl2va_output_path(out_dir: str | Path, mode: str = FL2VA_FAST) -> Path:
+    """Destination for the selected mode. An existing file is left where it is."""
+    video = Path(out_dir) / str(fl2va_choice(mode)["name"])
     if video.exists():
         raise RemakeError(f"既にあるので上書きしない: {video}")
     return video
 
 
-def build_fl2va_prompt(*, image_file: str, video_vae: str, seed: int = 1) -> dict[str, dict[str, Any]]:
+def build_fl2va_prompt(
+    *, image_file: str, video_vae: str, seed: int = 1, mode: str = FL2VA_FAST
+) -> dict[str, dict[str, Any]]:
     """First and last frame are the sword still. No reference video."""
-    model_ref: list[object] = ["30", 0]
-    return {
+    choice = fl2va_choice(mode)
+    model_ref: list[object] = ["30", 0] if choice["lora"] else ["4", 0]
+    nodes = {
         "1": {
             "class_type": "CLIPLoader",
             "inputs": {"clip_name": CLIP_FILE, "type": CLIP_TYPE, "device": "default"},
@@ -281,7 +314,7 @@ def build_fl2va_prompt(*, image_file: str, video_vae: str, seed: int = 1) -> dic
             "inputs": {
                 "model": model_ref,
                 "scheduler": SCHEDULER,
-                "steps": TURBO_STEPS,
+                "steps": int(choice["steps"]),
                 "denoise": DENOISE,
             },
         },
@@ -323,18 +356,20 @@ def build_fl2va_prompt(*, image_file: str, video_vae: str, seed: int = 1) -> dic
             "class_type": "SaveVideo",
             "inputs": {
                 "video": ["18", 0],
-                "filename_prefix": f"video/{FL2VA_STEM}",
+                "filename_prefix": f"video/{choice['stem']}",
                 "format": "mp4",
                 "codec": "auto",
             },
         },
         "20": {"class_type": "LoadImage", "inputs": {"image": image_file}},
-        "30": {
+    }
+    if choice["lora"]:
+        nodes["30"] = {
             "class_type": "LoraLoaderModelOnly",
             "inputs": {
                 "model": ["4", 0],
-                "lora_name": TURBO_FILE,
-                "strength_model": TURBO_STRENGTH,
+                "lora_name": choice["lora"],
+                "strength_model": choice["strength"],
             },
-        },
-    }
+        }
+    return nodes
