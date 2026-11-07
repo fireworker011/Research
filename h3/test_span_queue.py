@@ -153,6 +153,25 @@ class QueueTests(unittest.TestCase):
         name = history_video({"outputs": {"19": {"videos": [{"filename": "span-01_00001_.mp4"}]}}})
         self.assertEqual(name, "span-01_00001_.mp4")
 
+    def test_history_skips_the_input_video(self) -> None:
+        name = history_video(
+            {
+                "outputs": {
+                    "12": {"videos": [{"filename": "sakura-ref.mp4", "type": "input"}]},
+                    "19": {
+                        "videos": [
+                            {
+                                "filename": "sakura-sword_00001_.mp4",
+                                "subfolder": "video",
+                                "type": "output",
+                            }
+                        ]
+                    },
+                }
+            }
+        )
+        self.assertEqual(name, "video/sakura-sword_00001_.mp4")
+
 
 if __name__ == "__main__":
     unittest.main()
