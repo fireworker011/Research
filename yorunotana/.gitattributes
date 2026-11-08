@@ -1,0 +1,3 @@
+ORDER-20261109-0634.md -text
+jobs/*.json -text
+build-yorunotana.ps1 -text
