@@ -94,3 +94,13 @@
 - [ai-affi/ai-affi-tiktokshop-plan-20261107.md](ai-affi/ai-affi-tiktokshop-plan-20261107.md) | TikTok Shop プラン全文
 
 <!-- ai-affi 2026-11-08 end -->
+
+<!-- doujin-genre-platform 2026-11-08 begin -->
+
+## 2026-11-08 同人CG集・同人ゲームのジャンル×プラットフォーム
+
+公開ページの実測だけ。販売数と作品数は分けてある。
+
+- [doujin-genre-platform-2026-11-08.md](doujin-genre-platform-2026-11-08.md)
+
+<!-- doujin-genre-platform 2026-11-08 end -->
