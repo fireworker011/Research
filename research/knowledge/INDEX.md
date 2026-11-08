@@ -82,3 +82,15 @@
 - [電力乗り換え](affi-genres/electricity-switch.md)
 
 <!-- affi-genres 2026-10-12 end -->
+
+<!-- ai-affi 2026-11-08 begin -->
+
+## 2026-11-08 AIアフィ講座係（TikTok Shop）
+
+元ファイルを中身を変えずに置いた。
+
+- [ai-affi/ai-affi-summary-for-douga-20261108.md](ai-affi/ai-affi-summary-for-douga-20261108.md) | 動画部隊長向けの1枚まとめ
+- [ai-affi/ai-affiliate-roadmap-SKILL.md](ai-affi/ai-affiliate-roadmap-SKILL.md) | スキル ai-affiliate-roadmap 全文
+- [ai-affi/ai-affi-tiktokshop-plan-20261107.md](ai-affi/ai-affi-tiktokshop-plan-20261107.md) | TikTok Shop プラン全文
+
+<!-- ai-affi 2026-11-08 end -->
