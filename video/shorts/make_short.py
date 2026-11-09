@@ -1301,7 +1301,7 @@ def build(
         integrated, true_peak = measure_loudness(out)
         code, checker_text = run_checker(line, profile, out)
     notes.append(f"音量のやり直し: {fixes} 回（上限 3）。loudnorm は2パス、TP=-1.5、linear=true。BGM は自作の正弦波で、声の約15%。")
-    notes.append("投稿・公開はしていない。A8 の URL は置いていない。金メモの実額は未実装。本人の確認待ち。")
+    notes.append("投稿・公開はしていない。A8 の URL は置いていない。金メモの実額は出してよい（2026-11-10 確認）。")
     write_sources(sources, doc.scenes, jobs, dry=dry)
     write_review(ROOT / "review" / script_path.stem, out, checker_text, sources)
     print(checker_text, end="" if checker_text.endswith("\n") else "\n")

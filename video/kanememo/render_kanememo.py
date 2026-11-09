@@ -2,7 +2,8 @@
 """金メモの試作。表は1枚に描く。BGMは自作で、音量は声の約15%。
 
 画面にクレジットを焼く。猫の切り抜き合成はしない。尺は10.5秒。
-PRと商品名は入れない。円はダミー（100、200、300）で、公式の額ではない。
+PRと商品名は入れない。金メモの実額は出してよい（2026-11-10 確認）。
+--amount で渡した円をそのまま焼く。未指定の 100、200、300 は見本で、公式の額ではない。
 """
 
 from __future__ import annotations
@@ -52,7 +53,7 @@ def paint_flat() -> Canvas:
     return canvas
 
 
-def render(out: Path, bgm: bool) -> None:
+def render(out: Path, bgm: bool, amounts: tuple[str, str, str] | None = None) -> None:
     out.parent.mkdir(parents=True, exist_ok=True)
     with tempfile.TemporaryDirectory(prefix="kanememo-") as folder:
         root = Path(folder)
@@ -62,9 +63,9 @@ def render(out: Path, bgm: bool) -> None:
         write_wav(audio, SECONDS, [(0.0, 1.4), (2.0, 8.4)], bgm)
         lines = {
             "head": "いくら納める？\n",
-            "row1": "区分A  100\n",
-            "row2": "区分B  200\n",
-            "row3": "区分C  300\n",
+            "row1": f"区分A  {amounts[0] if amounts else '100'}\n",
+            "row2": f"区分B  {amounts[1] if amounts else '200'}\n",
+            "row3": f"区分C  {amounts[2] if amounts else '300'}\n",
             "conclusion": "結論: 表の3行。\n",
             "credit": "BGM: 自作\n",
         }
@@ -122,8 +123,14 @@ def main() -> None:
     parser = argparse.ArgumentParser(description="金メモの表と自作BGM")
     parser.add_argument("--out", type=Path, required=True)
     parser.add_argument("--no-bgm", action="store_true")
+    parser.add_argument("--amount", action="append", help="表の円。3つ。金メモの実額をそのまま焼く")
     args = parser.parse_args()
-    render(args.out, bgm=not args.no_bgm)
+    amounts = None
+    if args.amount:
+        if len(args.amount) != 3:
+            parser.error("--amount は3つ")
+        amounts = (args.amount[0], args.amount[1], args.amount[2])
+    render(args.out, bgm=not args.no_bgm, amounts=amounts)
 
 
 if __name__ == "__main__":

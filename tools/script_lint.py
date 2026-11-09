@@ -46,6 +46,7 @@ TAIL_SENTENCE = "しっぽは体につながった1本。"
 AFFILIATE_LINE = "アフィリエイト広告を含みます"
 HOOK_MARKS = ("0\u301c1秒フック", "0\uff5e1秒フック")
 BANNED_WORDS = ("必ず稼げる", "若返る", "治る", "絶対", "必ず")
+MONEY_RE = re.compile(r"\d[\d,]*\s*円|\d+\s*万\s*円")
 OPEN_PR = "{\\an9}PR"
 HOOK_TAG = "{\\an8}"
 SPEED_MARK = "等倍（+0%）"
@@ -376,6 +377,22 @@ def check_pr(cues: list[Cue], lane: str, name: str = "") -> str:
             return "FAIL（PRなしのラインにPRがある）"
         return "PASS（PRなし）"
     return "FAIL（レーン不明）"
+
+
+def check_money(name: str, text: str) -> str:
+    """金額のような数字。金メモだけ実額を出してよい。他のラインは不合格。"""
+    hits: list[str] = []
+    for match in MONEY_RE.finditer(text):
+        found = match.group(0)
+        if found not in hits:
+            hits.append(found)
+    if "金メモ" in name:
+        if hits:
+            return "PASS（実額は出してよい: " + "、".join(hits) + "）"
+        return "PASS（金額なし）"
+    if not hits:
+        return "PASS"
+    return "FAIL（" + "、".join(hits) + "）"
 
 
 def check_banned(md_spoken: str, srt_text: str | None) -> str:
@@ -741,6 +758,9 @@ def lint_texts(name: str, md: str | None, srt: str | None) -> Row:
         pr = "FAIL（アフィリエイト広告を含みます）"
 
     banned = check_banned(spoken, None if srt is None else srt_body)
+    money = check_money(name, spoken + "\n" + srt_body)
+    if money.startswith("FAIL"):
+        banned = money if banned.startswith("PASS") else banned + "、" + money.removeprefix("FAIL（").removesuffix("）")
     table = check_table("" if md is None else md_body)
     timing = check_timing(cues, name)
     prompts = check_prompts("" if md is None else md_body, cues, name)
@@ -1245,6 +1265,12 @@ def self_test(fixtures: Path, repo: Path) -> bool:
         "結論の1文が必須",
         missing_conclusion.conclusion,
     ) and ok
+    print()
+    print("金額:")
+    kane_money = check_money("2026-11-10-金メモ-gaku", "納める額は15000円。")
+    pet_money = check_money("2026-11-10-ペット-gaku", "料金は15000円。")
+    ok = expect(kane_money.startswith("PASS") and "15000円" in kane_money, "金メモの実額は合格", kane_money) and ok
+    ok = expect(pet_money.startswith("FAIL") and "15000円" in pet_money, "ペットの金額は不合格", pet_money) and ok
 
     print()
     print("自己テスト: " + ("OK" if ok else "NG"))
@@ -1255,7 +1281,15 @@ def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description="台本 md と SRT のチェッカー")
     parser.add_argument("root", nargs="?", help="scripts/ と subs/ があるディレクトリ")
     parser.add_argument("--self-test", action="store_true", help="壊したSRT 3つと境界を確認する")
+    parser.add_argument("--money-name", help="金額チェックの台本名。金メモだけ実額を通す")
+    parser.add_argument("--money-text", help="金額チェックの本文")
     args = parser.parse_args(argv)
+    if args.money_name is not None or args.money_text is not None:
+        if not args.money_name or args.money_text is None:
+            parser.error("--money-name と --money-text は両方要る")
+        status = check_money(args.money_name, args.money_text)
+        print(f"MONEY\t{status}")
+        return 0 if status.startswith("PASS") else 1
 
     repo = Path(__file__).resolve().parents[1]
     fixtures = Path(__file__).resolve().parent / "script_lint_fixtures"
