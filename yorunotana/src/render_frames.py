@@ -233,11 +233,13 @@ def pr_check_masks() -> tuple[np.ndarray, np.ndarray]:
     return glyph, plate
 
 
-def draw_hud(draw: ImageDraw.ImageDraw, day: object, clock: str, floor: str) -> None:
+def draw_hud(draw: ImageDraw.ImageDraw, day: object, clock: str, floor: str, title: str = "") -> None:
     draw.ellipse([48, 52, 84, 88], fill=RED)
     draw.text((100, 70), f"DAY {day}", font=font_px(42), fill=RED, anchor="lm")
     draw.text((48, 108), clock, font=font_px(76), fill=WHITE, anchor="lt")
     draw.text((48, 200), floor, font=font_px(36), fill=GRAY, anchor="lt")
+    if title:
+        draw.text((48, 246), title, font=font_px(32), fill=(186, 190, 198, 255), anchor="lt")
 
 
 def draw_top_card(draw: ImageDraw.ImageDraw, card: dict) -> None:
@@ -256,12 +258,21 @@ def draw_top_card(draw: ImageDraw.ImageDraw, card: dict) -> None:
     draw.rectangle([(WIDTH - 680) / 2, line_y, (WIDTH + 680) / 2, line_y + 6], fill=RED)
 
 
-def paint_overlay(day: object, clock: str, floor: str, pr: bool, top: dict | None, subtitle: str | None, color: str) -> Image.Image:
+def paint_overlay(
+    day: object,
+    clock: str,
+    floor: str,
+    pr: bool,
+    top: dict | None,
+    subtitle: str | None,
+    color: str,
+    title: str = "",
+) -> Image.Image:
     overlay = Image.new("RGBA", (WIDTH, HEIGHT), (0, 0, 0, 0))
     draw = ImageDraw.Draw(overlay)
     if subtitle:
         draw.rectangle([0, 1300, WIDTH, 1620], fill=(0, 0, 0, 120))
-    draw_hud(draw, day, clock, floor)
+    draw_hud(draw, day, clock, floor, title)
     if top:
         draw_top_card(draw, top)
     if subtitle:
@@ -333,6 +344,9 @@ def draw_stickman(
         dot((12, -2), 9, (255, 255, 255))
         dot((-12, -2), 4, (12, 12, 14))
         dot((12, -2), 4, (12, 12, 14))
+    elif eye == "closed":
+        line((-12, -2), (-4, -2))
+        line((4, -2), (12, -2))
     else:
         dot((-8, -2), 3.2, (20, 20, 24))
         dot((8, -2), 3.2, (20, 20, 24))
@@ -396,7 +410,34 @@ def paint_door(params: dict, ctx: dict, segment: dict) -> Image.Image:
     return img
 
 
+def paint_room_variant(params: dict, ctx: dict, segment: dict) -> Image.Image:
+    del ctx, segment
+    img = night_bg()
+    draw = ImageDraw.Draw(img)
+    draw.rectangle([0, 1100, WIDTH, HEIGHT], fill=(12, 12, 16))
+    if params.get("curtain_drawn"):
+        draw.rectangle([80, 420, 460, 980], fill=(28, 30, 36))
+        draw.rectangle([80, 420, 460, 980], outline=(70, 72, 80), width=8)
+        draw.rectangle([250, 420, 290, 980], fill=(18, 18, 22))
+    elif params.get("facing") == "door":
+        draw.rectangle([140, 380, 520, 1100], fill=(72, 48, 30))
+        draw.rectangle([170, 420, 490, 1040], outline=(40, 26, 16), width=8)
+        draw.ellipse([430, 700, 470, 740], fill=(190, 170, 90))
+        draw.text((330, 500), "705", font=font_px(42), fill=(230, 220, 190), anchor="mm")
+    if params.get("lamp_dim"):
+        draw.ellipse([760, 860, 860, 960], fill=(120, 78, 36))
+        glow = Image.new("RGBA", (WIDTH, HEIGHT), (0, 0, 0, 0))
+        ImageDraw.Draw(glow).ellipse([700, 800, 920, 1040], fill=(180, 120, 50, 70))
+        img = composite(img, glow)
+        draw = ImageDraw.Draw(img)
+    eye = "closed" if params.get("eyes_closed") else "small"
+    draw_stickman(draw, 700 if params.get("facing") == "door" else 540, 780, "stand", scale=2.0, sw=10, eye=eye, phone_on=False)
+    return img
+
+
 def paint_room(params: dict, ctx: dict, segment: dict) -> Image.Image:
+    if any(params.get(key) for key in ("lamp_dim", "curtain_drawn", "facing", "eyes_closed")):
+        return paint_room_variant(params, ctx, segment)
     del ctx, segment
     img = night_bg()
     draw = ImageDraw.Draw(img)
@@ -658,11 +699,12 @@ def paint_morning(params: dict, ctx: dict, segment: dict) -> Image.Image:
     tiled = np.repeat(color[:, None, :], WIDTH, axis=1)
     img = Image.fromarray(np.clip(tiled, 0, 255).astype(np.uint8), "RGB")
     draw = ImageDraw.Draw(img)
-    rng = random.Random(4)
+    low = params.get("skyline") == "low_rise"
+    rng = random.Random(4 if not low else 9)
     cursor = 0
     while cursor < WIDTH:
-        block_w = rng.randint(80, 170)
-        block_h = rng.randint(180, 520)
+        block_w = rng.randint(70, 150)
+        block_h = rng.randint(70, 200) if low else rng.randint(180, 520)
         draw.rectangle([cursor, 1180 - block_h, cursor + block_w - 8, 1240], fill=(18, 16, 26))
         cursor += block_w
     draw.rectangle([64, 300, 1016, 1220], outline=(236, 236, 236), width=16)
@@ -753,6 +795,177 @@ def paint_promo(job: dict, progress: float) -> Image.Image:
     return img
 
 
+def _shift(ctx: dict) -> tuple[int, int]:
+    raw = ctx.get("shift") or (0, 0)
+    return int(raw[0]), int(raw[1])
+
+
+def paint_corridor(params: dict, ctx: dict, segment: dict) -> Image.Image:
+    del segment
+    img = Image.new("RGB", (WIDTH, HEIGHT), (18, 20, 24))
+    draw = ImageDraw.Draw(img)
+    draw.polygon([(0, 420), (WIDTH, 420), (760, 1180), (320, 1180)], fill=(42, 44, 40))
+    draw.polygon([(0, 360), (420, 620), (420, 1180), (0, 1180)], fill=(28, 30, 34))
+    draw.polygon([(WIDTH, 360), (660, 620), (660, 1180), (WIDTH, 1180)], fill=(24, 26, 30))
+    lights = 7
+    mode = str(params.get("mode") or "far_blink")
+    count_on = int(params.get("count_on") or 1)
+    progress = float(ctx.get("progress") or 0.0)
+    high = params.get("intensity") == "high" or mode in ("surge", "stare_risk")
+    if mode == "advance":
+        lit = set(range(max(count_on, int(progress * lights) + 1)))
+    elif mode == "retreat":
+        lit = set(range(max(0, lights - int(progress * lights) - 1)))
+    elif mode == "surge":
+        lit = set(range(lights)) if int(progress * 10) % 2 == 0 else set()
+    elif mode == "steady_near":
+        lit = set(range(lights - count_on, lights))
+    elif mode == "stare_risk":
+        lit = set(range(lights - max(count_on, 3), lights))
+    else:
+        lit = set(range(min(count_on, lights)))
+    color = (220, 48, 42) if high else (36, 170, 96)
+    for index in range(lights):
+        near = index / (lights - 1)
+        cx = 540 + (near - 0.15) * 40
+        cy = 430 + near * 280
+        w = 18 + near * 70
+        h = 10 + near * 28
+        on = index in lit
+        fill = color if on else (16, 22, 18)
+        draw.rounded_rectangle([cx - w / 2, cy, cx + w / 2, cy + h], radius=3, fill=fill)
+        if on:
+            glow = Image.new("RGBA", (WIDTH, HEIGHT), (0, 0, 0, 0))
+            ImageDraw.Draw(glow).ellipse([cx - w, cy - 8, cx + w, cy + h + 16], fill=(*color, 70 if not high else 120))
+            img = composite(img, glow)
+            draw = ImageDraw.Draw(img)
+    draw.rectangle([70, 520, 280, 1180], fill=(64, 58, 48))
+    draw.rectangle([96, 560, 254, 1120], outline=(36, 30, 24), width=6)
+    draw.rounded_rectangle([150, 620, 230, 680], radius=6, fill=(210, 196, 150))
+    draw.text((190, 650), "705", font=font_px(28), fill=(40, 32, 20), anchor="mm")
+    return img
+
+
+def paint_breaker(params: dict, ctx: dict, segment: dict) -> Image.Image:
+    del segment
+    dx, dy = _shift(ctx)
+    if params.get("hum"):
+        dy += 2 if int(float(ctx.get("phase") or 0) * 8) % 2 == 0 else -2
+    if params.get("heard_only"):
+        img = night_bg()
+        draw = ImageDraw.Draw(img)
+        draw.rectangle([0, 1080, WIDTH, HEIGHT], fill=(10, 10, 12))
+        draw.rounded_rectangle([430 + dx, 620 + dy, 650 + dx, 860 + dy], radius=8, fill=(48, 52, 56))
+        draw.text((540, 980), str(params.get("location") or ""), font=font_px(28), fill=GRAY, anchor="mt")
+        return img
+    img = Image.new("RGB", (WIDTH, HEIGHT), (22, 24, 28))
+    draw = ImageDraw.Draw(img)
+    x, y, w, h = 220 + dx, 340 + dy, 640, 860
+    draw.rounded_rectangle([x - 24, y - 24, x + w + 24, y + h + 24], radius=12, fill=(90, 94, 98))
+    draw.rounded_rectangle([x, y, x + w, y + h], radius=8, fill=(28, 30, 34))
+    if params.get("door_ajar"):
+        draw.polygon([(x + w - 20, y + 20), (x + w + 180, y + 80), (x + w + 180, y + h - 40), (x + w - 20, y + h - 20)], fill=(120, 124, 128))
+    for row in range(6):
+        by = y + 80 + row * 110
+        draw.rounded_rectangle([x + 70, by, x + w - 70, by + 70], radius=6, fill=(12, 12, 14))
+        for col in range(4):
+            bx = x + 110 + col * 120
+            draw.rectangle([bx, by + 16, bx + 28, by + 54], fill=(180, 180, 184))
+            draw.rectangle([bx + 8, by + 8, bx + 20, by + 28], fill=(40, 160, 80) if (row + col) % 3 else (180, 40, 36))
+    if params.get("hand_reaching"):
+        draw.line([(540, 1280), (700, 980)], fill=(255, 255, 255), width=16)
+        draw.ellipse([680, 950, 730, 1000], fill=(255, 255, 255))
+    label = "utility" if params.get("location") == "utility_closet" else "hall"
+    draw.text((x + 40, y + 24), label, font=font_px(28), fill=(180, 184, 188), anchor="lt")
+    return img
+
+
+def paint_door_note(params: dict, ctx: dict, segment: dict) -> Image.Image:
+    del ctx, segment
+    img = night_bg()
+    draw = ImageDraw.Draw(img)
+    draw.rectangle([160, 280, 920, 1240], fill=(92, 64, 40))
+    draw.rectangle([200, 320, 880, 1180], outline=(48, 32, 18), width=10)
+    draw.rectangle([200, 1188, 880, 1240], fill=(8, 8, 10))
+    if params.get("note_visible", True):
+        paper = [300, 1040, 780, 1280] if params.get("under_gap", True) else [340, 700, 740, 980]
+        draw.rounded_rectangle(paper, radius=6, fill=(236, 226, 196))
+        white = str(params.get("note_text_white") or params.get("note_text") or "")
+        red = str(params.get("note_text_red") or "")
+        y = paper[1] + 36
+        if white:
+            y += draw_lines(draw, (paper[0] + paper[2]) / 2, y, white, font_px(48), (20, 16, 12, 255), paper[2] - paper[0] - 40)
+        if red:
+            draw_lines(draw, (paper[0] + paper[2]) / 2, y, red, font_px(48), (176, 32, 28, 255), paper[2] - paper[0] - 40)
+    return img
+
+
+def paint_elevator(params: dict, ctx: dict, segment: dict) -> Image.Image:
+    del segment
+    img = Image.new("RGB", (WIDTH, HEIGHT), (16, 18, 22))
+    draw = ImageDraw.Draw(img)
+    draw.rectangle([80, 300, 1000, 1200], fill=(26, 28, 32))
+    draw.rounded_rectangle([390, 520, 690, 980], radius=18, fill=(8, 10, 12))
+    floor = str(params.get("floor") or "7")
+    phase = float(ctx.get("phase") or 0.0)
+    dim = params.get("flicker") and int(phase * 8) % 2 == 1
+    ink = (40, 48, 36) if dim else (120, 255, 140)
+    draw.text((540, 700), floor, font=font_px(160), fill=ink, anchor="mm")
+    if params.get("stuck"):
+        draw.text((540, 900), "STOP", font=font_px(28), fill=(180, 60, 48), anchor="mm")
+    if params.get("ding"):
+        draw.ellipse([620, 560, 650, 590], fill=(255, 196, 64))
+    return img
+
+
+def paint_thin_wall(params: dict, ctx: dict, segment: dict) -> Image.Image:
+    del segment
+    img = night_bg()
+    draw = ImageDraw.Draw(img)
+    draw.rectangle([0, 1000, WIDTH, HEIGHT], fill=(12, 12, 16))
+    draw.rectangle([500, 300, 580, 1200], fill=(70, 68, 64))
+    draw.rectangle([508, 300, 572, 1200], fill=(48, 46, 42))
+    eye = "closed" if params.get("ear_to_wall") else "small"
+    draw_stickman(draw, 360, 720, "stand", scale=1.8, sw=8, eye=eye, phone_on=None)
+    if params.get("ear_to_wall"):
+        draw.line([(430, 760), (500, 780)], fill=(255, 255, 255), width=8)
+    tone = (90, 90, 96) if params.get("silhouette") == "closer" else (40, 40, 46)
+    if params.get("silhouette"):
+        draw.line([(760, 620), (760, 980)], fill=tone, width=10)
+        draw.ellipse([732, 540, 788, 600], outline=tone, width=6)
+        draw.line([(760, 700), (700, 860)], fill=tone, width=8)
+        draw.line([(760, 700), (830, 860)], fill=tone, width=8)
+    if params.get("rhythm_marks"):
+        phase = int(float(ctx.get("phase") or 0) * 6)
+        for index in range(5):
+            bright = (index + phase) % 5 == 0
+            draw.line([(620, 420 + index * 90), (660, 420 + index * 90)], fill=(180, 40, 36) if bright else (60, 60, 64), width=6)
+    if params.get("whisper"):
+        draw.text((760, 1040), "…", font=font_px(48), fill=GRAY, anchor="mm")
+    return img
+
+
+def paint_door_handle(params: dict, ctx: dict, segment: dict) -> Image.Image:
+    del segment
+    dx, dy = _shift(ctx)
+    if params.get("shake"):
+        dx += int(round(math.sin(float(ctx.get("phase") or 0) * math.tau * 3) * 6))
+        dy += int(round(math.cos(float(ctx.get("phase") or 0) * math.tau * 3) * 4))
+    img = night_bg()
+    draw = ImageDraw.Draw(img)
+    draw.rectangle([180 + dx, 260 + dy, 900 + dx, 1280 + dy], fill=(78, 54, 34))
+    cx, cy = 620 + dx, 760 + dy
+    draw.ellipse([cx - 110, cy - 110, cx + 110, cy + 110], fill=(168, 148, 86))
+    draw.ellipse([cx - 70, cy - 70, cx + 70, cy + 70], fill=(120, 100, 52))
+    draw.ellipse([cx - 16, cy + 150, cx + 16, cy + 210], fill=(20, 16, 12))
+    if params.get("locked"):
+        draw.rectangle([cx - 8, cy + 40, cx + 8, cy + 90], fill=(210, 190, 120))
+    if params.get("hand_on_knob") and not params.get("backed_away"):
+        draw.line([(cx + 30, cy + 20), (cx + 220, cy + 420)], fill=(255, 255, 255), width=18)
+        draw.ellipse([cx - 28, cy - 28, cx + 36, cy + 36], fill=(255, 255, 255))
+    return img
+
+
 SCENE_PAINTERS = {
     "door_view": paint_door,
     "room_stickman": paint_room,
@@ -762,6 +975,12 @@ SCENE_PAINTERS = {
     "phone_message": paint_phone_message,
     "app_demo_screen": paint_app,
     "morning_window": paint_morning,
+    "corridor_blink": paint_corridor,
+    "breaker_panel": paint_breaker,
+    "door_note": paint_door_note,
+    "elevator_display": paint_elevator,
+    "thin_wall": paint_thin_wall,
+    "door_handle": paint_door_handle,
 }
 
 
@@ -787,8 +1006,8 @@ def paint_scene(job: dict, item: dict, segment: dict | None, ctx: dict) -> Image
 
 def drift_scene(image: Image.Image, step: int) -> Image.Image:
     """長い静止を 1.5 秒ごとに少しずらす。HUD や PR は後から重ねるので動かない。"""
-    dx = (step % 5) * 2
-    dy = (step % 3)
+    dx = 8 + (step % 4) * 10
+    dy = (step % 3) * 6
     arr = np.array(image)
     height, width = arr.shape[:2]
     moved = np.zeros_like(arr)
@@ -805,10 +1024,10 @@ def drift_scene(image: Image.Image, step: int) -> Image.Image:
         moved[:dy, :] = moved[dy : dy + 1, :]
     elif dy < 0:
         moved[height + dy :, :] = moved[height + dy - 1 : height + dy, :]
-    px = 120 + (step * 47) % 360
-    py = 480 + (step * 29) % 180
+    px = 160 + (step * 140) % 640
+    py = 520 + (step % 4) * 70
     dust = Image.fromarray(moved)
-    ImageDraw.Draw(dust).ellipse([px, py, px + 4, py + 4], fill=(170, 176, 186))
+    ImageDraw.Draw(dust).rounded_rectangle([px, py, px + 120, py + 36], radius=8, fill=(70, 210, 120))
     return dust
 
 
@@ -831,6 +1050,7 @@ def render_frame(job: dict, item: dict, segment: dict | None, ctx: dict, drift_s
         top if top else None,
         subtitle,
         color,
+        str(job.get("series_title") or ""),
     )
     return composite(scene, overlay)
 
@@ -1029,13 +1249,21 @@ def render_video(job_path: Path, timing_path: Path, audio_path: Path, out_path: 
             holds: list[tuple[Image.Image, int]] = []
             # 同じ絵がカットをまたいで 2.0 秒続くとフリーズになる。視点は動画全体で進める。
             still_limit = int(1.5 * FPS)
+            seen = 0
             for ctx, frames in zip(contexts, counts):
                 left = frames
+                cursor = seen
                 while left > 0:
                     piece = left if left <= still_limit else still_limit
-                    holds.append((render_frame(job, item, segment, ctx, drift_step), piece))
+                    ctx_here = dict(ctx)
+                    ctx_here["phase"] = (cursor + piece / 2) / max(count, 1)
+                    if len(contexts) == 1:
+                        ctx_here["progress"] = ctx_here["phase"]
+                    holds.append((render_frame(job, item, segment, ctx_here, drift_step), piece))
+                    cursor += piece
                     left -= piece
                     drift_step += 1
+                seen += frames
             part = work / f"part_{index:03d}.mp4"
             encode_holds(holds, part)
             parts.append(part)
@@ -1148,26 +1376,54 @@ def export_stills(out_dir: Path) -> None:
     add("day_end_card", "day_end_card", render_frame(day2, {"kind": "day_end_card", "segment_id": None}, None, static))
     add("promo_outro", "promo_outro", render_frame(day3, {"kind": "promo_outro", "segment_id": None}, None, {"shift": (0, 0), "progress": 0.25, "phase": 0.25}))
 
-    hud = composite(night_bg(), paint_overlay(2, "9:16 PM", "14階", False, None, None, "white"))
+    floor = str(day2.get("floor_label") or "")
+    title = str(day2.get("series_title") or "")
+    hud = composite(night_bg(), paint_overlay(day2.get("day"), "9:16 PM", floor, False, None, None, "white", title))
     add("overlay_hud", "HUD", hud)
-    badge = composite(night_bg(), paint_overlay(3, "4:30 AM", "14階", True, None, None, "white"))
-    # isolate the badge: paint only PR on the night plate
     only = Image.new("RGBA", (WIDTH, HEIGHT), (0, 0, 0, 0))
     draw_pr_badge(ImageDraw.Draw(only))
     add("overlay_pr_badge", "PRバッジ", composite(night_bg(), only))
-    card = composite(night_bg(), paint_overlay(2, "9:16 PM", "14階", False, {"badge": "ルール5", "title": "SNSを開くな"}, None, "yellow"))
+    card = composite(night_bg(), paint_overlay(day2.get("day"), "9:16 PM", floor, False, {"badge": "ルール5", "title": "SNSを開くな"}, None, "yellow", title))
     add("overlay_top_card", "top_card", card)
-    sub = composite(night_bg(), paint_overlay(2, "6:05 AM", "14階", False, None, "ドアは開けなかった。", "yellow"))
+    sub = composite(night_bg(), paint_overlay(day2.get("day"), "6:05 AM", floor, False, None, "ドアは開けなかった。", "yellow", title))
     add("overlay_subtitle", "字幕", sub)
-    del hud, badge
+    del hud
     sheet = out_dir / "contact_sheet.png"
     write_contact_sheet(labeled, sheet)
+    export_v2_scenes(out_dir)
     glyph, plate = pr_check_masks()
     log(f"stills {len(labeled)} -> {out_dir} glyph={int(glyph.sum())} plate={int(plate.sum())}")
 
 
+def export_v2_scenes(out_dir: Path) -> None:
+    jobs = []
+    for name in ("episode_day2.json", "episode_day3.json"):
+        path = ROOT / "jobs-v2" / name
+        if path.exists():
+            jobs.append(load_json(path))
+    if not jobs:
+        return
+    out_dir.mkdir(parents=True, exist_ok=True)
+    prefer = {
+        "breaker_panel": lambda item: not item["scene_params"].get("heard_only"),
+        "door_handle": lambda item: item["scene_params"].get("hand_on_knob"),
+        "thin_wall": lambda item: item["scene_params"].get("silhouette") == "closer" or item["scene_params"].get("ear_to_wall"),
+    }
+    for scene in ("corridor_blink", "breaker_panel", "door_note", "elevator_display", "thin_wall", "door_handle"):
+        job, seg = find_segment(jobs, scene, prefer.get(scene))
+        image = render_frame(
+            job,
+            {"kind": "segment", "segment_id": seg["id"], "segment": seg},
+            seg,
+            {"shift": (0, 0), "progress": 0.55, "phase": 0.55},
+            0,
+        )
+        image.save(out_dir / f"{scene}.png")
+        log(f"v2 still {scene}")
+
+
 def main(argv: list[str] | None = None) -> int:
-    parser = argparse.ArgumentParser(description="14階の2Dフレームを描く")
+    parser = argparse.ArgumentParser(description="縦動画の2Dフレームを描く")
     parser.add_argument("--job")
     parser.add_argument("--timing")
     parser.add_argument("--audio")

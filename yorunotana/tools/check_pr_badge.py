@@ -43,11 +43,11 @@ def main() -> int:
     # バッジあり/なしの静止画差分（圧縮前）も残す。
     with_badge = render_frames.composite(
         render_frames.night_bg(),
-        render_frames.paint_overlay(3, "4:30 AM", "14階", True, None, None, "white"),
+        render_frames.paint_overlay(3, "4:30 AM", "", True, None, None, "white"),
     )
     without = render_frames.composite(
         render_frames.night_bg(),
-        render_frames.paint_overlay(3, "4:30 AM", "14階", False, None, None, "white"),
+        render_frames.paint_overlay(3, "4:30 AM", "", False, None, None, "white"),
     )
     box = (x, y, x + width, y + height)
     diff = np.abs(

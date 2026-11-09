@@ -24,8 +24,8 @@ python -m pip install -r requirements.txt
 4. `yorunotana` をカレントにした状態で、ジョブごとに実行する。スクリプト自身も自分の場所へ移動するので、フルパスで呼んでもよい。
 
 ```powershell
-powershell -ExecutionPolicy Bypass -File .\build-yorunotana.ps1 -JobFile .\jobs\episode_day2.json
-powershell -ExecutionPolicy Bypass -File .\build-yorunotana.ps1 -JobFile .\jobs\episode_day3.json -Speaker 13
+powershell -ExecutionPolicy Bypass -File .\build-yorunotana.ps1 -JobFile .\jobs-v2\episode_day2.json
+powershell -ExecutionPolicy Bypass -File .\build-yorunotana.ps1 -JobFile .\jobs-v2\episode_day3.json -Speaker 13
 ```
 
 5. 成功の判定は、その場に上書きされる `LAST_RESULT.txt` が `PASS` で始まること。尺の合格は **60.0〜70.0秒**（2026-11-09 21:25 JST の決定）。形は `PASS | <job_id>.mp4 | 62.8s | PR:True | freeze=0.00s | silence=0.00s`。60秒未満でも70秒超でも、2.0秒以上のフリーズでも無音でも、先頭は `FAIL` で測った値が入る。詳細は `REPORT.md`（UTF-8 BOM）。`LAST_RESULT.txt` は UTF-8（BOMなし）。どちらも実行のたびに上書きされるので、day2 の1行を残すなら次を走らせる前にコピーする。
@@ -35,7 +35,7 @@ powershell -ExecutionPolicy Bypass -File .\build-yorunotana.ps1 -JobFile .\jobs\
 VOICEVOX を使わない長さ確認だけするときは `-DummyTts` を付ける。このスイッチはネットワークへ繋がない。
 
 ```powershell
-powershell -ExecutionPolicy Bypass -File .\build-yorunotana.ps1 -JobFile .\jobs\episode_day3.json -DummyTts
+powershell -ExecutionPolicy Bypass -File .\build-yorunotana.ps1 -JobFile .\jobs-v2\episode_day3.json -DummyTts
 ```
 
 ## 何がどこにあるか
@@ -87,24 +87,17 @@ python src/render_frames.py --job <json> --timing out/temp_audio/audio_timing.js
 
 `audio_timing.json` の各 item は `kind`（`segment` / `choice_card` / `day_end_card` / `promo_outro`）、`segment_id`、`start_sec`、`end_sec`、`audio_sec`、`pause_after_ms`、`pad_sec`、`wav`。描画は `start_sec` から `end_sec` まで同じ画面を出し、segment の中身はジョブ JSON から取る。
 
-## Linux での検証
+## Linux での検証（非常灯 / jobs-v2）
 
-pwsh はこの環境に無かった。合否は `tools/verify_mp4.py` で ps1 と同じ条件（60.0〜70.0秒、フリーズ 2.0秒未満、無音 2.0秒未満）にした。
+再実行は `jobs-v2/episode_day2.json` と `jobs-v2/episode_day3.json`。シリーズ名は JSON の `series_title`（非常灯）、階は `floor_label`（7階）。`jobs/` の旧「14階」は残すが、PC では使わない。
 
-`FAIL | yorunotana_14f_day2.mp4 | 58.8s | PR:False | freeze=0.00s | silence=0.00s`
+pwsh はこの環境に無かった。dummy-tts の合否は `tools/verify_mp4.py` で ps1 と同じ条件にした。
 
-`PASS | yorunotana_14f_day3_audible.mp4 | 62.8s | PR:True | freeze=0.00s | silence=0.00s`
+`PASS | yorunotana_hijolight_day2.mp4 | 61.9s | PR:False | freeze=0.00s | silence=0.00s`
 
-day2 の不合格は尺だけ。dummy-tts は 58.75秒で、60秒まで 1.25秒足りない。読み上げ速度も台本も動かしていない。フリーズと無音は両方 0。
+`PASS | yorunotana_hijolight_day3_audible.mp4 | 66.3s | PR:True | freeze=0.00s | silence=0.00s`
 
-3.45秒止まっていたのは day2 segment 27（`peephole_stickman`、「のぞき穴を見た。スマホを持った誰かが立ってる。」）。4.00秒が2回だったのは day3 の promo ステップ（各 `duration_sec` 4.0）。ほかにも 2秒を超える静止カットがあった。画面本体だけを 1.5秒ごとに数ピクセルずらし、小さな粒子を動かしている。HUD と PR は固定。day3 の PR は 3765/3765 フレームで残っている。
-
-| 出力 | 解像度 | fps | 尺 | 音声 | 最長フリーズ | 最長無音 |
-| --- | --- | --- | --- | --- | --- | --- |
-| day2 | 1080x1920 | 60/1 | 58.750s | あり | 0.00s | 0.00s |
-| day3 | 1080x1920 | 60/1 | 62.750s | あり | 0.00s | 0.00s |
-
-`tools/content_length.py --dummy-tts` は day2 が 58.75秒（`short_of_60=1.25s`）、day3 が 62.75秒（`within_60_70`）。この Linux では VOICEVOX は unavailable。前回 PC で中身が終わった時刻は day2 が 64.3秒（新しい幅の中）、day3 が 59.8秒（60秒まで 0.2秒不足）なので、同じ音声の再実行では day3 が尺で FAIL し得る。
+新規シーンは `corridor_blink`、`breaker_panel`、`door_note`、`elevator_display`、`thin_wall`、`door_handle`。旧モチーフ（足影、覗き穴、窓グリッド、差出人不明）は新話では使わない。画面本体だけを 1.5秒ごとに少しずらし、HUD と PR は固定する。day3 の PR は 3976/3976 フレームにある。台本の文言は変えていない。
 
 フリーズ検査の切り分け: 絵が動き続ける 4 秒のファイルは freeze なし。最後の絵を 4 秒止めたファイルは freeze=4.03s で FAIL。
 
@@ -137,13 +130,13 @@ python tools/check_pr_badge.py --video out/yorunotana_14f_day2.mp4 --expect fals
 
 ## 描画の対応
 
-共通: 左上に赤丸 + `DAY n`、時刻、`floor_label`。`pr_badge: true` のとき右上に半透明の黒地と白の `PR`。`top_card` は赤バッジ、白のタイトル、赤線。字幕は Y=1350、太字に黒フチ。`yellow` は `#FFEE33`、`white` は `#FFFFFF`。
+共通: 左上に赤丸 + `DAY n`、時刻、JSON の `floor_label`、その下に `series_title`。`pr_badge: true` のとき右上に半透明の黒地と白の `PR`。`top_card` は赤バッジ、白のタイトル、赤線。字幕は Y=1350、太字に黒フチ。`yellow` は `#FFEE33`、`white` は `#FFFFFF`。
 
-シーン: `door_view`（隙間の光と2本の影、`shake` は ±6px）、`room_stickman`（星空の窓、本棚、膝つき、スマホの青光、イヤホン）、`phone_tap`（4x5 アイコンと右下からの腕、波紋）、`window_grid`（5x5、`sequential_blackout` はシード固定の順で消灯）、`peephole_stickman`（赤い同心円と目玉）、`phone_message`、`app_demo_screen`（`dark_waveform_only` はほぼ黒にオレンジの波形）、`morning_window`、`choice_card`、`day_end_card`、`promo_outro`（ステップ①②とプロフィール誘導。URL は描かない）。
+非常灯で足したシーン: `corridor_blink`（廊下の一点透視と非常灯）、`breaker_panel`（配電箱）、`door_note`（扉下の紙。足影なし）、`elevator_display`（階数LED）、`thin_wall`（壁越し。覗き穴の双眸は使わない）、`door_handle`（室内側ノブ）。旧シーンの door_view / peephole_stickman / window_grid / phone_message は新話では使わない。
 
 ## 次に触るとき
 
-- 合格の尺は 60.0〜70.0秒。2026-11-09 21:25 JST の決定。速度は上げない。JSON は変えていない。
-- dummy-tts の day2 は 58.75秒のままなので、この下限では FAIL になる。中身を足すかどうかは人間が決める。
+- 合格の尺は 60.0〜70.0秒。2026-11-09 21:25 JST の決定。速度は上げない。JSON の文言は変えていない。
+- PC で走らせるジョブは `jobs-v2`。`git pull` のあと、上の PowerShell をそのまま再実行する。
 - 話者 13 が無いエラーなら `-Speaker` を、インストール済みの低音男性 ID に変える。
 - 生成物 `out/`、`assets/**/*.wav`、`REPORT.md`、`LAST_RESULT.txt` はコミットしない。
