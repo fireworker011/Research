@@ -15,6 +15,7 @@ import random
 import shutil
 import subprocess
 import sys
+import wave
 from pathlib import Path
 
 import numpy as np
@@ -23,6 +24,7 @@ from PIL import Image, ImageDraw, ImageFont
 WIDTH = 1080
 HEIGHT = 1920
 FPS = 60
+MAX_TAIL_SEC = 1.0
 ROOT = Path(__file__).resolve().parents[1]
 
 YELLOW = (255, 238, 51, 255)
@@ -919,6 +921,33 @@ def encode_holds(holds: list[tuple[Image.Image, int]], out_mp4: Path) -> None:
         part.unlink(missing_ok=True)
 
 
+def wav_duration_sec(path: Path) -> float:
+    with wave.open(str(path), "rb") as handle:
+        rate = handle.getframerate()
+        if rate <= 0:
+            raise SystemExit(f"WAVのサンプルレートが不正です: {path}")
+        return handle.getnframes() / float(rate)
+
+
+def clamp_timeline(items: list[dict], audio_sec: float) -> list[dict]:
+    """音声の終わりから先は、最大1秒だけ。静止画で尺を埋めない。"""
+    clamped = [dict(item) for item in items]
+    last = clamped[-1]
+    pad = float(last.get("pad_sec") or 0.0)
+    end = float(last["end_sec"])
+    if pad > MAX_TAIL_SEC:
+        end -= pad - MAX_TAIL_SEC
+        last["pad_sec"] = MAX_TAIL_SEC
+    limit = float(audio_sec) + MAX_TAIL_SEC
+    if end > limit:
+        end = limit
+    start = float(last["start_sec"])
+    if end < start:
+        end = start
+    last["end_sec"] = round(end, 4)
+    return clamped
+
+
 def frame_spans(items: list[dict]) -> list[tuple[int, int]]:
     spans = []
     cursor = 0
@@ -945,6 +974,8 @@ def render_video(job_path: Path, timing_path: Path, audio_path: Path, out_path: 
     items = sorted(timing.get("items") or [], key=lambda item: float(item["start_sec"]))
     if not items:
         raise SystemExit("audio_timing.json に items がありません")
+    audio_sec = wav_duration_sec(audio_path)
+    items = clamp_timeline(items, audio_sec)
     spans = frame_spans(items)
     total_frames = spans[-1][1]
     if total_frames <= 0:

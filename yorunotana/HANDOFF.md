@@ -28,7 +28,7 @@ powershell -ExecutionPolicy Bypass -File .\build-yorunotana.ps1 -JobFile .\jobs\
 powershell -ExecutionPolicy Bypass -File .\build-yorunotana.ps1 -JobFile .\jobs\episode_day3.json -Speaker 13
 ```
 
-5. 成功の判定は、その場に上書きされる `LAST_RESULT.txt` が `PASS` で始まること。例: `PASS | yorunotana_14f_day3_audible.mp4 | 87.0s | PR:True`。失敗しても同じ形の1行で、先頭が `FAIL`。詳細は `REPORT.md`（UTF-8 BOM）。`LAST_RESULT.txt` は UTF-8（BOMなし）。どちらも実行のたびに上書きされるので、day2 の1行を残すなら次を走らせる前にコピーする。
+5. 成功の判定は、その場に上書きされる `LAST_RESULT.txt` が `PASS` で始まること。形は `PASS | <job_id>.mp4 | 86.8s | PR:True | freeze=0.00s | silence=0.00s`。足りない尺は静止画で埋めないので、75秒未満なら先頭が `FAIL` になり、測った秒数が入る。詳細は `REPORT.md`（UTF-8 BOM）。`LAST_RESULT.txt` は UTF-8（BOMなし）。どちらも実行のたびに上書きされるので、day2 の1行を残すなら次を走らせる前にコピーする。
 
 VOICEVOX を使わない長さ確認だけするときは `-DummyTts` を付ける。このスイッチはネットワークへ繋がない。
 
@@ -47,6 +47,7 @@ powershell -ExecutionPolicy Bypass -File .\build-yorunotana.ps1 -JobFile .\jobs\
 | `tools/make_dummy_timing.py` | 各 segment をちょうど 2.0 秒にした仮タイミング |
 | `tools/check_pr_badge.py` | 右上 PR 領域の画素チェック |
 | `tools/verify_mp4.py` | ps1 と同じ合否を Python で出す |
+| `tools/content_length.py` | dummy-tts と、あれば VOICEVOX の実測の長さ。75秒との差 |
 | `jobs/episode_day2.json` `jobs/episode_day3.json` | 入力。原文のバイト列のまま |
 | `ORDER-20261109-0634.md` | 依頼原文。一字も変えていない |
 
@@ -77,19 +78,29 @@ python src/render_frames.py --job <json> --timing out/temp_audio/audio_timing.js
 - promo の見た目は `steps[].duration_sec` の合計より短くしない（day3 は 8 秒）。
 - BGM `assets/bgm/dark_ambient_drone.wav` を -18 dB で全編ループ。SE は segment の開始に混ぜる。ファイルが無ければ `tools/make_assets.py` が生成する。
 - VOICEVOX に繋がらないときは、メッセージを出して終了する。別の TTS には切り替えない。確認済み: `Connection refused` で終了コード 1。
-- `--dummy-tts` は無音だけで、発話の長さをモーラ比で配り、`target_duration_sec` ちょうどにする。day2 は 88.000 秒、day3 は 87.000 秒。
-- 本物の VOICEVOX は測った長さのまま等倍で置く。合計が target より短く、target が 95 秒以下なら、最後のカードを無音（BGM は続く）で target まで延ばす。読み上げ自体は伸ばさないし切らない。読みが 95 秒を超えると ps1 は FAIL になる。
+- `--dummy-tts` は無音だけで、等倍に近い長さをモーラから見積もる。`target_duration_sec` まで引き伸ばさない。
+- 本物の VOICEVOX も測った長さのまま等倍で置く。速度は変えない。短いからといって最後の絵を止めたり、75秒の下限を下げたりしない。75秒未満は検査が FAIL になる。
+- 描画は `audio_timing.json` の終わりに従う。`pad_sec` や音声より先へ伸ばす場合も、尾は最大 1.0 秒。それ以上の静止は作らない。
+- 検査は ffprobe に加え、`freezedetect=n=-60dB:d=2` と `silencedetect=n=-50dB:d=2`。2.0秒以上のフリーズまたは無音で FAIL。測った値は `REPORT.md` と `LAST_RESULT.txt` に書く。
 
 `audio_timing.json` の各 item は `kind`（`segment` / `choice_card` / `day_end_card` / `promo_outro`）、`segment_id`、`start_sec`、`end_sec`、`audio_sec`、`pause_after_ms`、`pad_sec`、`wav`。描画は `start_sec` から `end_sec` まで同じ画面を出し、segment の中身はジョブ JSON から取る。
 
 ## Linux での検証
 
-pwsh はこの環境に無かった。合否は `tools/verify_mp4.py` で ps1 と同じ条件（1080x1920、60fps、75.0〜95.0 秒、音声あり）を再現した。
+pwsh はこの環境に無かった。合否は `tools/verify_mp4.py` で ps1 と同じ条件にした。dummy-tts の本編は 75 秒に届かないので FAIL。末尾の水増しは無い。残っているフリーズは、2秒以上同じ絵が続くカット（day3 のステップは 4.00 秒が2回）。
 
-| 出力 | 解像度 | fps | フレーム | 尺 | 音声 | LAST_RESULT |
+`FAIL | yorunotana_14f_day2.mp4 | 58.8s | PR:False | freeze=3.45s | silence=0.00s`
+
+`FAIL | yorunotana_14f_day3_audible.mp4 | 62.8s | PR:True | freeze=4.00s | silence=0.00s`
+
+| 出力 | 解像度 | fps | 尺 | 音声 | 最長フリーズ | 最長無音 |
 | --- | --- | --- | --- | --- | --- | --- |
-| `out/yorunotana_14f_day2.mp4` | 1080x1920 | 60/1 | 5280 | 88.000s | あり | `PASS \| yorunotana_14f_day2.mp4 \| 88.0s \| PR:False` |
-| `out/yorunotana_14f_day3_audible.mp4` | 1080x1920 | 60/1 | 5220 | 87.000s | あり | `PASS \| yorunotana_14f_day3_audible.mp4 \| 87.0s \| PR:True` |
+| day2 | 1080x1920 | 60/1 | 58.750s | あり | 3.45s | 0.00s |
+| day3 | 1080x1920 | 60/1 | 62.750s | あり | 4.00s | 0.00s |
+
+`tools/content_length.py --dummy-tts` の見積もりは day2 が 58.75秒（75秒まで 16.25秒不足）、day3 が 62.75秒（12.25秒不足）。この Linux では VOICEVOX は unavailable。PC の実測（フリーズが始まった時刻）は day2 が 64.3秒（10.7秒不足）、day3 が 59.8秒（15.2秒不足）。
+
+フリーズ検査の切り分け: 絵が動き続ける 4 秒のファイルは freeze なし。最後の絵を 4 秒止めたファイルは freeze=4.03s で FAIL。
 
 2秒ダミー（尺ゲートの対象外。segment はすべて 2.000 秒。day3 の promo は steps 合計の 8 秒）:
 
@@ -127,6 +138,7 @@ python tools/check_pr_badge.py --video out/yorunotana_14f_day2.mp4 --expect fals
 
 ## 次に触るとき
 
-- PC で VOICEVOX を通した `LAST_RESULT.txt` が FAIL で尺だけが理由なら、読みが 95 秒を超えている。速度は上げず、台本側を短くする。
+- 75秒に届かせるのは台本側。速度は上げない。75秒の下限も下げない。JSON はこの修正では変えていない。
+- 2秒以上同じ絵が続くカットも FAIL になる。短くするか、絵を動かすかは人間の判断。
 - 話者 13 が無いエラーなら `-Speaker` を、インストール済みの低音男性 ID に変える。
 - 生成物 `out/`、`assets/**/*.wav`、`REPORT.md`、`LAST_RESULT.txt` はコミットしない。

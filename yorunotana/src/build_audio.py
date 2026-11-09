@@ -2,7 +2,7 @@
 
 第一候補はローカルの VOICEVOX (http://127.0.0.1:50021)。等倍速。
 つながらないときはエラーで止まる。別のTTSには落とさない。
---dummy-tts は無音で長さだけ作り、target_duration_sec に合わせる。
+--dummy-tts は無音で、等倍の読み上げに近い長さだけ作る。尺を target まで埋めない。
 """
 
 from __future__ import annotations
@@ -202,19 +202,27 @@ def voicevox_wav(text: str, speaker: int, base_url: str) -> bytes:
         ) from exc
 
 
+def estimate_speech_sec(text: str) -> float:
+    """等倍の低音男性に近い長さ。target_duration_sec には合わせない。"""
+    mora = mora_count(text)
+    if mora <= 0:
+        return 0.35
+    return max(0.35, 0.25 + mora / 7.2)
+
+
 def timeline(units: list[dict], audio_lengths: list[float]) -> tuple[list[dict], float]:
     items = []
     cursor = 0.0
     for index, (unit, audio_sec) in enumerate(zip(units, audio_lengths), start=1):
         audio_sec = max(0.05, float(audio_sec))
         pause = max(0.0, unit["pause_after_ms"] / 1000.0)
-        pad = 0.0
+        # ステップカードの表示時間は中身。尺を埋めるための pad ではない。
+        extra = 0.0
         if unit["kind"] == "promo_outro":
             step_sum = sum(float(step.get("duration_sec") or 0) for step in unit.get("steps") or [])
-            need = max(audio_sec + pause, step_sum)
-            pad = max(0.0, need - audio_sec - pause)
+            extra = max(0.0, step_sum - audio_sec - pause)
         start = cursor
-        end = cursor + audio_sec + pause + pad
+        end = cursor + audio_sec + pause + extra
         items.append(
             {
                 "index": index,
@@ -226,41 +234,13 @@ def timeline(units: list[dict], audio_lengths: list[float]) -> tuple[list[dict],
                 "se": unit["se"],
                 "audio_sec": round(audio_sec, 4),
                 "pause_after_ms": unit["pause_after_ms"],
-                "pad_sec": round(pad, 4),
+                "pad_sec": 0.0,
                 "start_sec": round(start, 4),
                 "end_sec": round(end, 4),
             }
         )
         cursor = end
     return items, cursor
-
-
-def pad_to_target(items: list[dict], total: float, target: float) -> tuple[list[dict], float]:
-    if target <= 0 or total >= target or target > 95.0:
-        return items, total
-    extra = target - total
-    items[-1]["end_sec"] = round(items[-1]["end_sec"] + extra, 4)
-    items[-1]["pad_sec"] = round(items[-1]["pad_sec"] + extra, 4)
-    return items, target
-
-
-def dummy_lengths(units: list[dict], target: float) -> list[float]:
-    weights = [max(1.0, mora_count(unit["text"])) for unit in units]
-
-    def lengths(rate: float) -> list[float]:
-        return [max(0.35, 0.2 + weight * rate) for weight in weights]
-
-    lo, hi = 0.01, 0.8
-    best = lo
-    for _ in range(28):
-        mid = (lo + hi) / 2.0
-        _, total = timeline(units, lengths(mid))
-        if total > target:
-            hi = mid
-        else:
-            lo = mid
-            best = mid
-    return lengths(best)
 
 
 def synthesize_real(units: list[dict], out_dir: Path, speaker: int, base_url: str) -> list[float]:
@@ -318,19 +298,15 @@ def build(job_path: Path, speaker: int, dummy: bool, base_url: str, out_dir: Pat
     out_dir.mkdir(parents=True, exist_ok=True)
     for old in out_dir.glob("seg_*.wav"):
         old.unlink()
-    target = float(job.get("target_duration_sec") or 0.0)
     if dummy:
-        log("dummy-tts: VOICEVOXは呼びません。無音で長さだけ作ります。")
-        if target <= 0:
-            raise SystemExit("dummy-tts には job の target_duration_sec が必要です")
-        lengths = dummy_lengths(units, target)
+        log("dummy-tts: VOICEVOXは呼びません。無音で長さだけ作り、尺は埋めません。")
+        lengths = [estimate_speech_sec(unit["text"]) for unit in units]
         for index, length in enumerate(lengths, start=1):
             write_silence(out_dir / f"seg_{index:02d}.wav", length)
     else:
         log(f"VOICEVOX {base_url} speaker={speaker} speedScale=1.0")
         lengths = synthesize_real(units, out_dir, speaker, base_url)
     items, total = timeline(units, lengths)
-    items, total = pad_to_target(items, total, target)
     timing = {
         "job_id": job["job_id"],
         "generator": "build_audio",

@@ -23,14 +23,75 @@ function Format-Num([double]$Number, [int]$Digits) {
     return [string]::Format($culture, $fmt, $Number)
 }
 
-function Write-Outputs([string]$Status, [string]$Id, [double]$Seconds, [string]$PrFlag, [string]$Report) {
-    $durText = Format-Num $Seconds 1
-    $line = "$Status | $Id.mp4 | ${durText}s | PR:$PrFlag"
+function Write-Outputs([string]$Status, [string]$Id, [double]$Seconds, [string]$PrFlag, [double]$Freeze, [double]$Silence, [string]$Report) {
+    $line = "$Status | $Id.mp4 | $(Format-Num $Seconds 1)s | PR:$PrFlag | freeze=$(Format-Num $Freeze 2)s | silence=$(Format-Num $Silence 2)s"
     $utf8 = New-Object System.Text.UTF8Encoding $false
     $utf8bom = New-Object System.Text.UTF8Encoding $true
     [System.IO.File]::WriteAllText((Join-Path $Root "LAST_RESULT.txt"), ($line + "`n"), $utf8)
     [System.IO.File]::WriteAllText((Join-Path $Root "REPORT.md"), $Report, $utf8bom)
     Write-Host $line
+}
+
+function Add-Span([System.Collections.Generic.List[double]]$Spans, [double]$Value) {
+    $Spans.Add($Value)
+}
+
+function Get-MediaMax([string]$OutName, [double]$Total) {
+    $prev = $ErrorActionPreference
+    $ErrorActionPreference = "Continue"
+    $log = & ffmpeg -hide_banner -nostats -i $OutName -vf "freezedetect=n=-60dB:d=2" -af "silencedetect=n=-50dB:d=2" -f null - 2>&1 | ForEach-Object { "$_" }
+    $ErrorActionPreference = $prev
+    $culture = [System.Globalization.CultureInfo]::InvariantCulture
+    $freezeStarts = New-Object System.Collections.Generic.List[double]
+    $freezeEnds = New-Object System.Collections.Generic.List[double]
+    $freezeDurs = New-Object System.Collections.Generic.List[double]
+    $silenceStarts = New-Object System.Collections.Generic.List[double]
+    $silenceEnds = New-Object System.Collections.Generic.List[double]
+    $silenceDurs = New-Object System.Collections.Generic.List[double]
+    foreach ($line in @($log)) {
+        if ($line -match "freeze_start:\s*([0-9]+(?:\.[0-9]+)?)") { Add-Span $freezeStarts ([double]::Parse($Matches[1], $culture)) }
+        if ($line -match "freeze_end:\s*([0-9]+(?:\.[0-9]+)?)") { Add-Span $freezeEnds ([double]::Parse($Matches[1], $culture)) }
+        if ($line -match "freeze_duration:\s*([0-9]+(?:\.[0-9]+)?)") { Add-Span $freezeDurs ([double]::Parse($Matches[1], $culture)) }
+        if ($line -match "silence_start:\s*([0-9]+(?:\.[0-9]+)?)") { Add-Span $silenceStarts ([double]::Parse($Matches[1], $culture)) }
+        if ($line -match "silence_end:\s*([0-9]+(?:\.[0-9]+)?)") { Add-Span $silenceEnds ([double]::Parse($Matches[1], $culture)) }
+        if ($line -match "silence_duration:\s*([0-9]+(?:\.[0-9]+)?)") { Add-Span $silenceDurs ([double]::Parse($Matches[1], $culture)) }
+    }
+    $freezeList = New-Object System.Collections.Generic.List[string]
+    $silenceList = New-Object System.Collections.Generic.List[string]
+    $freezeMax = 0.0
+    $silenceMax = 0.0
+    function Consider([double]$Value, [System.Collections.Generic.List[string]]$Shown, [ref]$Max) {
+        $Shown.Add((Format-Num $Value 2))
+        if ($Value -gt $Max.Value) { $Max.Value = $Value }
+    }
+    $useFreezeDur = ($freezeDurs.Count -ge $freezeStarts.Count -and $freezeDurs.Count -gt 0)
+    if ($useFreezeDur) {
+        foreach ($value in $freezeDurs) { Consider $value $freezeList ([ref]$freezeMax) }
+    } else {
+        for ($i = 0; $i -lt $freezeStarts.Count; $i++) {
+            if ($i -lt $freezeEnds.Count) { $value = $freezeEnds[$i] - $freezeStarts[$i] }
+            elseif ($i -lt $freezeDurs.Count) { $value = $freezeDurs[$i] }
+            else { $value = $Total - $freezeStarts[$i] }
+            Consider $value $freezeList ([ref]$freezeMax)
+        }
+    }
+    $useSilenceDur = ($silenceDurs.Count -ge $silenceStarts.Count -and $silenceDurs.Count -gt 0)
+    if ($useSilenceDur) {
+        foreach ($value in $silenceDurs) { Consider $value $silenceList ([ref]$silenceMax) }
+    } else {
+        for ($i = 0; $i -lt $silenceStarts.Count; $i++) {
+            if ($i -lt $silenceEnds.Count) { $value = $silenceEnds[$i] - $silenceStarts[$i] }
+            elseif ($i -lt $silenceDurs.Count) { $value = $silenceDurs[$i] }
+            else { $value = $Total - $silenceStarts[$i] }
+            Consider $value $silenceList ([ref]$silenceMax)
+        }
+    }
+    return @{
+        Freeze = $freezeMax
+        Silence = $silenceMax
+        FreezeList = ($freezeList -join ", ")
+        SilenceList = ($silenceList -join ", ")
+    }
 }
 
 try {
@@ -78,7 +139,12 @@ try {
     $okRes = ($width -eq 1080 -and $height -eq 1920)
     $okFps = ([math]::Abs($fps - 60.0) -lt 0.05)
     $okDur = ($duration -ge 75.0 -and $duration -le 95.0)
-    $ok = $okRes -and $okFps -and $okDur -and $hasAudio
+    $detected = Get-MediaMax $outName $duration
+    $freezeMax = [double]$detected.Freeze
+    $silenceMax = [double]$detected.Silence
+    $okFreeze = ($freezeMax -lt 2.0)
+    $okSilence = ($silenceMax -lt 2.0)
+    $ok = $okRes -and $okFps -and $okDur -and $hasAudio -and $okFreeze -and $okSilence
 
     $timing = [System.IO.File]::ReadAllText((Join-Path $Root "out\temp_audio\audio_timing.json"), $utf8read) | ConvertFrom-Json
     $cutLines = New-Object System.Collections.Generic.List[string]
@@ -96,6 +162,8 @@ try {
     if (-not $okFps) { $reasons.Add("フレームレートが $(Format-Num $fps 3)") }
     if (-not $okDur) { $reasons.Add("尺が $(Format-Num $duration 3)秒") }
     if (-not $hasAudio) { $reasons.Add("音声ストリームがない") }
+    if (-not $okFreeze) { $reasons.Add("フリーズが $(Format-Num $freezeMax 2)秒") }
+    if (-not $okSilence) { $reasons.Add("無音が $(Format-Num $silenceMax 2)秒") }
 
     function Mark([bool]$Flag) { if ($Flag) { "OK" } else { "NG" } }
     $audioLabel = "なし"
@@ -108,7 +176,15 @@ try {
     $report += "- 解像度: ${width}x${height} （基準 1080x1920） $(Mark $okRes)" + $nl
     $report += "- フレームレート: $(Format-Num $fps 3) （基準 60） $(Mark $okFps)" + $nl
     $report += "- 尺: $(Format-Num $duration 3)秒 （基準 75.0〜95.0） $(Mark $okDur)" + $nl
+    $freezeShown = $detected.FreezeList
+    if (-not $freezeShown) { $freezeShown = "なし" }
+    $silenceShown = $detected.SilenceList
+    if (-not $silenceShown) { $silenceShown = "なし" }
     $report += "- 音声ストリーム: $audioLabel $(Mark $hasAudio)" + $nl
+    $report += "- 最長フリーズ: $(Format-Num $freezeMax 2)秒 （基準 2.0秒未満、noise=-60dB d=2） $(Mark $okFreeze)" + $nl
+    $report += "- 検出したフリーズ: $freezeShown" + $nl
+    $report += "- 最長無音: $(Format-Num $silenceMax 2)秒 （基準 2.0秒未満、noise=-50dB d=2） $(Mark $okSilence)" + $nl
+    $report += "- 検出した無音: $silenceShown" + $nl
     $report += "- PRバッジ（ジョブ指定）: $prText" + $nl
     if ($ok) { $report += "- 総合: PASS" + $nl } else { $report += "- 総合: FAIL" + $nl }
     $report += $nl + "## 各カット" + $nl
@@ -127,16 +203,16 @@ try {
     }
 
     if ($ok) {
-        Write-Outputs "PASS" $jobId $duration $prText $report
+        Write-Outputs "PASS" $jobId $duration $prText $freezeMax $silenceMax $report
         exit 0
     }
-    Write-Outputs "FAIL" $jobId $duration $prText $report
+    Write-Outputs "FAIL" $jobId $duration $prText $freezeMax $silenceMax $report
     exit 1
 } catch {
     $message = $_.Exception.Message
     $nl = "`n"
     $report = "# yorunotana 検証レポート" + $nl + $nl + "失敗: $message" + $nl
-    Write-Outputs "FAIL" $jobId $duration $prText $report
+    Write-Outputs "FAIL" $jobId $duration $prText 0.0 0.0 $report
     Write-Host $message
     exit 1
 }

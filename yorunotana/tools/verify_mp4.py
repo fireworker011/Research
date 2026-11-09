@@ -1,13 +1,15 @@
 """build-yorunotana.ps1 と同じ ffprobe 検査を Python で行う。
 
-合格は 1080x1920、60fps、75.0〜95.0秒、音声ストリームあり。
-LAST_RESULT.txt は `PASS | <job_id>.mp4 | 86.8s | PR:True` の1行。
+合格は 1080x1920、60fps、75.0〜95.0秒、音声あり、
+2.0秒以上のフリーズなし、2.0秒以上の無音なし。
+尺が足りないときは測った長さのまま FAIL する。
 """
 
 from __future__ import annotations
 
 import argparse
 import json
+import re
 import subprocess
 import sys
 from pathlib import Path
@@ -30,6 +32,48 @@ def fps_of(stream: dict) -> float:
     if den_f == 0:
         return 0.0
     return float(num) / den_f
+
+
+def _spans(log: str, kind: str, total: float) -> list[float]:
+    number = r"([0-9]+(?:\.[0-9]+)?)"
+    starts = [float(value) for value in re.findall(rf"{kind}_start:\s*{number}", log)]
+    ends = [float(value) for value in re.findall(rf"{kind}_end:\s*{number}", log)]
+    durations = [float(value) for value in re.findall(rf"{kind}_duration:\s*{number}", log)]
+    if durations and len(durations) >= len(starts):
+        return durations
+    spans: list[float] = []
+    for index, start in enumerate(starts):
+        if index < len(ends):
+            spans.append(ends[index] - start)
+        elif index < len(durations):
+            spans.append(durations[index])
+        else:
+            spans.append(max(0.0, total - start))
+    return spans or durations
+
+
+def detect_freeze_and_silence(video: Path) -> tuple[list[float], list[float], str]:
+    """freezedetect n=-60dB d=2 と silencedetect n=-50dB d=2。秒のリストを返す。"""
+    result = subprocess.run(
+        [
+            "ffmpeg", "-hide_banner", "-nostats",
+            "-i", str(video),
+            "-vf", "freezedetect=n=-60dB:d=2",
+            "-af", "silencedetect=n=-50dB:d=2",
+            "-f", "null", "-",
+        ],
+        capture_output=True,
+        text=True,
+    )
+    log = (result.stderr or "") + "\n" + (result.stdout or "")
+    if result.returncode != 0 and "freeze_start" not in log and "silence_start" not in log:
+        raise SystemExit(f"ffmpeg のフリーズ/無音検出が失敗しました:\n{log[-1500:]}")
+    total = 0.0
+    info = probe(video)
+    total = float((info.get("format") or {}).get("duration") or 0.0)
+    freezes = _spans(log, "freeze", total)
+    silences = _spans(log, "silence", total)
+    return freezes, silences, log
 
 
 def cuts(timing_path: Path | None) -> list[str]:
@@ -65,6 +109,10 @@ def main() -> int:
     duration = 0.0
     fps = 0.0
     has_audio = False
+    freezes: list[float] = []
+    silences: list[float] = []
+    freeze_max = 0.0
+    silence_max = 0.0
     if not video.exists():
         reasons.append("MP4が存在しない")
     else:
@@ -87,8 +135,18 @@ def main() -> int:
             reasons.append(f"尺が {duration:.3f}秒")
         if not has_audio:
             reasons.append("音声ストリームがない")
+        freezes, silences, _log = detect_freeze_and_silence(video)
+        freeze_max = max(freezes) if freezes else 0.0
+        silence_max = max(silences) if silences else 0.0
+        if freeze_max >= 2.0:
+            reasons.append(f"フリーズが {freeze_max:.2f}秒")
+        if silence_max >= 2.0:
+            reasons.append(f"無音が {silence_max:.2f}秒")
     status = "PASS" if not reasons else "FAIL"
-    line = f"{status} | {job_id}.mp4 | {duration:.1f}s | PR:{pr_text}"
+    line = (
+        f"{status} | {job_id}.mp4 | {duration:.1f}s | PR:{pr_text}"
+        f" | freeze={freeze_max:.2f}s | silence={silence_max:.2f}s"
+    )
     mark = lambda ok: "OK" if ok else "NG"
     report = "\n".join(
         [
@@ -101,6 +159,10 @@ def main() -> int:
             f"- フレームレート: {fps:.3f} （基準 60） {mark(abs(fps - 60.0) < 0.05)}",
             f"- 尺: {duration:.3f}秒 （基準 75.0〜95.0） {mark(75.0 <= duration <= 95.0)}",
             f"- 音声ストリーム: {'あり' if has_audio else 'なし'} {mark(has_audio)}",
+            f"- 最長フリーズ: {freeze_max:.2f}秒 （基準 2.0秒未満、noise=-60dB d=2） {mark(freeze_max < 2.0)}",
+            f"- 検出したフリーズ: {', '.join(f'{value:.2f}s' for value in freezes) if freezes else 'なし'}",
+            f"- 最長無音: {silence_max:.2f}秒 （基準 2.0秒未満、noise=-50dB d=2） {mark(silence_max < 2.0)}",
+            f"- 検出した無音: {', '.join(f'{value:.2f}s' for value in silences) if silences else 'なし'}",
             f"- PRバッジ（ジョブ指定）: {pr_text}",
             f"- 総合: {status}",
             "",
