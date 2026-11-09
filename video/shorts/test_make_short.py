@@ -13,14 +13,15 @@ if str(ROOT) not in sys.path:
 
 from video.shorts.make_short import (
     PROFILES,
+    accent_spans,
     adult_marker,
+    asset_rows,
     build_cues,
-    choose_takes,
+    judge_body,
+    Scene,
     parse_script,
-    place_takes,
     pr_problem,
     render_srt,
-    variants_of,
     video_filter,
 )
 
@@ -40,31 +41,38 @@ class MakeShortTests(unittest.TestCase):
         self.assertTrue(doc.scenes[-1].pr_only)
         self.assertTrue(any(cap.text == "三脚とセルフタイマー" for cap in doc.captions))
 
-    def test_variants_drop_the_leading_conjunction(self) -> None:
-        found = variants_of("だから、撮ってくれる人に頼んだ。")
-        self.assertIn("撮ってくれる人に頼んだ。", found)
-        self.assertEqual(found[0], "だから、撮ってくれる人に頼んだ。")
+    def test_body_over_8_5_seconds_fails_and_names_the_long_line(self) -> None:
+        code, rows = judge_body([("長い一文です。", 6.0), ("次も長いです。", 6.0)], 0.2, 0.2)
+        self.assertEqual(code, 1)
+        self.assertTrue(any(row.startswith("DUR FAIL") and "超え" in row for row in rows))
+        self.assertTrue(any(row.startswith("LINE FAIL") and "次も長いです。" in row for row in rows))
 
-    def test_choose_keeps_the_original_when_it_fits(self) -> None:
-        options = [[("そのまま。", 1.0), ("短い。", 0.4)]]
-        picked = choose_takes(options, limit=2.0)
-        self.assertIsNotNone(picked)
-        assert picked is not None
-        chosen, _start, _gap = picked
-        self.assertEqual(chosen[0][0], "そのまま。")
+    def test_body_inside_8_5_seconds_passes(self) -> None:
+        code, rows = judge_body([("短い。", 1.2), ("次。", 1.0)], 0.2, 0.2)
+        self.assertEqual(code, 0)
+        self.assertTrue(all("FAIL" not in row for row in rows))
 
-    def test_choose_shortens_until_the_speech_ends_before_the_pr(self) -> None:
-        options = [
-            [("長い一文です。", 6.0), ("短い。", 1.2)],
-            [("次も長いです。", 6.0), ("次。", 1.0)],
-        ]
-        picked = choose_takes(options, limit=8.5)
-        self.assertIsNotNone(picked)
-        assert picked is not None
-        chosen, start, gap = picked
-        placed = place_takes(chosen, start, gap)
-        self.assertLessEqual(placed[-1][2], 8.5)
-        self.assertLess(sum(item[1] for item in chosen), 12.0)
+    def test_accent_phrase_lengths_add_up(self) -> None:
+        query = {
+            "accent_phrases": [
+                {
+                    "moras": [
+                        {"text": "シャ", "consonant_length": 0.1, "vowel_length": 0.2},
+                        {"text": "シン", "consonant_length": 0.1, "vowel_length": 0.3},
+                    ],
+                    "pause_mora": {"vowel_length": 0.1},
+                }
+            ]
+        }
+        spans = accent_spans(query)
+        self.assertEqual(len(spans), 1)
+        self.assertEqual(spans[0][0], "シャシン")
+        self.assertAlmostEqual(spans[0][2], 0.8, places=5)
+
+    def test_missing_box_path_is_an_asset_fail(self) -> None:
+        scenes = [Scene(0.0, 4.0, "公園", False)]
+        rows = asset_rows(scenes, [{"path": "", "source": {"where": "自作", "id": ""}}])
+        self.assertTrue(any(row.startswith("ASSET FAIL") for row in rows))
 
     def test_konkatsu_pr_is_only_the_last_two_seconds(self) -> None:
         doc = parse_script(SCRIPT.read_text(encoding="utf-8"))

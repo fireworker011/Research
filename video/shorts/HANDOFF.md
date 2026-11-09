@@ -1,21 +1,42 @@
-# 短尺の1本目
+# 短尺の直し（fix2 と fix3）
 
-投稿していない。テンプレの `video/HANDOFF.md` と `tools/check_video.sh` は書き換えていない。
+投稿していない。マージしていない。有料契約はしていない。テンプレの `video/HANDOFF.md` と `tools/check_video.sh` は書き換えていない。
 
-## メモ
+金メモの実額は未実装、本人の確認待ち。PR #321 のダミー（100、200、300）のまま。
 
-- Krea と Drive の画像は添付に無かった。jobs.json の path が空なので、顔の無い平面の絵を枠いっぱいに使った。切り抜き合成はしていない。有料プランには上げていない。
-- VOICEVOX の CPU エンジンは 127.0.0.1:50021 に無い。予備の edge-tts（ja-JP-NanamiNeural、等倍）にした。有料の声は使っていない。
-- 原文のままだと等倍で 8.5 秒までに終わらない。早回しはせず、言葉を削った。採用した読み: 「友だちに写真頼むの。」1.69秒、「だから撮ってくれる人に頼んだ。」2.07秒、「外の光で撮ってもらった。」1.85秒、「三脚は、持ってこなくていい。」2.11秒。間は 0.20 秒。
-- 台本が指す subs/*.srt は添付に無かった。字幕の節から作り、映像に焼いたものと同じ内容を video/shorts/subs/2026-11-03-婚活-tanomeru-hito.srt に書いた。PR は 8.5〜10.5 秒だけ。
-- 音量のやり直し: 0 回（上限 3）。BGM は自作の正弦波で、声の実効値の約15%。
-- 投稿・公開はしていない。A8 の URL は置いていない。
+## 1. setup
 
-## 音量
+`bash video/shorts/setup_voicevox.sh`
 
-I=-14.40 LUFS / TP=-2.50 dBFS
+```
+PASS 生存確認 http://127.0.0.1:50021/version "0.26.1"
+```
 
-## check_video.sh
+exit=0
+
+公式の Linux CPU 版 0.26.1。話者は `video/shorts/lines.json`。冥鳴ひまりは 14、青山龍星は 13、四国めたんの標準は 2。エンジンで確認した。
+
+## 2. 本番（tanomeru-hito、素材が無い）
+
+`python3 make_short.py video/shorts/scripts/2026-11-03-婚活-tanomeru-hito.md konkatsu --jobs video/shorts/jobs/2026-11-03-婚活-tanomeru-hito.json`
+
+```
+ASSET FAIL カット1の箱のパスが無い
+SRC PASS カット1 自作 （自作・IDなし）
+ASSET FAIL カット2の箱のパスが無い
+SRC PASS カット2 自作 （自作・IDなし）
+ASSET FAIL カット3の箱のパスが無い
+SRC PASS カット3 自作 （自作・IDなし）
+結果: FAIL 素材が欠けているので止める。仮の絵は --dry だけ。
+```
+
+exit=1
+
+## 3. --dry の検品
+
+`python3 make_short.py video/shorts/fixtures/dry-fit.md konkatsu --jobs video/shorts/fixtures/dry-fit.json --dry --final`
+
+本編の声は 2.79 秒で 8.5 秒以内。ファイル名は `dry-fit_DRY.mp4`。声は edge-tts。
 
 ```
 M1   PASS コンテナ=mov,mp4,m4a,3gp,3g2,mj2（mp4系）
@@ -25,12 +46,43 @@ M4   PASS fps=30.00
 M5   PASS 長さ=10.500000秒（8〜60秒）
 M6   PASS 音声=aac
 M7   PASS pix_fmt=yuv420p
-M8   PASS 平均音量=-14.9dB
+M8   PASS 平均音量=-13.3dB
 M9   PASS 冒頭1秒に0.5秒以上の黒画面なし
 M10  PASS 縦長（9:16）
----
-ファイル: /agent/repos/Research/output/00_確認待ち/2026-11-03_婚活/2026-11-03-婚活-tanomeru-hito.mp4 / ライン: konkatsu / 機械チェック 10行
+M11  PASS I=-14.0 LUFS / TP=-1.5 dBTP（-14±1、TP≦-1.5）
+M12  PASS 映像=10.500000秒 音声=10.500000秒（差≦0.05秒）
+M13  PASS 長さ=10.500000秒（上限10.5秒）
 結果: 機械チェックは全行PASS。続けて checklist の手で見る行を確認する。
 ```
 
 exit=0
+
+## 4. 尺を超えたダミーの lint
+
+`python3 make_short.py video/shorts/fixtures/over-duration.md konkatsu --dry --lint-duration`
+
+```
+DUR FAIL 本編の終わりが11.26秒（上限8.5秒、2.76秒超え、声の合計10.46秒）
+LINE PASS 「友だちに写真頼むの、気まずくて。」 2.55秒
+LINE PASS 「だから、撮ってくれる人に頼んだ。」 2.36秒
+LINE FAIL 「外の光で、撮ってもらった感じの写真。」 3.12秒（残り2.99秒に入らない）
+LINE FAIL 「三脚は、もう持ってこなくていい。」 2.43秒（残り0.00秒に入らない）
+結果: FAIL 尺を超えた。言葉は削らない。台本に戻す。
+```
+
+exit=1
+
+## 足した check の FAIL 実測
+
+合格の mp4 を 13 秒に延ばし、音を上げ、音声を映像より短くしたファイル。
+
+```
+M11  FAIL I=-8.0 LUFS / TP=8.6 dBTP（-14±1、TP≦-1.5）
+M12  FAIL 映像=13.000000秒 音声=11.717000秒（差≦0.05秒）
+M13  FAIL 長さ=13.000000秒（上限10.5秒、短尺の本番は --final の上限）
+結果: FAIL 3行（M11 M12 M13）→ 止める。上のFAIL行を報告して直す。
+```
+
+exit=1
+
+全文は `review/fail-demo/check.txt`。合格側は `review/dry-fit/check.txt`。

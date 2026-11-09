@@ -1,8 +1,17 @@
 {
   "clips": [
-    {"paint": "park-tripod"},
-    {"paint": "photographer"},
-    {"paint": "monitor"}
+    {
+      "path": "",
+      "source": {"where": "自作", "id": "", "note": "箱のファイルはまだ無い"}
+    },
+    {
+      "path": "",
+      "source": {"where": "自作", "id": "", "note": "箱のファイルはまだ無い"}
+    },
+    {
+      "path": "",
+      "source": {"where": "自作", "id": "", "note": "箱のファイルはまだ無い"}
+    }
   ],
-  "note": "Krea と Drive のファイルは添付に無かった。path に画像か動画を書くと、そのファイルを枠に合わせて使う。切り抜きはしない。"
+  "note": "path は箱のローカルパス。出どころは Krea / Grok Imagine / 自作（生成ID）か Drive の ID。Drive からの取り込みは動画部隊がやる。パスが空だと本番は止まる。仮の絵は --dry だけ。"
 }

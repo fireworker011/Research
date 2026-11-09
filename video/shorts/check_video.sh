@@ -63,6 +63,45 @@ if [[ "$line" == h3 ]]; then
 else
   [[ "${h:-0}" -gt "${w:-0}" ]] && out M10 PASS "縦長（9:16）" || out M10 FAIL "縦長ではない"
 fi
+# M11 音量。-14±1 LUFS、TP は -1.5 dBTP 以下（fix3 を優先）
+ebur=$(ffmpeg -nostats -hide_banner -i "$f" -af ebur128=peak=true -f null - 2>&1 || true)
+lufs=$(printf '%s\n' "$ebur" | awk '/I:/ && /LUFS/ {v=$2} END{print v}')
+tp=$(printf '%s\n' "$ebur" | awk 'BEGIN{p=0} /True peak:/{p=1} p && /Peak:/ {v=$2} END{print v}')
+if python3 - "$lufs" "$tp" << 'PY'
+import sys
+try:
+    i = float(sys.argv[1]); tp = float(sys.argv[2])
+except ValueError:
+    sys.exit(1)
+sys.exit(0 if (-15.0 <= i <= -13.0 and tp <= -1.5) else 1)
+PY
+then out M11 PASS "I=${lufs} LUFS / TP=${tp} dBTP（-14±1、TP≦-1.5）"
+else out M11 FAIL "I=${lufs:-測れず} LUFS / TP=${tp:-測れず} dBTP（-14±1、TP≦-1.5）"; fi
+# M12 音声と映像の尺の差
+vd=$(ffprobe -v error -select_streams v:0 -show_entries stream=duration -of csv=p=0 "$f" 2>/dev/null || true)
+ad=$(ffprobe -v error -select_streams a:0 -show_entries stream=duration -of csv=p=0 "$f" 2>/dev/null || true)
+if python3 - "$vd" "$ad" << 'PY'
+import sys
+try:
+    v = float(sys.argv[1]); a = float(sys.argv[2])
+except ValueError:
+    sys.exit(1)
+sys.exit(0 if abs(v - a) <= 0.05 else 1)
+PY
+then out M12 PASS "映像=${vd}秒 音声=${ad}秒（差≦0.05秒）"
+else out M12 FAIL "映像=${vd:-なし}秒 音声=${ad:-なし}秒（差≦0.05秒）"; fi
+# M13 短尺の上限。婚活は 10.5 秒
+case "$line" in
+  h3) CAP=80 ;;
+  *) CAP=10.5 ;;
+esac
+if python3 - "${dur:-0}" "$CAP" << 'PY'
+import sys
+d, cap = float(sys.argv[1]), float(sys.argv[2])
+sys.exit(0 if d <= cap + 0.001 else 1)
+PY
+then out M13 PASS "長さ=${dur}秒（上限${CAP}秒）"
+else out M13 FAIL "長さ=${dur}秒（上限${CAP}秒、短尺の本番は --final の上限）"; fi
 
 echo "---"
 echo "ファイル: $f / ライン: $line / 機械チェック ${n}行"

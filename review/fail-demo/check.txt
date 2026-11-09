@@ -1,0 +1,16 @@
+M1   PASS コンテナ=mov,mp4,m4a,3gp,3g2,mj2（mp4系）
+M2   PASS 映像コーデック=h264（許可: h264）
+M3   PASS 解像度=1080x1920
+M4   PASS fps=30.00
+M5   PASS 長さ=13.000000秒（8〜60秒）
+M6   PASS 音声=aac
+M7   PASS pix_fmt=yuv420p
+M8   PASS 平均音量=-7.6dB
+M9   PASS 冒頭1秒に0.5秒以上の黒画面なし
+M10  PASS 縦長（9:16）
+M11  FAIL I=-8.0 LUFS / TP=8.6 dBTP（-14±1、TP≦-1.5）
+M12  FAIL 映像=13.000000秒 音声=11.717000秒（差≦0.05秒）
+M13  FAIL 長さ=13.000000秒（上限10.5秒、短尺の本番は --final の上限）
+---
+ファイル: /tmp/check-fail.mp4 / ライン: konkatsu / 機械チェック 13行
+結果: FAIL 3行（M11 M12 M13）→ 止める。上のFAIL行を報告して直す。

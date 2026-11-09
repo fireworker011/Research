@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """台本.md と jobs.json から縦の短い動画を作る。
 
-声は VOICEVOX の CPU エンジン（起動しているとき）。無いときは edge-tts。
-等倍のまま置く。10.5秒に入らないときは言葉を削る。早回しはしない。
+声は VOICEVOX。本番でエンジンが無いときは止まる。edge-tts は --dry だけ。
+台本の言葉は削らない。本編8.5秒を超えたら lint が FAIL。
 書き出しの直後に検品を実行する。投稿はしない。
 """
 
@@ -35,8 +35,6 @@ RATE = 48000
 VOICEVOX_URL = "http://127.0.0.1:50021"
 ADULT_MARKERS = ("ヌード", "全裸", "性交", "アダルトビデオ", "エロ動画")
 DASH = r"[\-\u2013\u2014〜~]"
-PREFIXES = ("だから、", "だから", "でも、", "でも", "それで、", "それで")
-SOFT_WORDS = ("感じの", "もう、", "もう")
 EDGE_VOICE = {
     "yorunotana": "ja-JP-KeitaNeural",
 }
@@ -219,83 +217,6 @@ def is_pr_text(text: str) -> bool:
     if "#PR" in text:
         return True
     return visible == "PR" or visible.startswith("PR｜") or visible.startswith("PR|")
-
-
-def variants_of(text: str) -> list[str]:
-    found: list[str] = []
-
-    def add(item: str) -> None:
-        cleaned = re.sub(r"\s+", "", item).strip("、")
-        if not cleaned:
-            return
-        if cleaned[-1] not in "。？！":
-            cleaned += "。"
-        if cleaned not in found:
-            found.append(cleaned)
-
-    add(text)
-    for prefix in PREFIXES:
-        if text.startswith(prefix):
-            add(text[len(prefix) :])
-    for soft in SOFT_WORDS:
-        if soft in text:
-            add(text.replace(soft, "", 1))
-    parts = [part.strip() for part in text.rstrip("。？！").split("、") if part.strip()]
-    if len(parts) >= 2:
-        add(parts[0])
-        add(parts[-1])
-        add("".join(parts))
-        second = parts[-1]
-        for soft in SOFT_WORDS:
-            second = second.replace(soft, "")
-        add(parts[0] + second.replace("写真", ""))
-    return found
-
-
-def choose_takes(
-    options: list[list[tuple[str, float]]],
-    limit: float,
-) -> tuple[list[tuple[str, float]], float, float] | None:
-    """各行は原文を先に置く。入らないときだけ、より短い候補へ替える。"""
-    chosen = [line[0] for line in options]
-    guard = 0
-    while guard < 40:
-        guard += 1
-        placed = _fit_gap(chosen, limit)
-        if placed is not None:
-            return placed
-        longest = max(range(len(chosen)), key=lambda index: chosen[index][1])
-        text, duration = chosen[longest]
-        original = options[longest][0][0]
-        head = original.rstrip("。？！")
-        for prefix in PREFIXES:
-            if head.startswith(prefix):
-                head = head[len(prefix) :]
-                break
-        head = head.split("、")[0]
-        shorter = [
-            item
-            for item in options[longest]
-            if item[0] != text and item[1] <= duration - 0.05
-        ]
-        if not shorter:
-            return None
-        shorter.sort(key=lambda item: (head in item[0], item[1]), reverse=True)
-        chosen[longest] = shorter[0]
-    return None
-
-
-def _fit_gap(
-    chosen: list[tuple[str, float]],
-    limit: float,
-) -> tuple[list[tuple[str, float]], float, float] | None:
-    speech = sum(item[1] for item in chosen)
-    gaps = max(0, len(chosen) - 1)
-    for gap, start in ((0.40, 0.25), (0.30, 0.20), (0.20, 0.15), (0.15, 0.12)):
-        end = start + speech + gap * gaps
-        if end <= limit + 1e-6:
-            return chosen, start, gap
-    return None
 
 
 def place_takes(
@@ -592,11 +513,18 @@ def voicevox_speaker_ids(base: str) -> set[int]:
     return found
 
 
-def synthesize_voicevox(text: str, speaker: int, dest: Path, base: str) -> None:
+def voicevox_audio_query(text: str, speaker: int, base: str) -> dict[str, object]:
     query_url = base + "/audio_query?" + urllib.parse.urlencode({"text": text, "speaker": speaker})
     request = urllib.request.Request(query_url, data=b"", method="POST")
     with urllib.request.urlopen(request, timeout=60) as response:
-        query = response.read()
+        payload = json.loads(response.read().decode("utf-8"))
+    if not isinstance(payload, dict):
+        raise RuntimeError("VOICEVOX の audio_query がオブジェクトではない")
+    return payload
+
+
+def synthesize_voicevox(text: str, speaker: int, dest: Path, base: str) -> None:
+    query = json.dumps(voicevox_audio_query(text, speaker, base)).encode("utf-8")
     synth_url = base + "/synthesis?" + urllib.parse.urlencode({"speaker": speaker})
     synth = urllib.request.Request(
         synth_url,
@@ -702,12 +630,28 @@ def mix_bed(
 
 
 def loudnorm_two_pass(src: Path, dest: Path, integrated: float, true_peak: float) -> None:
+    # 声が短いと無音区間が平均を下げる。先に軽く圧縮してから2パスする。
+    pre = dest.with_name(dest.stem + "-pre.wav")
+    subprocess.check_call(
+        [
+            "ffmpeg",
+            "-y",
+            "-hide_banner",
+            "-loglevel",
+            "error",
+            "-i",
+            str(src),
+            "-af",
+            "acompressor=threshold=-20dB:ratio=4:attack=5:release=80:makeup=6",
+            str(pre),
+        ]
+    )
     probe = subprocess.run(
         [
             "ffmpeg",
             "-hide_banner",
             "-i",
-            str(src),
+            str(pre),
             "-af",
             f"loudnorm=I={integrated}:TP={true_peak}:LRA=11:print_format=json",
             "-f",
@@ -736,7 +680,7 @@ def loudnorm_two_pass(src: Path, dest: Path, integrated: float, true_peak: float
             "-loglevel",
             "error",
             "-i",
-            str(src),
+            str(pre),
             "-af",
             audio_filter,
             "-ar",
@@ -769,18 +713,17 @@ def measure_loudness(path: Path) -> tuple[float | None, float | None]:
 def loudness_ok(integrated: float | None, true_peak: float | None) -> bool:
     if integrated is None or true_peak is None:
         return False
-    return abs(integrated - (-14.0)) <= 0.6 and -6.0 <= true_peak <= -1.5
+    return -15.0 <= integrated <= -13.0 and true_peak <= -1.5
 
 
 def gain_db(integrated: float | None, true_peak: float | None) -> float:
     gain = 0.0
-    if integrated is not None and integrated > -13.4:
+    if integrated is not None and integrated > -13.0:
         gain = -14.0 - integrated
     if true_peak is not None and true_peak > -1.5:
-        gain = min(gain, -1.5 - true_peak - 0.4)
-    if integrated is not None and integrated < -14.6 and true_peak is not None and true_peak < -2.3:
-        headroom = -1.9 - true_peak
-        gain = min(-14.0 - integrated, max(0.0, headroom))
+        gain = min(gain, -1.5 - true_peak - 0.3)
+    if integrated is not None and integrated < -15.0 and true_peak is not None and true_peak < -2.2:
+        gain = min(-14.0 - integrated, max(0.0, -1.8 - true_peak))
     return gain
 
 
@@ -964,6 +907,7 @@ def mux_audio(picture: Path, audio: Path, dest: Path, profile: Profile) -> None:
             "48000",
             "-t",
             f"{profile.duration:.3f}",
+            "-shortest",
             "-movflags",
             "+faststart",
             str(dest),
@@ -1043,7 +987,7 @@ def prepare_media(
         if duration <= 0.05:
             raise RuntimeError(f"カット{index + 1}の長さが無い")
         clip = jobs[index] if index < len(jobs) else {}
-        given = clip.get("path", "").strip()
+        given = str(clip.get("path") or "").strip()
         dest = work / f"cut{index}.ppm"
         if given:
             source = Path(given)
@@ -1057,6 +1001,145 @@ def prepare_media(
     return cuts
 
 
+BODY_LIMIT = 8.5
+LINE_FILE = ROOT / "video" / "shorts" / "lines.json"
+SOURCE_KINDS = ("Krea", "Grok Imagine", "自作", "Drive")
+
+
+def load_line(line: str) -> dict[str, object]:
+    payload = json.loads(LINE_FILE.read_text(encoding="utf-8"))
+    found = payload.get(line)
+    if not isinstance(found, dict) or "speaker_id" not in found:
+        raise RuntimeError(f"ラインの話者が lines.json に無い: {line}")
+    return found
+
+
+def judge_body(
+    lines: list[tuple[str, float]],
+    start: float,
+    gap: float,
+    limit: float = BODY_LIMIT,
+) -> tuple[int, list[str]]:
+    """本編 8.5 秒を超えたら FAIL。言葉は変えない。"""
+    voice = sum(duration for _text, duration in lines)
+    gaps = gap * max(0, len(lines) - 1)
+    end = start + voice + gaps
+    over = end - limit
+    rows: list[str] = []
+    code = 0
+    if over > 0.001:
+        code = 1
+        rows.append(
+            f"DUR FAIL 本編の終わりが{end:.2f}秒（上限{limit:.1f}秒、{over:.2f}秒超え、声の合計{voice:.2f}秒）"
+        )
+    else:
+        rows.append(f"DUR PASS 本編の終わりが{end:.2f}秒（上限{limit:.1f}秒、声の合計{voice:.2f}秒）")
+    clock = start
+    for text, duration in lines:
+        if clock + duration > limit + 0.001:
+            code = 1
+            rows.append(f"LINE FAIL 「{text}」 {duration:.2f}秒（残り{max(limit - clock, 0):.2f}秒に入らない）")
+        else:
+            rows.append(f"LINE PASS 「{text}」 {duration:.2f}秒")
+        clock += duration + gap
+    return code, rows
+
+
+def accent_spans(query: dict[str, object]) -> list[tuple[str, float, float]]:
+    """VOICEVOX の audio_query から、アクセント句の開始と終わりを取る。"""
+    phrases = query.get("accent_phrases")
+    if not isinstance(phrases, list):
+        return []
+    clock = 0.0
+    spans: list[tuple[str, float, float]] = []
+    for phrase in phrases:
+        if not isinstance(phrase, dict):
+            continue
+        chars: list[str] = []
+        length = 0.0
+        moras = phrase.get("moras")
+        if isinstance(moras, list):
+            for mora in moras:
+                if not isinstance(mora, dict):
+                    continue
+                chars.append(str(mora.get("text") or ""))
+                length += float(mora.get("consonant_length") or 0)
+                length += float(mora.get("vowel_length") or 0)
+        pause = phrase.get("pause_mora")
+        if isinstance(pause, dict):
+            length += float(pause.get("vowel_length") or 0)
+        spans.append(("".join(chars), clock, clock + length))
+        clock += length
+    return spans
+
+
+def source_of(clip: dict[str, object]) -> tuple[str, str]:
+    raw = clip.get("source")
+    if not isinstance(raw, dict):
+        return "", ""
+    where = str(raw.get("where") or "")
+    ident = str(raw.get("id") or "")
+    return where, ident
+
+
+def asset_rows(scenes: list[Scene], clips: list[dict[str, object]]) -> list[str]:
+    content = [scene for scene in scenes if not scene.pr_only] or scenes
+    rows: list[str] = []
+    for index, _scene in enumerate(content):
+        clip = clips[index] if index < len(clips) else {}
+        path = str(clip.get("path") or "").strip()
+        where, ident = source_of(clip)
+        if not path:
+            rows.append(f"ASSET FAIL カット{index + 1}の箱のパスが無い")
+        elif not Path(path).is_file():
+            rows.append(f"ASSET FAIL カット{index + 1}のファイルが無い: {path}")
+        else:
+            rows.append(f"ASSET PASS カット{index + 1} {path}")
+        if where not in SOURCE_KINDS:
+            rows.append(f"SRC FAIL カット{index + 1}の出どころが無い（Krea / Grok Imagine / 自作 / Drive）")
+        elif where != "自作" and not ident:
+            rows.append(f"SRC FAIL カット{index + 1}の ID が無い")
+        else:
+            rows.append(f"SRC PASS カット{index + 1} {where} {ident or '（自作・IDなし）'}")
+    return rows
+
+
+def write_sources(path: Path, scenes: list[Scene], clips: list[dict[str, object]], dry: bool) -> None:
+    content = [scene for scene in scenes if not scene.pr_only] or scenes
+    lines = [
+        "# 素材の出どころ",
+        "",
+        "Drive から箱への取り込みは動画部隊がやる。このファイルは箱のパスと出どころだけ。",
+        "",
+        "| カット | 箱のパス | 出どころ | ID |",
+        "| --- | --- | --- | --- |",
+    ]
+    for index, _scene in enumerate(content):
+        clip = clips[index] if index < len(clips) else {}
+        given = str(clip.get("path") or "").strip()
+        where, ident = source_of(clip)
+        if dry and not given:
+            given = "（--dry の仮の絵。本番のパスは無い）"
+            where = where or "自作"
+            ident = ident or f"dry-paint-{index + 1}"
+        lines.append(f"| {index + 1} | {given or '（無い）'} | {where or '（無い）'} | {ident or ''} |")
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text("\n".join(lines) + "\n", encoding="utf-8")
+
+
+def write_review(folder: Path, mp4: Path | None, check_text: str, sources: Path) -> None:
+    folder.mkdir(parents=True, exist_ok=True)
+    if mp4 is not None and mp4.is_file():
+        target = folder / mp4.name
+        if target.resolve() != mp4.resolve():
+            target.write_bytes(mp4.read_bytes())
+    (folder / "check.txt").write_text(check_text, encoding="utf-8")
+    if sources.is_file():
+        (folder / "sources.md").write_text(sources.read_text(encoding="utf-8"), encoding="utf-8")
+    manual = ROOT / "video" / "shorts" / "manual-rows.md"
+    (folder / "manual.md").write_text(manual.read_text(encoding="utf-8"), encoding="utf-8")
+
+
 def synth_take(text: str, line: str, dest: Path, engine: str, speaker: int | None, voice: str) -> None:
     if engine == "voicevox":
         if speaker is None:
@@ -1066,7 +1149,16 @@ def synth_take(text: str, line: str, dest: Path, engine: str, speaker: int | Non
     synthesize_edge(text, voice, dest)
 
 
-def build(script_path: Path, line: str, jobs_path: Path | None, srt_path: Path | None, out: Path, handoff: Path) -> int:
+def build(
+    script_path: Path,
+    line: str,
+    jobs_path: Path | None,
+    srt_path: Path | None,
+    out: Path,
+    handoff: Path,
+    dry: bool = False,
+    lint_only: bool = False,
+) -> int:
     notes: list[str] = []
     profile = PROFILES.get(line)
     if profile is None:
@@ -1091,16 +1183,28 @@ def build(script_path: Path, line: str, jobs_path: Path | None, srt_path: Path |
         handoff.write_text("セリフが無いので止めた。投稿していない。\n", encoding="utf-8")
         return 1
     found_srt = find_srt(script_path, srt_path)
-    jobs: list[dict[str, str]] = []
+    jobs: list[dict[str, object]] = []
     if jobs_text:
         payload = json.loads(jobs_text)
         jobs = list(payload.get("clips", []))
-    if not any(str(clip.get("path", "")).strip() for clip in jobs):
-        notes.append(
-            "Krea と Drive の画像は添付に無かった。jobs.json の path が空なので、"
-            "顔の無い平面の絵を枠いっぱいに使った。切り抜き合成はしていない。有料プランには上げていない。"
-        )
-    engine, speaker, voice, engine_note = _pick_engine(line)
+    rows = asset_rows(doc.scenes, jobs)
+    sources = out.parent / "sources.md"
+    if not dry and any(row.split()[1] == "FAIL" for row in rows if row.startswith(("ASSET", "SRC"))):
+        report = "\n".join(rows) + "\n結果: FAIL 素材が欠けているので止める。仮の絵は --dry だけ。\n"
+        print(report, end="")
+        write_sources(sources, doc.scenes, jobs, dry=False)
+        write_review(ROOT / "review" / script_path.stem, None, report, sources)
+        _write_handoff(handoff, notes + rows + ["仮の絵は --dry だけ。本番は素材が欠けているので止めた。"], report, None, None, 1)
+        return 1
+    if dry:
+        notes.append("仮の絵は --dry だけ。切り抜きはしていない。有料プランには上げていない。")
+    engine_pick = _pick_engine(line, dry)
+    if engine_pick is None:
+        report = "ENGINE FAIL VOICEVOX が 127.0.0.1:50021 に無い。本番は止まる。edge-tts は --dry だけ。\n"
+        print(report, end="")
+        _write_handoff(handoff, notes + [report.strip()], report, None, None, 1)
+        return 1
+    engine, speaker, voice, engine_note = engine_pick
     notes.append(engine_note)
     work = out.parent / f".work-{script_path.stem}"
     if work.exists():
@@ -1108,38 +1212,49 @@ def build(script_path: Path, line: str, jobs_path: Path | None, srt_path: Path |
             if child.is_file():
                 child.unlink()
     work.mkdir(parents=True, exist_ok=True)
-    options: list[list[tuple[str, float]]] = []
+    measured: list[tuple[str, float]] = []
+    phrase_book: list[list[tuple[str, float, float]]] = []
     cache: dict[str, list[int]] = {}
     for speech in doc.speeches:
-        line_options: list[tuple[str, float]] = []
-        for text in variants_of(speech.text):
-            if text not in cache:
-                media = work / f"voice-{len(cache)}.wav"
-                synth_take(text, line, media, engine, speaker, voice)
-                samples = trim_ends(decode_mono(media))
-                fade_edges(samples)
-                cache[text] = samples
-            line_options.append((text, len(cache[text]) / RATE))
-        options.append(line_options)
-    limit = speech_limit_of(profile)
-    picked = choose_takes(options, limit)
-    if picked is None:
-        _write_handoff(handoff, notes + ["等倍のまま言葉を削っても、声が尺に入らなかった。投稿していない。"], "", None, None, 1)
-        return 1
-    chosen, start, gap = picked
-    placed = place_takes(chosen, start, gap)
-    spoken_note = "、".join(f"「{text}」{span_end - span_start:.2f}秒" for text, span_start, span_end in [
-        (item[0], item[1], item[2]) for item in placed
-    ])
-    originals = [speech.text for speech in doc.speeches]
-    if [item[0] for item in chosen] != originals:
-        notes.append(
-            f"原文のままだと等倍で {limit:.1f} 秒までに終わらない。早回しはせず、言葉を削った。"
-            f"採用した読み: {spoken_note}。間は {gap:.2f} 秒。"
-        )
-    else:
-        notes.append(f"読みは原文のまま。間は {gap:.2f} 秒。{spoken_note}")
+        media = work / f"voice-{len(cache)}.wav"
+        phrases: list[tuple[str, float, float]] = []
+        if engine == "voicevox" and speaker is not None:
+            query = voicevox_audio_query(speech.text, speaker, VOICEVOX_URL)
+            phrases = accent_spans(query)
+        synth_take(speech.text, line, media, engine, speaker, voice)
+        samples = trim_ends(decode_mono(media))
+        fade_edges(samples)
+        cache[speech.text] = samples
+        duration = len(samples) / RATE
+        if phrases:
+            raw_end = phrases[-1][2]
+            scale = duration / raw_end if raw_end else 1.0
+            phrases = [(text, begin * scale, end * scale) for text, begin, end in phrases]
+        else:
+            phrases = [(speech.text, 0.0, duration)]
+        measured.append((speech.text, duration))
+        phrase_book.append(phrases)
+    start, gap = 0.20, 0.20
+    code, lint_rows = judge_body(measured, start, gap)
+    if code != 0:
+        report = "\n".join(lint_rows) + "\n結果: FAIL 尺を超えた。言葉は削らない。台本に戻す。\n"
+        print(report, end="")
+        _write_handoff(handoff, notes + lint_rows + ["言葉は削っていない。台本に戻す。"], report, None, None, code)
+        return code
+    print("\n".join(lint_rows))
+    print("結果: PASS 本編は8.5秒以内。")
+    if lint_only:
+        _write_handoff(handoff, notes + lint_rows, "\n".join(lint_rows) + "\n", None, None, 0)
+        return 0
+    placed = place_takes(measured, start, gap)
+    notes.append("読みは台本のまま。削っていない。間は 0.20 秒。")
     cues = build_cues(doc, placed, profile)
+    for phrases, span in zip(phrase_book, placed):
+        origin = span[1]
+        if len(phrases) <= 1:
+            continue
+        for text, begin, end in phrases:
+            cues.append(Cue(origin + begin, origin + end, text, "bottom"))
     problem = pr_problem(cues, profile)
     if problem:
         _write_handoff(handoff, notes + [f"字幕のPRが規格外: {problem}"], "", None, None, 1)
@@ -1161,7 +1276,7 @@ def build(script_path: Path, line: str, jobs_path: Path | None, srt_path: Path |
     voice_wav = work / "mix.wav"
     norm_wav = work / "norm.wav"
     write_wav(voice_wav, mixed)
-    loudnorm_two_pass(voice_wav, norm_wav, -14.0, -2.6)
+    loudnorm_two_pass(voice_wav, norm_wav, -14.0, -1.5)
     bounds = cut_bounds(doc, placed, profile)
     cuts = prepare_media(doc, jobs, profile, bounds, work)
     picture = work / "picture.mp4"
@@ -1185,34 +1300,37 @@ def build(script_path: Path, line: str, jobs_path: Path | None, srt_path: Path |
         mux_audio(picture, audio_now, out, profile)
         integrated, true_peak = measure_loudness(out)
         code, checker_text = run_checker(line, profile, out)
-    notes.append(f"音量のやり直し: {fixes} 回（上限 3）。BGM は自作の正弦波で、声の実効値の約15%。")
-    notes.append("投稿・公開はしていない。A8 の URL は置いていない。")
+    notes.append(f"音量のやり直し: {fixes} 回（上限 3）。loudnorm は2パス、TP=-1.5、linear=true。BGM は自作の正弦波で、声の約15%。")
+    notes.append("投稿・公開はしていない。A8 の URL は置いていない。金メモの実額は未実装。本人の確認待ち。")
+    write_sources(sources, doc.scenes, jobs, dry=dry)
+    write_review(ROOT / "review" / script_path.stem, out, checker_text, sources)
+    print(checker_text, end="" if checker_text.endswith("\n") else "\n")
+    print(f"exit={code}")
     _write_handoff(handoff, notes, checker_text, integrated, true_peak, code)
     return code
 
 
-def _pick_engine(line: str) -> tuple[str, int | None, str, str]:
-    speaker = VOICEVOX_SPEAKER.get(line, 2)
+def _pick_engine(line: str, dry: bool) -> tuple[str, int | None, str, str] | None:
+    spec = load_line(line)
+    speaker = int(str(spec["speaker_id"]))
+    name = str(spec.get("speaker_name") or speaker)
     voice = EDGE_VOICE.get(line, "ja-JP-NanamiNeural")
-    if voicevox_up(VOICEVOX_URL):
-        try:
-            ids = voicevox_speaker_ids(VOICEVOX_URL)
-        except (urllib.error.URLError, TimeoutError, OSError, json.JSONDecodeError):
-            ids = set()
-        if speaker in ids:
-            return "voicevox", speaker, voice, f"声は VOICEVOX 話者{speaker}。等倍。edge-tts は使っていない。"
+    if dry:
         return (
             "edge-tts",
             None,
             voice,
-            f"VOICEVOX は起動していたが話者{speaker}が無い。予備の edge-tts（{voice}、等倍）にした。",
+            f"声は --dry の edge-tts（{voice}、等倍）。ファイル名に _DRY。本番の声ではない。",
         )
-    return (
-        "edge-tts",
-        None,
-        voice,
-        f"VOICEVOX の CPU エンジンは 127.0.0.1:50021 に無い。予備の edge-tts（{voice}、等倍）にした。有料の声は使っていない。",
-    )
+    if not voicevox_up(VOICEVOX_URL):
+        return None
+    try:
+        ids = voicevox_speaker_ids(VOICEVOX_URL)
+    except (urllib.error.URLError, TimeoutError, OSError, json.JSONDecodeError):
+        return None
+    if speaker not in ids:
+        raise RuntimeError(f"ENGINE FAIL 話者{speaker}（{name}）がエンジンに無い")
+    return "voicevox", speaker, voice, f"声は VOICEVOX {name}（話者{speaker}）。等倍。lines.json から読んだ。"
 
 
 def _write_handoff(
@@ -1265,6 +1383,8 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--out", type=Path)
     parser.add_argument("--handoff", type=Path, default=ROOT / "video" / "shorts" / "HANDOFF.md")
     parser.add_argument("--final", action="store_true", help="完成の尺（既定でこの規格）")
+    parser.add_argument("--dry", action="store_true", help="仮の絵と edge-tts。ファイル名に _DRY")
+    parser.add_argument("--lint-duration", action="store_true", help="本編8.5秒を超えたら FAIL して終わる")
     args = parser.parse_args(argv)
     script = args.script if args.script.is_absolute() else ROOT / args.script
     if not script.is_file():
@@ -1276,8 +1396,19 @@ def main(argv: list[str] | None = None) -> int:
     out = args.out or default_out(script, args.line)
     if not out.is_absolute():
         out = ROOT / out
+    if args.dry and not out.stem.endswith("_DRY"):
+        out = out.with_name(out.stem + "_DRY" + out.suffix)
     try:
-        return build(script, args.line, jobs, args.srt, out, args.handoff)
+        return build(
+            script,
+            args.line,
+            jobs,
+            args.srt,
+            out,
+            args.handoff,
+            dry=args.dry,
+            lint_only=args.lint_duration,
+        )
     except (subprocess.CalledProcessError, RuntimeError, OSError, json.JSONDecodeError) as exc:
         args.handoff.parent.mkdir(parents=True, exist_ok=True)
         args.handoff.write_text(

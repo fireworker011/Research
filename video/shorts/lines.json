@@ -1,0 +1,13 @@
+{
+  "pet": {"speaker_name": "冥鳴ひまり", "speaker_id": 14},
+  "kane": {"speaker_name": "冥鳴ひまり", "speaker_id": 14},
+  "yorunotana": {"speaker_name": "青山龍星", "speaker_id": 13},
+  "konkatsu": {
+    "speaker_name": "四国めたん",
+    "speaker_id": 2,
+    "script_voice": "ElevenLabs Konomi"
+  },
+  "beauty": {"speaker_name": "四国めたん", "speaker_id": 2},
+  "yua": {"speaker_name": "春日部つむぎ", "speaker_id": 8},
+  "h3": {"speaker_name": "四国めたん", "speaker_id": 2}
+}
