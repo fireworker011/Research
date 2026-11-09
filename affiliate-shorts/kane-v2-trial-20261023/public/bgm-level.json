@@ -1,0 +1,17 @@
+{
+  "payslip": {
+    "voice_speech_rms": 0.147402,
+    "bgm_rms": 0.02211,
+    "rms_ratio": 0.15,
+    "bgm_peak": 0.088,
+    "seconds": 18.3
+  },
+  "pension": {
+    "voice_speech_rms": 0.140589,
+    "bgm_rms": 0.021088,
+    "rms_ratio": 0.15,
+    "bgm_peak": 0.0842,
+    "seconds": 17.567
+  },
+  "target_ratio": 0.15
+}
