@@ -785,8 +785,37 @@ def paint_scene(job: dict, item: dict, segment: dict | None, ctx: dict) -> Image
     raise SystemExit(f"未知のkindです: {kind}")
 
 
-def render_frame(job: dict, item: dict, segment: dict | None, ctx: dict) -> Image.Image:
+def drift_scene(image: Image.Image, step: int) -> Image.Image:
+    """長い静止を 1.5 秒ごとに少しずらす。HUD や PR は後から重ねるので動かない。"""
+    dx = (step % 5) * 2
+    dy = (step % 3)
+    arr = np.array(image)
+    height, width = arr.shape[:2]
+    moved = np.zeros_like(arr)
+    src_x0, src_x1 = max(0, -dx), min(width, width - dx)
+    src_y0, src_y1 = max(0, -dy), min(height, height - dy)
+    dst_x0, dst_y0 = max(0, dx), max(0, dy)
+    block = arr[src_y0:src_y1, src_x0:src_x1]
+    moved[dst_y0 : dst_y0 + block.shape[0], dst_x0 : dst_x0 + block.shape[1]] = block
+    if dx > 0:
+        moved[:, :dx] = moved[:, dx : dx + 1]
+    elif dx < 0:
+        moved[:, width + dx :] = moved[:, width + dx - 1 : width + dx]
+    if dy > 0:
+        moved[:dy, :] = moved[dy : dy + 1, :]
+    elif dy < 0:
+        moved[height + dy :, :] = moved[height + dy - 1 : height + dy, :]
+    px = 120 + (step * 47) % 360
+    py = 480 + (step * 29) % 180
+    dust = Image.fromarray(moved)
+    ImageDraw.Draw(dust).ellipse([px, py, px + 4, py + 4], fill=(170, 176, 186))
+    return dust
+
+
+def render_frame(job: dict, item: dict, segment: dict | None, ctx: dict, drift_step: int = 0) -> Image.Image:
     scene = paint_scene(job, item, segment, ctx)
+    if drift_step:
+        scene = drift_scene(scene, drift_step)
     subtitle = None
     top = None
     color = "white"
@@ -986,6 +1015,7 @@ def render_video(job_path: Path, timing_path: Path, audio_path: Path, out_path: 
         shutil.rmtree(work)
     work.mkdir(parents=True)
     parts: list[Path] = []
+    drift_step = 1
     try:
         for index, (item, (start, end)) in enumerate(zip(items, spans)):
             count = end - start
@@ -997,10 +1027,15 @@ def render_video(job_path: Path, timing_path: Path, audio_path: Path, out_path: 
                 weights = [1.0] * len(contexts)
             counts = split_frames(count, weights)
             holds: list[tuple[Image.Image, int]] = []
+            # 同じ絵がカットをまたいで 2.0 秒続くとフリーズになる。視点は動画全体で進める。
+            still_limit = int(1.5 * FPS)
             for ctx, frames in zip(contexts, counts):
-                if frames <= 0:
-                    continue
-                holds.append((render_frame(job, item, segment, ctx), frames))
+                left = frames
+                while left > 0:
+                    piece = left if left <= still_limit else still_limit
+                    holds.append((render_frame(job, item, segment, ctx, drift_step), piece))
+                    left -= piece
+                    drift_step += 1
             part = work / f"part_{index:03d}.mp4"
             encode_holds(holds, part)
             parts.append(part)

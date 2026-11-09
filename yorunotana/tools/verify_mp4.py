@@ -1,6 +1,6 @@
 """build-yorunotana.ps1 と同じ ffprobe 検査を Python で行う。
 
-合格は 1080x1920、60fps、75.0〜95.0秒、音声あり、
+合格は 1080x1920、60fps、60.0〜70.0秒、音声あり、
 2.0秒以上のフリーズなし、2.0秒以上の無音なし。
 尺が足りないときは測った長さのまま FAIL する。
 """
@@ -131,7 +131,7 @@ def main() -> int:
             reasons.append(f"解像度が {width}x{height}")
         if abs(fps - 60.0) >= 0.05:
             reasons.append(f"フレームレートが {fps:.3f}")
-        if not (75.0 <= duration <= 95.0):
+        if not (60.0 <= duration <= 70.0):
             reasons.append(f"尺が {duration:.3f}秒")
         if not has_audio:
             reasons.append("音声ストリームがない")
@@ -157,7 +157,7 @@ def main() -> int:
             f"- 出力: {video}",
             f"- 解像度: {width}x{height} （基準 1080x1920） {mark(width == 1080 and height == 1920)}",
             f"- フレームレート: {fps:.3f} （基準 60） {mark(abs(fps - 60.0) < 0.05)}",
-            f"- 尺: {duration:.3f}秒 （基準 75.0〜95.0） {mark(75.0 <= duration <= 95.0)}",
+            f"- 尺: {duration:.3f}秒 （基準 60.0〜70.0。2026-11-09 21:25 の決定） {mark(60.0 <= duration <= 70.0)}",
             f"- 音声ストリーム: {'あり' if has_audio else 'なし'} {mark(has_audio)}",
             f"- 最長フリーズ: {freeze_max:.2f}秒 （基準 2.0秒未満、noise=-60dB d=2） {mark(freeze_max < 2.0)}",
             f"- 検出したフリーズ: {', '.join(f'{value:.2f}s' for value in freezes) if freezes else 'なし'}",
@@ -171,7 +171,7 @@ def main() -> int:
             "",
             "## A8提出前チェック",
             "- 画面は 1080x1920 の縦動画",
-            "- 尺は 75.0秒以上 95.0秒以下",
+            "- 尺は 60.0秒以上 70.0秒以下",
             "- 音声トラックがある",
             "- pr_badge が true のジョブは、右上に PR を全編出す（描画側の責務）",
             "- アフィリエイトのURLは、リポジトリにも完成動画の中にも置かない",

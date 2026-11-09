@@ -1,4 +1,4 @@
-"""各エピソードの音声の長さを出す。75秒との差も書く。
+"""各エピソードの音声の長さを出す。60〜70秒との差も書く。
 
 --dummy-tts は build_audio と同じ見積もり（尺は埋めない）。
 --timing に VOICEVOX などが書いた audio_timing.json を渡すと、その実測も出す。
@@ -35,11 +35,11 @@ def dummy_seconds(job: dict) -> float:
 
 
 def gap(seconds: float) -> str:
-    if seconds < 75.0:
-        return f"short_of_75={75.0 - seconds:.2f}s"
-    if seconds > 95.0:
-        return f"over_95={seconds - 95.0:.2f}s"
-    return "within_75_95"
+    if seconds < 60.0:
+        return f"short_of_60={60.0 - seconds:.2f}s"
+    if seconds > 70.0:
+        return f"over_70={seconds - 70.0:.2f}s"
+    return "within_60_70"
 
 
 def main() -> int:

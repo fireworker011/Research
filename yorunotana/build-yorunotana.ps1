@@ -138,7 +138,7 @@ try {
     $hasAudio = $null -ne $audioStream
     $okRes = ($width -eq 1080 -and $height -eq 1920)
     $okFps = ([math]::Abs($fps - 60.0) -lt 0.05)
-    $okDur = ($duration -ge 75.0 -and $duration -le 95.0)
+    $okDur = ($duration -ge 60.0 -and $duration -le 70.0)
     $detected = Get-MediaMax $outName $duration
     $freezeMax = [double]$detected.Freeze
     $silenceMax = [double]$detected.Silence
@@ -175,7 +175,7 @@ try {
     $report += "- 出力: $outName" + $nl
     $report += "- 解像度: ${width}x${height} （基準 1080x1920） $(Mark $okRes)" + $nl
     $report += "- フレームレート: $(Format-Num $fps 3) （基準 60） $(Mark $okFps)" + $nl
-    $report += "- 尺: $(Format-Num $duration 3)秒 （基準 75.0〜95.0） $(Mark $okDur)" + $nl
+    $report += "- 尺: $(Format-Num $duration 3)秒 （基準 60.0〜70.0。2026-11-09 21:25 の決定） $(Mark $okDur)" + $nl
     $freezeShown = $detected.FreezeList
     if (-not $freezeShown) { $freezeShown = "なし" }
     $silenceShown = $detected.SilenceList
@@ -191,7 +191,7 @@ try {
     foreach ($cut in $cutLines) { $report += $cut + $nl }
     $report += $nl + "## A8提出前チェック" + $nl
     $report += "- 画面は 1080x1920 の縦動画" + $nl
-    $report += "- 尺は 75.0秒以上 95.0秒以下" + $nl
+    $report += "- 尺は 60.0秒以上 70.0秒以下" + $nl
     $report += "- 音声トラックがある" + $nl
     $report += "- pr_badge が true のジョブは、右上に PR を全編出す（描画側の責務）" + $nl
     $report += "- アフィリエイトのURLは、リポジトリにも完成動画の中にも置かない" + $nl
