@@ -1,0 +1,8 @@
+{
+  "clips": [
+    {"paint": "park-tripod"},
+    {"paint": "photographer"},
+    {"paint": "monitor"}
+  ],
+  "note": "Krea と Drive のファイルは添付に無かった。path に画像か動画を書くと、そのファイルを枠に合わせて使う。切り抜きはしない。"
+}
