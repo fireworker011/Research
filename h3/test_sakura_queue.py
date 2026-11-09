@@ -9,9 +9,13 @@ from pathlib import Path
 from h3.live_remake import STEPS, RemakeError
 from h3.sakura_clip import SOURCE_FRAMES, build_plan
 from h3.sakura_queue import (
+    FL2VA_ARC,
+    FL2VA_CHAIN,
     FL2VA_FAST,
     FL2VA_FRAMES,
     FL2VA_QUALITY,
+    FL2VA_RUSH,
+    FL2VA_SLASH,
     FL2VA_UNET,
     TURBO_FILE,
     TURBO_STEPS,
@@ -123,6 +127,36 @@ class SakuraQueueTests(unittest.TestCase):
         self.assertEqual(fl2va_choice(FL2VA_QUALITY)["wait_minutes"], 90 * STEPS // TURBO_STEPS)
         with self.assertRaises(RemakeError):
             fl2va_choice("other")
+
+    def test_action_scripts_keep_full_speed_and_the_end_still(self) -> None:
+        phrases = {
+            FL2VA_SLASH: "Three tachi cuts",
+            FL2VA_CHAIN: "continuous chain",
+            FL2VA_RUSH: "straight rush",
+            FL2VA_ARC: "fast arc",
+        }
+        stems = []
+        for action, phrase in phrases.items():
+            prompt = build_fl2va_prompt(
+                first_file="sakura-16x9-open.jpg",
+                last_file="sakura-16x9-yokai-end.jpg",
+                video_vae="minimax_h3_video_vae_fp16.safetensors",
+                action=action,
+            )
+            text = prompt["8"]["inputs"]["prompt"]
+            self.assertIn(phrase, text)
+            self.assertIn("No slow motion", text)
+            self.assertIn("祝千三百", text)
+            self.assertIn("[0.000s-0.678s]", text)
+            self.assertIn("[8.133s-10.833s]", text)
+            for mode in (FL2VA_FAST, FL2VA_QUALITY):
+                stems.append(fl2va_choice(mode, action)["stem"])
+        for stem in stems:
+            self.assertFalse(any(other != stem and other.startswith(stem) for other in stems))
+        self.assertEqual(fl2va_choice(FL2VA_FAST, FL2VA_CHAIN)["name"], "sakura-fl2va-chain8.mp4")
+        self.assertEqual(fl2va_choice(FL2VA_QUALITY, FL2VA_RUSH)["name"], "sakura-fl2va-rush20.mp4")
+        with self.assertRaises(RemakeError):
+            fl2va_choice(FL2VA_FAST, "other")
 
 
 if __name__ == "__main__":
