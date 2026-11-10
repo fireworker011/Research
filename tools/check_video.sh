@@ -287,6 +287,7 @@ head_fail = 0
 black_fail = 0
 cat_frames = 0
 frames = 0
+frame_dark = []
 
 def component_sizes(grid, minimum):
     hh, ww = len(grid), len(grid[0])
@@ -382,17 +383,26 @@ for ss in times:
     if len(blobs) >= 2 and any(ratio >= 2.2 for ratio in blobs):
         head_fail = 1
     dark_sizes = component_sizes(dark, 8)
-    if dark_sizes:
-        body = max(dark_sizes)
-        # 本体の 0.5% 未満の第2成分は無視する。
-        # kuroneko-chair v2 の実測では、毛の隙間などの第2成分は最大 36 / 19156 ≒ 0.188%。
-        # 0.5% はその約 2.7 倍。隙間は通し、それ以上の浮いた塊は落とす。
+    frame_dark.append(dark_sizes)
+cat_only = 1 if frames and cat_frames == frames else 0
+# 0.5% 未満の第2成分を無視するのは cat_only のときだけ。
+# 人が出る画では、従来どおり第2成分が1つでもあれば black_fail。
+# 頭のない塗りの判定は人向け。猫だけの画では椅子の脚が別の fg 塊になり
+# 誤って head_fail するので、cat_only のときだけ head_fail は使わない。
+black_fail = 0
+for dark_sizes in frame_dark:
+    if not dark_sizes:
+        continue
+    body = max(dark_sizes)
+    if cat_only:
+        # kuroneko-chair v2 の実測では第2成分の最大は 36 / 19156 ≒ 0.188%。
+        # 0.5% はその約 2.7 倍。隙間は通し、それ以上の浮遊塊は落とす。
         significant = [size for size in dark_sizes if size >= body * 0.005]
         if body < 40 or len(significant) > 1:
             black_fail = 1
-cat_only = 1 if frames and cat_frames == frames else 0
-# 頭のない塗りの判定は人向け。猫だけの画では椅子の脚などが別の fg 塊になり、
-# 誤って head_fail する。M14 自体はスキップせず、黒い塊の判定は続ける。
+    else:
+        if body < 40 or len(dark_sizes) > 1:
+            black_fail = 1
 if cat_only:
     head_fail = 0
 print(f"{arm_fail} {head_fail} {black_fail} {cat_only}")
