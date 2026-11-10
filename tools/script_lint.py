@@ -16,6 +16,7 @@
 - ペットの猫の描写は全カットで同じ文。使い回しの食事カットは不合格。結論は最後の1.5秒より前
 - ペットの本編字幕は冒頭1秒のフックだけ。1秒以降のセリフ字幕は不合格
 - 台本の字幕節で「」に入っている行（フック・札・下部・PR）が SRT に全部ある。抜けは不合格
+- 同じ時間に同じ文言の字幕が2本あれば警告（結果は WARN。FAIL が優先）
 - 札（{\an5}）はセリフ字幕の間隔・場面数に入れない
 - ペットと金メモは、結論の1文を最後の1.5秒より前に置くことを必須にする
 - 台本の台詞と、画面の表・見出しの用語がずれていたら不合格（加給と加算など）
@@ -277,6 +278,23 @@ def check_script_captions(md: str, cues: list[Cue]) -> str:
                 missing.append(f"{item}が{got}本（要{count}本）")
     if missing:
         return "FAIL（字幕の抜け: " + "、".join(missing) + "）"
+    return "PASS"
+
+
+def check_duplicate_cues(cues: list[Cue]) -> str:
+    """同じ時間に同じ文言が2本あれば警告。"""
+    items = [(cue.start, cue.end, visible_cue_text(cue.text)) for cue in cues]
+    hits: list[str] = []
+    for index, (start, end, text) in enumerate(items):
+        if not text:
+            continue
+        for other_start, other_end, other_text in items[index + 1 :]:
+            if text == other_text and start < other_end and other_start < end:
+                hits.append(text)
+                break
+    if hits:
+        names = "、".join(dict.fromkeys(hits))
+        return "WARN（同時に同じ文言: " + names + "）"
     return "PASS"
 
 
@@ -787,8 +805,15 @@ def check_pet_captions(cues: list[Cue], name: str) -> str:
 
 def check_captions(cues: list[Cue], name: str, md: str) -> str:
     if "ペット" in name:
-        return check_pet_captions(cues, name)
-    return check_script_captions(md, cues)
+        base = check_pet_captions(cues, name)
+    else:
+        base = check_script_captions(md, cues)
+    dup = check_duplicate_cues(cues)
+    if dup.startswith("WARN"):
+        if base.startswith("FAIL"):
+            return base
+        return dup
+    return base
 
 
 def overall_of(row: Row) -> str:
@@ -809,9 +834,9 @@ def overall_of(row: Row) -> str:
         row.conclusion,
         row.captions,
     )
-    if any(not item.startswith("PASS") for item in hard):
+    if any(item.startswith("FAIL") for item in hard):
         return "FAIL"
-    if row.a8.startswith("WARN"):
+    if row.a8.startswith("WARN") or any(item.startswith("WARN") for item in hard):
         return "WARN"
     return "PASS"
 
@@ -1467,9 +1492,59 @@ def self_test(fixtures: Path, repo: Path) -> bool:
         missing_caps.captions,
     ) and ok
     ok = expect(
-        complete_caps.captions == "PASS" and complete_caps.gap.startswith("PASS") and complete_caps.result == "PASS",
-        "フック・札・下部・PRが揃えば合格。札は間隔に入れない",
+        complete_caps.captions.startswith("WARN")
+        and "同じ文言" in complete_caps.captions
+        and complete_caps.gap.startswith("PASS")
+        and complete_caps.result == "WARN",
+        "フック・札・下部・PRが揃い、同じ文言が同時なら警告",
         complete_caps.captions + " / " + complete_caps.gap + " / " + complete_caps.result,
+    ) and ok
+    no_dup_srt = (
+        "1\n00:00:00,000 --> 00:00:01,000\n"
+        + HOOK_TAG
+        + "プロフ写真、頼める人いない\n\n"
+        "2\n00:00:00,000 --> 00:00:02,908\n"
+        + CENTER_TAG
+        + "三脚とセルフタイマー\n\n"
+        "3\n00:00:00,312 --> 00:00:02,908\n気まずくて\n\n"
+        "4\n00:00:02,908 --> 00:00:05,157\n"
+        + CENTER_TAG
+        + "撮ってくれる人\n\n"
+        "5\n00:00:02,908 --> 00:00:05,157\n頼んでみた\n\n"
+        "6\n00:00:05,157 --> 00:00:08,500\n三脚はもういらない\n\n"
+        "7\n00:00:08,500 --> 00:00:10,500\n広告 #PR\n"
+    )
+    no_dup_md = (
+        cap_md.replace(
+            "／2.8-5.2「撮ってくれる人」／5.2-8.5「三脚はもういらない」",
+            "。5.2秒以降は中央の札を出さない",
+        )
+        # 下部は残す。札の2つ目「撮ってくれる人」は1本だけに
+    )
+    # cap_md has 撮ってくれる人 twice (札+下部) and 三脚 twice. Build a tighter md.
+    hook = HOOK_MARKS[0]
+    no_dup_md = (
+        f"# テスト\n\n"
+        f"## {hook}（画＋文字）\n"
+        f"- テキストフック: 「プロフ写真、頼める人いない」\n\n"
+        f"## brief\n"
+        f"- 尺: 10.5秒\n"
+        f"- 声: {SPEED_MARK}\n\n"
+        f"## 台詞\n"
+        f"テストの台詞。\n\n"
+        f"## 字幕\n"
+        f"- 0.0-1.0 上部「プロフ写真、頼める人いない」\n"
+        f"- 札（中央）: 0.0-2.8「三脚とセルフタイマー」／2.8-5.2「撮ってくれる人」\n"
+        f"- 下部の名詞: 0.3-2.8「気まずくて」／2.8-5.2「頼んでみた」／5.2-8.5「三脚はもういらない」\n"
+        f"- 8.5-10.5 中央「広告 #PR」\n\n"
+        f"## 自己採点\n"
+        f"- 合計 80/100\n"
+    )
+    no_dup = lint_texts("2026-11-10-婚活-no-dup", no_dup_md, no_dup_srt)
+    ok = expect(
+        no_dup.captions == "PASS" and no_dup.result == "PASS",
+        "同じ文言が同時に無ければ合格",
+        no_dup.captions + " / " + no_dup.result,
     ) and ok
 
     print()
@@ -1520,7 +1595,7 @@ def main(argv: list[str] | None = None) -> int:
         if not (root / "cuts-for-pc.md").is_file():
             print("FAIL\tcuts-for-pc.md が無い", file=sys.stderr)
             exit_code = max(exit_code, 1)
-        if any(row.result != "PASS" for row in rows):
+        if any(row.result == "FAIL" for row in rows):
             exit_code = max(exit_code, 1)
     elif not args.self_test:
         parser.error("root か --self-test を指定する")

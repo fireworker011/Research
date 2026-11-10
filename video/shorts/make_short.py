@@ -209,6 +209,9 @@ def _position(bullet: str) -> str:
         return "corner"
     if "上部" in bullet or "an8" in bullet:
         return "top"
+    # 札の行に「下部は出さない」などの注記があっても、中央の札のままにする。
+    if "札" in bullet:
+        return "center"
     if "下部" in bullet or "an2" in bullet:
         return "bottom"
     return "center"

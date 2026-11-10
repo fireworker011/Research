@@ -20,6 +20,7 @@ from video.shorts.make_short import (
     asset_rows,
     CENTER_TAG,
     build_cues,
+    _parse_captions,
     content_cuts,
     cut_bounds,
     judge_body,
@@ -153,6 +154,22 @@ class MakeShortTests(unittest.TestCase):
         bounds = cut_bounds(ScriptDoc([], [], [], ""), placed, profile)
         self.assertEqual(bounds[0], 0.0)
         self.assertEqual(bounds[-1], profile.duration)
+
+    def test_fuda_stays_center_when_the_note_mentions_bottom(self) -> None:
+        body = (
+            "- 0.0-1.0 上部「プロフ写真、頼める人いない」\n"
+            "- 札（中央）: 0.0-2.8「三脚とセルフタイマー」／2.8-5.2「撮ってくれる人」。"
+            "5.2秒以降は中央の札を出さない（下部の字幕だけ）\n"
+            "- 下部の名詞: 0.3-2.8「気まずくて」／2.8-5.2「撮ってくれる人」／5.2-8.5「三脚はもういらない」\n"
+        )
+        caps = _parse_captions(body)
+        centers = [cap.text for cap in caps if cap.position == "center"]
+        bottoms = [cap.text for cap in caps if cap.position == "bottom"]
+        tops = [cap.text for cap in caps if cap.position == "top"]
+        self.assertEqual(tops, ["プロフ写真、頼める人いない"])
+        self.assertEqual(centers, ["三脚とセルフタイマー", "撮ってくれる人"])
+        self.assertEqual(bottoms, ["気まずくて", "撮ってくれる人", "三脚はもういらない"])
+        self.assertFalse(any(cap.end > 5.2 and cap.position == "center" for cap in caps))
 
     def test_path_outside_the_repo_is_shown_as_written(self) -> None:
         self.assertEqual(shown(Path("/tmp/x/台本.md")), "/tmp/x/台本.md")
