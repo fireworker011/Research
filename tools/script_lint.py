@@ -23,6 +23,7 @@
 - 禁止語が台詞・字幕に無い（根拠メモや PR 注記は見ない）
 - 見出し「0〜1秒フック」「brief」「自己採点」があり、自己採点の最後の合計が 80 以上
 - アフィリエイト URL の断片があれば警告（結果は WARN。他が落ちていれば FAIL が優先）
+- ペットの静止画カットのナレに動きの語（近づける・止まる・乗る・跳ぶ・歩く など）があれば警告（結果は WARN。FAIL が優先）。乗らない、乗らなくは対象外。動画カットは見ない
 
 使い方:
   python tools/script_lint.py inputs/20261028
@@ -92,6 +93,7 @@ COLUMNS = (
     "用語",
     "結論",
     "字幕",
+    "動き",
     "結果",
 )
 
@@ -130,6 +132,7 @@ class Row:
     terms: str
     conclusion: str
     captions: str
+    motion: str
     result: str
 
 
@@ -816,6 +819,95 @@ def check_captions(cues: list[Cue], name: str, md: str) -> str:
     return base
 
 
+
+def _motion_hits(text: str) -> list[str]:
+    """ナレから動きの語を拾う。『乗らない』『乗らなく』は乗ると数えない。"""
+    found: list[str] = []
+    patterns = (
+        "近づける",
+        "近づけて",
+        "近づけ",
+        "近づいて",
+        "近づく",
+        "近づき",
+        "止まる",
+        "止まって",
+        "跳ぶ",
+        "跳ね",
+        "歩く",
+        "歩いて",
+        "走る",
+        "走って",
+        "乗って",
+    )
+    for word in patterns:
+        if word in text and word not in found and not any(word in already for already in found):
+            found.append(word)
+    for match in re.finditer(r"乗る(?!な|ず)", text):
+        if "乗る" not in found:
+            found.append("乗る")
+        break
+    return found
+
+
+def _imagine_video_cuts(md: str) -> set[str]:
+    """Imagine 欄で動画・i2v と書いたカット名。"""
+    names: set[str] = set()
+    for section in parse_sections(md):
+        title = section.title
+        if "Imagine" not in title and "プロンプト" not in title and "カット" not in title:
+            continue
+        blob = title + "\n" + section.body
+        if not any(mark in blob.lower() for mark in ("i2v", "video")) and "動画" not in blob:
+            continue
+        names.update(re.findall(r"カット\s*(\d+)", title + "\n" + section.body))
+    return names
+
+
+def check_still_motion(name: str, md: str) -> str:
+    """ペットの静止画カットのナレに動きの語があれば WARN。"""
+    if "ペット" not in name:
+        return "PASS（対象外）"
+    if not md:
+        return "PASS（対象外）"
+    video_cuts = _imagine_video_cuts(md)
+    hits: list[str] = []
+    saw_still = False
+    for section in parse_sections(md):
+        title = section.title
+        if "台詞" not in title and "セリフ" not in title:
+            continue
+        rows = _markdown_rows(section.body)
+        if not rows:
+            continue
+        header = rows[0]
+        speech_at = [i for i, cell in enumerate(header) if any(mark in cell for mark in ("台詞", "ナレ", "セリフ"))]
+        view_at = [i for i, cell in enumerate(header) if any(mark in cell for mark in ("映っている", "画", "画面"))]
+        if not speech_at:
+            continue
+        for row in rows[1:]:
+            view = " ".join(row[i] for i in view_at if i < len(row))
+            nare = " ".join(row[i] for i in speech_at if i < len(row))
+            if not nare.strip() or "声なし" in nare:
+                continue
+            cut_m = re.search(r"カット\s*(\d+)", view) or re.search(r"カット\s*(\d+)", nare)
+            cut = cut_m.group(1) if cut_m else ""
+            if cut and cut in video_cuts:
+                continue
+            if any(mark in (view + nare).lower() for mark in ("i2v", "video")) or "動画" in view or "動画" in nare:
+                continue
+            saw_still = True
+            words = _motion_hits(nare)
+            if words:
+                label = f"カット{cut}" if cut else nare.strip()[:20]
+                hits.append(label + ": " + "、".join(words))
+    if hits:
+        return "WARN（" + "、".join(hits) + "）"
+    if saw_still:
+        return "PASS（動きの語なし）"
+    return "PASS（対象外）"
+
+
 def overall_of(row: Row) -> str:
     hard = (
         row.srt_format,
@@ -833,6 +925,7 @@ def overall_of(row: Row) -> str:
         row.terms,
         row.conclusion,
         row.captions,
+        row.motion,
     )
     if any(item.startswith("FAIL") for item in hard):
         return "FAIL"
@@ -903,6 +996,7 @@ def lint_texts(name: str, md: str | None, srt: str | None, timing: str | None = 
     terms = check_terms(md_body)
     conclusion = check_conclusion(md_body, cues, name)
     captions = check_captions(cues, name, md_body)
+    motion = check_still_motion(name, md_body)
     row = Row(
         name,
         srt_format,
@@ -921,6 +1015,7 @@ def lint_texts(name: str, md: str | None, srt: str | None, timing: str | None = 
         terms,
         conclusion,
         captions,
+        motion,
         "FAIL",
     )
     return Row(
@@ -941,6 +1036,7 @@ def lint_texts(name: str, md: str | None, srt: str | None, timing: str | None = 
         row.terms,
         row.conclusion,
         row.captions,
+        row.motion,
         overall_of(row),
     )
 
@@ -1006,6 +1102,7 @@ def render(rows: list[Row]) -> str:
             row.terms,
             row.conclusion,
             row.captions,
+            row.motion,
             row.result,
         )
         lines.append("| " + " | ".join(cells) + " |")
@@ -1545,6 +1642,53 @@ def self_test(fixtures: Path, repo: Path) -> bool:
         no_dup.captions == "PASS" and no_dup.result == "PASS",
         "同じ文言が同時に無ければ合格",
         no_dup.captions + " / " + no_dup.result,
+    ) and ok
+
+    motion_md = (
+        minimal_md("- 合計 80/100")
+        + "\n## セリフ\n"
+        + "| 時間帯 | 映っているもの | セリフ（冥鳴ひまり） |\n"
+        + "|---|---|---|\n"
+        + "| 0.0-2.3 | カット1。空の椅子の横 | [0.15-2.24] 椅子、乗らなくなった？ |\n"
+        + "| 2.3-5.0 | カット2。同じ黒猫。鼻先が座面のふちのすぐ横 | [2.39-4.88] 鼻先だけ、近づけて止まる。 |\n"
+        + "| 5.0-8.5 | カット3。空の座面を見ている | [5.03-7.46] 上には乗らない。見ているだけ。 |\n"
+    )
+    motion_row = lint_texts(
+        "2026-11-10-ペット-kuroneko-chair-motion",
+        motion_md,
+        "1\n00:00:00,000 --> 00:00:01,000\n"
+        + HOOK_TAG
+        + "椅子、乗らなくなった？\n\n2\n00:00:08,500 --> 00:00:10,500\n広告 #PR\n",
+    )
+    still_ok_md = (
+        minimal_md("- 合計 80/100")
+        + "\n## セリフ\n"
+        + "| 時間帯 | 映っているもの | セリフ |\n"
+        + "|---|---|---|\n"
+        + "| 0.0-2.3 | カット1。空の椅子の横 | 椅子、乗らなくなった？ |\n"
+        + "| 2.3-8.5 | カット3。空の座面を見ている | 上には乗らない。見ているだけ。 |\n"
+    )
+    still_ok = lint_texts(
+        "2026-11-10-ペット-still-ok",
+        still_ok_md,
+        "1\n00:00:00,000 --> 00:00:01,000\n"
+        + HOOK_TAG
+        + "椅子、乗らなくなった？\n\n2\n00:00:08,500 --> 00:00:10,500\n広告 #PR\n",
+    )
+    ok = expect(
+        motion_row.motion.startswith("WARN")
+        and "カット2" in motion_row.motion
+        and "近づ" in motion_row.motion
+        and "止ま" in motion_row.motion
+        and "カット1" not in motion_row.motion
+        and "カット3" not in motion_row.motion,
+        "静止画カット2の動きナレは WARN",
+        motion_row.motion + " / " + motion_row.result,
+    ) and ok
+    ok = expect(
+        still_ok.motion.startswith("PASS"),
+        "乗らない・見ているだけは動きWARNにしない",
+        still_ok.motion + " / " + still_ok.result,
     ) and ok
 
     print()
