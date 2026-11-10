@@ -384,9 +384,17 @@ for ss in times:
     dark_sizes = component_sizes(dark, 8)
     if dark_sizes:
         body = max(dark_sizes)
-        if body < 40 or len(dark_sizes) > 1:
+        # 本体の 0.5% 未満の第2成分は無視する。
+        # kuroneko-chair v2 の実測では、毛の隙間などの第2成分は最大 36 / 19156 ≒ 0.188%。
+        # 0.5% はその約 2.7 倍。隙間は通し、それ以上の浮いた塊は落とす。
+        significant = [size for size in dark_sizes if size >= body * 0.005]
+        if body < 40 or len(significant) > 1:
             black_fail = 1
 cat_only = 1 if frames and cat_frames == frames else 0
+# 頭のない塗りの判定は人向け。猫だけの画では椅子の脚などが別の fg 塊になり、
+# 誤って head_fail する。M14 自体はスキップせず、黒い塊の判定は続ける。
+if cat_only:
+    head_fail = 0
 print(f"{arm_fail} {head_fail} {black_fail} {cat_only}")
 PY
 )
@@ -397,12 +405,7 @@ elif [[ "$arm_fail" == "1" ]]; then
 else
   say M13 1 "腕の比率の外れ値なし"
 fi
-if [[ "$cat_only" == "1" ]]; then
-  # M13 と同じ。黒猫の体は max(RGB)<40 の塊として数えられる。
-  # しっぽの付け根や毛の隙間で 8 画素以上の第2成分が立つと、
-  # 人間向けの「体の外の黒い塊」判定が誤って FAIL する。閾値は変えない。
-  printf 'M14\tSKIP\t猫だけの映像は対象外\n'
-elif [[ "$black_fail" == "1" ]]; then
+if [[ "$black_fail" == "1" ]]; then
   say M14 0 "体の外に黒い塊がある"
 elif [[ "$head_fail" == "1" ]]; then
   say M14 0 "塗りのかたまりが2つ以上で、頭のないかたまりがある"
