@@ -170,15 +170,3 @@ python3 make_short.py /home/box/shorts/daihon/scripts/2026-11-10-婚活-tanomeru
 bash video/shorts/check_video.sh <台本名>.mp4 konkatsu
 python3 tools/script_lint.py <台本・字幕・timing.json・cuts-for-pc.md があるディレクトリ>
 ```
-
-箱で同じ手順:
-
-```
-bash video/shorts/setup_voicevox.sh
-export PATH="/tmp/ffmpeg-static:$PATH"
-ffmpeg -version | head -1
-python3 make_short.py <台本.md> konkatsu --jobs <jobs.json> --lint-duration
-python3 make_short.py <台本.md> konkatsu --jobs <jobs.json> --out <台本名>.mp4
-bash video/shorts/check_video.sh <台本名>.mp4 konkatsu
-python3 tools/script_lint.py <scripts と subs と cuts-for-pc.md があるディレクトリ>
-```
