@@ -397,7 +397,12 @@ elif [[ "$arm_fail" == "1" ]]; then
 else
   say M13 1 "腕の比率の外れ値なし"
 fi
-if [[ "$black_fail" == "1" ]]; then
+if [[ "$cat_only" == "1" ]]; then
+  # M13 と同じ。黒猫の体は max(RGB)<40 の塊として数えられる。
+  # しっぽの付け根や毛の隙間で 8 画素以上の第2成分が立つと、
+  # 人間向けの「体の外の黒い塊」判定が誤って FAIL する。閾値は変えない。
+  printf 'M14\tSKIP\t猫だけの映像は対象外\n'
+elif [[ "$black_fail" == "1" ]]; then
   say M14 0 "体の外に黒い塊がある"
 elif [[ "$head_fail" == "1" ]]; then
   say M14 0 "塗りのかたまりが2つ以上で、頭のないかたまりがある"
