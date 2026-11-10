@@ -29,7 +29,7 @@ ROOT = Path(__file__).resolve().parents[2]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
-from video.common.flat_mix import BGM_RATIO, filter_path, font_path
+from video.common.flat_mix import filter_path, font_path
 
 RATE = 48000
 VOICEVOX_URL = "http://127.0.0.1:50021"
@@ -630,28 +630,12 @@ def mix_bed(
 
 
 def loudnorm_two_pass(src: Path, dest: Path, integrated: float, true_peak: float) -> None:
-    # 声が短いと無音区間が平均を下げる。先に軽く圧縮してから2パスする。
-    pre = dest.with_name(dest.stem + "-pre.wav")
-    subprocess.check_call(
-        [
-            "ffmpeg",
-            "-y",
-            "-hide_banner",
-            "-loglevel",
-            "error",
-            "-i",
-            str(src),
-            "-af",
-            "acompressor=threshold=-20dB:ratio=4:attack=5:release=80:makeup=6",
-            str(pre),
-        ]
-    )
     probe = subprocess.run(
         [
             "ffmpeg",
             "-hide_banner",
             "-i",
-            str(pre),
+            str(src),
             "-af",
             f"loudnorm=I={integrated}:TP={true_peak}:LRA=11:print_format=json",
             "-f",
@@ -680,7 +664,7 @@ def loudnorm_two_pass(src: Path, dest: Path, integrated: float, true_peak: float
             "-loglevel",
             "error",
             "-i",
-            str(pre),
+            str(src),
             "-af",
             audio_filter,
             "-ar",
@@ -1034,6 +1018,16 @@ def judge_body(
         )
     else:
         rows.append(f"DUR PASS 本編の終わりが{end:.2f}秒（上限{limit:.1f}秒、声の合計{voice:.2f}秒）")
+    share = voice / limit if limit else 0.0
+    if share < 0.60:
+        code = 1
+        rows.append(
+            f"RATIO FAIL 声の合計{voice:.2f}秒は本編{limit:.1f}秒の{share * 100:.1f}%（60%未満）"
+        )
+    else:
+        rows.append(
+            f"RATIO PASS 声の合計{voice:.2f}秒は本編{limit:.1f}秒の{share * 100:.1f}%"
+        )
     clock = start
     for text, duration in lines:
         if clock + duration > limit + 0.001:
@@ -1272,7 +1266,8 @@ def build(
     else:
         notes.append(f"隣の SRT は残した: {found_srt.relative_to(ROOT)}。映像用は尺に合わせて書き直した。")
     spans = [(cache[text], span_start) for text, span_start, _span_end in placed]
-    mixed = mix_bed(spans, profile.duration, BGM_RATIO)
+    # 0.15 だと短いナレの2パスは I が -16.9 で止まる。0.70 は同じ声で I=-15.0 / TP=-1.5。
+    mixed = mix_bed(spans, profile.duration, 0.70)
     voice_wav = work / "mix.wav"
     norm_wav = work / "norm.wav"
     write_wav(voice_wav, mixed)

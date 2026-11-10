@@ -47,6 +47,8 @@ AFFILIATE_LINE = "アフィリエイト広告を含みます"
 HOOK_MARKS = ("0\u301c1秒フック", "0\uff5e1秒フック")
 BANNED_WORDS = ("必ず稼げる", "若返る", "治る", "絶対", "必ず")
 MONEY_RE = re.compile(r"\d[\d,]*\s*円|\d+\s*万\s*円")
+# 秒の区切り。基準は同じで、読める表記だけ広げる。
+SPAN_RE = re.compile(r"(\d+\.\d+)\s*(?:-|–|〜|～)\s*(\d+\.\d+)")
 OPEN_PR = "{\\an9}PR"
 HOOK_TAG = "{\\an8}"
 SPEED_MARK = "等倍（+0%）"
@@ -426,7 +428,7 @@ def join_status(parts: list[str]) -> str:
 
 def _spans_in(text: str) -> list[tuple[float, float]]:
     found: list[tuple[float, float]] = []
-    for matched in re.finditer(r"(\d+\.\d+)\s*[-–]\s*(\d+\.\d+)", text):
+    for matched in SPAN_RE.finditer(text):
         found.append((float(matched.group(1)), float(matched.group(2))))
     return found
 
@@ -456,7 +458,7 @@ def check_table(md: str) -> str:
     for index, line in enumerate(rows, start=1):
         if re.search(r"\d", line) is None:
             continue
-        matched = re.search(r"(\d+\.\d+)\s*[-–]\s*(\d+\.\d+)", line)
+        matched = SPAN_RE.search(line)
         if matched is None:
             missing.append(index)
             continue
@@ -550,7 +552,7 @@ def check_prompts(md: str, cues: list[Cue], name: str) -> str:
     if "プロンプト" not in md:
         return "PASS（プロンプトなし）"
     headings = re.findall(
-        r"^###\s+プロンプト[^\n]*?(\d+\.\d+)\s*[-–]\s*(\d+\.\d+)",
+        r"^###\s+プロンプト[^\n]*?(\d+\.\d+)\s*(?:-|–|〜|～)\s*(\d+\.\d+)",
         md,
         flags=re.MULTILINE,
     )
@@ -673,7 +675,7 @@ def check_conclusion(md: str, cues: list[Cue], name: str) -> str:
         found = True
         if re.search(r"結論[:：]|[。？?]", line):
             sentence = True
-        matched = re.search(r"(\d+\.\d+)\s*[-–]\s*(\d+\.\d+)", line)
+        matched = SPAN_RE.search(line)
         if matched is not None:
             ends.append(float(matched.group(2)))
             continue
@@ -1264,6 +1266,35 @@ def self_test(fixtures: Path, repo: Path) -> bool:
         missing_conclusion.conclusion == "FAIL（結論の1文が無い）" and missing_conclusion.result == "FAIL",
         "結論の1文が必須",
         missing_conclusion.conclusion,
+    ) and ok
+    print()
+    print("秒の区切り:")
+    hook_and_pr = (
+        "1\n00:00:00,000 --> 00:00:01,000\n"
+        + HOOK_TAG
+        + "テスト\n\n2\n00:00:08,500 --> 00:00:10,500\n広告 #PR\n"
+    )
+    for mark in ("〜", "～", "-", "–"):
+        waved = lint_texts(
+            "2026-11-10-婚活-span",
+            minimal_md("- 合計 80/100")
+            + f"\n## Imagine\n### プロンプト1（カット1・8.500{mark}10.500）\n9:16。画面に文字を出さない。\n",
+            hook_and_pr,
+        )
+        ok = expect(
+            waved.prompts.startswith("PASS"),
+            f"区切り {mark} の秒は読める",
+            waved.prompts,
+        ) and ok
+    missing_span = lint_texts(
+        "2026-11-10-婚活-no-span",
+        minimal_md("- 合計 80/100") + "\n## Imagine\n### プロンプト1（カット1）\n9:16。画面に文字を出さない。\n",
+        hook_and_pr,
+    )
+    ok = expect(
+        missing_span.prompts.startswith("FAIL") and "秒が無い" in missing_span.prompts,
+        "秒の無いプロンプトは不合格のまま",
+        missing_span.prompts,
     ) and ok
     print()
     print("金額:")

@@ -47,10 +47,17 @@ class MakeShortTests(unittest.TestCase):
         self.assertTrue(any(row.startswith("DUR FAIL") and "超え" in row for row in rows))
         self.assertTrue(any(row.startswith("LINE FAIL") and "次も長いです。" in row for row in rows))
 
-    def test_body_inside_8_5_seconds_passes(self) -> None:
-        code, rows = judge_body([("短い。", 1.2), ("次。", 1.0)], 0.2, 0.2)
+    def test_body_inside_8_5_seconds_passes_when_voice_is_at_least_60_percent(self) -> None:
+        code, rows = judge_body([("長いめ。", 2.6), ("次も。", 2.6)], 0.2, 0.2)
         self.assertEqual(code, 0)
+        self.assertTrue(any(row.startswith("RATIO PASS") for row in rows))
         self.assertTrue(all("FAIL" not in row for row in rows))
+
+    def test_short_voice_fails_the_60_percent_line(self) -> None:
+        code, rows = judge_body([("友だちに頼めない。", 1.211), ("撮ってもらった。", 0.845), ("三脚なし。", 0.862)], 0.2, 0.2)
+        self.assertEqual(code, 1)
+        self.assertTrue(any(row.startswith("RATIO FAIL") and "60%未満" in row for row in rows))
+        self.assertTrue(any(row.startswith("DUR PASS") for row in rows))
 
     def test_accent_phrase_lengths_add_up(self) -> None:
         query = {
