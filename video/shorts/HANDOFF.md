@@ -128,4 +128,28 @@ exit=1
 | 0.15（これまでのコード） | -16.9 LUFS | -1.5 dBFS | 10.466667秒 |
 | 0.70 | -15.0 LUFS | -1.5 dBFS | 10.466667秒 |
 
-箱の -15.0 / -1.5 / 10.467秒は BGM 比 0.70 と一致する。VM の -16.4 は比 0.15 に圧縮を足したファイル。圧縮を外した比 0.15 は -16.9。差の本体は BGM の比率で、TP と長さは同じ。make_short の下地は 0.70 にした。テンプレのペットと金メモの 15% はそのまま。
+箱の -15.0 / -1.5 / 10.467秒は BGM 比 0.70 と一致する。VM の -16.4 は比 0.15 に圧縮を足したファイル。圧縮を外した比 0.15 は -16.9。その後、BGM は声の約15%へ戻し、ffmpeg を静的ビルドに固定した。
+
+## ffmpeg を固定した v3（声OK前・投稿用に使わない）
+
+版: `ffmpeg version n8.1.3-34-ga35157abb9-20261109`
+
+取得元: https://github.com/FFmpeg-Builds/FFmpeg-Builds/releases/download/autobuild-2026-11-09-12-42/ffmpeg-n8.1.3-34-ga35157abb9-linux64-gpl-8.1.tar.xz
+
+BGM は声の約15%。コンプレッサーは使っていない。loudnorm は2パス、linear、I=-14、TP=-1.5。
+
+VM: I=-14.5 LUFS、TP=-1.5 dBTP、長さ 10.466667 秒。`check_video.sh konkatsu` は exit 0。声の合計 6.02 秒、本編の終わり 6.62 秒、RATIO PASS 70.8%。
+
+字幕はセリフ1行につき1本。アクセント句では切らない。script_lint は行数は4本で揃うが、秒がプロンプトの 0.0-2.8 / 2.8-5.2 / 5.2-8.5 と違うため exit 1。
+
+箱で同じ手順:
+
+```
+bash video/shorts/setup_voicevox.sh
+export PATH="/tmp/ffmpeg-static:$PATH"
+ffmpeg -version | head -1
+python3 make_short.py <台本.md> konkatsu --jobs <jobs.json> --lint-duration
+python3 make_short.py <台本.md> konkatsu --jobs <jobs.json> --out <台本名>.mp4
+bash video/shorts/check_video.sh <台本名>.mp4 konkatsu
+python3 tools/script_lint.py <scripts と subs と cuts-for-pc.md があるディレクトリ>
+```
