@@ -53,6 +53,9 @@ def write_ffmpeg_version(out: Path) -> str:
 RATE = 48000
 VOICEVOX_URL = "http://127.0.0.1:50021"
 ADULT_MARKERS = ("ヌード", "全裸", "性交", "アダルトビデオ", "エロ動画")
+HOOK_TAG = "{" + chr(92) + "an8}"
+CENTER_TAG = "{" + chr(92) + "an5}"
+CORNER_TAG = "{" + chr(92) + "an9}"
 DASH = r"[\-\u2013\u2014〜~]"
 EDGE_VOICE = {
     "yorunotana": "ja-JP-KeitaNeural",
@@ -277,16 +280,10 @@ def build_cues(
     if doc.scenes and doc.scenes[-1].pr_only:
         content_end = doc.scenes[-1].start
     source.append(content_end)
-    dest = [0.0]
-    for scene_index in range(1, len(content)):
-        starts = [
-            span[1]
-            for speech, span in zip(doc.speeches, placed)
-            if speech.scene == scene_index
-        ]
-        dest.append(starts[0] if starts else dest[-1])
+    # 字幕の秒は timing.json と同じ切れ目（行間の無音の真ん中）に載せる。
+    cuts = content_cuts(placed, profile)
+    dest = [cuts[0][0]] + [item[1] for item in cuts]
     begin = pr_begin_of(profile)
-    dest.append(profile.duration if begin is None else begin)
     cues: list[Cue] = []
     for raw in doc.captions:
         if is_pr_text(raw.text) or raw.position == "corner":
@@ -301,7 +298,10 @@ def build_cues(
             end = min(end, begin)
         if end - start < 0.05:
             continue
-        cues.append(Cue(start, end, raw.text, raw.position))
+        label = raw.text
+        if raw.position == "center" and not label.startswith(CENTER_TAG):
+            label = CENTER_TAG + label
+        cues.append(Cue(start, end, label, raw.position))
     cues = _mark_hook(cues)
     return _add_pr(cues, profile)
 
@@ -314,11 +314,11 @@ def _mark_hook(cues: list[Cue]) -> list[Cue]:
     if first.start > 0.05:
         return cues
     hook_end = min(first.end, 1.0)
+    visible = re.sub(r"\{[^}]*\}", "", first.text).strip()
     replacement = [
-        Cue(0.0, hook_end, "{\\an8}" + first.text, "top", hook=True),
+        Cue(0.0, hook_end, HOOK_TAG + visible, "top", hook=True),
     ]
-    if first.end > hook_end + 0.05:
-        replacement.append(Cue(hook_end, first.end, first.text, "top"))
+    # フックは1秒で切る。切れ目の写像で1秒を少し超えても残さない。
     index = cues.index(first)
     return cues[:index] + replacement + cues[index + 1 :]
 
@@ -335,7 +335,7 @@ def _add_pr(cues: list[Cue], profile: Profile) -> list[Cue]:
         kept.append(Cue(begin, profile.duration, "広告 #PR", "center", pr=True))
         return kept
     if profile.pr == "open-tail":
-        kept.append(Cue(0.0, profile.duration, "{\\an9}PR", "corner", pr=True))
+        kept.append(Cue(0.0, profile.duration, CORNER_TAG + "PR", "corner", pr=True))
         begin = profile.duration - 2.0
         kept.append(Cue(begin, profile.duration, "広告 #PR", "center", pr=True))
         return kept
@@ -711,6 +711,11 @@ def loudnorm_two_pass(src: Path, dest: Path, integrated: float, true_peak: float
 
 
 def measure_loudness(path: Path) -> tuple[float | None, float | None]:
+    integrated, true_peak, _lra = measure_loudness_lra(path)
+    return integrated, true_peak
+
+
+def measure_loudness_lra(path: Path) -> tuple[float | None, float | None, float | None]:
     probe = subprocess.run(
         ["ffmpeg", "-hide_banner", "-i", str(path), "-af", "ebur128=peak=true", "-f", "null", "-"],
         capture_output=True,
@@ -718,6 +723,7 @@ def measure_loudness(path: Path) -> tuple[float | None, float | None]:
     )
     text = probe.stderr
     integrated_vals = re.findall(r"I:\s*(-?[0-9.]+)\s*LUFS", text)
+    lra_vals = re.findall(r"LRA:\s*(-?[0-9.]+)\s*LU", text)
     true_peak = None
     if "True peak:" in text:
         tail = text.split("True peak:")[-1]
@@ -725,7 +731,8 @@ def measure_loudness(path: Path) -> tuple[float | None, float | None]:
         if matched:
             true_peak = float(matched.group(1))
     integrated = float(integrated_vals[-1]) if integrated_vals else None
-    return integrated, true_peak
+    lra = float(lra_vals[-1]) if lra_vals else None
+    return integrated, true_peak, lra
 
 
 def loudness_ok(integrated: float | None, true_peak: float | None) -> bool:
@@ -1313,7 +1320,12 @@ def build(
     placed = place_takes(measured, start, gap)
     notes.append("読みは台本のまま。削っていない。間は 0.20 秒。字幕は行ごとで、アクセント句では切らない。")
     notes.append("カットの切れ目は行間の無音の真ん中。台本に書いた秒は目安。最後のカットは本編の終わりまで。")
-    cues = cues_from_lines(placed, profile)
+    if doc.captions and profile.captions != "hook":
+        cues = build_cues(doc, placed, profile)
+        notes.append("字幕は台本の字幕節（フック・札・下部・PR）を焼いた。セリフ全文だけにはしない。")
+    else:
+        cues = cues_from_lines(placed, profile)
+    notes.append(f"字幕の字体は {font_path()}。#・英字・数字が入ることを確認した。")
     problem = pr_problem(cues, profile)
     if problem:
         _write_handoff(handoff, notes + [f"字幕のPRが規格外: {problem}"], "", None, None, 1)
@@ -1378,26 +1390,56 @@ def build(
     out.parent.mkdir(parents=True, exist_ok=True)
     norm_wav = work / "norm.wav"
     mux_audio(picture, norm_wav, out, profile)
-    integrated, true_peak = measure_loudness(out)
+    integrated, true_peak, lra = measure_loudness_lra(out)
     fixes = 0
     code, checker_text = run_checker(line, profile, out)
+    # I/TP が外れているとき、または LRA が 14 LU を超えるときにコンプレッサーを試す。
+    # I -14±1 と TP≦-1.5 は必ず守る。LRA は下がれば採用、下がらなくても I/TP 優先。
+    need_lra = lra is not None and lra > 14.0 and loudness_ok(integrated, true_peak)
     for ratio in (2.5, 3.0):
-        if fixes >= 3 or (code == 0 and loudness_ok(integrated, true_peak)):
+        if fixes >= 3:
             break
-        if loudness_ok(integrated, true_peak):
+        if loudness_ok(integrated, true_peak) and not need_lra:
             break
+        previous_out = work / "out-before-comp.mp4"
+        previous_wav = work / "norm-before-comp.wav"
+        if out.is_file():
+            previous_out.write_bytes(out.read_bytes())
+        if norm_wav.is_file():
+            previous_wav.write_bytes(norm_wav.read_bytes())
+        prev = (integrated, true_peak, lra, code, checker_text)
         fixes += 1
         used_compressor = True
         mix_and_norm(ratio)
         mux_audio(picture, norm_wav, out, profile)
-        integrated, true_peak = measure_loudness(out)
+        integrated, true_peak, lra = measure_loudness_lra(out)
         code, checker_text = run_checker(line, profile, out)
-        notes.append(f"声トラックに acompressor ratio={ratio} を掛けてから loudnorm 2パス。BGM 比は {BGM_RATIO} のまま。")
+        notes.append(
+            f"声トラックに acompressor ratio={ratio} を掛けてから loudnorm 2パス。"
+            f"BGM 比は {BGM_RATIO} のまま。"
+            + (f" LRA={lra:.1f} LU。" if lra is not None else "")
+        )
+        improved = prev[2] is not None and lra is not None and lra < prev[2] - 0.3
+        if (not loudness_ok(integrated, true_peak)) or (need_lra and not improved):
+            if previous_out.is_file():
+                out.write_bytes(previous_out.read_bytes())
+            if previous_wav.is_file():
+                norm_wav.write_bytes(previous_wav.read_bytes())
+            reason = "I/TP が外れた" if not loudness_ok(integrated, true_peak) else "LRA が下がらなかった"
+            integrated, true_peak, lra, code, checker_text = prev
+            notes.append(f"コンプレッサー後に{reason}ので、直前の音に戻した。")
+            if fixes == 1:
+                used_compressor = False
+            need_lra = False
+            break
+        need_lra = lra is not None and lra > 14.0
     version = write_ffmpeg_version(out)
     notes.append(f"ffmpeg: {version}")
     notes.append(f"ffmpeg の取得元: {FFMPEG_URL}")
     notes.append("コンプレッサーあり" if used_compressor else "コンプレッサーなし")
     notes.append(f"音量のやり直し: {fixes} 回（上限 3）。")
+    if lra is not None:
+        notes.append(f"LRA={lra:.1f} LU（目標は 14 LU 以下。I/TP を優先）。")
     notes.append("投稿・公開はしていない。A8 の URL は置いていない。金メモの実額は出してよい（2026-11-10 確認）。")
     write_sources(sources, doc.scenes, jobs, dry=dry)
     write_review(ROOT / "review" / script_path.stem, out, checker_text, sources)

@@ -11,12 +11,14 @@ ROOT = Path(__file__).resolve().parents[2]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
+from video.common.flat_mix import font_covers, font_path
 from video.shorts.make_short import (
     PROFILES,
     ScriptDoc,
     accent_spans,
     adult_marker,
     asset_rows,
+    CENTER_TAG,
     build_cues,
     content_cuts,
     cut_bounds,
@@ -107,6 +109,10 @@ class MakeShortTests(unittest.TestCase):
         self.assertEqual(len(hook), 1)
         self.assertEqual(hook[0].start, 0.0)
         self.assertLessEqual(hook[0].end, 1.0)
+        cards = [cue for cue in cues if "三脚とセルフタイマー" in cue.text]
+        self.assertEqual(len(cards), 1)
+        self.assertTrue(cards[0].text.startswith(CENTER_TAG))
+        self.assertTrue(any(cue.text == "頼みづらい友だち" or "頼みづらい友だち" in cue.text for cue in cues))
 
     def test_filter_does_not_change_speed_and_locks_30fps(self) -> None:
         profile = PROFILES["konkatsu"]
@@ -150,6 +156,16 @@ class MakeShortTests(unittest.TestCase):
 
     def test_path_outside_the_repo_is_shown_as_written(self) -> None:
         self.assertEqual(shown(Path("/tmp/x/台本.md")), "/tmp/x/台本.md")
+
+    def test_font_covers_ascii_and_hash_and_skips_droid(self) -> None:
+        chosen = font_path()
+        self.assertTrue(font_covers(chosen), chosen)
+        self.assertTrue("#" in __import__("pathlib").Path(chosen).name.lower() or font_covers(chosen, "#PR0A"))
+        droid = "/usr/share/fonts/truetype/droid/DroidSansFallbackFull.ttf"
+        if Path(droid).is_file():
+            self.assertFalse(font_covers(droid))
+        if Path("/usr/share/fonts/opentype/noto/NotoSansCJK-Regular.ttc").is_file():
+            self.assertEqual(chosen, "/usr/share/fonts/opentype/noto/NotoSansCJK-Regular.ttc")
 
 
 if __name__ == "__main__":

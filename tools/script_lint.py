@@ -15,6 +15,8 @@
 - timing.json があるときは、台本の秒ではなく実際の切れ目で見る。字幕が自分のカットからはみ出したら許容なしで不合格。場面と字幕の数が違っても不合格
 - ペットの猫の描写は全カットで同じ文。使い回しの食事カットは不合格。結論は最後の1.5秒より前
 - ペットの本編字幕は冒頭1秒のフックだけ。1秒以降のセリフ字幕は不合格
+- 台本の字幕節で「」に入っている行（フック・札・下部・PR）が SRT に全部ある。抜けは不合格
+- 札（{\an5}）はセリフ字幕の間隔・場面数に入れない
 - ペットと金メモは、結論の1文を最後の1.5秒より前に置くことを必須にする
 - 台本の台詞と、画面の表・見出しの用語がずれていたら不合格（加給と加算など）
 - 禁止語が台詞・字幕に無い（根拠メモや PR 注記は見ない）
@@ -32,6 +34,7 @@ import argparse
 import json
 import re
 import sys
+from collections import Counter
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -53,6 +56,7 @@ MONEY_RE = re.compile(r"\d[\d,]*\s*円|\d+\s*万\s*円")
 SPAN_RE = re.compile(r"(\d+\.\d+)\s*(?:-|–|〜|～)\s*(\d+\.\d+)")
 OPEN_PR = "{\\an9}PR"
 HOOK_TAG = "{\\an8}"
+CENTER_TAG = "{\\an5}"
 SPEED_MARK = "等倍（+0%）"
 CTA_WORDS = ("プロフィール", "リンク", "概要欄から", "買って", "申し込んで", "フォロー")
 PRODUCT_NAMES = ("毎日腎活",)
@@ -225,10 +229,55 @@ def is_hook_cue(text: str) -> bool:
     return HOOK_TAG in text
 
 
+def is_card_cue(text: str) -> bool:
+    """中央の札。{\an5}。セリフ字幕の間隔・場面数には入れない。"""
+    return CENTER_TAG in text
+
+
 def dialogue_cues(cues: list[Cue]) -> list[Cue]:
-    spoken = [cue for cue in cues if not is_pr_cue(cue.text) and not is_hook_cue(cue.text)]
+    spoken = [
+        cue
+        for cue in cues
+        if not is_pr_cue(cue.text) and not is_hook_cue(cue.text) and not is_card_cue(cue.text)
+    ]
     spoken.sort(key=lambda cue: (cue.start, cue.end, cue.index))
     return spoken
+
+
+def visible_cue_text(text: str) -> str:
+    return re.sub(r"\{[^}]*\}", "", text).strip()
+
+
+def script_caption_texts(md: str) -> list[str]:
+    """字幕節の「」の中身。同じ文言が札と下部で二重にあれば、その回数だけ要る。"""
+    texts: list[str] = []
+    for section in parse_sections(md):
+        if "字幕" not in section.title:
+            continue
+        for match in re.finditer(r"「([^」]+)」", section.body):
+            item = match.group(1).strip()
+            if item:
+                texts.append(item)
+    return texts
+
+
+def check_script_captions(md: str, cues: list[Cue]) -> str:
+    """台本の字幕の行が SRT に全部あるか。抜けは不合格。"""
+    needed = script_caption_texts(md)
+    if not needed:
+        return "PASS（字幕の行なし）"
+    have = Counter(visible_cue_text(cue.text) for cue in cues)
+    missing: list[str] = []
+    for item, count in Counter(needed).items():
+        got = have.get(item, 0)
+        if got < count:
+            if count == 1:
+                missing.append(item)
+            else:
+                missing.append(f"{item}が{got}本（要{count}本）")
+    if missing:
+        return "FAIL（字幕の抜け: " + "、".join(missing) + "）"
+    return "PASS"
 
 
 def find_banned(text: str) -> list[str]:
@@ -736,6 +785,12 @@ def check_pet_captions(cues: list[Cue], name: str) -> str:
     return "PASS（フックだけ）"
 
 
+def check_captions(cues: list[Cue], name: str, md: str) -> str:
+    if "ペット" in name:
+        return check_pet_captions(cues, name)
+    return check_script_captions(md, cues)
+
+
 def overall_of(row: Row) -> str:
     hard = (
         row.srt_format,
@@ -822,7 +877,7 @@ def lint_texts(name: str, md: str | None, srt: str | None, timing: str | None = 
     a8 = check_a8(md_body + "\n" + srt_body)
     terms = check_terms(md_body)
     conclusion = check_conclusion(md_body, cues, name)
-    captions = check_pet_captions(cues, name)
+    captions = check_captions(cues, name, md_body)
     row = Row(
         name,
         srt_format,
@@ -1358,6 +1413,65 @@ def self_test(fixtures: Path, repo: Path) -> bool:
         "秒の無いプロンプトは不合格のまま",
         missing_span.prompts,
     ) and ok
+    print()
+    print("字幕の抜け:")
+    hook = HOOK_MARKS[0]
+    cap_md = (
+        f"# テスト\n\n"
+        f"## {hook}（画＋文字）\n"
+        f"- テキストフック: 「プロフ写真、頼める人いない」\n\n"
+        f"## brief\n"
+        f"- 尺: 10.5秒\n"
+        f"- 声: {SPEED_MARK}\n\n"
+        f"## 台詞\n"
+        f"テストの台詞。\n\n"
+        f"## 字幕\n"
+        f"- 0.0-1.0 上部「プロフ写真、頼める人いない」\n"
+        f"- 札（中央）: 0.0-2.8「三脚とセルフタイマー」／2.8-5.2「撮ってくれる人」／5.2-8.5「三脚はもういらない」\n"
+        f"- 下部の名詞: 0.3-2.8「気まずくて」／2.8-5.2「撮ってくれる人」／5.2-8.5「三脚はもういらない」\n"
+        f"- 8.5-10.5 中央「広告 #PR」\n\n"
+        f"## 自己採点\n"
+        f"- 合計 80/100\n"
+    )
+    missing_caps = lint_texts(
+        "2026-11-10-婚活-missing-cards",
+        cap_md,
+        "1\n00:00:00,200 --> 00:00:02,808\n気まずくて。\n\n"
+        "2\n00:00:03,008 --> 00:00:05,057\n撮ってくれる人に頼んでみた。\n\n"
+        "3\n00:00:05,257 --> 00:00:06,621\n三脚はもういらない。\n\n"
+        "4\n00:00:08,500 --> 00:00:10,500\n広告 #PR\n",
+    )
+    complete_caps = lint_texts(
+        "2026-11-10-婚活-all-cards",
+        cap_md,
+        "1\n00:00:00,000 --> 00:00:01,000\n"
+        + HOOK_TAG
+        + "プロフ写真、頼める人いない\n\n"
+        "2\n00:00:00,000 --> 00:00:02,908\n"
+        + CENTER_TAG
+        + "三脚とセルフタイマー\n\n"
+        "3\n00:00:02,908 --> 00:00:05,157\n"
+        + CENTER_TAG
+        + "撮ってくれる人\n\n"
+        "4\n00:00:05,157 --> 00:00:08,500\n"
+        + CENTER_TAG
+        + "三脚はもういらない\n\n"
+        "5\n00:00:00,312 --> 00:00:02,908\n気まずくて\n\n"
+        "6\n00:00:02,908 --> 00:00:05,157\n撮ってくれる人\n\n"
+        "7\n00:00:05,157 --> 00:00:08,500\n三脚はもういらない\n\n"
+        "8\n00:00:08,500 --> 00:00:10,500\n広告 #PR\n",
+    )
+    ok = expect(
+        missing_caps.captions.startswith("FAIL") and "抜け" in missing_caps.captions,
+        "台本の字幕がSRTに無いと不合格",
+        missing_caps.captions,
+    ) and ok
+    ok = expect(
+        complete_caps.captions == "PASS" and complete_caps.gap.startswith("PASS") and complete_caps.result == "PASS",
+        "フック・札・下部・PRが揃えば合格。札は間隔に入れない",
+        complete_caps.captions + " / " + complete_caps.gap + " / " + complete_caps.result,
+    ) and ok
+
     print()
     print("金額:")
     kane_money = check_money("2026-11-10-金メモ-gaku", "納める額は15000円。")
