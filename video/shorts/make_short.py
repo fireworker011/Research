@@ -354,7 +354,10 @@ def cues_from_lines(
     for index, (text, start, end) in enumerate(placed):
         if profile.captions == "hook":
             if index == 0:
-                cues.append(Cue(start, min(end, start + 1.0), text, "top", hook=True))
+                # ペットの本編字幕は冒頭1秒のフックだけ。
+                # script_lint は 0.000-1.000 かつ {\an8} を要求する（声の開始 0.20 秒には合わせない）。
+                visible = re.sub(r"\{[^}]*\}", "", text).strip()
+                cues.append(Cue(0.0, 1.0, HOOK_TAG + visible, "top", hook=True))
             continue
         cues.append(Cue(start, end, text, "bottom"))
     return _add_pr(cues, profile)
