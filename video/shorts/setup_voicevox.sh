@@ -11,6 +11,31 @@ CACHE="${VOICEVOX_CACHE:-/tmp/voicevox-engine}"
 VERSION="0.26.1"
 ASSET="voicevox_engine-linux-cpu-x64-${VERSION}.7z.001"
 URL="https://github.com/VOICEVOX/voicevox_engine/releases/download/${VERSION}/${ASSET}"
+FFMPEG_URL="https://github.com/FFmpeg-Builds/FFmpeg-Builds/releases/download/autobuild-2026-11-09-12-42/ffmpeg-n8.1.3-34-ga35157abb9-linux64-gpl-8.1.tar.xz"
+FFMPEG_DIR="${FFMPEG_DIR:-/tmp/ffmpeg-static}"
+
+install_ffmpeg() {
+  local bin="${FFMPEG_DIR}/ffmpeg"
+  if [[ -x "$bin" ]]; then
+    echo "PASS ffmpeg $("$bin" -version | head -1)"
+    echo "URL ${FFMPEG_URL}"
+    return 0
+  fi
+  mkdir -p "$FFMPEG_DIR"
+  echo "静的ビルドを取る: ${FFMPEG_URL}"
+  curl -fL --retry 3 -o "${FFMPEG_DIR}/ffmpeg.tar.xz" "$FFMPEG_URL"
+  tar -xJf "${FFMPEG_DIR}/ffmpeg.tar.xz" -C "$FFMPEG_DIR"
+  local found
+  found="$(find "$FFMPEG_DIR" -type f -path '*/bin/ffmpeg' | head -1)"
+  local probe
+  probe="$(find "$FFMPEG_DIR" -type f -path '*/bin/ffprobe' | head -1)"
+  ln -sfn "$found" "${FFMPEG_DIR}/ffmpeg"
+  ln -sfn "$probe" "${FFMPEG_DIR}/ffprobe"
+  echo "PASS ffmpeg $("${FFMPEG_DIR}/ffmpeg" -version | head -1)"
+  echo "URL ${FFMPEG_URL}"
+}
+
+install_ffmpeg
 
 health() {
   curl -fsS --max-time 3 "${BASE}/version" 2>/dev/null || true

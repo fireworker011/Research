@@ -11,6 +11,7 @@ from __future__ import annotations
 import argparse
 import asyncio
 import json
+import os
 import math
 import re
 import struct
@@ -29,7 +30,25 @@ ROOT = Path(__file__).resolve().parents[2]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
-from video.common.flat_mix import filter_path, font_path
+from video.common.flat_mix import BGM_RATIO, filter_path, font_path
+
+FFMPEG_DIR = Path(os.environ.get("FFMPEG_DIR", "/tmp/ffmpeg-static"))
+FFMPEG_URL = (
+    "https://github.com/FFmpeg-Builds/FFmpeg-Builds/releases/download/"
+    "autobuild-2026-11-09-12-42/ffmpeg-n8.1.3-34-ga35157abb9-linux64-gpl-8.1.tar.xz"
+)
+
+
+def prefer_pinned_ffmpeg() -> None:
+    """setup が置いた静的ビルドを、システムの ffmpeg より先に使う。"""
+    if (FFMPEG_DIR / "ffmpeg").is_file() and (FFMPEG_DIR / "ffprobe").is_file():
+        os.environ["PATH"] = str(FFMPEG_DIR) + os.pathsep + os.environ.get("PATH", "")
+
+
+def write_ffmpeg_version(out: Path) -> str:
+    version = subprocess.check_output(["ffmpeg", "-version"], text=True).splitlines()[0]
+    (out.parent / "ffmpeg-version.txt").write_text(version + "\n" + FFMPEG_URL + "\n", encoding="utf-8")
+    return version
 
 RATE = 48000
 VOICEVOX_URL = "http://127.0.0.1:50021"
@@ -321,6 +340,21 @@ def _add_pr(cues: list[Cue], profile: Profile) -> list[Cue]:
         kept.append(Cue(begin, profile.duration, "広告 #PR", "center", pr=True))
         return kept
     raise AssertionError(profile.pr)
+
+
+def cues_from_lines(
+    placed: list[tuple[str, float, float]],
+    profile: Profile,
+) -> list[Cue]:
+    """台本のセリフ1行につき字幕1本。長さはその行を読んだ実測。アクセント句では切らない。"""
+    cues: list[Cue] = []
+    for index, (text, start, end) in enumerate(placed):
+        if profile.captions == "hook":
+            if index == 0:
+                cues.append(Cue(start, min(end, start + 1.0), text, "top", hook=True))
+            continue
+        cues.append(Cue(start, end, text, "bottom"))
+    return _add_pr(cues, profile)
 
 
 def cues_for_burn(cues: list[Cue], profile: Profile) -> list[Cue]:
@@ -1207,27 +1241,14 @@ def build(
                 child.unlink()
     work.mkdir(parents=True, exist_ok=True)
     measured: list[tuple[str, float]] = []
-    phrase_book: list[list[tuple[str, float, float]]] = []
     cache: dict[str, list[int]] = {}
     for speech in doc.speeches:
         media = work / f"voice-{len(cache)}.wav"
-        phrases: list[tuple[str, float, float]] = []
-        if engine == "voicevox" and speaker is not None:
-            query = voicevox_audio_query(speech.text, speaker, VOICEVOX_URL)
-            phrases = accent_spans(query)
         synth_take(speech.text, line, media, engine, speaker, voice)
         samples = trim_ends(decode_mono(media))
         fade_edges(samples)
         cache[speech.text] = samples
-        duration = len(samples) / RATE
-        if phrases:
-            raw_end = phrases[-1][2]
-            scale = duration / raw_end if raw_end else 1.0
-            phrases = [(text, begin * scale, end * scale) for text, begin, end in phrases]
-        else:
-            phrases = [(speech.text, 0.0, duration)]
-        measured.append((speech.text, duration))
-        phrase_book.append(phrases)
+        measured.append((speech.text, len(samples) / RATE))
     start, gap = 0.20, 0.20
     code, lint_rows = judge_body(measured, start, gap)
     if code != 0:
@@ -1241,14 +1262,8 @@ def build(
         _write_handoff(handoff, notes + lint_rows, "\n".join(lint_rows) + "\n", None, None, 0)
         return 0
     placed = place_takes(measured, start, gap)
-    notes.append("読みは台本のまま。削っていない。間は 0.20 秒。")
-    cues = build_cues(doc, placed, profile)
-    for phrases, span in zip(phrase_book, placed):
-        origin = span[1]
-        if len(phrases) <= 1:
-            continue
-        for text, begin, end in phrases:
-            cues.append(Cue(origin + begin, origin + end, text, "bottom"))
+    notes.append("読みは台本のまま。削っていない。間は 0.20 秒。字幕は行ごとで、アクセント句では切らない。")
+    cues = cues_from_lines(placed, profile)
     problem = pr_problem(cues, profile)
     if problem:
         _write_handoff(handoff, notes + [f"字幕のPRが規格外: {problem}"], "", None, None, 1)
@@ -1265,37 +1280,69 @@ def build(
         )
     else:
         notes.append(f"隣の SRT は残した: {found_srt.relative_to(ROOT)}。映像用は尺に合わせて書き直した。")
-    spans = [(cache[text], span_start) for text, span_start, _span_end in placed]
-    # 0.15 だと短いナレの2パスは I が -16.9 で止まる。0.70 は同じ声で I=-15.0 / TP=-1.5。
-    mixed = mix_bed(spans, profile.duration, 0.70)
-    voice_wav = work / "mix.wav"
-    norm_wav = work / "norm.wav"
-    write_wav(voice_wav, mixed)
-    loudnorm_two_pass(voice_wav, norm_wav, -14.0, -1.5)
+    def mix_and_norm(compress_ratio: float | None) -> None:
+        spans: list[tuple[list[int], float]] = []
+        for index, (text, span_start, _span_end) in enumerate(placed):
+            samples = cache[text]
+            if compress_ratio is not None:
+                raw = work / f"voice-plain-{index}.wav"
+                comp = work / f"voice-comp-{index}.wav"
+                write_wav(raw, samples)
+                subprocess.check_call(
+                    [
+                        "ffmpeg",
+                        "-y",
+                        "-hide_banner",
+                        "-loglevel",
+                        "error",
+                        "-i",
+                        str(raw),
+                        "-af",
+                        f"acompressor=threshold=-18dB:ratio={compress_ratio}:attack=5:release=80:makeup=1",
+                        "-ar",
+                        str(RATE),
+                        "-ac",
+                        "1",
+                        str(comp),
+                    ]
+                )
+                samples = decode_mono(comp)
+            spans.append((samples, span_start))
+        mixed = mix_bed(spans, profile.duration, BGM_RATIO)
+        voice_wav = work / "mix.wav"
+        write_wav(voice_wav, mixed)
+        loudnorm_two_pass(voice_wav, work / "norm.wav", -14.0, -1.5)
+
+    mix_and_norm(None)
+    used_compressor = False
+    notes.append("BGM は声の約15%。loudnorm は2パス、TP=-1.5、linear=true。最初はコンプレッサーなし。")
     bounds = cut_bounds(doc, placed, profile)
     cuts = prepare_media(doc, jobs, profile, bounds, work)
     picture = work / "picture.mp4"
     render_picture(cuts, burn, profile, picture, work)
     out.parent.mkdir(parents=True, exist_ok=True)
+    norm_wav = work / "norm.wav"
     mux_audio(picture, norm_wav, out, profile)
     integrated, true_peak = measure_loudness(out)
-    audio_now = norm_wav
     fixes = 0
     code, checker_text = run_checker(line, profile, out)
-    while fixes < 3 and (code != 0 or not loudness_ok(integrated, true_peak)):
-        if loudness_ok(integrated, true_peak) or integrated is None:
+    for ratio in (2.5, 3.0):
+        if fixes >= 3 or (code == 0 and loudness_ok(integrated, true_peak)):
             break
-        gain = gain_db(integrated, true_peak)
-        if abs(gain) < 0.05:
+        if loudness_ok(integrated, true_peak):
             break
         fixes += 1
-        nxt = work / f"norm-{fixes}.wav"
-        apply_gain(audio_now, nxt, gain)
-        audio_now = nxt
-        mux_audio(picture, audio_now, out, profile)
+        used_compressor = True
+        mix_and_norm(ratio)
+        mux_audio(picture, norm_wav, out, profile)
         integrated, true_peak = measure_loudness(out)
         code, checker_text = run_checker(line, profile, out)
-    notes.append(f"音量のやり直し: {fixes} 回（上限 3）。loudnorm は2パス、TP=-1.5、linear=true。BGM は自作の正弦波で、声の約15%。")
+        notes.append(f"声トラックに acompressor ratio={ratio} を掛けてから loudnorm 2パス。BGM 比は {BGM_RATIO} のまま。")
+    version = write_ffmpeg_version(out)
+    notes.append(f"ffmpeg: {version}")
+    notes.append(f"ffmpeg の取得元: {FFMPEG_URL}")
+    notes.append("コンプレッサーあり" if used_compressor else "コンプレッサーなし")
+    notes.append(f"音量のやり直し: {fixes} 回（上限 3）。")
     notes.append("投稿・公開はしていない。A8 の URL は置いていない。金メモの実額は出してよい（2026-11-10 確認）。")
     write_sources(sources, doc.scenes, jobs, dry=dry)
     write_review(ROOT / "review" / script_path.stem, out, checker_text, sources)
@@ -1381,6 +1428,7 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--dry", action="store_true", help="仮の絵と edge-tts。ファイル名に _DRY")
     parser.add_argument("--lint-duration", action="store_true", help="本編8.5秒を超えたら FAIL して終わる")
     args = parser.parse_args(argv)
+    prefer_pinned_ffmpeg()
     script = args.script if args.script.is_absolute() else ROOT / args.script
     if not script.is_file():
         print(f"台本が無い: {args.script}", file=sys.stderr)
