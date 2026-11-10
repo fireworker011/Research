@@ -12,6 +12,7 @@
 - ゆあ・金メモは PR が無い。金メモの概要欄に「アフィリエイト広告を含みます」は無い
 - 早見表は 3行まで。数字の行は 2秒以上。秒を行に書いた表は文字の高さ 40px 以上
 - Imagine のプロンプトは、フック以外の字幕 1本につき 1本。秒は字幕と揃える
+- timing.json があるときは、台本の秒ではなく実際の切れ目で見る。字幕が自分のカットからはみ出したら許容なしで不合格。場面と字幕の数が違っても不合格
 - ペットの猫の描写は全カットで同じ文。使い回しの食事カットは不合格。結論は最後の1.5秒より前
 - ペットの本編字幕は冒頭1秒のフックだけ。1秒以降のセリフ字幕は不合格
 - ペットと金メモは、結論の1文を最後の1.5秒より前に置くことを必須にする
@@ -28,6 +29,7 @@
 from __future__ import annotations
 
 import argparse
+import json
 import re
 import sys
 from dataclasses import dataclass
@@ -55,7 +57,7 @@ SPEED_MARK = "等倍（+0%）"
 CTA_WORDS = ("プロフィール", "リンク", "概要欄から", "買って", "申し込んで", "フォロー")
 PRODUCT_NAMES = ("毎日腎活",)
 TERM_PAIRS = (("加給", "加算"),)
-SKIP_MD = frozenset({"REPORT.md", "cuts-for-pc.md"})
+SKIP_MD = frozenset({"REPORT.md", "cuts-for-pc.md", "HANDOFF.md", "sources.md"})
 BAD_SPEED_RE = re.compile(
     r"早回し\s*[=:]?\s*([0-9]+(?:\.[0-9]+)?)|"
     r"([0-9]+(?:\.[0-9]+)?)\s*倍速|"
@@ -547,8 +549,39 @@ def check_cta(name: str, spoken: str, srt: str, md: str) -> str:
     return "PASS"
 
 
-def check_prompts(md: str, cues: list[Cue], name: str) -> str:
-    """プロンプト節があるときだけ。フック以外の字幕と秒を揃える。秒の無い見出しは不合格。"""
+def scene_fit(cues: list[Cue], timing: dict[str, object]) -> list[str]:
+    """字幕の1行が、timing.json の自分のカットに収まっているか。はみ出しは許容しない。"""
+    raw = timing.get("cuts")
+    if not isinstance(raw, list) or not raw:
+        return ["timing.json にカットが無い"]
+    cuts: list[tuple[int, int, str]] = []
+    for item in raw:
+        if not isinstance(item, dict):
+            return ["timing.json のカットが読めない"]
+        try:
+            start = int(round(float(item["start"]) * 1000))
+            end = int(round(float(item["end"]) * 1000))
+        except (KeyError, TypeError, ValueError):
+            return ["timing.json の秒が読めない"]
+        label = f"{float(item['start']):.3f}-{float(item['end']):.3f}"
+        cuts.append((start, end, label))
+    needed = dialogue_cues(cues)
+    reasons: list[str] = []
+    if len(cuts) != len(needed):
+        reasons.append(f"場面{len(cuts)}（字幕{len(needed)}）")
+    for cue, (start, end, label) in zip(needed, cuts, strict=False):
+        if cue.start < start or cue.end > end:
+            reasons.append(f"{cue.start / 1000:.3f}-{cue.end / 1000:.3f}が{label}からはみ出す")
+    return reasons
+
+
+def check_prompts(
+    md: str,
+    cues: list[Cue],
+    name: str,
+    timing: dict[str, object] | None = None,
+) -> str:
+    """プロンプト節があるときだけ。timing.json があれば実際の切れ目で測る。秒の無い見出しは不合格。"""
     if "プロンプト" not in md:
         return "PASS（プロンプトなし）"
     headings = re.findall(
@@ -563,13 +596,16 @@ def check_prompts(md: str, cues: list[Cue], name: str) -> str:
     reasons: list[str] = []
     ranges = [(float(start), float(end)) for start, end in headings]
     needed = [cue for cue in cues if not is_hook_cue(cue.text)]
-    for cue in needed:
-        start = cue.start / 1000
-        end = cue.end / 1000
-        if not any(abs(start - left) < 0.001 and abs(end - right) < 0.001 for left, right in ranges):
-            reasons.append(f"{start:.3f}-{end:.3f}のプロンプトが無い")
-    if len(ranges) != len(needed):
-        reasons.append(f"プロンプト{len(ranges)}本（字幕{len(needed)}本）")
+    if timing is not None:
+        reasons.extend(scene_fit(cues, timing))
+    else:
+        for cue in needed:
+            start = cue.start / 1000
+            end = cue.end / 1000
+            if not any(abs(start - left) < 0.001 and abs(end - right) < 0.001 for left, right in ranges):
+                reasons.append(f"{start:.3f}-{end:.3f}のプロンプトが無い")
+        if len(ranges) != len(needed):
+            reasons.append(f"プロンプト{len(ranges)}本（字幕{len(needed)}本）")
     for block in prompt_blocks:
         if "9:16" not in block or "画面に文字を出さない" not in block:
             reasons.append("9:16か画面文字の指定が無い")
@@ -725,7 +761,7 @@ def overall_of(row: Row) -> str:
     return "PASS"
 
 
-def lint_texts(name: str, md: str | None, srt: str | None) -> Row:
+def lint_texts(name: str, md: str | None, srt: str | None, timing: str | None = None) -> Row:
     lane = lane_of(name)
     if md is None:
         sections: list[Section] = []
@@ -764,8 +800,22 @@ def lint_texts(name: str, md: str | None, srt: str | None) -> Row:
     if money.startswith("FAIL"):
         banned = money if banned.startswith("PASS") else banned + "、" + money.removeprefix("FAIL（").removesuffix("）")
     table = check_table("" if md is None else md_body)
-    timing = check_timing(cues, name)
-    prompts = check_prompts("" if md is None else md_body, cues, name)
+    timing_label = check_timing(cues, name)
+    parsed_timing: dict[str, object] | None = None
+    timing_error = ""
+    if timing:
+        try:
+            loaded = json.loads(timing)
+        except json.JSONDecodeError:
+            timing_error = "timing.json が読めない"
+        else:
+            if isinstance(loaded, dict):
+                parsed_timing = loaded
+            else:
+                timing_error = "timing.json が読めない"
+    prompts = check_prompts("" if md is None else md_body, cues, name, parsed_timing)
+    if timing_error:
+        prompts = "FAIL（" + timing_error + "）" if prompts.startswith("PASS") else prompts.replace("）", "、" + timing_error + "）", 1)
     hook = check_hook(cues)
     speed = check_speed(md_body)
     cta = check_cta(name, spoken, srt_body, md_body)
@@ -782,7 +832,7 @@ def lint_texts(name: str, md: str | None, srt: str | None) -> Row:
         headings,
         score,
         table,
-        timing,
+        timing_label,
         prompts,
         hook,
         speed,
@@ -819,7 +869,19 @@ def read_text(path: Path) -> str:
     return path.read_text(encoding="utf-8-sig")
 
 
-def collect(root: Path) -> list[tuple[str, str | None, str | None]]:
+def find_timing(root: Path, stem: str) -> str | None:
+    """出力の横、または台本・字幕と同じフォルダの timing.json。"""
+    names = ("timing.json", f"{stem}.timing.json")
+    folders = (root, root / "subs", root / "scripts")
+    for folder in folders:
+        for name in names:
+            path = folder / name
+            if path.is_file():
+                return read_text(path)
+    return None
+
+
+def collect(root: Path) -> list[tuple[str, str | None, str | None, str | None]]:
     """scripts/+subs/ と、同じフォルダに md と srt が並ぶ形の両方。"""
     scripts = root / "scripts"
     subs = root / "subs"
@@ -829,16 +891,16 @@ def collect(root: Path) -> list[tuple[str, str | None, str | None]]:
     else:
         md_paths = {path.stem: path for path in root.glob("*.md") if path.name not in SKIP_MD}
         srt_paths = {path.stem: path for path in root.glob("*.srt")}
-    items: list[tuple[str, str | None, str | None]] = []
+    items: list[tuple[str, str | None, str | None, str | None]] = []
     for stem in sorted(set(md_paths) | set(srt_paths)):
         md = read_text(md_paths[stem]) if stem in md_paths else None
         srt = read_text(srt_paths[stem]) if stem in srt_paths else None
-        items.append((stem, md, srt))
+        items.append((stem, md, srt, find_timing(root, stem)))
     return items
 
 
 def lint_dir(root: Path) -> list[Row]:
-    return [lint_texts(name, md, srt) for name, md, srt in collect(root)]
+    return [lint_texts(name, md, srt, timing) for name, md, srt, timing in collect(root)]
 
 
 def render(rows: list[Row]) -> str:

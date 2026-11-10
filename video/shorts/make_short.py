@@ -766,18 +766,66 @@ def apply_gain(src: Path, dest: Path, gain: float) -> None:
     )
 
 
+def content_end_of(profile: Profile) -> float:
+    begin = pr_begin_of(profile)
+    if begin is None:
+        return profile.duration
+    return begin
+
+
+def content_cuts(
+    placed: list[tuple[str, float, float]],
+    profile: Profile,
+) -> list[tuple[float, float, str]]:
+    """切れ目は行と行の無音の真ん中。最後のカットは本編の終わりまで。台本の秒は目安。"""
+    end = round(content_end_of(profile), 3)
+    if not placed:
+        return [(0.0, end, "")]
+    edges = [0.0]
+    for index in range(len(placed) - 1):
+        left = placed[index][2]
+        right = placed[index + 1][1]
+        edges.append(round((left + right) / 2.0, 3))
+    edges.append(end)
+    return [
+        (edges[index], edges[index + 1], text)
+        for index, (text, _start, _stop) in enumerate(placed)
+    ]
+
+
 def cut_bounds(doc: ScriptDoc, placed: list[tuple[str, float, float]], profile: Profile) -> list[float]:
-    content = [scene for scene in doc.scenes if not scene.pr_only] or doc.scenes
-    bounds = [0.0]
-    for scene_index in range(1, len(content)):
-        starts = [
-            span[1]
-            for speech, span in zip(doc.speeches, placed)
-            if speech.scene == scene_index
-        ]
-        bounds.append(starts[0] if starts else bounds[-1])
-    bounds.append(profile.duration)
-    return bounds
+    """映像の最後のコマは PR の終わりまで。本編の切れ目は content_cuts。"""
+    del doc
+    cuts = content_cuts(placed, profile)
+    return [item[0] for item in cuts] + [profile.duration]
+
+
+def write_timing(
+    path: Path,
+    cuts: list[tuple[float, float, str]],
+    profile: Profile,
+) -> None:
+    payload: dict[str, object] = {
+        "content_end": round(content_end_of(profile), 3),
+        "cuts": [
+            {"index": index, "start": start, "end": end, "line": text}
+            for index, (start, end, text) in enumerate(cuts, start=1)
+        ],
+    }
+    begin = pr_begin_of(profile)
+    if begin is not None:
+        payload["pr"] = {"start": round(begin, 3), "end": round(profile.duration, 3)}
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(json.dumps(payload, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+
+
+def shown(path: Path) -> str:
+    """リポジトリの外の絶対パスでも落ちない。"""
+    resolved = path.resolve()
+    try:
+        return str(resolved.relative_to(ROOT))
+    except ValueError:
+        return str(resolved)
 
 
 def video_filter(
@@ -1000,10 +1048,11 @@ def prepare_media(
 ) -> list[tuple[Path, float]]:
     content = [scene for scene in doc.scenes if not scene.pr_only] or doc.scenes
     cuts: list[tuple[Path, float]] = []
-    for index, scene in enumerate(content):
+    for index in range(len(bounds) - 1):
         duration = bounds[index + 1] - bounds[index]
         if duration <= 0.05:
             raise RuntimeError(f"カット{index + 1}の長さが無い")
+        scene = content[min(index, len(content) - 1)]
         clip = jobs[index] if index < len(jobs) else {}
         given = str(clip.get("path") or "").strip()
         dest = work / f"cut{index}.ppm"
@@ -1263,6 +1312,7 @@ def build(
         return 0
     placed = place_takes(measured, start, gap)
     notes.append("読みは台本のまま。削っていない。間は 0.20 秒。字幕は行ごとで、アクセント句では切らない。")
+    notes.append("カットの切れ目は行間の無音の真ん中。台本に書いた秒は目安。最後のカットは本編の終わりまで。")
     cues = cues_from_lines(placed, profile)
     problem = pr_problem(cues, profile)
     if problem:
@@ -1272,14 +1322,19 @@ def build(
     srt_dest = default_srt(script_path)
     srt_dest.parent.mkdir(parents=True, exist_ok=True)
     srt_dest.write_text(render_srt(burn), encoding="utf-8")
+    timing_path = out.parent / "timing.json"
+    write_timing(timing_path, content_cuts(placed, profile), profile)
+    if srt_dest.parent.resolve() != timing_path.parent.resolve():
+        write_timing(srt_dest.parent / "timing.json", content_cuts(placed, profile), profile)
+    notes.append(f"実際の切れ目は {shown(timing_path)} に書いた。")
     if found_srt is None:
         notes.append(
             "台本が指す subs/*.srt は添付に無かった。字幕の節から作り、"
-            f"映像に焼いたものと同じ内容を {srt_dest.relative_to(ROOT)} に書いた。"
+            f"映像に焼いたものと同じ内容を {shown(srt_dest)} に書いた。"
             "PR は 8.5〜10.5 秒だけ。"
         )
     else:
-        notes.append(f"隣の SRT は残した: {found_srt.relative_to(ROOT)}。映像用は尺に合わせて書き直した。")
+        notes.append(f"隣の SRT は残した: {shown(found_srt)}。映像用は尺に合わせて書き直した。")
     def mix_and_norm(compress_ratio: float | None) -> None:
         spans: list[tuple[list[int], float]] = []
         for index, (text, span_start, _span_end) in enumerate(placed):

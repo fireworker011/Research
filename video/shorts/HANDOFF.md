@@ -140,7 +140,36 @@ BGM は声の約15%。コンプレッサーは使っていない。loudnorm は2
 
 VM: I=-14.5 LUFS、TP=-1.5 dBTP、長さ 10.466667 秒。`check_video.sh konkatsu` は exit 0。声の合計 6.02 秒、本編の終わり 6.62 秒、RATIO PASS 70.8%。
 
-字幕はセリフ1行につき1本。アクセント句では切らない。script_lint は行数は4本で揃うが、秒がプロンプトの 0.0-2.8 / 2.8-5.2 / 5.2-8.5 と違うため exit 1。
+字幕はセリフ1行につき1本。アクセント句では切らない。この時点の script_lint は、台本の秒と字幕の秒が違うため exit 1。次の節で、実際の切れ目に切り替えた。
+
+## 切れ目は読んだ長さ（声OK前・投稿用に使わない）
+
+台本の秒は目安。切れ目は行と行の無音の真ん中。最後のカットは本編の終わり 8.5 秒まで。絶対パスの台本でも動く。
+
+VM で `/tmp/x/2026-11-10-婚活-tanomeru-hito-v3.md`（sha256 60358a039b4d334476de841ef36155fcd63b9aa716b27dae926e128518fc4223）を指定した。make_short は exit 0。check_video.sh konkatsu は exit 0。I=-14.5 LUFS、TP=-1.5 dBTP、長さ 10.500000 秒。script_lint は exit 0。
+
+timing.json:
+
+```
+content_end 8.5
+カット1 0.0-2.908 友だちに写真頼むの、気まずくて。
+カット2 2.908-5.157 だから撮ってくれる人に頼んでみた。
+カット3 5.157-8.5 三脚はもういらない。
+PR 8.5-10.5
+```
+
+字幕を 0.200-3.200 に延ばしたダミーは `FAIL（0.200-3.200が0.000-2.908からはみ出す）`、script_lint exit 1。
+
+箱で同じ手順:
+
+```
+bash video/shorts/setup_voicevox.sh
+export PATH="/tmp/ffmpeg-static:$PATH"
+ffmpeg -version | head -1
+python3 make_short.py /home/box/shorts/daihon/scripts/2026-11-10-婚活-tanomeru-hito-v3.md konkatsu --jobs <jobs.json> --out <台本名>.mp4
+bash video/shorts/check_video.sh <台本名>.mp4 konkatsu
+python3 tools/script_lint.py <台本・字幕・timing.json・cuts-for-pc.md があるディレクトリ>
+```
 
 箱で同じ手順:
 

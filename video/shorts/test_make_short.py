@@ -13,15 +13,19 @@ if str(ROOT) not in sys.path:
 
 from video.shorts.make_short import (
     PROFILES,
+    ScriptDoc,
     accent_spans,
     adult_marker,
     asset_rows,
     build_cues,
+    content_cuts,
+    cut_bounds,
     judge_body,
     Scene,
     parse_script,
     pr_problem,
     render_srt,
+    shown,
     video_filter,
 )
 
@@ -129,6 +133,23 @@ class MakeShortTests(unittest.TestCase):
         self.assertEqual(kane.pr, "none")
         self.assertEqual(PROFILES["yorunotana"].silence_limit, 2.0)
         self.assertEqual(PROFILES["yorunotana"].duration_min, 60.0)
+
+    def test_cut_is_the_middle_of_the_gap_and_the_last_cut_ends_at_8_5(self) -> None:
+        placed = [
+            ("一行目。", 0.2, 2.8),
+            ("二行目。", 3.0, 5.0),
+            ("三行目。", 5.2, 6.6),
+        ]
+        profile = PROFILES["konkatsu"]
+        cuts = content_cuts(placed, profile)
+        self.assertEqual([item[0] for item in cuts], [0.0, 2.9, 5.1])
+        self.assertEqual([item[1] for item in cuts], [2.9, 5.1, 8.5])
+        bounds = cut_bounds(ScriptDoc([], [], [], ""), placed, profile)
+        self.assertEqual(bounds[0], 0.0)
+        self.assertEqual(bounds[-1], profile.duration)
+
+    def test_path_outside_the_repo_is_shown_as_written(self) -> None:
+        self.assertEqual(shown(Path("/tmp/x/台本.md")), "/tmp/x/台本.md")
 
 
 if __name__ == "__main__":
