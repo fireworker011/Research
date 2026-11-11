@@ -639,10 +639,88 @@ def write_wav(path: Path, samples: list[int]) -> None:
         handle.writeframes(frames)
 
 
+def _load_bgm_unit(path: Path, count: int) -> list[float]:
+    """自作 wav を RATE モノラルに合わせ、先頭からループして -1..1 で返す。"""
+    with wave.open(str(path), "r") as handle:
+        channels = handle.getnchannels()
+        width = handle.getsampwidth()
+        src_rate = handle.getframerate()
+        nframes = handle.getnframes()
+        raw = handle.readframes(nframes)
+    if width != 2:
+        raise RuntimeError(f"BGM は 16bit である必要がある: {path}")
+    import array
+    samples = array.array("h")
+    samples.frombytes(raw)
+    if channels > 1:
+        mono = []
+        for i in range(0, len(samples), channels):
+            mono.append(sum(samples[i:i + channels]) / channels / 32767.0)
+    else:
+        mono = [s / 32767.0 for s in samples]
+    if src_rate != RATE:
+        src_n = len(mono)
+        duration = src_n / float(src_rate)
+        new_n = max(1, int(round(duration * RATE)))
+        resampled = []
+        for i in range(new_n):
+            pos = i * (src_n - 1) / max(1, new_n - 1)
+            lo = int(pos)
+            hi = min(lo + 1, src_n - 1)
+            frac = pos - lo
+            resampled.append(mono[lo] * (1.0 - frac) + mono[hi] * frac)
+        mono = resampled
+    if not mono:
+        raise RuntimeError(f"BGM が空: {path}")
+    out = []
+    n = len(mono)
+    for i in range(count):
+        out.append(mono[i % n])
+    return out
+
+
+def _load_wav_oneshot(path: Path, count: int) -> list[float]:
+    """効果音など。ループせず、尺が足りない部分は 0。"""
+    with wave.open(str(path), "r") as handle:
+        channels = handle.getnchannels()
+        width = handle.getsampwidth()
+        src_rate = handle.getframerate()
+        raw = handle.readframes(handle.getnframes())
+    if width != 2:
+        raise RuntimeError(f"効果音は 16bit である必要がある: {path}")
+    import array
+    samples = array.array("h")
+    samples.frombytes(raw)
+    if channels > 1:
+        mono = []
+        for i in range(0, len(samples), channels):
+            mono.append(sum(samples[i:i + channels]) / channels / 32767.0)
+    else:
+        mono = [s / 32767.0 for s in samples]
+    if src_rate != RATE:
+        src_n = len(mono)
+        duration = src_n / float(src_rate)
+        new_n = max(1, int(round(duration * RATE)))
+        resampled = []
+        for i in range(new_n):
+            pos = i * (src_n - 1) / max(1, new_n - 1)
+            lo = int(pos)
+            hi = min(lo + 1, src_n - 1)
+            frac = pos - lo
+            resampled.append(mono[lo] * (1.0 - frac) + mono[hi] * frac)
+        mono = resampled
+    out = [0.0] * count
+    n = min(len(mono), count)
+    for i in range(n):
+        out[i] = mono[i]
+    return out
+
+
 def mix_bed(
     spans: list[tuple[list[int], float]],
     seconds: float,
     ratio: float,
+    bgm_path: str | None = None,
 ) -> list[int]:
     count = int(round(seconds * RATE))
     voice = [0] * count
@@ -657,15 +735,43 @@ def mix_bed(
     if not voiced:
         raise RuntimeError("声が空")
     voice_rms = math.sqrt(sum(sample * sample for sample in voiced) / len(voiced))
-    bed_amp = voice_rms * ratio / math.sqrt(1.0 + 0.6 * 0.6)
+    chosen = (bgm_path or os.environ.get("VIDEO_BGM", "")).strip()
+    sfx_path = os.environ.get("VIDEO_SFX", "").strip()
+    silent_head = float(os.environ.get("VIDEO_BGM_SILENT_HEAD", "0") or 0)
+    sfx_ratio = float(os.environ.get("VIDEO_SFX_RATIO", "0.40") or 0.40)
+    fade_in = 0.08
     mixed: list[int] = []
+    if chosen:
+        unit = _load_bgm_unit(Path(chosen), count)
+        bed_rms = math.sqrt(sum(s * s for s in unit) / len(unit)) if unit else 0.0
+        scale = (voice_rms * ratio / bed_rms) if bed_rms else 0.0
+    else:
+        unit = None
+        bed_amp = voice_rms * ratio / math.sqrt(1.0 + 0.6 * 0.6)
+        scale = 0.0
+    sfx = _load_wav_oneshot(Path(sfx_path), count) if sfx_path else None
+    sfx_scale = 0.0
+    if sfx:
+        # 効果音はワンショットの実効値で合わせる（無音部分は含めない）
+        voiced_sfx = [s for s in sfx if abs(s) > 1e-4]
+        sfx_rms = math.sqrt(sum(s * s for s in voiced_sfx) / len(voiced_sfx)) if voiced_sfx else 0.0
+        sfx_scale = (voice_rms * sfx_ratio / sfx_rms) if sfx_rms else 0.0
     for index in range(count):
         second = index / RATE
-        bed = math.sin(2 * math.pi * 110 * second) * bed_amp
-        bed += math.sin(2 * math.pi * 164.81 * second) * bed_amp * 0.6
+        if unit is not None:
+            bed = unit[index] * scale
+        else:
+            bed = math.sin(2 * math.pi * 110 * second) * bed_amp
+            bed += math.sin(2 * math.pi * 164.81 * second) * bed_amp * 0.6
+        if silent_head > 0:
+            if second < silent_head:
+                bed = 0.0
+            elif second < silent_head + fade_in:
+                bed *= (second - silent_head) / fade_in
         if second > seconds - 0.25:
             bed *= max(0.0, (seconds - second) / 0.25)
-        mixed.append(int(voice[index] + bed))
+        fx = (sfx[index] * sfx_scale) if sfx else 0.0
+        mixed.append(int(voice[index] + bed + fx))
     return mixed
 
 
