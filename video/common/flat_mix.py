@@ -13,7 +13,7 @@ from pathlib import Path
 
 RATE = 48000
 VOICE_AMP = 8000
-BGM_RATIO = 0.15
+BGM_RATIO = float(os.environ.get("VIDEO_BGM_RATIO", "0.15"))
 # 英数字と # が欠けている字体（DroidSansFallback など）は使わない。
 REQUIRED_GLYPHS = "#0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
 FONT_CANDIDATES = (

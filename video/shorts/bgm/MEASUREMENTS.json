@@ -148,5 +148,21 @@
     "window": "full",
     "duration_s": 0.95,
     "sample_rate": 48000
+  },
+  "lofi": {
+    "centroid_hz": 985.6,
+    "rolloff85_hz": 363.3,
+    "flatness": 0.08808,
+    "rms": 0.03197,
+    "peak": 0.21998,
+    "dominant_hz": 199.2,
+    "top_peaks_hz": [
+      199.2,
+      257.8,
+      128.9,
+      316.4,
+      375.0,
+      468.8
+    ]
   }
 }
