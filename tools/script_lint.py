@@ -12,13 +12,18 @@
 - ゆあ・金メモは PR が無い。金メモの概要欄に「アフィリエイト広告を含みます」は無い
 - 早見表は 3行まで。数字の行は 2秒以上。秒を行に書いた表は文字の高さ 40px 以上
 - Imagine のプロンプトは、フック以外の字幕 1本につき 1本。秒は字幕と揃える
+- timing.json があるときは、台本の秒ではなく実際の切れ目で見る。字幕が自分のカットからはみ出したら許容なしで不合格。場面と字幕の数が違っても不合格
 - ペットの猫の描写は全カットで同じ文。使い回しの食事カットは不合格。結論は最後の1.5秒より前
 - ペットの本編字幕は冒頭1秒のフックだけ。1秒以降のセリフ字幕は不合格
+- 台本の字幕節で「」に入っている行（フック・札・下部・PR）が SRT に全部ある。抜けは不合格
+- 同じ時間に同じ文言の字幕が2本あれば警告（結果は WARN。FAIL が優先）
+- 札（{\an5}）はセリフ字幕の間隔・場面数に入れない
 - ペットと金メモは、結論の1文を最後の1.5秒より前に置くことを必須にする
 - 台本の台詞と、画面の表・見出しの用語がずれていたら不合格（加給と加算など）
 - 禁止語が台詞・字幕に無い（根拠メモや PR 注記は見ない）
 - 見出し「0〜1秒フック」「brief」「自己採点」があり、自己採点の最後の合計が 80 以上
 - アフィリエイト URL の断片があれば警告（結果は WARN。他が落ちていれば FAIL が優先）
+- ペットの静止画カットのナレに動きの語（近づける・止まる・乗る・跳ぶ・歩く など）があれば警告（結果は WARN。FAIL が優先）。乗らない、乗らなくは対象外。動画カットは見ない
 
 使い方:
   python tools/script_lint.py inputs/20261028
@@ -28,8 +33,10 @@
 from __future__ import annotations
 
 import argparse
+import json
 import re
 import sys
+from collections import Counter
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -46,13 +53,17 @@ TAIL_SENTENCE = "しっぽは体につながった1本。"
 AFFILIATE_LINE = "アフィリエイト広告を含みます"
 HOOK_MARKS = ("0\u301c1秒フック", "0\uff5e1秒フック")
 BANNED_WORDS = ("必ず稼げる", "若返る", "治る", "絶対", "必ず")
+MONEY_RE = re.compile(r"\d[\d,]*\s*円|\d+\s*万\s*円")
+# 秒の区切り。基準は同じで、読める表記だけ広げる。
+SPAN_RE = re.compile(r"(\d+\.\d+)\s*(?:-|–|〜|～)\s*(\d+\.\d+)")
 OPEN_PR = "{\\an9}PR"
 HOOK_TAG = "{\\an8}"
+CENTER_TAG = "{\\an5}"
 SPEED_MARK = "等倍（+0%）"
 CTA_WORDS = ("プロフィール", "リンク", "概要欄から", "買って", "申し込んで", "フォロー")
 PRODUCT_NAMES = ("毎日腎活",)
 TERM_PAIRS = (("加給", "加算"),)
-SKIP_MD = frozenset({"REPORT.md", "cuts-for-pc.md"})
+SKIP_MD = frozenset({"REPORT.md", "cuts-for-pc.md", "HANDOFF.md", "sources.md"})
 BAD_SPEED_RE = re.compile(
     r"早回し\s*[=:]?\s*([0-9]+(?:\.[0-9]+)?)|"
     r"([0-9]+(?:\.[0-9]+)?)\s*倍速|"
@@ -82,6 +93,7 @@ COLUMNS = (
     "用語",
     "結論",
     "字幕",
+    "動き",
     "結果",
 )
 
@@ -120,6 +132,7 @@ class Row:
     terms: str
     conclusion: str
     captions: str
+    motion: str
     result: str
 
 
@@ -220,10 +233,72 @@ def is_hook_cue(text: str) -> bool:
     return HOOK_TAG in text
 
 
+def is_card_cue(text: str) -> bool:
+    """中央の札。{\an5}。セリフ字幕の間隔・場面数には入れない。"""
+    return CENTER_TAG in text
+
+
 def dialogue_cues(cues: list[Cue]) -> list[Cue]:
-    spoken = [cue for cue in cues if not is_pr_cue(cue.text) and not is_hook_cue(cue.text)]
+    spoken = [
+        cue
+        for cue in cues
+        if not is_pr_cue(cue.text) and not is_hook_cue(cue.text) and not is_card_cue(cue.text)
+    ]
     spoken.sort(key=lambda cue: (cue.start, cue.end, cue.index))
     return spoken
+
+
+def visible_cue_text(text: str) -> str:
+    return re.sub(r"\{[^}]*\}", "", text).strip()
+
+
+def script_caption_texts(md: str) -> list[str]:
+    """字幕節の「」の中身。同じ文言が札と下部で二重にあれば、その回数だけ要る。"""
+    texts: list[str] = []
+    for section in parse_sections(md):
+        if "字幕" not in section.title:
+            continue
+        for match in re.finditer(r"「([^」]+)」", section.body):
+            item = match.group(1).strip()
+            if item:
+                texts.append(item)
+    return texts
+
+
+def check_script_captions(md: str, cues: list[Cue]) -> str:
+    """台本の字幕の行が SRT に全部あるか。抜けは不合格。"""
+    needed = script_caption_texts(md)
+    if not needed:
+        return "PASS（字幕の行なし）"
+    have = Counter(visible_cue_text(cue.text) for cue in cues)
+    missing: list[str] = []
+    for item, count in Counter(needed).items():
+        got = have.get(item, 0)
+        if got < count:
+            if count == 1:
+                missing.append(item)
+            else:
+                missing.append(f"{item}が{got}本（要{count}本）")
+    if missing:
+        return "FAIL（字幕の抜け: " + "、".join(missing) + "）"
+    return "PASS"
+
+
+def check_duplicate_cues(cues: list[Cue]) -> str:
+    """同じ時間に同じ文言が2本あれば警告。"""
+    items = [(cue.start, cue.end, visible_cue_text(cue.text)) for cue in cues]
+    hits: list[str] = []
+    for index, (start, end, text) in enumerate(items):
+        if not text:
+            continue
+        for other_start, other_end, other_text in items[index + 1 :]:
+            if text == other_text and start < other_end and other_start < end:
+                hits.append(text)
+                break
+    if hits:
+        names = "、".join(dict.fromkeys(hits))
+        return "WARN（同時に同じ文言: " + names + "）"
+    return "PASS"
 
 
 def find_banned(text: str) -> list[str]:
@@ -378,6 +453,22 @@ def check_pr(cues: list[Cue], lane: str, name: str = "") -> str:
     return "FAIL（レーン不明）"
 
 
+def check_money(name: str, text: str) -> str:
+    """金額のような数字。金メモだけ実額を出してよい。他のラインは不合格。"""
+    hits: list[str] = []
+    for match in MONEY_RE.finditer(text):
+        found = match.group(0)
+        if found not in hits:
+            hits.append(found)
+    if "金メモ" in name:
+        if hits:
+            return "PASS（実額は出してよい: " + "、".join(hits) + "）"
+        return "PASS（金額なし）"
+    if not hits:
+        return "PASS"
+    return "FAIL（" + "、".join(hits) + "）"
+
+
 def check_banned(md_spoken: str, srt_text: str | None) -> str:
     parts: list[str] = []
     md_hits = find_banned(md_spoken)
@@ -409,7 +500,7 @@ def join_status(parts: list[str]) -> str:
 
 def _spans_in(text: str) -> list[tuple[float, float]]:
     found: list[tuple[float, float]] = []
-    for matched in re.finditer(r"(\d+\.\d+)\s*[-–]\s*(\d+\.\d+)", text):
+    for matched in SPAN_RE.finditer(text):
         found.append((float(matched.group(1)), float(matched.group(2))))
     return found
 
@@ -439,7 +530,7 @@ def check_table(md: str) -> str:
     for index, line in enumerate(rows, start=1):
         if re.search(r"\d", line) is None:
             continue
-        matched = re.search(r"(\d+\.\d+)\s*[-–]\s*(\d+\.\d+)", line)
+        matched = SPAN_RE.search(line)
         if matched is None:
             missing.append(index)
             continue
@@ -528,12 +619,43 @@ def check_cta(name: str, spoken: str, srt: str, md: str) -> str:
     return "PASS"
 
 
-def check_prompts(md: str, cues: list[Cue], name: str) -> str:
-    """プロンプト節があるときだけ。フック以外の字幕と秒を揃える。秒の無い見出しは不合格。"""
+def scene_fit(cues: list[Cue], timing: dict[str, object]) -> list[str]:
+    """字幕の1行が、timing.json の自分のカットに収まっているか。はみ出しは許容しない。"""
+    raw = timing.get("cuts")
+    if not isinstance(raw, list) or not raw:
+        return ["timing.json にカットが無い"]
+    cuts: list[tuple[int, int, str]] = []
+    for item in raw:
+        if not isinstance(item, dict):
+            return ["timing.json のカットが読めない"]
+        try:
+            start = int(round(float(item["start"]) * 1000))
+            end = int(round(float(item["end"]) * 1000))
+        except (KeyError, TypeError, ValueError):
+            return ["timing.json の秒が読めない"]
+        label = f"{float(item['start']):.3f}-{float(item['end']):.3f}"
+        cuts.append((start, end, label))
+    needed = dialogue_cues(cues)
+    reasons: list[str] = []
+    if len(cuts) != len(needed):
+        reasons.append(f"場面{len(cuts)}（字幕{len(needed)}）")
+    for cue, (start, end, label) in zip(needed, cuts, strict=False):
+        if cue.start < start or cue.end > end:
+            reasons.append(f"{cue.start / 1000:.3f}-{cue.end / 1000:.3f}が{label}からはみ出す")
+    return reasons
+
+
+def check_prompts(
+    md: str,
+    cues: list[Cue],
+    name: str,
+    timing: dict[str, object] | None = None,
+) -> str:
+    """プロンプト節があるときだけ。timing.json があれば実際の切れ目で測る。秒の無い見出しは不合格。"""
     if "プロンプト" not in md:
         return "PASS（プロンプトなし）"
     headings = re.findall(
-        r"^###\s+プロンプト[^\n]*?(\d+\.\d+)\s*[-–]\s*(\d+\.\d+)",
+        r"^###\s+プロンプト[^\n]*?(\d+\.\d+)\s*(?:-|–|〜|～)\s*(\d+\.\d+)",
         md,
         flags=re.MULTILINE,
     )
@@ -544,13 +666,16 @@ def check_prompts(md: str, cues: list[Cue], name: str) -> str:
     reasons: list[str] = []
     ranges = [(float(start), float(end)) for start, end in headings]
     needed = [cue for cue in cues if not is_hook_cue(cue.text)]
-    for cue in needed:
-        start = cue.start / 1000
-        end = cue.end / 1000
-        if not any(abs(start - left) < 0.001 and abs(end - right) < 0.001 for left, right in ranges):
-            reasons.append(f"{start:.3f}-{end:.3f}のプロンプトが無い")
-    if len(ranges) != len(needed):
-        reasons.append(f"プロンプト{len(ranges)}本（字幕{len(needed)}本）")
+    if timing is not None:
+        reasons.extend(scene_fit(cues, timing))
+    else:
+        for cue in needed:
+            start = cue.start / 1000
+            end = cue.end / 1000
+            if not any(abs(start - left) < 0.001 and abs(end - right) < 0.001 for left, right in ranges):
+                reasons.append(f"{start:.3f}-{end:.3f}のプロンプトが無い")
+        if len(ranges) != len(needed):
+            reasons.append(f"プロンプト{len(ranges)}本（字幕{len(needed)}本）")
     for block in prompt_blocks:
         if "9:16" not in block or "画面に文字を出さない" not in block:
             reasons.append("9:16か画面文字の指定が無い")
@@ -656,7 +781,7 @@ def check_conclusion(md: str, cues: list[Cue], name: str) -> str:
         found = True
         if re.search(r"結論[:：]|[。？?]", line):
             sentence = True
-        matched = re.search(r"(\d+\.\d+)\s*[-–]\s*(\d+\.\d+)", line)
+        matched = SPAN_RE.search(line)
         if matched is not None:
             ends.append(float(matched.group(2)))
             continue
@@ -681,6 +806,108 @@ def check_pet_captions(cues: list[Cue], name: str) -> str:
     return "PASS（フックだけ）"
 
 
+def check_captions(cues: list[Cue], name: str, md: str) -> str:
+    if "ペット" in name:
+        base = check_pet_captions(cues, name)
+    else:
+        base = check_script_captions(md, cues)
+    dup = check_duplicate_cues(cues)
+    if dup.startswith("WARN"):
+        if base.startswith("FAIL"):
+            return base
+        return dup
+    return base
+
+
+
+def _motion_hits(text: str) -> list[str]:
+    """ナレから動きの語を拾う。『乗らない』『乗らなく』は乗ると数えない。"""
+    found: list[str] = []
+    patterns = (
+        "近づける",
+        "近づけて",
+        "近づけ",
+        "近づいて",
+        "近づく",
+        "近づき",
+        "止まる",
+        "止まって",
+        "跳ぶ",
+        "跳ね",
+        "歩く",
+        "歩いて",
+        "走る",
+        "走って",
+        "乗って",
+    )
+    for word in patterns:
+        if word in text and word not in found and not any(word in already for already in found):
+            found.append(word)
+    for match in re.finditer(r"乗る(?!な|ず)", text):
+        if "乗る" not in found:
+            found.append("乗る")
+        break
+    return found
+
+
+def _imagine_video_cuts(md: str) -> set[str]:
+    """Imagine 欄で動画・i2v と書いたカット名。"""
+    names: set[str] = set()
+    for section in parse_sections(md):
+        title = section.title
+        if "Imagine" not in title and "プロンプト" not in title and "カット" not in title:
+            continue
+        blob = title + "\n" + section.body
+        if not any(mark in blob.lower() for mark in ("i2v", "video")) and "動画" not in blob:
+            continue
+        names.update(re.findall(r"カット\s*(\d+)", title + "\n" + section.body))
+    return names
+
+
+def check_still_motion(name: str, md: str) -> str:
+    """ペットの静止画カットのナレに動きの語があれば WARN。"""
+    if "ペット" not in name:
+        return "PASS（対象外）"
+    if not md:
+        return "PASS（対象外）"
+    video_cuts = _imagine_video_cuts(md)
+    hits: list[str] = []
+    saw_still = False
+    for section in parse_sections(md):
+        title = section.title
+        if "台詞" not in title and "セリフ" not in title:
+            continue
+        rows = _markdown_rows(section.body)
+        if not rows:
+            continue
+        header = rows[0]
+        speech_at = [i for i, cell in enumerate(header) if any(mark in cell for mark in ("台詞", "ナレ", "セリフ"))]
+        view_at = [i for i, cell in enumerate(header) if any(mark in cell for mark in ("映っている", "画", "画面"))]
+        if not speech_at:
+            continue
+        for row in rows[1:]:
+            view = " ".join(row[i] for i in view_at if i < len(row))
+            nare = " ".join(row[i] for i in speech_at if i < len(row))
+            if not nare.strip() or "声なし" in nare:
+                continue
+            cut_m = re.search(r"カット\s*(\d+)", view) or re.search(r"カット\s*(\d+)", nare)
+            cut = cut_m.group(1) if cut_m else ""
+            if cut and cut in video_cuts:
+                continue
+            if any(mark in (view + nare).lower() for mark in ("i2v", "video")) or "動画" in view or "動画" in nare:
+                continue
+            saw_still = True
+            words = _motion_hits(nare)
+            if words:
+                label = f"カット{cut}" if cut else nare.strip()[:20]
+                hits.append(label + ": " + "、".join(words))
+    if hits:
+        return "WARN（" + "、".join(hits) + "）"
+    if saw_still:
+        return "PASS（動きの語なし）"
+    return "PASS（対象外）"
+
+
 def overall_of(row: Row) -> str:
     hard = (
         row.srt_format,
@@ -698,15 +925,16 @@ def overall_of(row: Row) -> str:
         row.terms,
         row.conclusion,
         row.captions,
+        row.motion,
     )
-    if any(not item.startswith("PASS") for item in hard):
+    if any(item.startswith("FAIL") for item in hard):
         return "FAIL"
-    if row.a8.startswith("WARN"):
+    if row.a8.startswith("WARN") or any(item.startswith("WARN") for item in hard):
         return "WARN"
     return "PASS"
 
 
-def lint_texts(name: str, md: str | None, srt: str | None) -> Row:
+def lint_texts(name: str, md: str | None, srt: str | None, timing: str | None = None) -> Row:
     lane = lane_of(name)
     if md is None:
         sections: list[Section] = []
@@ -741,16 +969,34 @@ def lint_texts(name: str, md: str | None, srt: str | None) -> Row:
         pr = "FAIL（アフィリエイト広告を含みます）"
 
     banned = check_banned(spoken, None if srt is None else srt_body)
+    money = check_money(name, spoken + "\n" + srt_body)
+    if money.startswith("FAIL"):
+        banned = money if banned.startswith("PASS") else banned + "、" + money.removeprefix("FAIL（").removesuffix("）")
     table = check_table("" if md is None else md_body)
-    timing = check_timing(cues, name)
-    prompts = check_prompts("" if md is None else md_body, cues, name)
+    timing_label = check_timing(cues, name)
+    parsed_timing: dict[str, object] | None = None
+    timing_error = ""
+    if timing:
+        try:
+            loaded = json.loads(timing)
+        except json.JSONDecodeError:
+            timing_error = "timing.json が読めない"
+        else:
+            if isinstance(loaded, dict):
+                parsed_timing = loaded
+            else:
+                timing_error = "timing.json が読めない"
+    prompts = check_prompts("" if md is None else md_body, cues, name, parsed_timing)
+    if timing_error:
+        prompts = "FAIL（" + timing_error + "）" if prompts.startswith("PASS") else prompts.replace("）", "、" + timing_error + "）", 1)
     hook = check_hook(cues)
     speed = check_speed(md_body)
     cta = check_cta(name, spoken, srt_body, md_body)
     a8 = check_a8(md_body + "\n" + srt_body)
     terms = check_terms(md_body)
     conclusion = check_conclusion(md_body, cues, name)
-    captions = check_pet_captions(cues, name)
+    captions = check_captions(cues, name, md_body)
+    motion = check_still_motion(name, md_body)
     row = Row(
         name,
         srt_format,
@@ -760,7 +1006,7 @@ def lint_texts(name: str, md: str | None, srt: str | None) -> Row:
         headings,
         score,
         table,
-        timing,
+        timing_label,
         prompts,
         hook,
         speed,
@@ -769,6 +1015,7 @@ def lint_texts(name: str, md: str | None, srt: str | None) -> Row:
         terms,
         conclusion,
         captions,
+        motion,
         "FAIL",
     )
     return Row(
@@ -789,6 +1036,7 @@ def lint_texts(name: str, md: str | None, srt: str | None) -> Row:
         row.terms,
         row.conclusion,
         row.captions,
+        row.motion,
         overall_of(row),
     )
 
@@ -797,7 +1045,19 @@ def read_text(path: Path) -> str:
     return path.read_text(encoding="utf-8-sig")
 
 
-def collect(root: Path) -> list[tuple[str, str | None, str | None]]:
+def find_timing(root: Path, stem: str) -> str | None:
+    """出力の横、または台本・字幕と同じフォルダの timing.json。"""
+    names = ("timing.json", f"{stem}.timing.json")
+    folders = (root, root / "subs", root / "scripts")
+    for folder in folders:
+        for name in names:
+            path = folder / name
+            if path.is_file():
+                return read_text(path)
+    return None
+
+
+def collect(root: Path) -> list[tuple[str, str | None, str | None, str | None]]:
     """scripts/+subs/ と、同じフォルダに md と srt が並ぶ形の両方。"""
     scripts = root / "scripts"
     subs = root / "subs"
@@ -807,16 +1067,16 @@ def collect(root: Path) -> list[tuple[str, str | None, str | None]]:
     else:
         md_paths = {path.stem: path for path in root.glob("*.md") if path.name not in SKIP_MD}
         srt_paths = {path.stem: path for path in root.glob("*.srt")}
-    items: list[tuple[str, str | None, str | None]] = []
+    items: list[tuple[str, str | None, str | None, str | None]] = []
     for stem in sorted(set(md_paths) | set(srt_paths)):
         md = read_text(md_paths[stem]) if stem in md_paths else None
         srt = read_text(srt_paths[stem]) if stem in srt_paths else None
-        items.append((stem, md, srt))
+        items.append((stem, md, srt, find_timing(root, stem)))
     return items
 
 
 def lint_dir(root: Path) -> list[Row]:
-    return [lint_texts(name, md, srt) for name, md, srt in collect(root)]
+    return [lint_texts(name, md, srt, timing) for name, md, srt, timing in collect(root)]
 
 
 def render(rows: list[Row]) -> str:
@@ -842,6 +1102,7 @@ def render(rows: list[Row]) -> str:
             row.terms,
             row.conclusion,
             row.captions,
+            row.motion,
             row.result,
         )
         lines.append("| " + " | ".join(cells) + " |")
@@ -1245,6 +1506,197 @@ def self_test(fixtures: Path, repo: Path) -> bool:
         "結論の1文が必須",
         missing_conclusion.conclusion,
     ) and ok
+    print()
+    print("秒の区切り:")
+    hook_and_pr = (
+        "1\n00:00:00,000 --> 00:00:01,000\n"
+        + HOOK_TAG
+        + "テスト\n\n2\n00:00:08,500 --> 00:00:10,500\n広告 #PR\n"
+    )
+    for mark in ("〜", "～", "-", "–"):
+        waved = lint_texts(
+            "2026-11-10-婚活-span",
+            minimal_md("- 合計 80/100")
+            + f"\n## Imagine\n### プロンプト1（カット1・8.500{mark}10.500）\n9:16。画面に文字を出さない。\n",
+            hook_and_pr,
+        )
+        ok = expect(
+            waved.prompts.startswith("PASS"),
+            f"区切り {mark} の秒は読める",
+            waved.prompts,
+        ) and ok
+    missing_span = lint_texts(
+        "2026-11-10-婚活-no-span",
+        minimal_md("- 合計 80/100") + "\n## Imagine\n### プロンプト1（カット1）\n9:16。画面に文字を出さない。\n",
+        hook_and_pr,
+    )
+    ok = expect(
+        missing_span.prompts.startswith("FAIL") and "秒が無い" in missing_span.prompts,
+        "秒の無いプロンプトは不合格のまま",
+        missing_span.prompts,
+    ) and ok
+    print()
+    print("字幕の抜け:")
+    hook = HOOK_MARKS[0]
+    cap_md = (
+        f"# テスト\n\n"
+        f"## {hook}（画＋文字）\n"
+        f"- テキストフック: 「プロフ写真、頼める人いない」\n\n"
+        f"## brief\n"
+        f"- 尺: 10.5秒\n"
+        f"- 声: {SPEED_MARK}\n\n"
+        f"## 台詞\n"
+        f"テストの台詞。\n\n"
+        f"## 字幕\n"
+        f"- 0.0-1.0 上部「プロフ写真、頼める人いない」\n"
+        f"- 札（中央）: 0.0-2.8「三脚とセルフタイマー」／2.8-5.2「撮ってくれる人」／5.2-8.5「三脚はもういらない」\n"
+        f"- 下部の名詞: 0.3-2.8「気まずくて」／2.8-5.2「撮ってくれる人」／5.2-8.5「三脚はもういらない」\n"
+        f"- 8.5-10.5 中央「広告 #PR」\n\n"
+        f"## 自己採点\n"
+        f"- 合計 80/100\n"
+    )
+    missing_caps = lint_texts(
+        "2026-11-10-婚活-missing-cards",
+        cap_md,
+        "1\n00:00:00,200 --> 00:00:02,808\n気まずくて。\n\n"
+        "2\n00:00:03,008 --> 00:00:05,057\n撮ってくれる人に頼んでみた。\n\n"
+        "3\n00:00:05,257 --> 00:00:06,621\n三脚はもういらない。\n\n"
+        "4\n00:00:08,500 --> 00:00:10,500\n広告 #PR\n",
+    )
+    complete_caps = lint_texts(
+        "2026-11-10-婚活-all-cards",
+        cap_md,
+        "1\n00:00:00,000 --> 00:00:01,000\n"
+        + HOOK_TAG
+        + "プロフ写真、頼める人いない\n\n"
+        "2\n00:00:00,000 --> 00:00:02,908\n"
+        + CENTER_TAG
+        + "三脚とセルフタイマー\n\n"
+        "3\n00:00:02,908 --> 00:00:05,157\n"
+        + CENTER_TAG
+        + "撮ってくれる人\n\n"
+        "4\n00:00:05,157 --> 00:00:08,500\n"
+        + CENTER_TAG
+        + "三脚はもういらない\n\n"
+        "5\n00:00:00,312 --> 00:00:02,908\n気まずくて\n\n"
+        "6\n00:00:02,908 --> 00:00:05,157\n撮ってくれる人\n\n"
+        "7\n00:00:05,157 --> 00:00:08,500\n三脚はもういらない\n\n"
+        "8\n00:00:08,500 --> 00:00:10,500\n広告 #PR\n",
+    )
+    ok = expect(
+        missing_caps.captions.startswith("FAIL") and "抜け" in missing_caps.captions,
+        "台本の字幕がSRTに無いと不合格",
+        missing_caps.captions,
+    ) and ok
+    ok = expect(
+        complete_caps.captions.startswith("WARN")
+        and "同じ文言" in complete_caps.captions
+        and complete_caps.gap.startswith("PASS")
+        and complete_caps.result == "WARN",
+        "フック・札・下部・PRが揃い、同じ文言が同時なら警告",
+        complete_caps.captions + " / " + complete_caps.gap + " / " + complete_caps.result,
+    ) and ok
+    no_dup_srt = (
+        "1\n00:00:00,000 --> 00:00:01,000\n"
+        + HOOK_TAG
+        + "プロフ写真、頼める人いない\n\n"
+        "2\n00:00:00,000 --> 00:00:02,908\n"
+        + CENTER_TAG
+        + "三脚とセルフタイマー\n\n"
+        "3\n00:00:00,312 --> 00:00:02,908\n気まずくて\n\n"
+        "4\n00:00:02,908 --> 00:00:05,157\n"
+        + CENTER_TAG
+        + "撮ってくれる人\n\n"
+        "5\n00:00:02,908 --> 00:00:05,157\n頼んでみた\n\n"
+        "6\n00:00:05,157 --> 00:00:08,500\n三脚はもういらない\n\n"
+        "7\n00:00:08,500 --> 00:00:10,500\n広告 #PR\n"
+    )
+    no_dup_md = (
+        cap_md.replace(
+            "／2.8-5.2「撮ってくれる人」／5.2-8.5「三脚はもういらない」",
+            "。5.2秒以降は中央の札を出さない",
+        )
+        # 下部は残す。札の2つ目「撮ってくれる人」は1本だけに
+    )
+    # cap_md has 撮ってくれる人 twice (札+下部) and 三脚 twice. Build a tighter md.
+    hook = HOOK_MARKS[0]
+    no_dup_md = (
+        f"# テスト\n\n"
+        f"## {hook}（画＋文字）\n"
+        f"- テキストフック: 「プロフ写真、頼める人いない」\n\n"
+        f"## brief\n"
+        f"- 尺: 10.5秒\n"
+        f"- 声: {SPEED_MARK}\n\n"
+        f"## 台詞\n"
+        f"テストの台詞。\n\n"
+        f"## 字幕\n"
+        f"- 0.0-1.0 上部「プロフ写真、頼める人いない」\n"
+        f"- 札（中央）: 0.0-2.8「三脚とセルフタイマー」／2.8-5.2「撮ってくれる人」\n"
+        f"- 下部の名詞: 0.3-2.8「気まずくて」／2.8-5.2「頼んでみた」／5.2-8.5「三脚はもういらない」\n"
+        f"- 8.5-10.5 中央「広告 #PR」\n\n"
+        f"## 自己採点\n"
+        f"- 合計 80/100\n"
+    )
+    no_dup = lint_texts("2026-11-10-婚活-no-dup", no_dup_md, no_dup_srt)
+    ok = expect(
+        no_dup.captions == "PASS" and no_dup.result == "PASS",
+        "同じ文言が同時に無ければ合格",
+        no_dup.captions + " / " + no_dup.result,
+    ) and ok
+
+    motion_md = (
+        minimal_md("- 合計 80/100")
+        + "\n## セリフ\n"
+        + "| 時間帯 | 映っているもの | セリフ（冥鳴ひまり） |\n"
+        + "|---|---|---|\n"
+        + "| 0.0-2.3 | カット1。空の椅子の横 | [0.15-2.24] 椅子、乗らなくなった？ |\n"
+        + "| 2.3-5.0 | カット2。同じ黒猫。鼻先が座面のふちのすぐ横 | [2.39-4.88] 鼻先だけ、近づけて止まる。 |\n"
+        + "| 5.0-8.5 | カット3。空の座面を見ている | [5.03-7.46] 上には乗らない。見ているだけ。 |\n"
+    )
+    motion_row = lint_texts(
+        "2026-11-10-ペット-kuroneko-chair-motion",
+        motion_md,
+        "1\n00:00:00,000 --> 00:00:01,000\n"
+        + HOOK_TAG
+        + "椅子、乗らなくなった？\n\n2\n00:00:08,500 --> 00:00:10,500\n広告 #PR\n",
+    )
+    still_ok_md = (
+        minimal_md("- 合計 80/100")
+        + "\n## セリフ\n"
+        + "| 時間帯 | 映っているもの | セリフ |\n"
+        + "|---|---|---|\n"
+        + "| 0.0-2.3 | カット1。空の椅子の横 | 椅子、乗らなくなった？ |\n"
+        + "| 2.3-8.5 | カット3。空の座面を見ている | 上には乗らない。見ているだけ。 |\n"
+    )
+    still_ok = lint_texts(
+        "2026-11-10-ペット-still-ok",
+        still_ok_md,
+        "1\n00:00:00,000 --> 00:00:01,000\n"
+        + HOOK_TAG
+        + "椅子、乗らなくなった？\n\n2\n00:00:08,500 --> 00:00:10,500\n広告 #PR\n",
+    )
+    ok = expect(
+        motion_row.motion.startswith("WARN")
+        and "カット2" in motion_row.motion
+        and "近づ" in motion_row.motion
+        and "止ま" in motion_row.motion
+        and "カット1" not in motion_row.motion
+        and "カット3" not in motion_row.motion,
+        "静止画カット2の動きナレは WARN",
+        motion_row.motion + " / " + motion_row.result,
+    ) and ok
+    ok = expect(
+        still_ok.motion.startswith("PASS"),
+        "乗らない・見ているだけは動きWARNにしない",
+        still_ok.motion + " / " + still_ok.result,
+    ) and ok
+
+    print()
+    print("金額:")
+    kane_money = check_money("2026-11-10-金メモ-gaku", "納める額は15000円。")
+    pet_money = check_money("2026-11-10-ペット-gaku", "料金は15000円。")
+    ok = expect(kane_money.startswith("PASS") and "15000円" in kane_money, "金メモの実額は合格", kane_money) and ok
+    ok = expect(pet_money.startswith("FAIL") and "15000円" in pet_money, "ペットの金額は不合格", pet_money) and ok
 
     print()
     print("自己テスト: " + ("OK" if ok else "NG"))
@@ -1255,7 +1707,15 @@ def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description="台本 md と SRT のチェッカー")
     parser.add_argument("root", nargs="?", help="scripts/ と subs/ があるディレクトリ")
     parser.add_argument("--self-test", action="store_true", help="壊したSRT 3つと境界を確認する")
+    parser.add_argument("--money-name", help="金額チェックの台本名。金メモだけ実額を通す")
+    parser.add_argument("--money-text", help="金額チェックの本文")
     args = parser.parse_args(argv)
+    if args.money_name is not None or args.money_text is not None:
+        if not args.money_name or args.money_text is None:
+            parser.error("--money-name と --money-text は両方要る")
+        status = check_money(args.money_name, args.money_text)
+        print(f"MONEY\t{status}")
+        return 0 if status.startswith("PASS") else 1
 
     repo = Path(__file__).resolve().parents[1]
     fixtures = Path(__file__).resolve().parent / "script_lint_fixtures"
@@ -1279,7 +1739,7 @@ def main(argv: list[str] | None = None) -> int:
         if not (root / "cuts-for-pc.md").is_file():
             print("FAIL\tcuts-for-pc.md が無い", file=sys.stderr)
             exit_code = max(exit_code, 1)
-        if any(row.result != "PASS" for row in rows):
+        if any(row.result == "FAIL" for row in rows):
             exit_code = max(exit_code, 1)
     elif not args.self_test:
         parser.error("root か --self-test を指定する")

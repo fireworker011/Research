@@ -1,0 +1,7 @@
+ASSET FAIL カット1の箱のパスが無い
+SRC PASS カット1 自作 （自作・IDなし）
+ASSET FAIL カット2の箱のパスが無い
+SRC PASS カット2 自作 （自作・IDなし）
+ASSET FAIL カット3の箱のパスが無い
+SRC PASS カット3 自作 （自作・IDなし）
+結果: FAIL 素材が欠けているので止める。仮の絵は --dry だけ。

@@ -1,0 +1,16 @@
+M1   PASS コンテナ=mov,mp4,m4a,3gp,3g2,mj2（mp4系）
+M2   PASS 映像コーデック=h264（許可: h264）
+M3   PASS 解像度=1080x1920
+M4   PASS fps=30.00
+M5   PASS 長さ=10.500000秒（8〜60秒）
+M6   PASS 音声=aac
+M7   PASS pix_fmt=yuv420p
+M8   PASS 平均音量=-13.3dB
+M9   PASS 冒頭1秒に0.5秒以上の黒画面なし
+M10  PASS 縦長（9:16）
+M11  PASS I=-14.0 LUFS / TP=-1.5 dBTP（-14±1、TP≦-1.5）
+M12  PASS 映像=10.500000秒 音声=10.500000秒（差≦0.05秒）
+M13  PASS 長さ=10.500000秒（上限10.5秒）
+---
+ファイル: /agent/repos/Research/output/00_確認待ち/undated_konkatsu/dry-fit_DRY.mp4 / ライン: konkatsu / 機械チェック 13行
+結果: 機械チェックは全行PASS。続けて checklist の手で見る行を確認する。

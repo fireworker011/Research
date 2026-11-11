@@ -1,0 +1,4 @@
+/output/
+/review/**/*.mp4
+__pycache__/
+*.pyc
