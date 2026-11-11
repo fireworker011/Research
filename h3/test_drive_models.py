@@ -45,6 +45,16 @@ class DriveModelTests(unittest.TestCase):
             self.assertTrue((comfy / "vae").is_symlink())
             self.assertEqual((comfy / "vae").resolve(), (drive / "vae").resolve())
             self.assertFalse((comfy / "erotic").exists())
+            overlay = comfy / "checkpoints"
+            if overlay.is_symlink():
+                overlay.unlink()
+            overlay.mkdir()
+            (overlay / "staged.safetensors").symlink_to(drive / "checkpoints" / "staged.safetensors")
+            (drive / "checkpoints").mkdir(exist_ok=True)
+            (drive / "checkpoints" / "staged.safetensors").write_bytes(b"x" * 20)
+            linked_again = link_comfy_models(comfy, drive)
+            self.assertIn("checkpoints", linked_again)
+            self.assertTrue((comfy / "checkpoints").is_symlink())
             require_mode(drive, "r2v")
             require_mode(drive, "both")
 

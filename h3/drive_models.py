@@ -57,7 +57,11 @@ def missing_files(drive_models: Path, names: Sequence[str]) -> list[str]:
 
 
 def _has_weights(path: Path) -> bool:
-    return any(item.is_file() and item.stat().st_size > WEIGHT_BYTES for item in path.rglob("*"))
+    """A real weight file blocks replacement. Symlinks are a staging overlay."""
+    return any(
+        item.is_file() and not item.is_symlink() and item.stat().st_size > WEIGHT_BYTES
+        for item in path.rglob("*")
+    )
 
 
 def link_comfy_models(comfy_models: Path, drive_models: Path) -> list[str]:

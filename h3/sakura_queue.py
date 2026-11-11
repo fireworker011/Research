@@ -16,6 +16,10 @@ from h3.live_remake import (
     CLIP_TYPE,
     DENOISE,
     FPS,
+    FRAME_REMAINDER,
+    FRAMES_PER_CHUNK,
+    MAX_FRAMES,
+    MIN_FRAMES,
     MODEL_FILE,
     REF_IMAGE_SIZE,
     SAMPLER,
@@ -34,14 +38,14 @@ FL2VA_UNET = "minimax_h3_fl2va_pruned_int8_convrot.safetensors"
 TURBO_FILE = "minimax_h3_fl2v_turbo_8step_v1.0_768p_comfyui_bf16.safetensors"
 TURBO_STRENGTH = 1.0
 TURBO_STEPS = 8
-# 244 frames is the measured source. H3 accepts 17k+5, so the next legal length is 260.
+# 244 source frames. The next legal 17k+5 length is 260. 243 (17*14+5) is one frame shorter.
 FL2VA_FRAMES = align_frames(SOURCE_FRAMES)
 # Source is 1280x714. H3's wide canvas is 1344x768, the 16:9 768P size.
 FL2VA_WIDTH, FL2VA_HEIGHT = canvas_for(SOURCE_WIDTH, SOURCE_HEIGHT)
 FL2VA_FIRST = "sakura-16x9-open.jpg"
 FL2VA_LAST = "sakura-16x9-yokai-end.jpg"
-FL2VA_FAST = "速い 8step"
-FL2VA_QUALITY = "きれい 20step"
+FL2VA_FAST = "fast_8step"
+FL2VA_QUALITY = "quality_20step"
 FL2VA_SLASH = "一刀"
 FL2VA_CHAIN = "連撃"
 FL2VA_RUSH = "突進"
@@ -268,10 +272,20 @@ def _action_beats(action: str) -> tuple[str, ...]:
         raise RemakeError(f"台本の選択が違う: {action}") from exc
 
 
-def fl2va_prompt(action: str = FL2VA_ACTION) -> str:
+def validate_frames(frames: int) -> int:
+    """H3 accepts 17k+5 from 124 through 345."""
+    count = int(frames)
+    legal = MIN_FRAMES <= count <= MAX_FRAMES and (count - FRAME_REMAINDER) % FRAMES_PER_CHUNK == 0
+    if not legal:
+        raise RemakeError(f"フレーム数 {count} は 124〜345 の 17k+5 ではない")
+    return count
+
+
+def fl2va_prompt(action: str = FL2VA_ACTION, frames: int = FL2VA_FRAMES) -> str:
     """One high-speed action script. The clock and the end still stay fixed."""
+    count = validate_frames(frames)
     marks = scaled_marks()
-    end = FL2VA_FRAMES / FPS
+    end = count / FPS
     beats = _action_beats(action)
     bounds = (marks[0], marks[1], marks[2], marks[3], marks[4], marks[5], end)
     shots = tuple((bounds[index], bounds[index + 1], text) for index, text in enumerate(beats))
@@ -368,9 +382,15 @@ def build_fl2va_prompt(
     seed: int = 1,
     mode: str = FL2VA_FAST,
     action: str = FL2VA_ACTION,
+    frames: int = FL2VA_FRAMES,
 ) -> dict[str, dict[str, Any]]:
     """The open still starts the clip. The yokai still is the last frame."""
+    count = validate_frames(frames)
     choice = fl2va_choice(mode, action)
+    if choice["lora"] and int(choice["steps"]) != TURBO_STEPS:
+        raise RemakeError("fast_8step は Turbo LoRA と steps 8 だけ")
+    if not choice["lora"] and int(choice["steps"]) != STEPS:
+        raise RemakeError("quality_20step は LoRA なしの steps 20")
     model_ref: list[object] = ["30", 0] if choice["lora"] else ["4", 0]
     nodes = {
         "1": {
@@ -401,10 +421,10 @@ def build_fl2va_prompt(
                 "vae": ["2", 0],
                 "first_frame": ["20", 0],
                 "last_frame": ["21", 0],
-                "prompt": fl2va_prompt(action),
+                "prompt": fl2va_prompt(action, count),
                 "width": FL2VA_WIDTH,
                 "height": FL2VA_HEIGHT,
-                "length": FL2VA_FRAMES,
+                "length": count,
             },
         },
         "14": {
