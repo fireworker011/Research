@@ -1,0 +1,75 @@
+name: CW 司令塔（応募しない・ログインしない）
+
+# 置き場所: 人間の非公開リポジトリ（例: fireworker011/cw-work）の .github/workflows/cw.yml
+# この非公開リポジトリに、状態・下書き・素材・完成品・台帳が全部たまる。公開リポジトリには置かない。
+# エンジン本体は公開リポジトリ fireworker011/Research の cw-engine/ を毎回 checkout する。
+
+on:
+  issue_comment:
+    types: [created]
+  workflow_dispatch:
+  push:
+    paths:
+      - '.github/workflows/cw.yml'
+
+concurrency:
+  group: cw-commander
+  cancel-in-progress: false
+
+env:
+  ENGINE_REPO: fireworker011/Research
+  # マージ前は PR 枝。#122 がデフォルトに入ったら claude/setup-colab-comfyui-Eb9Lh に戻す。
+  ENGINE_REF: cursor/cw-auto-commander-c1fb
+
+jobs:
+  commander:
+    if: >
+      github.event_name != 'issue_comment' || (
+        github.event.issue.title == 'CW — 司令塔' &&
+        !github.event.issue.pull_request &&
+        github.event.comment.user.login != 'github-actions[bot]'
+      )
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      issues: write
+    steps:
+      - name: 状態（この非公開リポジトリ）
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683  # v4.2.2
+        with:
+          path: work
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: エンジン（公開リポジトリ。読むだけ）
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683  # v4.2.2
+        with:
+          repository: ${{ env.ENGINE_REPO }}
+          ref: ${{ env.ENGINE_REF }}
+          path: engine
+          persist-credentials: false
+
+      - name: コマンドを処理して告知を書く
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+          CW_WORK_DIR: ${{ github.workspace }}/work
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          CW_FACTS_JSON: ${{ secrets.CW_FACTS_JSON }}
+        run: |
+          set -euo pipefail
+          cd engine/cw-engine
+          node --check src/apply-commander-comment.js
+          node src/self-test.js
+          node src/apply-commander-comment.js
+
+      - name: 状態を保存（この非公開リポジトリだけ）
+        working-directory: work
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git diff --staged --quiet || {
+            git commit -m "chore: CW 司令塔 ${{ github.event_name }}"
+            git pull --rebase origin "${{ github.event.repository.default_branch }}"
+            git push origin "HEAD:${{ github.event.repository.default_branch }}"
+          }
