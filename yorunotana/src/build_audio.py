@@ -243,6 +243,22 @@ def timeline(units: list[dict], audio_lengths: list[float]) -> tuple[list[dict],
     return items, cursor
 
 
+def audible_slice(samples: np.ndarray, sr: int, thresh: float = 0.02, pad_sec: float = 0.04) -> np.ndarray:
+    """読みの前後にある無音を外し、声の長さを測れるようにする。"""
+    win = max(1, int(0.01 * sr))
+    loud: list[int] = []
+    for index in range(0, len(samples) - win, win):
+        rms = float(np.sqrt(np.mean(samples[index : index + win] ** 2)))
+        if rms >= thresh:
+            loud.append(index)
+    if not loud:
+        return samples
+    pad = int(pad_sec * sr)
+    start = max(0, loud[0] - pad)
+    end = min(len(samples), loud[-1] + win + pad)
+    return samples[start:end]
+
+
 def synthesize_real(units: list[dict], out_dir: Path, speaker: int, base_url: str) -> list[float]:
     lengths = []
     for index, unit in enumerate(units, start=1):
@@ -253,7 +269,20 @@ def synthesize_real(units: list[dict], out_dir: Path, speaker: int, base_url: st
             lengths.append(0.35)
             continue
         dest.write_bytes(voicevox_wav(text, speaker, base_url))
-        lengths.append(wav_duration(dest))
+        raw_sec = wav_duration(dest)
+        if unit.get("kind") == "promo_outro":
+            speech, speech_sr = load_mono(dest)
+            speech = audible_slice(speech, speech_sr)
+            spoken = len(speech) / float(speech_sr)
+            if spoken > 1.90:
+                raise SystemExit(
+                    f"広告の読みが {spoken:.3f}秒です。1.90秒以下にしてください。speedScale は 1.0 のままです。"
+                )
+            write_wav(dest, speech, channels=1, sr=speech_sr)
+            log(f"VOICEVOX seg_{index:02d} raw={raw_sec:.3f}s speech={spoken:.3f}s speaker={speaker}")
+            lengths.append(spoken)
+            continue
+        lengths.append(raw_sec)
         log(f"VOICEVOX seg_{index:02d} {lengths[-1]:.2f}s speaker={speaker}")
     return lengths
 
@@ -274,10 +303,21 @@ def mix_master(items: list[dict], out_dir: Path, duration: float) -> None:
         speech, speech_sr = load_mono(wav_path)
         speech = resample(speech, speech_sr, SR) * 0.9
         origin = start
-        # 誘導の読みは末尾のカード（最後の2秒）に寄せる。台詞そのものは変えない。
+        # 広告の読みは、動画末尾2秒（PR表示）の内側で始める。
         if item.get("kind") == "promo_outro" and len(speech) > 0:
-            item_end = int(round(float(item["end_sec"]) * SR))
-            origin = max(start, item_end - len(speech))
+            video_end = round(float(item["end_sec"]) * 60.0) / 60.0
+            speech_sec = len(speech) / float(SR)
+            origin_sec = (video_end - 2.0) + 0.05
+            if origin_sec + speech_sec > video_end - 0.02:
+                origin_sec = video_end - speech_sec - 0.02
+            if origin_sec < video_end - 2.0:
+                raise SystemExit(
+                    f"広告の読み {speech_sec:.3f}秒が最後の2秒に収まりません。"
+                )
+            origin = int(round(origin_sec * SR))
+            origin = max(start, min(origin, total - 1))
+            item["speech_start_sec"] = round(origin / float(SR), 4)
+            item["speech_sec"] = round(speech_sec, 4)
         end = min(total, origin + len(speech))
         if end > origin:
             mix[origin:end] += speech[: end - origin]
@@ -312,6 +352,7 @@ def build(job_path: Path, speaker: int, dummy: bool, base_url: str, out_dir: Pat
         log(f"VOICEVOX {base_url} speaker={speaker} speedScale=1.0")
         lengths = synthesize_real(units, out_dir, speaker, base_url)
     items, total = timeline(units, lengths)
+    mix_master(items, out_dir, total)
     timing = {
         "job_id": job["job_id"],
         "generator": "build_audio",
@@ -325,7 +366,6 @@ def build(job_path: Path, speaker: int, dummy: bool, base_url: str, out_dir: Pat
         json.dumps(timing, ensure_ascii=False, indent=2) + "\n",
         encoding="utf-8",
     )
-    mix_master(items, out_dir, total)
     log(f"audio {total:.3f}s -> {out_dir / 'master_audio.wav'}")
     return timing
 

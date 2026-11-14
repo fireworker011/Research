@@ -325,17 +325,17 @@
   "promo_outro": {
     "enabled": true,
     "headline": "",
-    "narration": "夜中の確認癖を断つなら Audible。",
+    "narration": "確認癖に、オーディブル。",
     "steps": [
       {
         "step_num": 1,
         "text": "",
-        "duration_sec": 4.0
+        "duration_sec": 1.0
       },
       {
         "step_num": 2,
         "text": "",
-        "duration_sec": 4.0
+        "duration_sec": 1.0
       }
     ],
     "app_name": "Audible（オーディブル）",
