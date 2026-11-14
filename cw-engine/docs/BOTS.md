@@ -46,7 +46,7 @@ Issue `CW — 司令塔` の人間コメントを 1 通ずつ処理し、`cw-<ki
 | `CW: DESK` | デスクだけ | `cw-desk:` |
 
 やらない: エンジンへの応募 POST、`RESUME`、円の発明、素材に無い事実、公開リポジトリへの書き込み、HQ Issue への書き込み。
-`ANTHROPIC_API_KEY` は不要。応募と完成品は Grok。契約・外部案内誘導・納品は人間。QA は機械。
+`ANTHROPIC_API_KEY` は不要で、workflow にも渡さない。応募と完成品は Grok。契約・外部案内誘導・納品は人間。QA は機械。
 
 ## 2. CW 前面（Grok・既存1）への指示
 

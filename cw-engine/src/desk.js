@@ -54,7 +54,7 @@ function nextGrokAction(queue, capability, commander) {
     parts.push(`sent ${sent.length} が上限 ${maxSent}。新しい応募はするな`);
   } else if (!waitingHumanOverflow(queue, capability)) {
     const room = Math.max(1, Math.min(perRun, maxSent - sent.length));
-    parts.push(`文章系を最大 ${room} 件 CW: JOB + 公開文 → すぐ応募 SENT。remain/n10 禁止。顔出し・口コミ・アカウント作成は捨てる`);
+    parts.push(`文章系を最大 ${room} 件 CW: JOB + 公開文 → すぐ応募 SENT。remain/n10 禁止。顔出し・声出し・面談必須・LINE誘導・口コミ・アカウント作成・AI禁止・物販や体験は捨てる`);
   }
   return parts.join('。');
 }

@@ -25,7 +25,7 @@ function buildProfileDraft({ facts, capability, funnel = null }) {
   if (pub.tools && pub.tools.length) lines.push(`・使用ツール: ${pub.tools.join('、')}`);
   lines.push('');
   lines.push('【お受けしていないもの】');
-  lines.push('・顔出し・出演・撮影、口コミやレビューの投稿、外部サービスのアカウント作成、仮払い前の作業、クラウドワークス外でのやり取り');
+  lines.push('・顔出し・声出し・出演・撮影、面談必須、LINEへの誘導、口コミやレビューの投稿、外部サービスのアカウント作成、商品の購入や体験が必要なもの、仮払い前の作業、クラウドワークス外でのやり取り');
   if (funnel && funnel.advice && funnel.advice.length) {
     lines.push('');
     lines.push('（改善メモ・貼らない）');

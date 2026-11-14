@@ -46,4 +46,4 @@ node src/apply-commander-comment.js --dry-run --comment "CW: DESK"
 
 ## 不変条件
 
-`.cursor/rules/cw-engine.mdc` が正。要点: 本線を触らない／守秘物は公開に置かない／送信と受注可否は人間／LLM に選ばせない／実績と円を発明しない／仮払い前に着手しない／Grok clone を増やさない。
+`.cursor/rules/cw-engine.mdc` が正。要点: 本線を触らない／守秘物は公開に置かない／送信と受注可否は人間／LLM に選ばせない／応募稿は cw-work の rules と skills を読んでから書く／名乗りはオカモト／Anthropic API は呼ばない／実績と円を発明しない／仮払い前に着手しない／Grok clone を増やさない。
