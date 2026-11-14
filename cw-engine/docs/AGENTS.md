@@ -18,9 +18,9 @@ XM は EA が発注し Grok が止め役。CW に公式の応募 REST は無い�
 | 役 | 実体 | いつ動く | LLM を使うか |
 |---|---|---|---|
 | 取込・資格判定 | `intake.js` `qualify.js` | `CW: JOB` | 使わない（allowlist / deny。LLM に選ばせない） |
-| 応募稿 | `apply-draft.js` | 資格 OK | サンプル 1 段落だけ（無くても稿は出る） |
+| 応募稿 | `apply-draft.js` + cw-work の rules/skills | 資格 OK | 使わない。テンプレだけ。Anthropic は呼ばない |
 | 定型返信 | `reply-draft.js` | `CW: MSG` | 使わない（意図分類 → 定型） |
-| 業務の把握 | `brief.js` | `CW: CONTRACT` | 構成案だけ（素材があるとき） |
+| 業務の把握 | `brief.js` | `CW: CONTRACT` | 使わない（構成案を API で足さない） |
 | 完成品 | `make.js` + Grok | `CW: MAKE` → `CW: DRAFT` | Anthropic は使わない。Grok が本文。QA は機械 |
 | 検品 | `compliance.js` | 稿と完成品の全部 | 使わない（決定論） |
 | 納品パッケージ | `deliver.js` | QA 合格 | 使わない |

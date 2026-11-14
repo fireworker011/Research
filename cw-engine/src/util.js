@@ -63,7 +63,7 @@ function sanitizeFacts(raw) {
     delete facts[k];
   }
   return {
-    handle: typeof facts.handle === 'string' && facts.handle ? facts.handle : 'fireworker12',
+    handle: typeof facts.handle === 'string' && facts.handle ? facts.handle : 'オカモト',
     public_profile_facts: {
       occupation: typeof pub.occupation === 'string' && pub.occupation ? pub.occupation : null,
       hours_per_day: Number.isFinite(Number(pub.hours_per_day)) && pub.hours_per_day !== null ? Number(pub.hours_per_day) : null,

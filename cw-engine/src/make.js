@@ -90,25 +90,16 @@ function qaDeliverableText(job, { capability, brief, materials, text }) {
   };
 }
 
-async function makeDeliverable(job, { capability, brief, briefText, materials, revisionRequest = null }) {
+function makeDeliverable(job, { capability, brief, briefText, materials, revisionRequest = null }) {
   const packet = grokPacket(job, { capability, brief, briefText, materials, revisionRequest });
-  if (!llm.llmAvailable()) {
-    return {
-      ok: false,
-      blocked: 'await_grok',
-      text: null,
-      category: packet.category,
-      ext: packet.ext,
-      grokPrompt: formatGrokPrompt(packet)
-    };
-  }
-  let raw;
-  try {
-    raw = await llm.ask(packet.prompt, { system: makerSystem(packet.category), maxTokens: 8000 });
-  } catch (err) {
-    return { ok: false, blocked: `llm_error:${String(err.message || err).slice(0, 80)}`, text: null, category: packet.category, ext: packet.ext };
-  }
-  return qaDeliverableText(job, { capability, brief, materials, text: raw });
+  return {
+    ok: false,
+    blocked: 'await_grok',
+    text: null,
+    category: packet.category,
+    ext: packet.ext,
+    grokPrompt: formatGrokPrompt(packet)
+  };
 }
 
 module.exports = {

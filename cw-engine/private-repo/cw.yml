@@ -18,13 +18,21 @@ concurrency:
 
 env:
   ENGINE_REPO: fireworker011/Research
-  # マージ前は PR 枝。#122 がデフォルトに入ったら claude/setup-colab-comfyui-Eb9Lh に戻す。
-  ENGINE_REF: cursor/cw-auto-commander-c1fb
+  # #122 はデフォルトへマージしない。応募稿の修正はこの枝。
+  ENGINE_REF: cursor/cw-rules-apply-670c
+  # main に rules/ が無いあいだは PR #2 の枝を読む。マージ後は work のファイルを使う。
+  RULES_REF: cursor/cw-shared-rules-91b1
 
 jobs:
   commander:
     if: >
-      github.event_name != 'issue_comment' || (
+      (
+        github.event_name == 'push' &&
+        github.ref == format('refs/heads/{0}', github.event.repository.default_branch)
+      ) ||
+      github.event_name == 'workflow_dispatch' ||
+      (
+        github.event_name == 'issue_comment' &&
         github.event.issue.title == 'CW — 司令塔' &&
         !github.event.issue.pull_request &&
         github.event.comment.user.login != 'github-actions[bot]'
@@ -40,6 +48,31 @@ jobs:
           path: work
           token: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: 共通ルールの場所
+        id: rules
+        working-directory: work
+        run: |
+          set -euo pipefail
+          missing=0
+          for f in rules/CW_RULES.md skills/cw-ai-client-work/SKILL.md skills/skill-1789872612155/SKILL.md; do
+            if [ ! -f "$f" ]; then missing=1; fi
+          done
+          if [ "$missing" = 0 ]; then
+            echo "dir=${GITHUB_WORKSPACE}/work" >> "$GITHUB_OUTPUT"
+          else
+            echo "dir=${GITHUB_WORKSPACE}/rules-src" >> "$GITHUB_OUTPUT"
+            echo "fetch=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: 共通ルール（main に無いとき。PR #2 の枝）
+        if: steps.rules.outputs.fetch == 'true'
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683  # v4.2.2
+        with:
+          ref: ${{ env.RULES_REF }}
+          path: rules-src
+          token: ${{ secrets.GITHUB_TOKEN }}
+          persist-credentials: false
+
       - name: エンジン（公開リポジトリ。読むだけ）
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683  # v4.2.2
         with:
@@ -53,7 +86,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GITHUB_REPOSITORY: ${{ github.repository }}
           CW_WORK_DIR: ${{ github.workspace }}/work
-          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          CW_RULES_DIR: ${{ steps.rules.outputs.dir }}
           CW_FACTS_JSON: ${{ secrets.CW_FACTS_JSON }}
         run: |
           set -euo pipefail

@@ -9,6 +9,7 @@ const { loadQueue, saveQueue, findJob, upsertJob, newJobRecord, transition } = r
 const { parseJobText, fetchPublicJob } = require('./intake');
 const { qualify } = require('./qualify');
 const { draftApplication } = require('./apply-draft');
+const { loadSharedRules, publicTextMissing } = require('./shared-rules');
 const { draftReply } = require('./reply-draft');
 const { buildBrief, enrichBrief } = require('./brief');
 const { makeDeliverable, qaDeliverableText } = require('./make');
@@ -21,7 +22,7 @@ const { writeToday } = require('./report');
 const github = require('./github');
 
 const CHEAT_SHEET = [
-  'CW 司令塔。人間は契約・外部案内誘導・納品だけ。ほかは Grok（応募・下書き・完成品）。コメント1行目 `CW: <コマンド> <仕事ID>`。',
+  'CW 司令塔。人間は契約・外部案内誘導・納品だけ。ほかは Grok（応募・下書き・完成品）。コメント1行目 `CW: <コマンド> <仕事ID>`。応募稿は rules/CW_RULES.md と skills/ を読んで書く。名乗りはオカモト。Anthropic API は使わない。',
   '',
   '| 行 | 意味 |',
   '|---|---|',
@@ -45,6 +46,18 @@ const CHEAT_SHEET = [
 
 function jobDir(id) {
   return workPath('jobs', String(id));
+}
+
+function writeJobFile(id, jobTitle, text, now, fetched, extra) {
+  const head = [
+    `# ${id} ${jobTitle || ''}`.trim(),
+    '',
+    `取込: ${nowIso(now)}${fetched ? '（公開ページ1回読み）' : '（人間が貼った公開文）'}`,
+    extra || ''
+  ]
+    .filter((line) => line !== '')
+    .join('\n');
+  writeText(path.join(jobDir(id), 'JOB.md'), `${head}\n\n${text}`);
 }
 
 function listMaterials(id) {
@@ -88,10 +101,20 @@ async function handleJob(cmd, ctx, now) {
     if (!fetched.ok) return { kind: 'note', id, body: `${id}: 公開ページを読めなかった（${fetched.reason}）。公開文を貼って \`CW: JOB ${id}\` をもう一度。`, queue };
     text = fetched.text;
   }
+  const rules = loadSharedRules();
+  if (!rules.ok) {
+    writeJobFile(id, fetched?.title, text, now, fetched, `共通ルールを読めなかった: ${(rules.missing || []).join(', ')}`);
+    return { kind: 'note', id, body: `${id}: rules/CW_RULES.md と skills/ を読めなかった（${(rules.missing || []).join(', ')}）。応募稿は書かない。`, queue };
+  }
+  if (publicTextMissing(text)) {
+    writeJobFile(id, fetched?.title, text, now, fetched, '公開文が「（人間が書く）」のまま。応募稿は作らない。');
+    return { kind: 'note', id, body: `${id}: 公開文が「（人間が書く）」のまま。応募稿は作らない。`, queue };
+  }
   const parsed = parseJobText(id, text, capability, { category: cmd.opts.category, applied: cmd.opts.applied, title: fetched?.title || undefined });
   const verdict = qualify(parsed, { capability, facts, commander, queue });
   let job = newJobRecord(parsed, verdict, now);
-  writeText(path.join(jobDir(id), 'JOB.md'), `# ${id} ${job.title}\n\n取込: ${nowIso(now)}${fetched ? '（公開ページ1回読み）' : '（人間が貼った公開文）'}\n\n${text}`);
+  const basis = `基準: ${rules.files.join(' / ')}（名乗り: ${rules.displayName}）`;
+  writeJobFile(id, job.title, text, now, fetched, `${basis}\n資格: ${verdict.ok ? 'OK' : verdict.reasons.join(', ')}`);
   if (!verdict.ok) {
     queue = upsertJob(queue, job, now);
     const hint = verdict.reasons.includes('category_unknown')
@@ -99,7 +122,19 @@ async function handleJob(cmd, ctx, now) {
       : '';
     return { kind: 'desk', id, body: `${id} は資格判定で落ちた: ${verdict.reasons.join(', ')}${verdict.warnings.length ? `（注意: ${verdict.warnings.join(', ')}）` : ''}${hint}`, queue };
   }
-  const draft = await draftApplication(job, { facts, capability });
+  const waitingOthers = (queue.jobs || []).filter((row) => row.status === 'drafted' && String(row.id) !== String(id)).length;
+  if (waitingOthers >= rules.maxWaitingDrafts) {
+    return {
+      kind: 'note',
+      id,
+      body: `${id}: 返事待ちの下書きが ${waitingOthers} 件ある（上限 ${rules.maxWaitingDrafts}）。新しい応募稿は書かない。`,
+      queue
+    };
+  }
+  const draft = await draftApplication(job, { facts, capability, rules });
+  if (!draft.rules?.ok || !draft.text) {
+    return { kind: 'note', id, body: `${id}: 共通ルールに沿った応募稿を書けなかった。`, queue };
+  }
   writeText(path.join(jobDir(id), 'APPLY.md'), `# APPLY — ${id}\n\n${draft.text}`);
   const t = transition(job, 'DRAFTED', now);
   job = t.ok ? t.job : job;

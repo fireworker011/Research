@@ -2,9 +2,9 @@
 
 const { categoryById } = require('./util');
 const { HUMAN_PLACEHOLDER, checkDraft } = require('./compliance');
-const llm = require('./llm');
+const { loadSharedRules } = require('./shared-rules');
 
-const AI_LINE = '作業には生成AIを補助的に使い、最終確認と修正は私自身が行います。AI利用に条件があればお知らせください。';
+const AI_LINE = '生成AIは補助に使います。最後の確認と直しは自分でやります。条件があれば合わせます。';
 
 function deliveriesLine(facts) {
   const n = Number(facts?.public_profile_facts?.deliveries_completed || 0);
@@ -12,83 +12,92 @@ function deliveriesLine(facts) {
   return 'クラウドワークスでの完成納品はまだありません。無い実績は書きません。';
 }
 
-function answerAsk(ask, { facts, category, job }) {
+function aiLine(facts) {
+  if (facts?.ai_policy?.disclose === false) return null;
+  if (facts?.ai_policy?.use_ai === false) return '生成AIは使いません。';
+  return AI_LINE;
+}
+
+function answerAsk(ask, { facts, placeholder = HUMAN_PLACEHOLDER }) {
   const pub = facts?.public_profile_facts || {};
   const a = String(ask);
-  if (/(氏名|お名前|名前|年齢|年代|ご年代|家族|住所|電話|生年月日|性別)/.test(a)) return HUMAN_PLACEHOLDER;
+  if (/(氏名|お名前|名前|年齢|年代|ご年代|家族|住所|電話|生年月日|性別)/.test(a)) return placeholder;
   if (/(稼働|作業時間|対応可能な時間|作業できる|週に)/.test(a)) {
-    return pub.hours_per_day ? `1日 ${pub.hours_per_day} 時間程度（${pub.reply_hours || '連絡時間は' + HUMAN_PLACEHOLDER}）` : HUMAN_PLACEHOLDER;
+    if (!pub.hours_per_day) return placeholder;
+    return pub.reply_hours ? `1日 ${pub.hours_per_day} 時間程度（${pub.reply_hours}）` : `1日 ${pub.hours_per_day} 時間程度`;
   }
-  if (/(連絡|返信|レスポンス)/.test(a)) return pub.reply_hours || HUMAN_PLACEHOLDER;
-  if (/(ソフト|ツール|環境|使用)/.test(a)) return pub.tools?.length ? pub.tools.join('、') : HUMAN_PLACEHOLDER;
-  if (/(職業|ご職業|お仕事|現在の状況|ご状況|経歴)/.test(a)) return pub.occupation || HUMAN_PLACEHOLDER;
+  if (/(連絡|返信|レスポンス)/.test(a)) return pub.reply_hours || placeholder;
+  if (/(ソフト|ツール|環境|使用)/.test(a)) return pub.tools?.length ? pub.tools.join('、') : placeholder;
+  if (/(職業|ご職業|お仕事|現在の状況|ご状況|経歴)/.test(a)) return pub.occupation || placeholder;
   if (/(ポートフォリオ|実績|作品|制作物|サンプル)/.test(a)) {
-    if (pub.portfolio_url) return pub.portfolio_url;
-    return Number(pub.deliveries_completed || 0) > 0 ? `クラウドワークスでの完成納品 ${pub.deliveries_completed} 件（詳細はお伝えできる範囲で）` : '無し（完成納品はまだありません。借り物は載せません）';
+    const n = Number(pub.deliveries_completed || 0);
+    if (n > 0) return `クラウドワークスでの完成納品は ${n} 件です。リンクは${placeholder}`;
+    return `クラウドワークスでの完成納品はまだありません。無い実績は書きません。リンクは${placeholder}`;
   }
   if (/(経験|スキル|得意)/.test(a)) {
-    return Number(pub.deliveries_completed || 0) > 0
-      ? `${category?.label || '同種'}の完成納品 ${pub.deliveries_completed} 件。無い経験は書きません`
-      : `${category?.label || '同種'}の実務納品はまだありません。生成AIを補助に使い、最終確認は自分で行います`;
+    const n = Number(pub.deliveries_completed || 0);
+    if (n > 0) return `クラウドワークスでの完成納品は ${n} 件です。無い経験は書きません。`;
+    return '同種の納品はまだありません。無い経験は書きません。';
   }
-  if (/(志望|理由|動機|意気込み|自己紹介)/.test(a)) {
-    return `公開の募集文を読み、${category?.label || '記載の業務'}として、納期と連絡を守って納品するために応募します。`;
+  if (/(自己紹介|志望|理由|動機|意気込み)/.test(a)) {
+    return pub.occupation ? `${pub.occupation}です。` : placeholder;
   }
-  if (/(AI|ＡＩ)/.test(a)) return facts?.ai_policy?.use_ai === false ? '使用しません' : '補助的に使用します（最終確認は自分で行います）。条件があれば従います';
-  return HUMAN_PLACEHOLDER;
+  if (/(AI|ＡＩ)/.test(a)) return facts?.ai_policy?.use_ai === false ? '使いません' : '補助に使います。最後の確認は自分でやります。条件があれば合わせます';
+  return placeholder;
 }
 
-function buildApplyDraft(job, { facts, capability, sample = null }) {
+function buildApplyDraft(job, { facts, capability, rules }) {
+  if (!rules?.ok || !rules.displayName) throw new Error('rules_required');
   const category = categoryById(capability, job.category);
-  const handle = facts?.handle || 'fireworker12';
   const pub = facts?.public_profile_facts || {};
+  const placeholder = rules.placeholder || HUMAN_PLACEHOLDER;
+  const asks = job.asks || [];
   const lines = [];
-  for (const ask of job.asks || []) {
-    lines.push(`${ask}: ${answerAsk(ask, { facts, category, job })}`);
-  }
-  if (lines.length) lines.push('');
-  lines.push(`はじめまして。クラウドワークスの ${handle} です。`);
-  lines.push(`公開の募集文を読み、${category ? category.label : '記載の業務'}として応募します。`);
-  const spec = job.char_spec ? `${job.char_spec[0]}〜${job.char_spec[1]}文字` : null;
-  lines.push(`納品物: 募集文のとおり${spec ? `（1${category ? category.unit : '本'}あたり ${spec}）` : ''}。形式はご指定に合わせます。`);
-  lines.push(`進め方: 着手 → 初稿 → 修正1回 → 納品（初稿の目安 ${category ? category.turnaround_days : 2} 日）。${pub.reply_hours ? `連絡は ${pub.reply_hours} に返します。` : ''}`.trim());
-  if (facts?.ai_policy?.disclose !== false) lines.push(AI_LINE);
-  lines.push(deliveriesLine(facts));
-  if (sample) {
+  lines.push(`${rules.displayName}です。`);
+  const title = String(job.title || '募集').replace(/\s+/g, ' ').trim();
+  const label = category ? category.label : '募集文の仕事';
+  lines.push(`「${title}」を読みました。${label}として応募します。`);
+  lines.push('募集の範囲で書きます。確認と直しは自分でします。');
+  if (asks.length) {
     lines.push('');
-    lines.push('募集文のテーマに沿った短いサンプルです（この応募のために作成）:');
-    lines.push(sample.trim());
-    lines.push('');
+    for (const ask of asks) lines.push(`${ask}: ${answerAsk(ask, { facts, placeholder })}`);
   }
-  lines.push('納期と連絡は守ります。よろしくお願いいたします。');
-  return lines.join('\n');
+  const askedHours = asks.some((ask) => /(稼働|作業時間|対応可能な時間|作業できる|週に)/.test(ask));
+  const askedRecord = asks.some((ask) => /(ポートフォリオ|実績|作品|制作物|サンプル|経験)/.test(ask));
+  lines.push('');
+  if (!askedHours) {
+    lines.push(pub.hours_per_day ? `稼働は1日 ${pub.hours_per_day} 時間程度です。` : `稼働: ${placeholder}`);
+  }
+  const spec = Array.isArray(job.char_spec) ? job.char_spec : null;
+  const titleText = String(job.title || '');
+  const titleHasSpec = spec && titleText.includes(String(spec[0])) && titleText.includes(String(spec[1]));
+  if (spec && !titleHasSpec) lines.push(`文字数は募集の ${spec[0]}〜${spec[1]}文字 に合わせます。`);
+  const disclosed = aiLine(facts);
+  if (disclosed) lines.push(disclosed);
+  if (!askedRecord) lines.push(deliveriesLine(facts));
+  lines.push('納期と連絡は守ります。よろしくお願いします。');
+  return lines.join('\n').replace(/\n{3,}/g, '\n\n');
 }
 
-async function makeSample(job, category) {
-  if (!llm.llmAvailable() || !category || category.ai_complete === false) return null;
-  const prompt = [
-    `募集文（公開）:\n${job.text_excerpt || job.title}`,
-    `この募集の${category.label}として、テーマに沿った 100〜150 字のサンプル文を1つだけ書いてください。`,
-    '固有名詞・数字・体験談は募集文にあるものだけ。無ければ一般的な表現にする。前置き・見出し・URL は書かない。'
-  ].join('\n\n');
-  try {
-    const out = llm.stripFences(await llm.ask(prompt, { maxTokens: 400 }));
-    return out.length >= 40 && out.length <= 260 ? out : null;
-  } catch (_) {
-    return null;
+function draftApplication(job, { facts, capability, rules = null } = {}) {
+  const loaded = rules || loadSharedRules();
+  if (!loaded.ok) {
+    return {
+      text: '',
+      check: { ok: false, issues: ['rules_missing'], needs_human: 0, chars: 0 },
+      sample_used: false,
+      rules: loaded
+    };
   }
+  const text = buildApplyDraft(job, { facts, capability, rules: loaded });
+  const check = checkDraft(text, { facts, kind: 'apply', maxChars: 1500 });
+  for (const phrase of loaded.banned || []) {
+    if (phrase && text.includes(phrase)) check.issues.push(`banned_phrase:${phrase}`);
+  }
+  if (/(LINE|ライン|アフィリエイト|友達追加|メールでご連絡|こちらから登録)/.test(text)) check.issues.push('external_redirect');
+  if (/\bfireworker12\b/.test(text)) check.issues.push('legacy_handle');
+  check.ok = check.issues.length === 0;
+  return { text, check, sample_used: false, rules: loaded };
 }
 
-async function draftApplication(job, { facts, capability }) {
-  const category = categoryById(capability, job.category);
-  const sample = await makeSample(job, category);
-  let text = buildApplyDraft(job, { facts, capability, sample });
-  let check = checkDraft(text, { facts, kind: 'apply', maxChars: 1500 });
-  if (!check.ok) {
-    text = buildApplyDraft(job, { facts, capability, sample: null });
-    check = checkDraft(text, { facts, kind: 'apply', maxChars: 1500 });
-  }
-  return { text, check, sample_used: Boolean(sample) && check.ok };
-}
-
-module.exports = { AI_LINE, answerAsk, buildApplyDraft, draftApplication, deliveriesLine };
+module.exports = { AI_LINE, answerAsk, buildApplyDraft, draftApplication, deliveriesLine, aiLine };

@@ -1,12 +1,17 @@
 'use strict';
 
 const { stripHtml } = require('./util');
+const { loadSharedRules } = require('./shared-rules');
 
 const PUBLIC_JOB_URL = 'https://crowdworks.jp/public/jobs/';
 
 const FLAG_RULES = {
   closed: /(募集(は|を)?終了|募集終了|応募期限を過ぎ|このお仕事は終了)/,
   on_camera: /(顔出し|ご出演|出演していただ|モデル(を)?募集|撮影を担当|撮影して(いただ|もら)|ご自身で撮影|撮影から(編集|お願い)|自撮り)/,
+  voice_required: /声出し(必須|あり|OK|ＯＫ|歓迎|をお願い|していただ|できる方|可能な方)|自分の声で|ご自身の声で|ナレーション(を)?収録|声を(収録|入れて)|肉声で/,
+  interview_required: /面談(必須|あり|が必要|をお願い|を実施)|面接(必須|あり|が必要|をお願い|を実施)|顔合わせ(必須|あり)|Zoom[^。\n]{0,8}(面談|面接|インタビュー)|ズーム[^。\n]{0,8}(面談|面接)|オンライン(面談|面接)/,
+  line_redirect: /(LINE|ライン)[^。\n]{0,24}(誘導|登録|追加|で連絡|での連絡|でお願|にお願|に(移動|登録)|で(の)?やり取り|友達|公式|QR)|連絡[^。\n]{0,16}(は|を)?(LINE|ライン)|友達追加|LINE登録|公式LINE/,
+  goods_or_experience: /商品を(購入|買って)|購入(が|を)?(必要|必須)|買って(いただ|もらって)|実店舗に|来店して|体験して(いただ|もら)|体験(が必要|必須)|モニターとして購入/,
   ai_forbidden: /((AI|ＡＩ|ChatGPT|生成AI|生成系AI)[^。\n]{0,14}(禁止|不可|NG|使用しない|使わない|お断り|認めません))|((禁止|不可|NG)[^。\n]{0,8}(AI|ChatGPT))/i,
   ai_disclose_required: /(AI|ＡＩ|ChatGPT)[^。\n]{0,14}(申告|明記|お知らせ|申し出|事前に)/i,
   review_posting: /((口コミ|クチコミ|レビュー|星|★)[^。\n]{0,8}(投稿|書き込|登録|して(ください|頂|いただ)))|(Amazon[^。\n]{0,10}レビュー)|(Google[^。\n]{0,10}(口コミ|クチコミ))|食べログ|(サクラ|やらせ)/,
@@ -112,12 +117,20 @@ function firstLine(text) {
   return (line || '').slice(0, 80);
 }
 
+function applicantHandles(capability) {
+  const handles = new Set(['fireworker12']);
+  if (capability?.account) handles.add(String(capability.account));
+  const rules = loadSharedRules();
+  if (rules.ok && rules.displayName) handles.add(rules.displayName);
+  return [...handles].filter(Boolean);
+}
+
 function parseJobText(id, text, capability, overrides = {}) {
   const clean = String(text || '').replace(/\r/g, '');
   const flags = detectFlags(clean);
   const category = overrides.category || detectCategory(clean, capability);
-  const handle = capability?.account || 'fireworker12';
-  const already = overrides.applied === 'yes' || (clean.includes(handle) && /応募した人|応募者/.test(clean));
+  const handles = applicantHandles(capability);
+  const already = overrides.applied === 'yes' || (handles.some((handle) => clean.includes(handle)) && /応募した人|応募者/.test(clean));
   return {
     id: String(id).trim(),
     title: overrides.title || firstLine(clean),
@@ -162,6 +175,7 @@ module.exports = {
   PUBLIC_JOB_URL,
   FLAG_RULES,
   detectFlags,
+  applicantHandles,
   detectCategory,
   extractAsks,
   extractPublicPrice,

@@ -2,7 +2,6 @@
 
 const { categoryById, addDays, dateJst } = require('./util');
 const { NEEDS_CHECK } = require('./compliance');
-const llm = require('./llm');
 
 function charSpecFor(job, category) {
   if (Array.isArray(job.char_spec) && job.char_spec[1] > 0) return job.char_spec;
@@ -81,20 +80,8 @@ function buildBrief(job, { capability, contractNotes = '', materials = '', now }
   return { text: lines.join('\n'), spec, due, missing, ready: missing.length === 0 || (hasMaterials && spec !== null) };
 }
 
-async function enrichBrief(brief, job, { materials = '' } = {}) {
-  if (!llm.llmAvailable() || !String(materials || '').trim()) return brief;
-  const prompt = [
-    `募集文（公開）:\n${job.text_excerpt || job.title}`,
-    `素材・指示:\n${String(materials).slice(0, 6000)}`,
-    '上の情報から「構成案」を見出しの箇条書きで 5〜10 行だけ書いてください。素材に無い事実・数字・固有名詞は書かず、不足は【要確認】と書いてください。前置きは不要です。'
-  ].join('\n\n');
-  try {
-    const outline = llm.stripFences(await llm.ask(prompt, { maxTokens: 800 }));
-    if (!outline) return brief;
-    return { ...brief, text: `${brief.text}\n\n## 構成案（機械。人間が確認）\n${outline}` };
-  } catch (_) {
-    return brief;
-  }
+function enrichBrief(brief) {
+  return brief;
 }
 
 module.exports = { buildBrief, enrichBrief, charSpecFor, materialsRequest };

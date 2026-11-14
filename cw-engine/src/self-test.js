@@ -16,6 +16,7 @@ const { REASONS, WARNINGS, qualify } = require('./qualify');
 const queueMod = require('./queue');
 const { checkDraft, checkDeliverable } = require('./compliance');
 const { buildApplyDraft, draftApplication, AI_LINE } = require('./apply-draft');
+const { loadSharedRules, publicTextMissing } = require('./shared-rules');
 const { classify, draftReply, INTENTS, replyFor } = require('./reply-draft');
 const { buildBrief } = require('./brief');
 const { makeDeliverable } = require('./make');
@@ -30,6 +31,36 @@ const { handleComment, CHEAT_SHEET } = require('./apply-commander-comment');
 
 function assert(cond, label) {
   if (!cond) throw new Error(label);
+}
+
+function writeRulesFixture(root, { name = 'オカモト' } = {}) {
+  fs.mkdirSync(path.join(root, 'rules'), { recursive: true });
+  fs.mkdirSync(path.join(root, 'skills', 'cw-ai-client-work'), { recursive: true });
+  fs.mkdirSync(path.join(root, 'skills', 'skill-1789872612155'), { recursive: true });
+  fs.writeFileSync(
+    path.join(root, 'rules', 'CW_RULES.md'),
+    [
+      '# CWの共通ルール（テスト）',
+      '',
+      '## 案件選び',
+      '- 外すもの: 顔出し、声出し、口コミ投稿、アカウント作成、AI禁止、面談必須、LINE誘導、物販や体験が必要なもの、アダルト、募集終了。',
+      '- 返事待ちの下書きが3件あるときは、新しい案件を足さない。',
+      '',
+      '## 応募文',
+      '- 無い実績、仕事ID、件数・評価・年数などの数字は作らない。確かめられないところは「（人間が書く）」と残す。',
+      `- 名乗りは「${name}」。年齢や本名は書かない。`,
+      '- 外部サイト（LINE・メール・自分のサイト・アフィリンク）への案内や誘導はしない。',
+      ''
+    ].join('\n')
+  );
+  fs.writeFileSync(
+    path.join(root, 'skills', 'cw-ai-client-work', 'SKILL.md'),
+    ['# AIクライアントワーク', '', '提案文はテンプレを案件ごとに調整。6要素：挨拶と名乗り／案件理解／できること／ポートフォリオ／納期・稼働／締め。', '公開文が求めていない項目は足さない。無い実績は書かない。', ''].join('\n')
+  );
+  fs.writeFileSync(
+    path.join(root, 'skills', 'skill-1789872612155', 'SKILL.md'),
+    ['# 人間っぽい納品文', '', '## やらない', '- 「一方で」「〜と言えるだろう」「押さえておきたい」などのAI定番接続', ''].join('\n')
+  );
 }
 
 const WRITING_JOB = `【継続あり】ペット用品の紹介記事（ブログ記事）ライティング｜1記事2000〜3000文字
@@ -106,6 +137,39 @@ function testIntakeAndQualify(capability, facts) {
   const videoNoMat = intake.parseJobText('13500007', '短尺 TikTok 動画編集。テロップとカット。', capability);
   const vn = qualify(videoNoMat, { capability, facts, commander: defaultCommander(), queue: queueMod.defaultQueue() });
   assert(vn.reasons.includes(REASONS.NOT_AI_COMPLETE), 'video without materials denied');
+
+  const interview = intake.parseJobText('13500008', 'ペット用品の記事を書いてください。資料は支給します。事前にZoom面談必須です。', capability);
+  const vi = qualify(interview, { capability, facts, commander: defaultCommander(), queue: queueMod.defaultQueue() });
+  assert(interview.flags.interview_required && !vi.ok && vi.reasons.includes(REASONS.INTERVIEW_REQUIRED), 'interview deny');
+  const lineJob = intake.parseJobText('13500010', 'ブログ記事の執筆です。資料を支給します。採用後の連絡はLINEでお願いします。', capability);
+  const vl = qualify(lineJob, { capability, facts, commander: defaultCommander(), queue: queueMod.defaultQueue() });
+  assert(lineJob.flags.line_redirect && !vl.ok && vl.reasons.includes(REASONS.LINE_REDIRECT), 'line deny');
+  const voice = intake.parseJobText('13500011', '自分の声でナレーション収録してください。台本は支給します。', capability);
+  const vvVoice = qualify(voice, { capability, facts, commander: defaultCommander(), queue: queueMod.defaultQueue() });
+  assert(voice.flags.voice_required && !vvVoice.ok && vvVoice.reasons.includes(REASONS.VOICE_REQUIRED), 'voice deny');
+  const goods = intake.parseJobText('13500012', '記事を書く前に商品を購入して使った感想を書いてください。資料は支給します。', capability);
+  const vg = qualify(goods, { capability, facts, commander: defaultCommander(), queue: queueMod.defaultQueue() });
+  assert(goods.flags.goods_or_experience && !vg.ok && vg.reasons.includes(REASONS.GOODS_OR_EXPERIENCE), 'goods deny');
+  const script = intake.parseJobText('13500013', 'ナレーション原稿を書く仕事です。台本を支給します。未経験OK。', capability);
+  const vs = qualify(script, { capability, facts, commander: defaultCommander(), queue: queueMod.defaultQueue() });
+  assert(!script.flags.voice_required && script.category === 'writing_script' && vs.ok, `script stays ${script.category} ${vs.reasons}`);
+  const noMeet = intake.parseJobText('13500014', '記事を書いてください。資料は支給します。面談は不要です。', capability);
+  const vnm = qualify(noMeet, { capability, facts, commander: defaultCommander(), queue: queueMod.defaultQueue() });
+  assert(!noMeet.flags.interview_required && vnm.ok, `no interview ${vnm.reasons}`);
+  const discord = intake.parseJobText('13500015', '記事を書いてください。資料は支給します。詳細はDiscordで連絡します。', capability);
+  const vdisc = qualify(discord, { capability, facts, commander: defaultCommander(), queue: queueMod.defaultQueue() });
+  assert(!discord.flags.line_redirect && discord.flags.external_contact_first && vdisc.ok && vdisc.warnings.includes(WARNINGS.EXTERNAL_CONTACT), 'discord warns');
+  const named = intake.parseJobText('13500016', `${WRITING_JOB}\n応募者 オカモト`, capability);
+  assert(named.flags.already_applied, 'already applied by display name');
+  const zoom = intake.parseJobText('13500017', '記事を書いてください。資料は支給します。Zoomインタビューがあります。', capability);
+  const vz = qualify(zoom, { capability, facts, commander: defaultCommander(), queue: queueMod.defaultQueue() });
+  assert(zoom.flags.interview_required && !vz.ok, `zoom interview ${vz.reasons}`);
+  const aiNgPhrase = intake.parseJobText('13500018', 'コラムを書いてください。資料は支給します。「AI使用不可」です。', capability);
+  const vai = qualify(aiNgPhrase, { capability, facts, commander: defaultCommander(), queue: queueMod.defaultQueue() });
+  assert(aiNgPhrase.flags.ai_forbidden && !vai.ok && vai.reasons.includes(REASONS.AI_FORBIDDEN), 'ai use forbidden phrase');
+  const lineReg = intake.parseJobText('13500019', '記事を書いてください。資料は支給します。購入やLINE登録前提です。', capability);
+  const vlr = qualify(lineReg, { capability, facts, commander: defaultCommander(), queue: queueMod.defaultQueue() });
+  assert(lineReg.flags.line_redirect && !vlr.ok && vlr.reasons.includes(REASONS.LINE_REDIRECT), 'line registration deny');
   return job;
 }
 
@@ -128,27 +192,46 @@ function testQueue(job, facts, capability) {
 }
 
 async function testDrafts(job, facts, capability) {
-  const text = buildApplyDraft(job, { facts, capability, sample: null });
+  const rules = loadSharedRules();
+  assert(rules.ok && rules.displayName === 'オカモト', `rules ${rules.missing}`);
+  assert(rules.banned.includes('一方で') && rules.banned.includes('と言えるだろう') && rules.banned.includes('押さえておきたい'), 'banned phrases');
+  assert(rules.maxWaitingDrafts === 3, 'waiting cap from rules');
+  const text = buildApplyDraft(job, { facts, capability, rules });
+  assert(text.includes('オカモトです'), 'display name');
+  assert(!text.includes('fireworker12'), 'legacy handle absent');
   assert(text.includes(AI_LINE), 'ai line');
   assert(text.includes('完成納品はまだありません'), 'honest deliveries');
   assert(text.includes('（人間が書く）'), 'placeholder for facts');
-  assert(!/実績多数|経験\d+年/.test(text), 'no invented');
+  assert(!/実績多数|経験\s*\d+\s*年|目安\s*\d+\s*日/.test(text), 'no invented');
+  assert(!/一方で|と言えるだろう|押さえておきたい/.test(text), 'not polished');
+  assert(!/https?:\/\//.test(text), 'no external url');
   const check = checkDraft(text, { facts, kind: 'apply' });
   assert(check.ok, `apply check ${check.issues}`);
-  const d = await draftApplication(job, { facts, capability });
-  assert(d.check.ok && !d.sample_used, 'draft without llm');
+  const d = await draftApplication(job, { facts, capability, rules });
+  assert(d.check.ok && !d.sample_used, `draft without llm ${d.check.issues}`);
   const bad = checkDraft('実績多数です。https://example.com 必ず成果が出ます。私はAIです。', { facts, kind: 'apply' });
   assert(!bad.ok && bad.issues.includes('invented_achievement') && bad.issues.includes('hype_phrase') && bad.issues.includes('meta_ai_phrase'), `bad draft ${bad.issues}`);
   assert(bad.issues.some((i) => i.startsWith('url_not_allowed')), 'url flagged');
 
   const richFacts = sanitizeFacts({
+    handle: 'fireworker12',
     public_profile_facts: { occupation: '会社員', hours_per_day: 2, reply_hours: '平日20-23時', tools: ['Google ドキュメント'], deliveries_completed: 3, portfolio_url: 'https://example.com/p', age: 40, name: 'x' }
   });
   assert(richFacts.public_profile_facts.age === undefined && richFacts.public_profile_facts.name === undefined, 'facts sanitized');
-  const rich = buildApplyDraft(job, { facts: richFacts, capability, sample: null });
+  assert(richFacts.handle === 'fireworker12', 'secret handle kept but not used as 名乗り');
+  const rich = buildApplyDraft(job, { facts: richFacts, capability, rules });
+  assert(rich.includes('オカモトです') && !rich.includes('fireworker12'), 'rules name wins');
   assert(rich.includes('完成納品は 3 件'), 'deliveries count');
   assert(rich.includes('1日 2 時間'), 'hours from facts');
+  assert(!rich.includes('https://example.com/p'), 'portfolio url not pasted');
   assert(checkDraft(rich, { facts: richFacts, kind: 'apply' }).ok, 'rich check ok');
+  const emptyRules = fs.mkdtempSync(path.join(os.tmpdir(), 'cw-rules-missing-'));
+  process.env.CW_RULES_DIR = emptyRules;
+  const missed = draftApplication(job, { facts, capability });
+  assert(!missed.check.ok && missed.check.issues.includes('rules_missing') && missed.text === '', 'no draft without rules');
+  delete process.env.CW_RULES_DIR;
+  assert(publicTextMissing('（人間が書く）') && publicTextMissing('## メモ\n【公開文】\n（人間が書く）\n'), 'placeholder posting');
+  assert(!publicTextMissing(WRITING_JOB), 'real posting');
 }
 
 function testReplies(job, facts, capability) {
@@ -184,8 +267,22 @@ async function testWork(job, facts, capability) {
   assert(/カタログ/.test(brief.text), 'brief marks catalog');
   const withMat = buildBrief(job, { capability, materials: 'キーワード: 犬 おもちゃ。読者: 初めて犬を飼う人。トーン: やさしく', now });
   assert(withMat.missing.length === 0 && withMat.ready, 'brief ready with materials');
+  const origFetch = global.fetch;
+  let fetched = false;
+  global.fetch = async (url) => {
+    fetched = true;
+    throw new Error(`unexpected fetch ${url}`);
+  };
+  process.env.ANTHROPIC_API_KEY = 'sk-ant-should-not-be-used';
+  process.env.CLAUDE_API_KEY = 'sk-ant-should-not-be-used';
   const made = await makeDeliverable(job, { capability, brief, briefText: brief.text, materials: '' });
+  delete process.env.ANTHROPIC_API_KEY;
+  delete process.env.CLAUDE_API_KEY;
+  global.fetch = origFetch;
+  assert(!fetched, 'anthropic path does not fetch');
   assert(!made.ok && made.blocked === 'await_grok' && /CW: DRAFT/.test(made.grokPrompt), 'make waits for grok');
+  const llmSrc = readText(path.join(ROOT, 'src', 'llm.js'));
+  assert(!/api\.anthropic\.com|ANTHROPIC_API_KEY|llmAvailable/.test(llmSrc), 'llm client removed');
   const qaBad = checkDeliverable('これは【要確認】です。https://evil.example 必ず治る。私はAIです。```x```', { materials: '', charSpec: [2000, 3000] });
   assert(!qaBad.ok, 'qa fails');
   assert(qaBad.issues.some((i) => i.startsWith('needs_check_left')), 'qa needs check');
@@ -249,6 +346,25 @@ async function testDispatcher() {
   assert(job.comment.startsWith('cw-apply: 13500001'), 'apply comment head');
   assert(/cw-desk: paper/.test(job.comment) && /next_human:/.test(job.comment), 'desk footer');
   assert(fs.existsSync(workPath('jobs', '13500001', 'APPLY.md')) && fs.existsSync(workPath('jobs', '13500001', 'JOB.md')), 'files written');
+  const applyText = readText(workPath('jobs', '13500001', 'APPLY.md'));
+  const jobText = readText(workPath('jobs', '13500001', 'JOB.md'));
+  assert(applyText.startsWith('# APPLY — 13500001') && applyText.includes('オカモトです') && !applyText.includes('fireworker12'), 'apply follows rules');
+  assert(/rules\/CW_RULES\.md/.test(jobText) && /skills\/cw-ai-client-work/.test(jobText), 'job cites rules');
+  const placeholder = await run('CW: JOB 13500020\n（人間が書く）');
+  assert(placeholder.result.kind === 'note' && /応募稿は作らない/.test(placeholder.result.body), 'no apply without posting');
+  assert(!fs.existsSync(workPath('jobs', '13500020', 'APPLY.md')), 'placeholder writes no apply');
+  const interview = await run('CW: JOB 13500021\n記事を書いてください。資料は支給します。面談必須です。');
+  assert(interview.result.kind === 'desk' && /interview_required/.test(interview.result.body), 'dispatcher drops interview');
+  assert(!fs.existsSync(workPath('jobs', '13500021', 'APPLY.md')), 'denied job has no apply');
+  const saved = queueMod.loadQueue();
+  queueMod.saveQueue({
+    jobs: [1, 2, 3].map((n) => ({ id: `9100000${n}`, status: 'drafted', title: 'x' })),
+    updated_at: now.toISOString()
+  });
+  const capped = await run(`CW: JOB 13500022\n${WRITING_JOB}`);
+  assert(capped.result.kind === 'note' && /下書き/.test(capped.result.body), `cap ${capped.result.body}`);
+  assert(!fs.existsSync(workPath('jobs', '13500022', 'APPLY.md')), 'cap writes no apply');
+  queueMod.saveQueue(saved);
   assert(fs.existsSync(workPath('reports', 'TODAY.md')), 'today written');
 
   const dup = await run(`CW: JOB 13500001\n${WRITING_JOB}`);
@@ -319,7 +435,7 @@ function testDocsAndSideline() {
   assert(!/crowdworks\.jp\/public\/jobs\/\d+/.test(dump), 'dump no live job urls');
   assert(/CW: HALT/.test(dump), 'dump halt');
   assert(/CW: DRAFT/.test(dump), 'dump draft');
-  assert(/Anthropic/.test(dump), 'dump no anthropic');
+  assert(/Anthropic API は使わない/.test(dump), 'dump no anthropic');
   assert(!/CW: RESUME/.test(dump.replace(/`CW: RESUME` は出すな/g, '')), 'dump resume forbidden');
   assert(/HQ clone|HQ の clone|別の会話/.test(dump), 'dump separate from HQ clone');
   assert(/6416ebcd-6cd0-42bb-92c3-55e00b13828c/.test(dump), 'dump names existing bot');
@@ -340,8 +456,10 @@ function testDocsAndSideline() {
   assert(/常時稼働.*0/.test(agents), 'agents: no always-on');
   const priv = readText(path.join(ROOT, 'private-repo/cw.yml'));
   assert(/CW — 司令塔/.test(priv) && !/^\s*schedule:/m.test(priv), 'private workflow: issue title, no cron');
+  assert(/github\.event\.repository\.default_branch/.test(priv), 'side branch push does not run commander');
   assert(/fireworker011\/Research/.test(priv) && /apply-commander-comment\.js/.test(priv), 'private workflow runs engine');
-  assert(/ANTHROPIC_API_KEY/.test(priv) && /CW_FACTS_JSON/.test(priv) && /CW_WORK_DIR/.test(priv), 'private workflow env');
+  assert(!/ANTHROPIC_API_KEY/.test(priv) && /CW_FACTS_JSON/.test(priv) && /CW_WORK_DIR/.test(priv), 'private workflow env');
+  assert(/CW_RULES_DIR/.test(priv) && /rules\/CW_RULES\.md/.test(priv) && /cursor\/cw-rules-apply-670c/.test(priv), 'private workflow reads rules');
   const ci = readText(path.join(repo, '.github/workflows/cw_engine_ci.yml'));
   assert(!/^\s*schedule:/m.test(ci) && !/issue_comment/.test(ci), 'ci: no cron, no issue trigger');
   assert(!fs.existsSync(path.join(repo, '.github/workflows/cw_engine_commander.yml')), 'no commander workflow in public repo');
@@ -358,9 +476,11 @@ function testDocsAndSideline() {
 }
 
 async function selfTest() {
+  writeRulesFixture(process.env.CW_WORK_DIR);
   const capability = loadCapability();
   const facts = loadFacts();
-  assert(capability.account === 'fireworker12', 'capability account');
+  assert(capability.account === 'オカモト', 'capability account');
+  assert(facts.handle === 'オカモト', 'facts example handle');
   assert(capability.categories.filter((c) => c.ai_complete).length >= 6, 'ai-complete categories');
   assert(facts.public_profile_facts.deliveries_completed === 0, 'facts example honest');
   assert(dateJst(new Date('2026-09-12T20:00:00Z')) === '2026-09-13', 'jst date');
