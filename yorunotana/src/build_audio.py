@@ -273,9 +273,14 @@ def mix_master(items: list[dict], out_dir: Path, duration: float) -> None:
         wav_path = out_dir / item["wav"]
         speech, speech_sr = load_mono(wav_path)
         speech = resample(speech, speech_sr, SR) * 0.9
-        end = min(total, start + len(speech))
-        if end > start:
-            mix[start:end] += speech[: end - start]
+        origin = start
+        # 誘導の読みは末尾のカード（最後の2秒）に寄せる。台詞そのものは変えない。
+        if item.get("kind") == "promo_outro" and len(speech) > 0:
+            item_end = int(round(float(item["end_sec"]) * SR))
+            origin = max(start, item_end - len(speech))
+        end = min(total, origin + len(speech))
+        if end > origin:
+            mix[origin:end] += speech[: end - origin]
         if item.get("se"):
             se_path = ROOT / "assets" / "se" / f"{item['se']}.wav"
             se, se_sr = load_mono(se_path)

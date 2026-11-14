@@ -1,4 +1,8 @@
-"""pr_badge の動画で、右上PRが全フレームにあるかを画素で確認する。"""
+"""右上PRの画素チェック。
+
+--expect true: 最後の2秒（120フレーム）だけに PR があり、それより前は 0。
+--expect false: 全フレームで PR が 0。
+"""
 
 from __future__ import annotations
 
@@ -40,6 +44,19 @@ def main() -> int:
     plate_means = frames[:, plate, :].mean(axis=(1, 2))
     contrast = glyph_means - plate_means
     present = (glyph_means >= 150.0) & (contrast >= 60.0)
+    tail_n = min(render_frames.PR_TAIL_FRAMES, int(frames.shape[0]))
+    if tail_n:
+        head = present[:-tail_n]
+        tail = present[-tail_n:]
+    else:
+        head = present
+        tail = present[:0]
+    head_pr = int(head.sum()) if len(head) else 0
+    tail_pr = int(tail.sum()) if len(tail) else 0
+    if expect:
+        passed = head_pr == 0 and tail_n > 0 and tail_pr == int(tail.shape[0])
+    else:
+        passed = int(present.sum()) == 0
     # バッジあり/なしの静止画差分（圧縮前）も残す。
     with_badge = render_frames.composite(
         render_frames.night_bg(),
@@ -64,8 +81,11 @@ def main() -> int:
         "max_plate_mean": round(float(plate_means.max()), 2),
         "min_contrast": round(float(contrast.min()), 2),
         "still_mae_pr_vs_off": round(float(diff), 2),
+        "tail_frames": tail_n,
+        "frames_with_pr_before_tail": head_pr,
+        "tail_frames_with_pr": tail_pr,
         "expect_present": expect,
-        "pass": bool(present.all()) if expect else bool((~present).all()),
+        "pass": passed,
     }
     Path(args.report).parent.mkdir(parents=True, exist_ok=True)
     Path(args.report).write_text(json.dumps(result, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
