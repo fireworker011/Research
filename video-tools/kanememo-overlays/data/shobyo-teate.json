@@ -1,0 +1,109 @@
+{
+  "slug": "shobyo-teate",
+  "durationSec": 15,
+  "fps": 24,
+  "callout": {
+    "fromSec": 0,
+    "toSec": 3,
+    "lines": ["30日 → ", "113,400円"],
+    "sub": "3,780円×30"
+  },
+  "heading": {
+    "fromSec": 3,
+    "toSec": 15,
+    "text": "協会けんぽの例・標準報酬月額の平均17万円・給与が出ない日"
+  },
+  "columns": ["支給日数（待期を除く）", "この例の支給額"],
+  "rows": [
+    {
+      "fromSec": 3.5,
+      "label": "10日",
+      "amount": "37,800円",
+      "detailLead": "3,780円",
+      "detailRest": "×10＝",
+      "emphasizeLead": { "fromSec": 6, "toSec": 9.2 }
+    },
+    {
+      "fromSec": 5.5,
+      "label": "30日",
+      "amount": "113,400円",
+      "detailLead": "3,780円",
+      "detailRest": "×30＝",
+      "emphasizeLead": { "fromSec": 6, "toSec": 9.2 },
+      "highlight": [{ "fromSec": 9.2, "toSec": 11.8 }]
+    },
+    {
+      "fromSec": 7.5,
+      "label": "60日",
+      "amount": "226,800円",
+      "detailLead": "3,780円",
+      "detailRest": "×60＝",
+      "emphasizeLead": { "fromSec": 6, "toSec": 9.2 }
+    }
+  ],
+  "notes": [
+    {
+      "fromSec": 3.5,
+      "toSec": 15,
+      "lines": [
+        "日額は、平均17万円÷30≒5,670円（10円未満四捨五入）×2/3＝3,780円",
+        "連続3日の待期は含まない",
+        "通算1年6か月まで。60日は上限ではない"
+      ]
+    },
+    {
+      "fromSec": 12.2,
+      "toSec": 15,
+      "emphasize": { "fromSec": 12.2, "toSec": 15 },
+      "lines": ["連続3日の待期は支給されない／通算1年6か月まで"]
+    }
+  ],
+  "source": {
+    "fromSec": 10,
+    "toSec": 15,
+    "text": "出典：協会けんぽ"
+  },
+  "credit": {
+    "fromSec": 0,
+    "toSec": 15,
+    "text": "VOICEVOX:冥鳴ひまり"
+  },
+  "subtitles": [
+    {
+      "fromSec": 0,
+      "toSec": 2.5,
+      "pos": "top",
+      "lines": ["傷病手当金、30日でいくら？", "協会けんぽの支給額例"]
+    },
+    {
+      "fromSec": 0.3,
+      "toSec": 2.6,
+      "pos": "bottom",
+      "lines": ["傷病手当金、30日でいくら？"]
+    },
+    {
+      "fromSec": 3,
+      "toSec": 5.6,
+      "pos": "bottom",
+      "lines": ["業務外で、平均17万円の例なら、"]
+    },
+    {
+      "fromSec": 6,
+      "toSec": 8.8,
+      "pos": "bottom",
+      "lines": ["給与が出ない日は、1日3,780円。"]
+    },
+    {
+      "fromSec": 9.2,
+      "toSec": 11.8,
+      "pos": "bottom",
+      "lines": ["30日分は、11万3,400円。"]
+    },
+    {
+      "fromSec": 12.2,
+      "toSec": 14.8,
+      "pos": "bottom",
+      "lines": ["最初の連続3日は、入りません。"]
+    }
+  ]
+}

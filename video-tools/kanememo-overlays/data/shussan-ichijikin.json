@@ -1,0 +1,100 @@
+{
+  "slug": "shussan-ichijikin",
+  "durationSec": 15,
+  "fps": 24,
+  "callout": {
+    "fromSec": 0,
+    "toSec": 3,
+    "lines": ["2人 → 100万円"],
+    "sub": "1人50万円×2"
+  },
+  "heading": {
+    "fromSec": 3,
+    "toSec": 15,
+    "text": "協会けんぽ・産科医療補償制度に加入・在胎22週以後"
+  },
+  "columns": ["子どもの人数", "一時金"],
+  "rows": [
+    {
+      "fromSec": 3.5,
+      "label": "1人",
+      "amount": "50万円",
+      "highlight": [{ "fromSec": 6.3, "toSec": 8 }]
+    },
+    {
+      "fromSec": 5.5,
+      "label": "2人",
+      "amount": "100万円",
+      "detailLead": "50万円×2＝",
+      "highlight": [{ "fromSec": 8, "toSec": 9.2 }]
+    },
+    {
+      "fromSec": 7.5,
+      "label": "3人",
+      "amount": "150万円",
+      "detailLead": "50万円×3＝",
+      "highlight": [{ "fromSec": 9.2, "toSec": 11.8 }]
+    }
+  ],
+  "notes": [
+    {
+      "fromSec": 3.5,
+      "toSec": 15,
+      "lines": ["協会けんぽ。2023年4月1日以降の出産"]
+    },
+    {
+      "fromSec": 11.8,
+      "toSec": 15,
+      "emphasize": { "fromSec": 11.8, "toSec": 15 },
+      "lines": ["22週未満、または未加入の施設は1人48万8千円"]
+    }
+  ],
+  "source": {
+    "fromSec": 10,
+    "toSec": 15,
+    "text": "出典：厚生労働省・協会けんぽ"
+  },
+  "credit": {
+    "fromSec": 0,
+    "toSec": 15,
+    "text": "VOICEVOX:冥鳴ひまり"
+  },
+  "subtitles": [
+    {
+      "fromSec": 0,
+      "toSec": 2.5,
+      "pos": "top",
+      "lines": ["双子の一時金、100万円？", "出産育児一時金の早見表"]
+    },
+    {
+      "fromSec": 0.3,
+      "toSec": 2.4,
+      "pos": "bottom",
+      "lines": ["双子の一時金は、100万円？"]
+    },
+    {
+      "fromSec": 2.8,
+      "toSec": 5.9,
+      "pos": "bottom",
+      "lines": ["補償制度に加入の施設で、", "22週以後なら、"]
+    },
+    {
+      "fromSec": 6.3,
+      "toSec": 8.8,
+      "pos": "bottom",
+      "lines": ["1人50万円。2人は100万円。"]
+    },
+    {
+      "fromSec": 9.2,
+      "toSec": 11.4,
+      "pos": "bottom",
+      "lines": ["3人なら、150万円です。"]
+    },
+    {
+      "fromSec": 11.8,
+      "toSec": 14.6,
+      "pos": "bottom",
+      "lines": ["それ以外は、1人48万8千円。"]
+    }
+  ]
+}
