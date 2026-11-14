@@ -24,8 +24,13 @@ from PIL import Image, ImageDraw, ImageFont
 WIDTH = 1080
 HEIGHT = 1920
 FPS = 60
+# PR と Audible 誘導カードは、動画の最後の2秒（120フレーム）だけ。
+PR_TAIL_SEC = 2.0
+PR_TAIL_FRAMES = int(PR_TAIL_SEC * FPS)
 MAX_TAIL_SEC = 1.0
 ROOT = Path(__file__).resolve().parents[1]
+DOOR_NUMBER_BOXES: list[tuple[int, int, int, int]] = []
+SUPPRESS_DOOR_NUMBER = False
 
 YELLOW = (255, 238, 51, 255)
 WHITE = (255, 255, 255, 255)
@@ -210,6 +215,83 @@ def composite(base: Image.Image, overlay: Image.Image) -> Image.Image:
 
 def night_bg() -> Image.Image:
     return vgradient((9, 11, 18), (4, 5, 9))
+
+
+def draw_door_number(
+    draw: ImageDraw.ImageDraw,
+    xy: tuple[float, float],
+    text: str,
+    font: ImageFont.FreeTypeFont,
+    fill: tuple[int, int, int] | tuple[int, int, int, int],
+    anchor: str = "mm",
+) -> None:
+    """扉の部屋番号。仮の英字ラベルは描かない。"""
+    label = str(text)
+    if not SUPPRESS_DOOR_NUMBER:
+        draw.text(xy, label, font=font, fill=fill, anchor=anchor)
+    if label == "705":
+        box = draw.textbbox(xy, label, font=font, anchor=anchor)
+        DOOR_NUMBER_BOXES.append(tuple(int(round(value)) for value in box))
+
+
+def drift_window(step: int, width: int = WIDTH, height: int = HEIGHT) -> tuple[int, int, int, int]:
+    """drift_scene と同じ切り出し。戻り値は (x, y, crop_w, crop_h)。"""
+    zoom = 1.030 + (step % 6) * 0.006
+    crop_w = max(int(width / zoom), width - 80)
+    crop_h = max(int(height / zoom), height - 140)
+    max_x = max(width - crop_w, 0)
+    max_y = max(height - crop_h, 0)
+    trip_x = max(max_x * 2, 1)
+    trip_y = max(max_y * 2, 1)
+    raw_x = (step * 11) % trip_x
+    raw_y = (step * 7) % trip_y
+    x = raw_x if raw_x <= max_x else trip_x - raw_x
+    y = raw_y if raw_y <= max_y else trip_y - raw_y
+    x = max(0, min(max_x, int(x)))
+    y = max(0, min(max_y, int(y)))
+    return (x, y, int(crop_w), int(crop_h))
+
+
+def map_source_box(
+    box: tuple[int, int, int, int],
+    step: int,
+    width: int = WIDTH,
+    height: int = HEIGHT,
+) -> tuple[int, int, int, int] | None:
+    crop_x, crop_y, crop_w, crop_h = drift_window(step, width, height)
+    sx0, sy0, sx1, sy1 = box
+    if sx1 <= crop_x or sy1 <= crop_y or sx0 >= crop_x + crop_w or sy0 >= crop_y + crop_h:
+        return None
+    scale_x = width / float(crop_w)
+    scale_y = height / float(crop_h)
+    return (
+        int(round((sx0 - crop_x) * scale_x)),
+        int(round((sy0 - crop_y) * scale_y)),
+        int(round((sx1 - crop_x) * scale_x)),
+        int(round((sy1 - crop_y) * scale_y)),
+    )
+
+
+def box_overlap_px(a: tuple[int, int, int, int], b: tuple[int, int, int, int]) -> int:
+    x0 = max(a[0], b[0])
+    y0 = max(a[1], b[1])
+    x1 = min(a[2], b[2])
+    y1 = min(a[3], b[3])
+    if x1 <= x0 or y1 <= y0:
+        return 0
+    return (x1 - x0) * (y1 - y0)
+
+
+def pr_tail_slices(global_start: int, piece: int, tail_start: int) -> list[tuple[int, int, bool]]:
+    """このホールドを、最後の2秒の前と中に分ける。(offset, length, in_tail)。"""
+    if piece <= 0:
+        return []
+    cut = tail_start - global_start
+    if cut <= 0:
+        return [(0, piece, True)]
+    if cut >= piece:
+        return [(0, piece, False)]
+    return [(0, cut, False), (cut, piece - cut, True)]
 
 
 def draw_pr_badge(draw: ImageDraw.ImageDraw) -> None:
@@ -411,27 +493,59 @@ def paint_door(params: dict, ctx: dict, segment: dict) -> Image.Image:
 
 
 def paint_room_variant(params: dict, ctx: dict, segment: dict) -> Image.Image:
+    """室内。部屋番号705は廊下側の面なので、部屋の中からは描かない。"""
     del ctx, segment
     img = night_bg()
     draw = ImageDraw.Draw(img)
-    draw.rectangle([0, 1100, WIDTH, HEIGHT], fill=(12, 12, 16))
+    draw.rectangle([0, 280, WIDTH, 1040], fill=(36, 32, 40))
+    draw.polygon([(0, 1040), (WIDTH, 1040), (WIDTH, HEIGHT), (0, HEIGHT)], fill=(14, 12, 16))
+    draw.rectangle([0, 1008, WIDTH, 1048], fill=(58, 48, 38))
+    draw.polygon([(0, 280), (180, 420), (180, 1040), (0, 1040)], fill=(22, 20, 26))
+    draw.polygon([(WIDTH, 280), (900, 420), (900, 1040), (WIDTH, 1040)], fill=(26, 24, 30))
+
+    wx0, wy0, wx1, wy1 = 700, 500, 980, 860
     if params.get("curtain_drawn"):
-        draw.rectangle([80, 420, 460, 980], fill=(28, 30, 36))
-        draw.rectangle([80, 420, 460, 980], outline=(70, 72, 80), width=8)
-        draw.rectangle([250, 420, 290, 980], fill=(18, 18, 22))
-    elif params.get("facing") == "door":
-        draw.rectangle([140, 380, 520, 1100], fill=(72, 48, 30))
-        draw.rectangle([170, 420, 490, 1040], outline=(40, 26, 16), width=8)
-        draw.ellipse([430, 700, 470, 740], fill=(190, 170, 90))
-        draw.text((330, 500), "705", font=font_px(42), fill=(230, 220, 190), anchor="mm")
+        draw.rectangle([wx0, wy0, wx1, wy1], fill=(24, 26, 32))
+        draw.rectangle([wx0, wy0, wx1, wy1], outline=(86, 88, 96), width=8)
+        draw.rectangle([wx0 + 128, wy0, wx0 + 156, wy1], fill=(12, 12, 16))
+    else:
+        draw.rectangle([wx0, wy0, wx1, wy1], fill=(8, 12, 26))
+        draw.rectangle([wx0, wy0, wx1, wy1], outline=(78, 82, 96), width=8)
+        star = random.Random(19)
+        for _ in range(14):
+            sx = star.randint(wx0 + 16, wx1 - 16)
+            sy = star.randint(wy0 + 16, wy1 - 16)
+            draw.ellipse([sx, sy, sx + 3, sy + 3], fill=(230, 228, 214))
+
+    # 室内側の扉。番号プレートは廊下に出た面だけにある。
+    dx0, dy0, dx1, dy1 = 150, 620, 500, 1160
+    draw.rectangle([dx0 - 18, dy0 - 16, dx1 + 18, dy1 + 10], fill=(52, 42, 34))
+    draw.rectangle([dx0, dy0, dx1, dy1], fill=(96, 66, 40))
+    mid = (dy0 + dy1) / 2
+    draw.rectangle([dx0 + 26, dy0 + 24, dx1 - 26, mid - 12], outline=(54, 36, 22), width=6)
+    draw.rectangle([dx0 + 26, mid + 8, dx1 - 26, dy1 - 24], outline=(54, 36, 22), width=6)
+    draw.ellipse([dx1 - 78, mid - 16, dx1 - 36, mid + 26], fill=(196, 172, 96))
+
     if params.get("lamp_dim"):
-        draw.ellipse([760, 860, 860, 960], fill=(120, 78, 36))
+        draw.ellipse([790, 980, 910, 1100], fill=(120, 74, 30))
         glow = Image.new("RGBA", (WIDTH, HEIGHT), (0, 0, 0, 0))
-        ImageDraw.Draw(glow).ellipse([700, 800, 920, 1040], fill=(180, 120, 50, 70))
+        ImageDraw.Draw(glow).ellipse([700, 880, 1000, 1200], fill=(190, 120, 48, 78))
         img = composite(img, glow)
         draw = ImageDraw.Draw(img)
+
     eye = "closed" if params.get("eyes_closed") else "small"
-    draw_stickman(draw, 700 if params.get("facing") == "door" else 540, 780, "stand", scale=2.0, sw=10, eye=eye, phone_on=False)
+    phone = True if params.get("phone_glow") else None
+    draw_stickman(
+        draw,
+        660,
+        900,
+        "stand",
+        scale=2.05,
+        sw=10,
+        eye=eye,
+        phone_on=phone,
+        earphones=bool(params.get("earphones_on")),
+    )
     return img
 
 
@@ -758,8 +872,30 @@ def paint_day_end(job: dict) -> Image.Image:
     return img
 
 
+def promo_has_body_copy(promo: dict) -> bool:
+    parts = [
+        str(promo.get("headline") or ""),
+        str(promo.get("sub_copy") or ""),
+        str(promo.get("cta_button_text") or ""),
+    ]
+    parts.extend(str(step.get("text") or "") for step in (promo.get("steps") or []))
+    return any(part.strip() for part in parts)
+
+
+def paint_name_pr_card(promo: dict) -> Image.Image:
+    """商品名と #PR だけ。URL誘導と条件の数字は出さない。"""
+    img = vgradient((8, 10, 16), (18, 12, 10))
+    draw = ImageDraw.Draw(img)
+    name = str(promo.get("app_name") or "")
+    draw.text((WIDTH / 2, 820), name, font=font_px(64), fill=(255, 160, 48, 255), anchor="mm")
+    draw.text((WIDTH / 2, 940), "#PR", font=font_px(42), fill=WHITE, anchor="mm")
+    return img
+
+
 def paint_promo(job: dict, progress: float) -> Image.Image:
     promo = job.get("promo_outro") or {}
+    if not promo_has_body_copy(promo):
+        return paint_name_pr_card(promo)
     img = vgradient((8, 10, 16), (18, 12, 10))
     draw = ImageDraw.Draw(img)
     y = 340
@@ -841,42 +977,82 @@ def paint_corridor(params: dict, ctx: dict, segment: dict) -> Image.Image:
             draw = ImageDraw.Draw(img)
     draw.rectangle([70, 520, 280, 1180], fill=(64, 58, 48))
     draw.rectangle([96, 560, 254, 1120], outline=(36, 30, 24), width=6)
-    draw.rounded_rectangle([150, 620, 230, 680], radius=6, fill=(210, 196, 150))
-    draw.text((190, 650), "705", font=font_px(28), fill=(40, 32, 20), anchor="mm")
+    # ルール帯（画面上部）と、寄りで上に動いたあとも重ならない高さ。
+    draw.rounded_rectangle([150, 980, 230, 1040], radius=6, fill=(210, 196, 150))
+    draw_door_number(draw, (190, 1010), "705", font_px(28), (40, 32, 20))
     return img
+
+
+def draw_breaker_cabinet(
+    draw: ImageDraw.ImageDraw,
+    box: tuple[float, float, float, float],
+    door_ajar: bool,
+    hand: bool,
+) -> None:
+    """配電箱の絵。灰色の四角や英字ラベルにはしない。"""
+    x0, y0, x1, y1 = box
+    w = max(1.0, x1 - x0)
+    h = max(1.0, y1 - y0)
+    rim = max(4, int(min(w, h) * 0.035))
+    draw.rounded_rectangle([x0 - rim, y0 - rim, x1 + rim, y1 + rim], radius=rim, fill=(96, 100, 104))
+    draw.rounded_rectangle([x0, y0, x1, y1], radius=max(3, rim - 2), fill=(26, 28, 32))
+    if door_ajar:
+        draw.polygon(
+            [
+                (x1 - w * 0.04, y0 + h * 0.05),
+                (x1 + w * 0.32, y0 + h * 0.12),
+                (x1 + w * 0.32, y1 - h * 0.06),
+                (x1 - w * 0.04, y1 - h * 0.04),
+            ],
+            fill=(132, 136, 140),
+        )
+    rows, cols = 6, 4
+    for row in range(rows):
+        by = y0 + h * (0.12 + row * 0.135)
+        bh = h * 0.1
+        draw.rounded_rectangle([x0 + w * 0.1, by, x1 - w * 0.1, by + bh], radius=4, fill=(10, 10, 12))
+        for col in range(cols):
+            bx = x0 + w * (0.18 + col * 0.18)
+            bw = max(6.0, w * 0.045)
+            draw.rectangle([bx, by + bh * 0.28, bx + bw, by + bh * 0.82], fill=(186, 186, 190))
+            tip = (36, 150, 72) if (row + col) % 3 else (176, 42, 36)
+            draw.rectangle([bx + bw * 0.2, by + bh * 0.08, bx + bw * 0.8, by + bh * 0.4], fill=tip)
+    if hand:
+        wrist = (x0 + w * 0.72, y0 + h * 0.78)
+        draw.line([(x0 + w * 0.48, y1 + h * 0.42), wrist], fill=(255, 255, 255), width=max(10, int(w * 0.035)))
+        draw.ellipse([wrist[0] - w * 0.06, wrist[1] - h * 0.05, wrist[0] + w * 0.08, wrist[1] + h * 0.05], fill=(255, 255, 255))
 
 
 def paint_breaker(params: dict, ctx: dict, segment: dict) -> Image.Image:
     del segment
+    if params.get("use_placeholder"):
+        raise SystemExit("breaker_panel の素材がありません。仮置きは出しません。")
     dx, dy = _shift(ctx)
     if params.get("hum"):
-        dy += 2 if int(float(ctx.get("phase") or 0) * 8) % 2 == 0 else -2
+        dy += 3 if int(float(ctx.get("phase") or 0) * 8) % 2 == 0 else -3
     if params.get("heard_only"):
-        img = night_bg()
+        img = Image.new("RGB", (WIDTH, HEIGHT), (16, 18, 22))
         draw = ImageDraw.Draw(img)
-        draw.rectangle([0, 1080, WIDTH, HEIGHT], fill=(10, 10, 12))
-        draw.rounded_rectangle([430 + dx, 620 + dy, 650 + dx, 860 + dy], radius=8, fill=(48, 52, 56))
-        draw.text((540, 980), str(params.get("location") or ""), font=font_px(28), fill=GRAY, anchor="mt")
+        draw.polygon([(0, 360), (WIDTH, 360), (760, 1040), (320, 1040)], fill=(40, 42, 46))
+        draw.polygon([(0, 300), (420, 560), (420, 1180), (0, 1280)], fill=(26, 28, 32))
+        draw.polygon([(WIDTH, 300), (660, 560), (660, 1180), (WIDTH, 1280)], fill=(22, 24, 28))
+        draw.rectangle([0, 1120, WIDTH, HEIGHT], fill=(10, 10, 12))
+        draw_breaker_cabinet(
+            draw,
+            (390 + dx, 470 + dy, 690 + dx, 920 + dy),
+            bool(params.get("door_ajar")),
+            bool(params.get("hand_reaching")),
+        )
         return img
     img = Image.new("RGB", (WIDTH, HEIGHT), (22, 24, 28))
     draw = ImageDraw.Draw(img)
-    x, y, w, h = 220 + dx, 340 + dy, 640, 860
-    draw.rounded_rectangle([x - 24, y - 24, x + w + 24, y + h + 24], radius=12, fill=(90, 94, 98))
-    draw.rounded_rectangle([x, y, x + w, y + h], radius=8, fill=(28, 30, 34))
-    if params.get("door_ajar"):
-        draw.polygon([(x + w - 20, y + 20), (x + w + 180, y + 80), (x + w + 180, y + h - 40), (x + w - 20, y + h - 20)], fill=(120, 124, 128))
-    for row in range(6):
-        by = y + 80 + row * 110
-        draw.rounded_rectangle([x + 70, by, x + w - 70, by + 70], radius=6, fill=(12, 12, 14))
-        for col in range(4):
-            bx = x + 110 + col * 120
-            draw.rectangle([bx, by + 16, bx + 28, by + 54], fill=(180, 180, 184))
-            draw.rectangle([bx + 8, by + 8, bx + 20, by + 28], fill=(40, 160, 80) if (row + col) % 3 else (180, 40, 36))
-    if params.get("hand_reaching"):
-        draw.line([(540, 1280), (700, 980)], fill=(255, 255, 255), width=16)
-        draw.ellipse([680, 950, 730, 1000], fill=(255, 255, 255))
-    label = "utility" if params.get("location") == "utility_closet" else "hall"
-    draw.text((x + 40, y + 24), label, font=font_px(28), fill=(180, 184, 188), anchor="lt")
+    draw.rectangle([0, 1180, WIDTH, HEIGHT], fill=(12, 12, 14))
+    draw_breaker_cabinet(
+        draw,
+        (220 + dx, 340 + dy, 860 + dx, 1200 + dy),
+        bool(params.get("door_ajar")),
+        bool(params.get("hand_reaching")),
+    )
     return img
 
 
@@ -911,8 +1087,6 @@ def paint_elevator(params: dict, ctx: dict, segment: dict) -> Image.Image:
     dim = params.get("flicker") and int(phase * 8) % 2 == 1
     ink = (40, 48, 36) if dim else (120, 255, 140)
     draw.text((540, 700), floor, font=font_px(160), fill=ink, anchor="mm")
-    if params.get("stuck"):
-        draw.text((540, 900), "STOP", font=font_px(28), fill=(180, 60, 48), anchor="mm")
     if params.get("ding"):
         draw.ellipse([620, 560, 650, 590], fill=(255, 196, 64))
     return img
@@ -993,7 +1167,7 @@ def paint_scene(job: dict, item: dict, segment: dict | None, ctx: dict) -> Image
         painter = SCENE_PAINTERS.get(scene)
         if painter is None:
             known = ", ".join(sorted(SCENE_PAINTERS))
-            raise SystemExit(f"未知のsceneです: {scene} (対応: {known})")
+            raise SystemExit(f"{scene} の素材がありません。仮置きは出しません。(対応: {known})")
         return painter(segment.get("scene_params") or {}, ctx, segment)
     if kind == "choice_card":
         return paint_choice(job)
@@ -1005,48 +1179,71 @@ def paint_scene(job: dict, item: dict, segment: dict | None, ctx: dict) -> Image
 
 
 def drift_scene(image: Image.Image, step: int) -> Image.Image:
-    """長い静止を 1.5 秒ごとに少しずらす。HUD や PR は後から重ねるので動かない。"""
-    dx = 8 + (step % 4) * 10
-    dy = (step % 3) * 6
-    arr = np.array(image)
-    height, width = arr.shape[:2]
-    moved = np.zeros_like(arr)
-    src_x0, src_x1 = max(0, -dx), min(width, width - dx)
-    src_y0, src_y1 = max(0, -dy), min(height, height - dy)
-    dst_x0, dst_y0 = max(0, dx), max(0, dy)
-    block = arr[src_y0:src_y1, src_x0:src_x1]
-    moved[dst_y0 : dst_y0 + block.shape[0], dst_x0 : dst_x0 + block.shape[1]] = block
-    if dx > 0:
-        moved[:, :dx] = moved[:, dx : dx + 1]
-    elif dx < 0:
-        moved[:, width + dx :] = moved[:, width + dx - 1 : width + dx]
-    if dy > 0:
-        moved[:dy, :] = moved[dy : dy + 1, :]
-    elif dy < 0:
-        moved[height + dy :, :] = moved[height + dy - 1 : height + dy, :]
-    px = 160 + (step * 140) % 640
-    py = 520 + (step % 4) * 70
-    dust = Image.fromarray(moved)
-    ImageDraw.Draw(dust).rounded_rectangle([px, py, px + 120, py + 36], radius=8, fill=(70, 210, 120))
-    return dust
+    """長い静止を 1.5 秒ごとに避ける。緑の角丸矩形は使わない。
+
+    動きは場面内だけにする。
+    - ゆっくりした寄りとパン（ken burns）
+    - 非常灯のような明るさの明滅
+    - 目立たない細い灰色の粒
+    HUD や PR は後から重ねるので動かない。
+    """
+    width, height = image.size
+    x, y, crop_w, crop_h = drift_window(step, width, height)
+    moved = image.crop((x, y, x + crop_w, y + crop_h)).resize((width, height), Image.Resampling.BICUBIC)
+
+    # 明滅: 隣のホールドと明るさが必ず違うように 4 段階で振る。
+    pulse = (0.08, 0.03, -0.03, -0.08)[step % 4]
+    arr = np.clip(np.array(moved, dtype=np.int16) * (1.0 + pulse), 0, 255).astype(np.uint8)
+    moved = Image.fromarray(arr)
+
+    rng = random.Random(1000 + step * 31)
+    draw = ImageDraw.Draw(moved)
+    for _ in range(16):
+        px = rng.randint(40, width - 40)
+        py = rng.randint(220, height - 220)
+        rad = rng.choice((1, 1, 2))
+        gray = rng.randint(86, 140)
+        fill = (gray, gray, max(gray - 8, 70))
+        draw.ellipse([px, py, px + rad, py + rad], fill=fill)
+    return moved
 
 
-def render_frame(job: dict, item: dict, segment: dict | None, ctx: dict, drift_step: int = 0) -> Image.Image:
-    scene = paint_scene(job, item, segment, ctx)
+def render_frame(
+    job: dict,
+    item: dict,
+    segment: dict | None,
+    ctx: dict,
+    drift_step: int = 0,
+    show_pr: bool | None = None,
+    reveal_promo: bool | None = None,
+) -> Image.Image:
+    DOOR_NUMBER_BOXES.clear()
+    if item.get("kind") == "promo_outro" and reveal_promo is False:
+        scene = paint_room_variant(
+            {"lamp_dim": True, "earphones_on": True, "curtain_drawn": True, "eyes_closed": True},
+            ctx,
+            {"id": 0},
+        )
+    else:
+        scene = paint_scene(job, item, segment, ctx)
     if drift_step:
         scene = drift_scene(scene, drift_step)
     subtitle = None
     top = None
     color = "white"
-    if segment is not None:
+    if segment is not None and not (item.get("kind") == "promo_outro" and reveal_promo is False):
         subtitle = segment.get("subtitle")
         top = segment.get("top_card")
         color = segment.get("text_color") or "white"
+    if show_pr is None:
+        pr_on = bool(job.get("pr_badge"))
+    else:
+        pr_on = bool(show_pr)
     overlay = paint_overlay(
         job.get("day"),
         clock_for(job, segment),
         str(job.get("floor_label") or ""),
-        bool(job.get("pr_badge")),
+        pr_on,
         top if top else None,
         subtitle,
         color,
@@ -1236,6 +1433,7 @@ def render_video(job_path: Path, timing_path: Path, audio_path: Path, out_path: 
     work.mkdir(parents=True)
     parts: list[Path] = []
     drift_step = 1
+    tail_start = max(0, total_frames - PR_TAIL_FRAMES)
     try:
         for index, (item, (start, end)) in enumerate(zip(items, spans)):
             count = end - start
@@ -1255,11 +1453,26 @@ def render_video(job_path: Path, timing_path: Path, audio_path: Path, out_path: 
                 cursor = seen
                 while left > 0:
                     piece = left if left <= still_limit else still_limit
-                    ctx_here = dict(ctx)
-                    ctx_here["phase"] = (cursor + piece / 2) / max(count, 1)
-                    if len(contexts) == 1:
-                        ctx_here["progress"] = ctx_here["phase"]
-                    holds.append((render_frame(job, item, segment, ctx_here, drift_step), piece))
+                    for offset, length, in_tail in pr_tail_slices(start + cursor, piece, tail_start):
+                        ctx_here = dict(ctx)
+                        ctx_here["phase"] = (cursor + offset + length / 2) / max(count, 1)
+                        if len(contexts) == 1:
+                            ctx_here["progress"] = ctx_here["phase"]
+                        reveal = bool(in_tail) if item.get("kind") == "promo_outro" else None
+                        holds.append(
+                            (
+                                render_frame(
+                                    job,
+                                    item,
+                                    segment,
+                                    ctx_here,
+                                    drift_step,
+                                    show_pr=bool(in_tail and job.get("pr_badge")),
+                                    reveal_promo=reveal,
+                                ),
+                                length,
+                            )
+                        )
                     cursor += piece
                     left -= piece
                     drift_step += 1

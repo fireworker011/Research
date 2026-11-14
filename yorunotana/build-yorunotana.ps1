@@ -193,7 +193,7 @@ try {
     $report += "- 画面は 1080x1920 の縦動画" + $nl
     $report += "- 尺は 60.0秒以上 70.0秒以下" + $nl
     $report += "- 音声トラックがある" + $nl
-    $report += "- pr_badge が true のジョブは、右上に PR を全編出す（描画側の責務）" + $nl
+    $report += "- pr_badge が true のジョブは、右上の PR を最後の2秒だけ出す（それより前は出さない）" + $nl
     $report += "- アフィリエイトのURLは、リポジトリにも完成動画の中にも置かない" + $nl
     $report += $nl + "## メモ" + $nl
     if ($reasons.Count -eq 0) {
