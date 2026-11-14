@@ -456,6 +456,7 @@ function testDocsAndSideline() {
   assert(/常時稼働.*0/.test(agents), 'agents: no always-on');
   const priv = readText(path.join(ROOT, 'private-repo/cw.yml'));
   assert(/CW — 司令塔/.test(priv) && !/^\s*schedule:/m.test(priv), 'private workflow: issue title, no cron');
+  assert(/github\.event\.repository\.default_branch/.test(priv), 'side branch push does not run commander');
   assert(/fireworker011\/Research/.test(priv) && /apply-commander-comment\.js/.test(priv), 'private workflow runs engine');
   assert(!/ANTHROPIC_API_KEY/.test(priv) && /CW_FACTS_JSON/.test(priv) && /CW_WORK_DIR/.test(priv), 'private workflow env');
   assert(/CW_RULES_DIR/.test(priv) && /rules\/CW_RULES\.md/.test(priv) && /cursor\/cw-rules-apply-670c/.test(priv), 'private workflow reads rules');
