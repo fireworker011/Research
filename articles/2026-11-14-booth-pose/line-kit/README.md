@@ -88,19 +88,24 @@ bash register.sh
 
 ## 5. 配布物
 
-`gift/` に3つのMarkdownと、それをスマホの画面幅で組んだ `gift/pose-kit.pdf` があります。
+`gift/` は、友だち追加の冊子です。Markdown3つを、スマホ縦の1つのPDFに組んであります。
 
-- `checklist.md` … 出す、選ぶ、まとめる、置く
-- `description-template.md` … 商品説明文の型
-- `work-log.md` … 1日1枚の作業記録
+- `checklist.md` … 企画、プロンプトの型、崩れの直し、選別、紙面
+- `description-template.md` … 商品ページ、説明文の記入例、タグ、サムネ、価格の考え方、ガイドライン
+- `work-log.md` … 出したあと、つまずき、12日の例、記録の記入例
+- `pose-kit.pdf` … 上の3つと、図
+- `figures/` … PDFに埋め込んだ図
 
-キーワード応答には、同じ内容の短い版を入れてあります。PDFは、チャットでファイルとして手渡しするとき用です。チャットの手返信は、200通の外です。PDFの公開URLは、まだありません。【要確認: PDFを置く場所】
+キーワード応答は、今日動かす短い版だけです。冊子の全部はPDFだと案内します。PDFファイル自体は、チャットで手渡しします。チャットの手返信は、200通の外です。この作業では、LINEへ送っていません。PDFの公開URLは、まだありません。【要確認: PDFを置く場所】
+
+リッチメニューは、キーワード5つのまま本番登録済みです。このフォルダの画像やJSONを、キーワードを変えて再登録しないでください。
 
 作り直すときは、記事フォルダの `render/` で次を実行します。
 
 ```sh
 python3 make_qr.py
 node render.mjs
+node gift-figures.mjs
 node pdf.mjs
 ```
 
