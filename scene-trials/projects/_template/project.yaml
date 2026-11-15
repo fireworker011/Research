@@ -38,6 +38,8 @@ prompt:
   composition: warn           # warn | drop | off
 
 face_visible_hints: [looking at viewer, looking back, looking up]
+face_pass: auto             # auto | required | skip | optional (per chain override in chains.yaml)
+rear_view_hints: [from behind, rear view]
 
 safety:
   adult_confirmed_by: ""      # a person fills these two before export or any run

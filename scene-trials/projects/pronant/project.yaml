@@ -44,7 +44,13 @@ prompt:
   positive_anchor: ["(mature female:1.2)"]   # the factory adds the same tag to every stage
   composition: drop                # removes landscape composition and horizontal framing on the portrait canvas
 
-face_visible_hints: [looking back, looking at viewer, looking up, looking down, head turned, face focus, from behind, ass focus, rear view]
+face_visible_hints: [looking back, looking at viewer, looking up, looking down, head turned, face focus]
+
+# A rear-view base image has no face to detect. With `auto`, a chain whose base prompt names one of
+# these words and none of face_visible_hints gets face_pass: skip. A chain can override with its own
+# `face_pass: required | skip | optional` in chains.yaml.
+face_pass: auto
+rear_view_hints: [from behind, ass focus, rear view]
 
 safety:
   adult_confirmed_by: ""           # filled by the owner before export or any run

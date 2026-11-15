@@ -232,6 +232,7 @@ def _write_manifest(trial_dir: Path, job: Job, result: SceneTrialResult, backend
             "height": job.height,
             "choices": [{"options": opts, "chosen": chosen} for opts, chosen in job.choices],
             "notes": list(job.notes),
+            "face_pass": job.face_pass,
         },
         "files": result.files,
         "warnings": result.warnings,

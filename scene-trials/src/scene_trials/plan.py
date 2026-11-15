@@ -10,8 +10,9 @@ from typing import Mapping
 
 from scene_trials.chains import ResolvedChain, load_chain_specs, resolve_chains
 from scene_trials.errors import ConfigError, SafetyError, unreachable
+from scene_trials.facepass import resolve_face_pass
 from scene_trials.lint import Level, LintIssue, face_hint_issue
-from scene_trials.project import ProjectConfig, TrialOrder
+from scene_trials.project import FacePass, ProjectConfig, TrialOrder
 from scene_trials.prompt import resolve_prompt
 from scene_trials.resources import LoraEntry, NegativeSet, load_loras, load_negatives
 from scene_trials.scenes import Scene, find_scene, load_scenes
@@ -40,6 +41,7 @@ class Job:
     choices: tuple[tuple[str, str], ...]
     lora_files: tuple[str, ...]
     notes: tuple[str, ...]
+    face_pass: str | None = None
 
     def serves(self, scene_id: str) -> bool:
         return any(found == scene_id for found, _ in self.scenes)
@@ -68,6 +70,7 @@ class Job:
             "choices": [{"options": opts, "chosen": chosen} for opts, chosen in self.choices],
             "lora_files": list(self.lora_files),
             "notes": list(self.notes),
+            "face_pass": self.face_pass,
         }
 
 
@@ -179,11 +182,22 @@ def _build_job(
         width=project.width,
         height=project.height,
     )
+    notes = list(resolved.notes)
+    face_pass: str | None = None
     if chain is not None:
         kind = JobKind.CHAIN
         scene_pairs: tuple[tuple[str, str | None], ...] = tuple(chain.scene_stages)
         stages = chain.stages
         category: str | None = chain.category
+        mode, reason = resolve_face_pass(
+            chain.face_pass or project.face_pass,
+            resolved.positive,
+            project.face_visible_hints,
+            project.rear_view_hints,
+        )
+        face_pass = mode.value
+        if reason:
+            notes.append(f"face_pass_skipped: {reason}")
     else:
         kind = JobKind.SOLO
         scene_pairs = ((base.scene_id, None),)
@@ -205,7 +219,8 @@ def _build_job(
         scenes=scene_pairs,
         choices=resolved.choices,
         lora_files=resolved.lora_files,
-        notes=resolved.notes,
+        notes=tuple(notes),
+        face_pass=face_pass,
     )
 
 
@@ -215,7 +230,7 @@ def _job_issues(project: ProjectConfig, chain: ResolvedChain | None, job: Job) -
         if note.startswith(("composition_conflict", "braces_left")):
             code, _, message = note.partition(": ")
             issues.append(LintIssue(Level.WARNING, code, job.key, message))
-    if chain is not None and chain.needs_face_visible:
+    if chain is not None and chain.needs_face_visible and job.face_pass == FacePass.REQUIRED.value:
         found = face_hint_issue(job.key, job.positive, project.face_visible_hints)
         if found is not None:
             issues.append(found)

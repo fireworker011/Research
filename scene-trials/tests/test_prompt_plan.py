@@ -167,3 +167,66 @@ class PlanTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class FacePassTests(unittest.TestCase):
+    def _plan_with(self, tmp: str, *, scenes: str | None = None, chains: str | None = None, project: str | None = None):
+        kwargs = {}
+        if scenes is not None:
+            kwargs["scenes"] = scenes
+        if chains is not None:
+            kwargs["chains"] = chains
+        if project is not None:
+            kwargs["project"] = project
+        return _plan(tmp, **kwargs)
+
+    def _chain_job(self, plan):
+        return next(job for job in plan.jobs if job.trial == 1 and job.stages)
+
+    def test_default_project_is_required_for_front_view(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            job = self._chain_job(_plan(tmp))
+            self.assertEqual(job.face_pass, "required")
+            self.assertEqual(job.to_dict()["face_pass"], "required")
+
+    def test_auto_skips_on_rear_words_without_a_face_hint(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            scenes = helpers.SCENES.replace("holding lantern, looking at viewer", "holding lantern, from behind")
+            project = helpers.PROJECT + "rear_view_hints: [from behind]\n"
+            plan = self._plan_with(tmp, scenes=scenes, project=project)
+            job = self._chain_job(plan)
+            self.assertEqual(job.face_pass, "skip")
+            self.assertTrue(any(note.startswith("face_pass_skipped") for note in job.notes))
+            self.assertNotIn("face_hint_missing", [issue.code for issue in plan.warnings])
+
+    def test_a_visible_face_hint_beats_a_rear_word(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            scenes = helpers.SCENES.replace(
+                "holding lantern, looking at viewer", "holding lantern, looking at viewer, from behind"
+            )
+            project = helpers.PROJECT + "rear_view_hints: [from behind]\n"
+            job = self._chain_job(self._plan_with(tmp, scenes=scenes, project=project))
+            self.assertEqual(job.face_pass, "required")
+
+    def test_chain_override_wins_and_stops_the_warning_only_when_not_required(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            scenes = helpers.SCENES.replace("holding lantern, looking at viewer", "holding lantern")
+            skipped = self._plan_with(tmp, scenes=scenes, chains=helpers.CHAINS + "    face_pass: skip\n")
+            self.assertEqual(self._chain_job(skipped).face_pass, "skip")
+            self.assertNotIn("face_hint_missing", [issue.code for issue in skipped.warnings])
+            optional = self._plan_with(tmp + "/b", scenes=scenes, chains=helpers.CHAINS + "    face_pass: optional\n")
+            self.assertEqual(self._chain_job(optional).face_pass, "optional")
+            required = self._plan_with(tmp + "/c", scenes=scenes)
+            self.assertIn("face_hint_missing", [issue.code for issue in required.warnings])
+
+    def test_bad_values_are_config_errors(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            with self.assertRaises(ConfigError):
+                self._plan_with(tmp, chains=helpers.CHAINS + "    face_pass: maybe\n")
+            with self.assertRaises(ConfigError):
+                self._plan_with(tmp + "/b", project=helpers.PROJECT + "face_pass: maybe\n")
+
+    def test_solo_jobs_have_no_face_pass(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            solo = next(job for job in _plan(tmp).jobs if not job.stages)
+            self.assertIsNone(solo.face_pass)

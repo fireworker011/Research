@@ -12,10 +12,12 @@ from dataclasses import dataclass
 from pathlib import Path
 
 from scene_trials.errors import ConfigError
-from scene_trials.project import load_yaml_file
+from scene_trials.project import FacePass, load_yaml_file
 from scene_trials.scenes import Scene, find_scene
 
-_CHAIN_KEYS = frozenset({"category", "base", "route_tags", "stage_order", "scenes", "needs_face_visible"})
+_CHAIN_KEYS = frozenset(
+    {"category", "base", "route_tags", "stage_order", "scenes", "needs_face_visible", "face_pass"}
+)
 
 
 @dataclass(frozen=True)
@@ -27,6 +29,7 @@ class ChainSpec:
     stage_order: tuple[str, ...]
     scene_refs: tuple[tuple[object, str], ...]
     needs_face_visible: bool
+    face_pass: FacePass | None
 
 
 @dataclass(frozen=True)
@@ -38,6 +41,7 @@ class ResolvedChain:
     stages: tuple[str, ...]
     scene_stages: tuple[tuple[str, str], ...]
     needs_face_visible: bool
+    face_pass: FacePass | None
 
     def stage_for(self, scene_id: str) -> str | None:
         for found, stage in self.scene_stages:
@@ -79,9 +83,20 @@ def load_chain_specs(path: Path | None) -> list[ChainSpec]:
                 stage_order=tuple(str(stage) for stage in order),
                 scene_refs=tuple((ref, str(stage)) for ref, stage in scenes.items()),
                 needs_face_visible=bool(body.get("needs_face_visible", False)),
+                face_pass=_chain_face_pass(chain_id, body.get("face_pass")),
             )
         )
     return specs
+
+
+def _chain_face_pass(chain_id: object, value: object) -> FacePass | None:
+    if value is None:
+        return None
+    for member in FacePass:
+        if member.value == value:
+            return member
+    allowed = ", ".join(member.value for member in FacePass)
+    raise ConfigError("bad_value", f"chain {chain_id}: face_pass must be one of: {allowed} (got {value!r})")
 
 
 def resolve_chains(specs: list[ChainSpec], scenes: list[Scene]) -> list[ResolvedChain]:
@@ -122,6 +137,7 @@ def resolve_chains(specs: list[ChainSpec], scenes: list[Scene]) -> list[Resolved
                 stages=spec.stage_order[: last + 1],
                 scene_stages=tuple(pairs),
                 needs_face_visible=spec.needs_face_visible,
+                face_pass=spec.face_pass,
             )
         )
     return resolved

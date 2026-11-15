@@ -1,0 +1,147 @@
+diff --git a/sd-diff-set/sd_diff_set/executor.py b/sd-diff-set/sd_diff_set/executor.py
+--- a/sd-diff-set/sd_diff_set/executor.py
++++ b/sd-diff-set/sd_diff_set/executor.py
+@@ -193,26 +193,36 @@
+             current = init
+             face_out = output_dir / f"{dest.stem}.face.png"
+             face_mask_path = output_dir / f"{dest.stem}.face-mask.png"
++            face_done = False
+             if item.face_denoise > 0:
+-                detect_mask(current, "face_yolov8n.pt", face_mask_path)
+-                _paint(
+-                    host,
+-                    item,
+-                    plan=plan,
+-                    info=info,
+-                    init=current,
+-                    mask=face_mask_path,
+-                    dest=face_out,
+-                    prompt=item.face_prompt,
+-                    negative_prompt=item.face_negative,
+-                    denoise=item.face_denoise,
+-                    mask_blur=0,
+-                    width=width,
+-                    height=height,
+-                    use_controlnet=use_controlnet,
+-                    base_path=base_path,
+-                )
+-                current = face_out
++                try:
++                    detect_mask(current, "face_yolov8n.pt", face_mask_path)
++                except DiffSetError as exc:
++                    if not (item.face_optional and exc.code in _FACE_OPTIONAL_CODES):
++                        raise
++                    item.warnings.append(
++                        f"face_pass_skipped: 顔が見つからないので顔は塗りません。({exc.code})"
++                    )
++                else:
++                    _paint(
++                        host,
++                        item,
++                        plan=plan,
++                        info=info,
++                        init=current,
++                        mask=face_mask_path,
++                        dest=face_out,
++                        prompt=item.face_prompt,
++                        negative_prompt=item.face_negative,
++                        denoise=item.face_denoise,
++                        mask_blur=0,
++                        width=width,
++                        height=height,
++                        use_controlnet=use_controlnet,
++                        base_path=base_path,
++                    )
++                    current = face_out
++                    face_done = True
+             mask = _mask_for_item(item, current, output_dir)
+             saved_mask = dest.with_suffix(".mask.png")
+             if mask.resolve() != saved_mask.resolve():
+@@ -235,7 +245,7 @@
+                 use_controlnet=use_controlnet,
+                 base_path=base_path,
+             )
+-            if item.face_denoise > 0:
++            if face_done:
+                 face_out.unlink(missing_ok=True)
+                 face_mask_path.unlink(missing_ok=True)
+             if item.category == "fluid":
+@@ -274,6 +284,8 @@
+         item.warnings.append("背景が平坦でないので、透過は作りません。")
+ 
+ 
++_FACE_OPTIONAL_CODES = {"mask_empty"}
++
+ _DETECT_FALLBACK = {
+     "mask_empty",
+     "mask_model_missing",
+diff --git a/sd-diff-set/sd_diff_set/planner.py b/sd-diff-set/sd_diff_set/planner.py
+--- a/sd-diff-set/sd_diff_set/planner.py
++++ b/sd-diff-set/sd_diff_set/planner.py
+@@ -28,6 +28,7 @@
+ _ADDON_IDS = set(ADDON_IDS)
+ _LIMB_IDS = {"hands", "feet"}
+ _FACE_MODEL = "face_yolov8n.pt"
++FACE_PASS_MODES = ("required", "skip", "optional")
+ from sd_diff_set.never import never
+ from sd_diff_set.prompt_edit import dynamic_prompt_warning, edit_prompt
+ 
+@@ -67,6 +68,7 @@
+     face_negative: str = ""
+     face_denoise: float = 0.0
+     lock_unmasked: bool = False
++    face_optional: bool = False
+ 
+ 
+ @dataclass
+@@ -113,7 +115,13 @@
+     available_models: list[str] | None = None,
+     stages: tuple[str, ...] | None = None,
+     cloth_detect: bool | None = None,
++    face_pass: str = "required",
+ ) -> Plan:
++    if face_pass not in FACE_PASS_MODES:
++        raise DiffSetError(
++            "bad_face_pass",
++            f"face_pass は {', '.join(FACE_PASS_MODES)} のどれかです: {face_pass!r}",
++        )
+     stem = sanitize_stem(base_stem)
+     warnings: list[str] = []
+     dynamic = dynamic_prompt_warning(prompt)
+@@ -164,6 +172,7 @@
+                 available_modules=available_modules,
+                 available_models=available_models,
+                 cloth_detect=detect_cloth,
++                face_pass=face_pass,
+             )
+             drafted.append(item)
+             produced[(preset.id, variant.id)] = item
+@@ -197,6 +206,7 @@
+     available_modules: list[str] | None,
+     available_models: list[str] | None,
+     cloth_detect: bool = False,
++    face_pass: str = "required",
+ ) -> PlanItem:
+     warnings: list[str] = []
+     init_ref, init_error, init_warning = _init_ref(preset, variant, produced)
+@@ -209,7 +219,11 @@
+     face_prompt = ""
+     face_negative = ""
+     face_denoise = 0.0
+-    if variant.face_prompt_add.strip():
++    face_optional = False
++    if variant.face_prompt_add.strip() and face_pass == "skip":
++        warnings.append("face_pass_skipped: face_pass が skip なので、この段は顔を塗りません。")
++    elif variant.face_prompt_add.strip():
++        face_optional = face_pass == "optional"
+         face_prompt = edit_prompt(
+             prompt, variant.face_prompt_add, list(variant.face_prompt_remove)
+         )
+@@ -313,6 +327,7 @@
+             or preset.id in _LIMB_IDS
+             or preset.id in _ADDON_IDS
+         ),
++        face_optional=face_optional,
+     )
+ 
+ 

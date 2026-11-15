@@ -11,3 +11,4 @@ chains:
       4: bright
       5: flare
     needs_face_visible: true
+    # face_pass: skip       # optional override: required | skip | optional

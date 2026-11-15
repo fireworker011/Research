@@ -83,8 +83,25 @@ bytes is reported as a conflict and kept unless `--overwrite` is given.
 
 * `composition_conflict`: a `landscape composition` tag on a portrait canvas.
   Set `prompt.composition: drop` to remove such tags, or fix the CSV.
-* `face_hint_missing`: a chain marked `needs_face_visible` whose base prompt has
-  none of `face_visible_hints`. A stage that detects the face may stop the chain.
+* `face_hint_missing`: a chain marked `needs_face_visible`, resolved to
+  `face_pass: required`, whose base prompt has none of `face_visible_hints`. A
+  stage that detects the face may stop the chain.
+
+## Face pass
+
+Some backends repaint the face in a stage and fail the stage when no face is
+found. Each chain job carries `face_pass`:
+
+* `required`: stop when the face is not found (the factory's current behavior).
+* `skip`: do not repaint the face.
+* `optional`: try, and continue without the face repaint when none is found.
+* `auto` (project default): `skip` when the base prompt names a word from
+  `rear_view_hints` and none from `face_visible_hints`; otherwise `required`.
+  `looking back` therefore wins over `from behind`.
+
+`chains.yaml` can set `face_pass` per chain. The value is written to `jobs.json`,
+the batch files and each `manifest.json`. A backend that cannot honor `skip` or
+`optional` must refuse the job rather than ignore the field.
 
 ## Private project data
 

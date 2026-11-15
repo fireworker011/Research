@@ -32,6 +32,8 @@ _TOP_KEYS = frozenset(
         "backend",
         "forbidden_path_fragments",
         "skip_scenes",
+        "face_pass",
+        "rear_view_hints",
     }
 )
 _E = TypeVar("_E", bound=Enum)
@@ -51,6 +53,18 @@ class CharPolicy(Enum):
     RANDOM_SEEDED = "random_seeded"
     ROTATE = "rotate"
     FIXED = "fixed"
+
+
+class FacePass(Enum):
+    """What a backend does with stages that repaint the face.
+
+    AUTO is a project setting only. It resolves to REQUIRED or SKIP per job.
+    """
+
+    AUTO = "auto"
+    REQUIRED = "required"
+    SKIP = "skip"
+    OPTIONAL = "optional"
 
 
 class CompositionAction(Enum):
@@ -121,6 +135,8 @@ class ProjectConfig:
     cutout: CutoutConfig
     backend: BackendConfig
     skip_scenes: tuple[str | int, ...]
+    face_pass: FacePass
+    rear_view_hints: tuple[str, ...]
 
     @property
     def project_out(self) -> Path:
@@ -181,6 +197,8 @@ def load_project(project_dir: Path) -> ProjectConfig:
         cutout=_cutout(_mapping(raw, "cutout", required=False)),
         backend=_backend(_mapping(raw, "backend", required=False)),
         skip_scenes=_scene_refs(raw.get("skip_scenes")),
+        face_pass=_enum(FacePass, str(raw.get("face_pass", FacePass.AUTO.value)), "face_pass"),
+        rear_view_hints=tuple(_str_list(raw.get("rear_view_hints", ()))),
     )
 
 
