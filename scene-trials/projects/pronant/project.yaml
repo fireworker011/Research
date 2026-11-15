@@ -42,7 +42,7 @@ prompt:
   expand_braces: true
   char_policy: random_seeded
   positive_anchor: ["(mature female:1.2)"]   # the factory adds the same tag to every stage
-  composition: warn
+  composition: drop                # removes landscape composition and horizontal framing on the portrait canvas
 
 face_visible_hints: [looking back, looking at viewer, looking up, looking down, head turned, face focus]
 

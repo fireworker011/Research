@@ -4,4 +4,4 @@ loras:
   jueri_xl: {file: jueri_xl, weight: 0.8}
   nieva_xl: {file: nieva_xl, weight: 0.8}
   seraphina_xl: {file: seraphina_xl, weight: 0.8}
-  # caststyle_xl is left as a plain word until its file name and weight are given.
+  caststyle_xl: {file: caststyle_xl_epoch08, weight: 0.9}
