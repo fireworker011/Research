@@ -8,7 +8,7 @@ and line numbers), and replaces it. It keeps each file's own line ending, skips 
 and writes nothing unless every patch matched. A record of what it applied is kept in .sd-diff-set-patches.json, so
 a second run does not repeat a patch; --force ignores the record and relies on per-hunk detection. Run with --check first.
 
-By default it applies 0001, 0002, 0003 and 0004 from this folder, in that order.
+By default it applies 0001 through 0005 from this folder, in that order.
 """
 
 from __future__ import annotations
@@ -27,6 +27,7 @@ DEFAULT_PATCHES = (
     "0002-limb-repairs-feed-the-diffs.patch",
     "0003-lora-check.patch",
     "0004-keep-base-lora-tags.patch",
+    "0005-inpaint-keeps-lora.patch",
 )
 MARKER = ".sd-diff-set-patches.json"
 HUNK = re.compile(r"^@@ -(\d+)(?:,\d+)? \+\d+(?:,\d+)? @@")

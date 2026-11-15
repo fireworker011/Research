@@ -36,7 +36,7 @@ every file matched.
 
 ```
 python apply_patches.py <path to extensions/sd-diff-set> --check     # report only
-python apply_patches.py <path to extensions/sd-diff-set>             # apply 0001 through 0004
+python apply_patches.py <path to extensions/sd-diff-set>             # apply 0001 through 0005
 python rebuild_bundle.py <path to extensions/sd-diff-set> --zip factory_extension.zip
 ```
 
@@ -49,7 +49,7 @@ the shared tree to CRLF: `git apply --check` fails in `cli.py`, `executor.py` an
 top and bottom of every patched file (so every line number moves). It was run repeatedly on each (a record in
 `.sd-diff-set-patches.json` skips a patch it already applied; `--force` ignores the record and relies on per-hunk
 detection), and on 16 random half-patched states of the kind `git apply --reject` leaves behind (some hunks already
-in, half of them CRLF). Every case ends with the same files as the verified tree and all 190 factory tests passing.
+in, half of them CRLF). Every case ends with the same files as the verified tree and all 194 factory tests passing.
 If a hunk really does not match, it names the file, the hunk, and the
 first line it looked for, and writes nothing. Send that file and I can regenerate the patch against your copy.
 
@@ -147,6 +147,19 @@ second time. The face prompt is left empty when that stage has no face pass.
 The diff PNG's parameters are the factory's own text, not the WebUI infotext, so they contain the `<lora:...>` tag
 in the first line and do not contain a `Lora hashes` line. Only the masked region is regenerated. The rest stays
 the base image.
+
+## 0005-inpaint-keeps-lora.patch (apply after 0004)
+
+The factory does not call the img2img HTTP API. `api_payload.py` is unused, and its prompt is already copied through. Inpaint runs inside reForge: `host.py` builds a processing object and calls `process_images`.
+
+Two things there differed from a manual inpaint.
+
+* The host replaced the always-on scripts with an empty list, so a build that applies networks from a script never got to run it. ADetailer, Regional Prompter and Dynamic Prompts still stay off, and ControlNet and Soft Inpainting run only when the job asks. A script whose name is LoRA, LyCO or extra networks stays.
+* reForge skips loading a LoRA when the name list matches the previous call, then img2img samples from `forge_objects_after_applying_lora`, which can still be the model without the LoRA. Before each inpaint whose prompt contains `<lora>` or `<lyco>`, the host clears that hash so the prompt's tags are loaded again. `disable_extra_networks` is set false. The checkpoint, clip skip and VAE overrides do not touch LoRA.
+
+The stage prompt, tags included, is the inpaint prompt. If the WebUI returns `Lora hashes`, they are written onto the diff PNG. If the prompt had tags and no hashes come back, the log says so.
+
+`tests/test_inpaint_lora.py`. With 0001 through 0005 the factory suite is 194 tests, all passing.
 
 ## Rebuilding the Colab bundle
 
