@@ -202,6 +202,13 @@ def load_project(project_dir: Path) -> ProjectConfig:
     )
 
 
+def anchor_path(path: Path, base_dir: Path | None) -> Path:
+    """Relative paths hang off ``base_dir``. A Windows drive path stays as written on any OS."""
+    if path.is_absolute() or base_dir is None or _DRIVE_PATH.match(str(path)):
+        return path
+    return base_dir / path
+
+
 def load_yaml_file(path: Path) -> Mapping[str, object]:
     return _load_yaml_mapping(path)
 

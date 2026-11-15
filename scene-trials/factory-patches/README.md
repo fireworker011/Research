@@ -1,24 +1,34 @@
 # factory patches
 
-Patches against the 11/13 sd-diff-set copy (`factory-26-20261113`, 26 files, MANIFEST sha256
-`69be2044f3e64aae064add2c38a21dd9fd3fda4f2b58390f4bb1e096cc415b19`). They are proposals. Nothing
-here has been applied to the factory.
+Proposals against the sd-diff-set extension (`C:\work\sd-diff-set\extensions\sd-diff-set`, shared as
+`sd-diff-set.zip`; its 26 files of the 11/13 remodel match `MANIFEST.md`
+`69be2044f3e64aae064add2c38a21dd9fd3fda4f2b58390f4bb1e096cc415b19`). Nothing here has been applied to
+the factory.
 
 ## 0001-face-pass-mode.patch
 
-Adds an opt-in `face_pass` mode to `planner.build_plan`. The default is `required`, which is the
-current behavior.
+Adds an opt-in `face_pass` to the factory and a `none` stage filter. Defaults keep today's behavior.
 
-| mode | behavior |
+| `face_pass` | behavior |
 | --- | --- |
-| `required` | unchanged: a stage that repaints the face stops with `mask_empty` when no face is found |
+| `required` (default) | unchanged: a stage that repaints the face stops with `mask_empty` when no face is found |
 | `skip` | the planner drops the face repaint for every stage that has one; each such item gets the warning `face_pass_skipped` |
-| `optional` | the face repaint is tried; only `mask_empty` from the face detector is forgiven. The stage continues without the face repaint and the item gets the warning `face_pass_skipped`. Any other error (for example `mask_model_missing`) still stops the stage |
+| `optional` | the face repaint is tried; only `mask_empty` from the face detector is forgiven. The stage continues without it and gets the warning `face_pass_skipped`. Any other error (for example `mask_model_missing`) still stops the stage |
 
-Files: `planner.py` (`build_plan(face_pass=...)`, `PlanItem.face_optional`, `FACE_PASS_MODES`,
-bad values raise `bad_face_pass`) and `executor.py` (`_run_item`).
+`stages: ["none"]` is an explicit "no pattern stages" (hands, feet and add-ons are unaffected). Before,
+an unknown stage name had the same effect but printed a `stage_filter` warning.
 
-Apply from the `extensions/` folder of the factory:
+Where the value can be set, from the most specific:
+
+* a factory job: `"face_pass": "skip"` next to `"stages"` (checked before anything is posted; a bad value
+  is `bad_face_pass`),
+* `pipeline.face_pass` in `config.json`,
+* `--face-pass` on `plan`, `patterns`, `route`, `watch` and `factory`.
+
+It reaches `Pipeline._paint` through the ledger row, then `route_file`, `run_job` and `build_plan`. The
+manifest item gains `face_optional`.
+
+Apply from the `extensions/` folder (the folder that contains `sd-diff-set/`):
 
 ```
 git apply --check -p1 0001-face-pass-mode.patch
@@ -27,16 +37,25 @@ git apply -p1 0001-face-pass-mode.patch
 
 ### What is verified
 
-* The patch applies cleanly to the pristine copy and reproduces the patched tree.
-* `planner.py` and `executor.py` compile.
-* `check_face_pass.py` runs the real `planner.py`, `executor.py` and `regions.py` with stubs for
-  every other module and passes 7 checks: default unchanged, `required` still stops, `skip`,
-  `optional` with and without a face, `optional` not hiding other detector errors, bad value refused.
+* The patch applies to the shared tree and the factory's 156 existing tests still pass.
+* It adds `tests/test_face_pass.py` with 16 tests (172 in total, all passing). On the unpatched tree 14 of
+  those 16 fail, so they do exercise the change.
+* `integration/check_sd_diff_set.py` runs the real factory end to end with only the GPU parts replaced,
+  against both the patched and the unpatched tree.
+* Weights: the factory's tests need the four detector files to exist. They do not read them. Point
+  `SD_DIFF_WEIGHTS_DIR` at a folder of empty files when running on a machine without the real weights.
 
 ### What is not done
 
-* The value has to reach `build_plan`. `service.run_job`, the job JSON, `pipeline.py` and `cli.py`
-  were not in the copy, so that wiring is not written. scene-trials already writes `face_pass` into
-  each chain job.
-* The factory's own unittest (156 tests) was not run, because most modules are missing from the copy.
-* `仕組み.md` and `ファイル説明/sd_diff_set/planner.md` and `executor.md` do not mention the mode yet.
+* `colab/factory_extension.b64` is a bundle of the old sources. Rebuild it before Colab uses the patch.
+* `仕組み.md`, `使い方.md` and the `docs/ファイル説明` pages do not mention the new options.
+* Nothing was run with a real GPU or real detectors.
+
+## Known issue, not patched
+
+`Pipeline._produced_image` reads `item["output_path"]`, but the manifest item key is `"path"`
+(`manifest.item_payload`). So the hands and feet repairs are never chained: each runs on the original
+sorted base, the ledger's `working` stays equal to `sorted`, and the diffs start from the unrepaired base.
+No test covers it. A one-word fix would change output folder names (the diff folder would be named after the
+repaired file), so it needs your decision. scene-trials reads `manifest` and `working` from the ledger, so it
+works either way.

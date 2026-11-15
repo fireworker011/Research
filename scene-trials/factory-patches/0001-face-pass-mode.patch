@@ -1,7 +1,108 @@
+diff --git a/sd-diff-set/sd_diff_set/cli.py b/sd-diff-set/sd_diff_set/cli.py
+index 3513993..5a667e8 100644
+--- a/sd-diff-set/sd_diff_set/cli.py
++++ b/sd-diff-set/sd_diff_set/cli.py
+@@ -20,13 +20,22 @@ from sd_diff_set.finish import plan_finish
+ from sd_diff_set.settings import ai_cutout_enabled, factory_config, pipeline_config
+ from sd_diff_set.game_fit import GAME_HEIGHT, GAME_WIDTH
+ from sd_diff_set.pattern_set import PATTERN_IDS, pattern_roster
+-from sd_diff_set.planner import parse_stages
++from sd_diff_set.planner import FACE_PASS_MODES, parse_stages
+ from sd_diff_set.preset import load_preset_dir
+ from sd_diff_set.pipeline import Pipeline, PipelineSettings
+ from sd_diff_set.router import route_folder
+ from sd_diff_set.service import format_log, run_job
+ 
+ 
++def _add_face_pass(parser: argparse.ArgumentParser) -> None:
++    parser.add_argument(
++        "--face-pass",
++        choices=FACE_PASS_MODES,
++        default="required",
++        help="顔を塗る段の扱い。required: 顔が無いと止まる。skip: 顔を塗らない。optional: 顔が無ければ顔だけ飛ばす。",
++    )
++
++
+ def main(argv: list[str] | None = None) -> int:
+     parser = argparse.ArgumentParser(prog="sd-diff-set")
+     sub = parser.add_subparsers(dest="command", required=True)
+@@ -43,6 +52,7 @@ def main(argv: list[str] | None = None) -> int:
+     plan.add_argument("--controlnet", action="store_true")
+     plan.add_argument("--run", action="store_true", help="call the WebUI host; default is dry-run")
+     plan.add_argument("--overwrite", action="store_true")
++    _add_face_pass(plan)
+     plan.add_argument(
+         "--stages",
+         action="append",
+@@ -64,6 +74,7 @@ def main(argv: list[str] | None = None) -> int:
+     patterns.add_argument("--controlnet", action="store_true")
+     patterns.add_argument("--run", action="store_true", help="call the WebUI host; default is dry-run")
+     patterns.add_argument("--overwrite", action="store_true")
++    _add_face_pass(patterns)
+     patterns.add_argument(
+         "--stages",
+         action="append",
+@@ -81,6 +92,7 @@ def main(argv: list[str] | None = None) -> int:
+     route.add_argument("--controlnet", action="store_true")
+     route.add_argument("--run", action="store_true", help="call the WebUI host; default is dry-run")
+     route.add_argument("--overwrite", action="store_true")
++    _add_face_pass(route)
+     route.add_argument(
+         "--stages",
+         action="append",
+@@ -100,6 +112,7 @@ def main(argv: list[str] | None = None) -> int:
+     watch.add_argument("--run", action="store_true", help="call the WebUI host; default is dry-run")
+     watch.add_argument("--once", action="store_true", help="sort and paint the inbox once, then exit")
+     watch.add_argument("--overwrite", action="store_true")
++    _add_face_pass(watch)
+     watch.add_argument("--poll", type=float, default=2.0)
+     watch.add_argument("--prepared", type=Path, help="folder of finished PNGs to sort and diff")
+     watch.add_argument(
+@@ -123,6 +136,7 @@ def main(argv: list[str] | None = None) -> int:
+     factory.add_argument("--run", action="store_true", help="call the WebUI host; default is dry-run")
+     factory.add_argument("--once", action="store_true", help="process the jobs and inbox once, then exit")
+     factory.add_argument("--overwrite", action="store_true")
++    _add_face_pass(factory)
+     factory.add_argument("--poll", type=float, default=2.0)
+     factory.add_argument("--colab-api", default="")
+     factory.add_argument(
+@@ -204,6 +218,7 @@ def _route(args: argparse.Namespace) -> int:
+         overwrite=args.overwrite,
+         use_controlnet=args.controlnet,
+         stages=parse_stages(getattr(args, "stages", None)),
++        face_pass=args.face_pass,
+     )
+     print(f"status: {payload.get('status')}")
+     print(f"dry_run: {payload.get('dry_run')}")
+@@ -235,6 +250,7 @@ def _watch(args: argparse.Namespace) -> int:
+             poll_seconds=args.poll if args.poll >= 0.2 else 0.2,
+             prepared=args.prepared,
+             stages=parse_stages(getattr(args, "stages", None)),
++            face_pass=args.face_pass,
+         )
+     )
+     if args.once:
+@@ -272,6 +288,7 @@ def _factory(args: argparse.Namespace) -> int:
+         album=planned.album,
+         ai_cutout=bool(args.ai_cutout),
+         stages=parse_stages(getattr(args, "stages", None)),
++        face_pass=args.face_pass,
+     )
+     link_path = args.colab_link
+     if not str(args.colab_api).strip() and link_path is None:
+@@ -361,6 +378,7 @@ def _plan(args: argparse.Namespace) -> int:
+         overwrite=args.overwrite,
+         eagle=eagle if args.run else None,
+         stages=parse_stages(getattr(args, "stages", None)),
++        face_pass=args.face_pass,
+     )
+     sys.stdout.write(format_log(payload))
+     if payload.get("error_code") == "adult_not_acknowledged":
 diff --git a/sd-diff-set/sd_diff_set/executor.py b/sd-diff-set/sd_diff_set/executor.py
+index acb6b22..49a6818 100644
 --- a/sd-diff-set/sd_diff_set/executor.py
 +++ b/sd-diff-set/sd_diff_set/executor.py
-@@ -193,26 +193,36 @@
+@@ -193,26 +193,36 @@ def _run_item(
              current = init
              face_out = output_dir / f"{dest.stem}.face.png"
              face_mask_path = output_dir / f"{dest.stem}.face-mask.png"
@@ -57,7 +158,7 @@ diff --git a/sd-diff-set/sd_diff_set/executor.py b/sd-diff-set/sd_diff_set/execu
              mask = _mask_for_item(item, current, output_dir)
              saved_mask = dest.with_suffix(".mask.png")
              if mask.resolve() != saved_mask.resolve():
-@@ -235,7 +245,7 @@
+@@ -235,7 +245,7 @@ def _run_item(
                  use_controlnet=use_controlnet,
                  base_path=base_path,
              )
@@ -66,7 +167,7 @@ diff --git a/sd-diff-set/sd_diff_set/executor.py b/sd-diff-set/sd_diff_set/execu
                  face_out.unlink(missing_ok=True)
                  face_mask_path.unlink(missing_ok=True)
              if item.category == "fluid":
-@@ -274,6 +284,8 @@
+@@ -274,6 +284,8 @@ def _write_transparent(item: PlanItem, dest: Path) -> None:
          item.warnings.append("背景が平坦でないので、透過は作りません。")
  
  
@@ -75,18 +176,130 @@ diff --git a/sd-diff-set/sd_diff_set/executor.py b/sd-diff-set/sd_diff_set/execu
  _DETECT_FALLBACK = {
      "mask_empty",
      "mask_model_missing",
+diff --git a/sd-diff-set/sd_diff_set/factory_line.py b/sd-diff-set/sd_diff_set/factory_line.py
+index 2c7ab9f..f142d67 100644
+--- a/sd-diff-set/sd_diff_set/factory_line.py
++++ b/sd-diff-set/sd_diff_set/factory_line.py
+@@ -15,7 +15,7 @@ from pathlib import Path
+ from sd_diff_set.errors import DiffSetError
+ from sd_diff_set.job_state import mark_done
+ from sd_diff_set.pipeline import Pipeline, PipelineSettings
+-from sd_diff_set.planner import parse_stages
++from sd_diff_set.planner import FACE_PASS_MODES, parse_stages
+ from sd_diff_set.png_text import upsert_parameters
+ from sd_diff_set.progress import set_progress
+ from sd_diff_set.router import blocked_token
+@@ -391,6 +391,16 @@ def _one_job(
+             "host": choice.kind,
+             "reason": choice.reason,
+         }
++    face_pass = job.get("face_pass")
++    if face_pass is not None and face_pass not in FACE_PASS_MODES:
++        return {
++            "id": name,
++            "status": "error",
++            "error_code": "bad_face_pass",
++            "error": f"face_pass は {', '.join(FACE_PASS_MODES)} のどれかです: {face_pass!r}",
++            "host": choice.kind,
++            "reason": choice.reason,
++        }
+     gap = missing_settings(job)
+     if gap:
+         return {
+@@ -435,8 +445,13 @@ def _one_job(
+     if isinstance(accepted, dict):
+         digest = accepted.get("sha256")
+         job_stages = parse_stages(job.get("stages"))
+-        if isinstance(digest, str) and job_stages:
+-            line._merge(digest, {"stages": list(job_stages)})
++        fields: dict[str, object] = {}
++        if job_stages:
++            fields["stages"] = list(job_stages)
++        if face_pass is not None:
++            fields["face_pass"] = face_pass
++        if isinstance(digest, str) and fields:
++            line._merge(digest, fields)
+     line.paint_available(1)
+     mark_done(line.settings.inbox.parent, name, saved)
+     return {
+diff --git a/sd-diff-set/sd_diff_set/manifest.py b/sd-diff-set/sd_diff_set/manifest.py
+index 5f6e447..a9800db 100644
+--- a/sd-diff-set/sd_diff_set/manifest.py
++++ b/sd-diff-set/sd_diff_set/manifest.py
+@@ -29,6 +29,7 @@ def item_payload(item: PlanItem, seed: int | None) -> dict[str, object]:
+         "face_denoise": item.face_denoise,
+         "face_prompt": item.face_prompt,
+         "face_negative": item.face_negative,
++        "face_optional": item.face_optional,
+         "lock_unmasked": item.lock_unmasked,
+         "mask_file": item.mask_path,
+         "mask_source": item.mask_source,
+diff --git a/sd-diff-set/sd_diff_set/pipeline.py b/sd-diff-set/sd_diff_set/pipeline.py
+index fe10c36..3a26ffb 100644
+--- a/sd-diff-set/sd_diff_set/pipeline.py
++++ b/sd-diff-set/sd_diff_set/pipeline.py
+@@ -21,7 +21,7 @@ from sd_diff_set.errors import DiffSetError
+ from sd_diff_set.infotext import parse_infotext
+ from sd_diff_set.progress import note_stage, set_progress
+ from sd_diff_set.prompt_edit import split_tags
+-from sd_diff_set.planner import parse_stages
++from sd_diff_set.planner import FACE_PASS_MODES, parse_stages
+ from sd_diff_set.router import (
+     blocked_token,
+     ignored_categories,
+@@ -78,6 +78,7 @@ class PipelineSettings:
+     ai_cutout: bool = False
+     stages: tuple[str, ...] | None = None
+     cloth_detect: bool | None = None
++    face_pass: str = "required"
+ 
+ 
+ def load_settings(config_path: Path, preset_dir: Path) -> PipelineSettings | None:
+@@ -134,9 +135,22 @@ def load_settings(config_path: Path, preset_dir: Path) -> PipelineSettings | Non
+         ai_cutout=ai_cutout_enabled(),
+         stages=parse_stages(block.get("stages")),
+         cloth_detect=None if "cloth_detect" not in block else bool(block.get("cloth_detect")),
++        face_pass=_face_pass_setting(block.get("face_pass")),
+     )
+ 
+ 
++def _face_pass_setting(value: object) -> str:
++    if value is None or (isinstance(value, str) and not value.strip()):
++        return "required"
++    text = str(value).strip()
++    if text not in FACE_PASS_MODES:
++        raise DiffSetError(
++            "pipeline_config",
++            f"pipeline.face_pass は {', '.join(FACE_PASS_MODES)} のどれかです: {text!r}",
++        )
++    return text
++
++
+ def _optional_dir(value: object) -> Path | None:
+     if not isinstance(value, str) or not value.strip():
+         return None
+@@ -434,6 +448,7 @@ class Pipeline:
+                 fallback_parameters=_fallback_text(self.settings),
+                 stages=parse_stages(row.get("stages")) or self.settings.stages,
+                 cloth_detect=self.settings.cloth_detect,
++                face_pass=str(row.get("face_pass") or self.settings.face_pass),
+             )
+         except DiffSetError as exc:
+             painted = {"status": "error", "error_code": exc.code, "error": exc.message}
 diff --git a/sd-diff-set/sd_diff_set/planner.py b/sd-diff-set/sd_diff_set/planner.py
+index b46145b..a27f3e8 100644
 --- a/sd-diff-set/sd_diff_set/planner.py
 +++ b/sd-diff-set/sd_diff_set/planner.py
-@@ -28,6 +28,7 @@
+@@ -28,6 +28,8 @@ _PATTERN_IDS = set(PATTERN_IDS)
  _ADDON_IDS = set(ADDON_IDS)
  _LIMB_IDS = {"hands", "feet"}
  _FACE_MODEL = "face_yolov8n.pt"
 +FACE_PASS_MODES = ("required", "skip", "optional")
++NO_STAGES = ("none",)
  from sd_diff_set.never import never
  from sd_diff_set.prompt_edit import dynamic_prompt_warning, edit_prompt
  
-@@ -67,6 +68,7 @@
+@@ -67,6 +69,7 @@ class PlanItem:
      face_negative: str = ""
      face_denoise: float = 0.0
      lock_unmasked: bool = False
@@ -94,7 +307,7 @@ diff --git a/sd-diff-set/sd_diff_set/planner.py b/sd-diff-set/sd_diff_set/planne
  
  
  @dataclass
-@@ -113,7 +115,13 @@
+@@ -113,7 +116,13 @@ def build_plan(
      available_models: list[str] | None = None,
      stages: tuple[str, ...] | None = None,
      cloth_detect: bool | None = None,
@@ -108,7 +321,22 @@ diff --git a/sd-diff-set/sd_diff_set/planner.py b/sd-diff-set/sd_diff_set/planne
      stem = sanitize_stem(base_stem)
      warnings: list[str] = []
      dynamic = dynamic_prompt_warning(prompt)
-@@ -164,6 +172,7 @@
+@@ -146,12 +155,13 @@ def build_plan(
+         )
+     ordered = sorted(presets, key=lambda item: (item.order, item.id))
+     wanted = parse_stages(stages)
++    no_pattern = wanted == NO_STAGES
+     detect_cloth = cloth_detect_enabled() if cloth_detect is None else bool(cloth_detect)
+     drafted: list[PlanItem] = []
+     produced: dict[tuple[str, str], PlanItem] = {}
+     for preset in ordered:
+         for variant in preset.variants:
+-            if wanted and preset.id in _PATTERN_IDS and variant.id not in wanted:
++            if wanted and preset.id in _PATTERN_IDS and (no_pattern or variant.id not in wanted):
+                 continue
+             item = _draft_variant(
+                 preset=preset,
+@@ -164,10 +174,11 @@ def build_plan(
                  available_modules=available_modules,
                  available_models=available_models,
                  cloth_detect=detect_cloth,
@@ -116,7 +344,12 @@ diff --git a/sd-diff-set/sd_diff_set/planner.py b/sd-diff-set/sd_diff_set/planne
              )
              drafted.append(item)
              produced[(preset.id, variant.id)] = item
-@@ -197,6 +206,7 @@
+-    if wanted and not any(item.category in _PATTERN_IDS for item in drafted):
++    if wanted and not no_pattern and not any(item.category in _PATTERN_IDS for item in drafted):
+         warnings.append(
+             "stage_filter: "
+             + ",".join(wanted)
+@@ -197,6 +208,7 @@ def _draft_variant(
      available_modules: list[str] | None,
      available_models: list[str] | None,
      cloth_detect: bool = False,
@@ -124,7 +357,7 @@ diff --git a/sd-diff-set/sd_diff_set/planner.py b/sd-diff-set/sd_diff_set/planne
  ) -> PlanItem:
      warnings: list[str] = []
      init_ref, init_error, init_warning = _init_ref(preset, variant, produced)
-@@ -209,7 +219,11 @@
+@@ -209,7 +221,11 @@ def _draft_variant(
      face_prompt = ""
      face_negative = ""
      face_denoise = 0.0
@@ -137,7 +370,7 @@ diff --git a/sd-diff-set/sd_diff_set/planner.py b/sd-diff-set/sd_diff_set/planne
          face_prompt = edit_prompt(
              prompt, variant.face_prompt_add, list(variant.face_prompt_remove)
          )
-@@ -313,6 +327,7 @@
+@@ -313,6 +329,7 @@ def _draft_variant(
              or preset.id in _LIMB_IDS
              or preset.id in _ADDON_IDS
          ),
@@ -145,3 +378,427 @@ diff --git a/sd-diff-set/sd_diff_set/planner.py b/sd-diff-set/sd_diff_set/planne
      )
  
  
+diff --git a/sd-diff-set/sd_diff_set/router.py b/sd-diff-set/sd_diff_set/router.py
+index 7baf21b..af5f7ed 100644
+--- a/sd-diff-set/sd_diff_set/router.py
++++ b/sd-diff-set/sd_diff_set/router.py
+@@ -158,6 +158,7 @@ def route_folder(
+     use_controlnet: bool = False,
+     stages: tuple[str, ...] | None = None,
+     cloth_detect: bool | None = None,
++    face_pass: str = "required",
+ ) -> dict[str, object]:
+     """Plan one pattern per PNG. Dry-run writes manifests and does not paint."""
+     from sd_diff_set.service import run_job
+@@ -177,6 +178,7 @@ def route_folder(
+                 run_job=run_job,
+                 stages=stages,
+                 cloth_detect=cloth_detect,
++                face_pass=face_pass,
+             )
+         )
+     failed = [
+@@ -210,6 +212,7 @@ def route_file(
+     fallback_parameters: str | None = None,
+     stages: tuple[str, ...] | None = None,
+     cloth_detect: bool | None = None,
++    face_pass: str = "required",
+ ) -> dict[str, object]:
+     row: dict[str, object] = {"file": path.name, "path": str(path)}
+     try:
+@@ -258,6 +261,7 @@ def route_file(
+             infotext=info,
+             stages=stages,
+             cloth_detect=cloth_detect,
++            face_pass=face_pass,
+         )
+     except DiffSetError as exc:
+         row.update(status="error", error_code=exc.code, error=exc.message)
+diff --git a/sd-diff-set/sd_diff_set/service.py b/sd-diff-set/sd_diff_set/service.py
+index 311dc66..30a566d 100644
+--- a/sd-diff-set/sd_diff_set/service.py
++++ b/sd-diff-set/sd_diff_set/service.py
+@@ -56,6 +56,7 @@ def run_job(
+     wai: WaiOverlay | None = None,
+     stages: tuple[str, ...] | None = None,
+     cloth_detect: bool | None = None,
++    face_pass: str = "required",
+ ) -> dict[str, object]:
+     presets = load_selected(preset_dir, preset_ids)
+     applied = apply_wai17(presets, wai or WaiOverlay(), adult_ok=adult_ok)
+@@ -78,6 +79,7 @@ def run_job(
+         available_models=models,
+         stages=stages,
+         cloth_detect=cloth_detect,
++        face_pass=face_pass,
+     )
+     _stamp_wai(plan, applied)
+     _stamp_notes(plan, pattern_notes)
+diff --git a/sd-diff-set/tests/test_face_pass.py b/sd-diff-set/tests/test_face_pass.py
+new file mode 100644
+index 0000000..769cd7f
+--- /dev/null
++++ b/sd-diff-set/tests/test_face_pass.py
+@@ -0,0 +1,362 @@
++"""face_pass modes and the ``none`` stage filter. No GPU, no WebUI, no YOLO."""
++
++from __future__ import annotations
++
++import os
++import sys
++import tempfile
++import unittest
++from pathlib import Path
++from unittest import mock
++
++sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
++
++from sd_diff_set.errors import DiffSetError
++from sd_diff_set.executor import GenerationHost, InpaintJob
++from sd_diff_set.factory_line import run_factory
++from sd_diff_set.pattern_set import PATTERN_IDS
++from sd_diff_set.pipeline import Pipeline, PipelineSettings, load_settings
++from sd_diff_set.png_text import read_parameters, upsert_parameters, write_rgb_png
++from sd_diff_set.service import run_job
++
++PRESETS = Path(__file__).resolve().parents[1] / "presets"
++WEIGHTS = (
++    "face_yolov8n.pt",
++    "hand_yolov8n.pt",
++    "foot_yolov8x_v2.pt",
++    "nsfw-anime-medium-x1280.pt",
++)
++SIZE = 64
++ANAL_STAGES = ("imminent", "tip", "hilt")
++
++
++def _info(prompt: str) -> str:
++    return "\n".join(
++        [
++            prompt,
++            "Negative prompt: lowres",
++            "Steps: 20, Sampler: Euler a, Schedule type: Automatic, CFG scale: 7, Seed: 1, "
++            f"Size: {SIZE}x{SIZE}, Model hash: abcd1234, Model: demoMix_v1, VAE: vaeFt, Clip skip: 2",
++        ]
++    )
++
++
++class _Host(GenerationHost):
++    def __init__(self) -> None:
++        self.jobs: list[InpaintJob] = []
++
++    def inpaint(self, job: InpaintJob) -> None:
++        self.jobs.append(job)
++        job.dest.write_bytes(job.init_path.read_bytes())
++        upsert_parameters(job.dest, job.parameters_text)
++
++    def face_passes(self) -> int:
++        return sum(job.dest.name.endswith(".face.png") for job in self.jobs)
++
++
++def _regions(_image: Path, _model: Path) -> list[tuple[str, tuple[float, float, float, float]]]:
++    return [("anus", (20, 20, 30, 30)), ("penis", (24, 8, 34, 22)), ("female face", (4, 4, 16, 16))]
++
++
++class _Fixture(unittest.TestCase):
++    def setUp(self) -> None:
++        self._tmp = tempfile.TemporaryDirectory()
++        self.addCleanup(self._tmp.cleanup)
++        self.root = Path(self._tmp.name)
++        weights = self.root / "weights"
++        weights.mkdir()
++        for name in WEIGHTS:
++            (weights / name).write_bytes(b"")
++        env = mock.patch.dict(os.environ, {"SD_DIFF_WEIGHTS_DIR": str(weights)})
++        env.start()
++        self.addCleanup(env.stop)
++        regions = mock.patch("sd_diff_set.regions._predict_regions", _regions)
++        regions.start()
++        self.addCleanup(regions.stop)
++        self.face_error: str | None = None
++        self.face_calls = 0
++        patcher = mock.patch("sd_diff_set.executor.detect_mask", self._detect)
++        patcher.start()
++        self.addCleanup(patcher.stop)
++        self.base = self.root / "base.png"
++        write_rgb_png(self.base, SIZE, SIZE, parameters=_info("1girl, solo, anal sex"))
++
++    def _detect(self, _image: Path, _model: str, dest: Path) -> Path:
++        self.face_calls += 1
++        if self.face_error:
++            raise DiffSetError(self.face_error, "no face")
++        write_rgb_png(dest, SIZE, SIZE, rgb=(255, 255, 255))
++        return dest
++
++    def run_anal(self, **kwargs: object) -> tuple[dict[str, object], _Host]:
++        host = _Host()
++        payload = run_job(
++            base_path=self.base,
++            preset_dir=PRESETS,
++            preset_ids=["anal"],
++            output_dir=self.root / "out",
++            adult_ok=True,
++            use_controlnet=False,
++            dry_run=False,
++            overwrite=True,
++            host=host,
++            stages=ANAL_STAGES,
++            **kwargs,  # type: ignore[arg-type]
++        )
++        return payload, host
++
++    @staticmethod
++    def items(payload: dict[str, object]) -> dict[str, dict[str, object]]:
++        rows = payload["items"]
++        assert isinstance(rows, list)
++        return {str(row["variant"]): row for row in rows}
++
++
++class FacePassExecutionTests(_Fixture):
++    def test_default_is_required_and_a_missing_face_stops_the_chain(self) -> None:
++        self.face_error = "mask_empty"
++        payload, host = self.run_anal()
++        items = self.items(payload)
++        self.assertEqual((items["imminent"]["status"], items["imminent"]["error_code"]), ("error", "mask_empty"))
++        self.assertEqual(items["tip"]["status"], "blocked")
++        self.assertEqual(host.face_passes(), 0)
++
++    def test_required_with_a_face_paints_the_face_first(self) -> None:
++        payload, host = self.run_anal()
++        items = self.items(payload)
++        self.assertEqual([items[stage]["status"] for stage in ANAL_STAGES], ["ok", "ok", "ok"])
++        self.assertEqual(host.face_passes(), 3)
++        self.assertGreater(float(items["imminent"]["face_denoise"]), 0)  # type: ignore[arg-type]
++        self.assertFalse(items["imminent"]["face_optional"])
++
++    def test_skip_never_looks_for_a_face(self) -> None:
++        self.face_error = "mask_empty"
++        payload, host = self.run_anal(face_pass="skip")
++        items = self.items(payload)
++        self.assertEqual([items[stage]["status"] for stage in ANAL_STAGES], ["ok", "ok", "ok"])
++        self.assertEqual(self.face_calls, 0)
++        self.assertEqual(host.face_passes(), 0)
++        for stage in ANAL_STAGES:
++            self.assertEqual(items[stage]["face_denoise"], 0.0)
++            self.assertEqual(items[stage]["face_prompt"], "")
++            self.assertTrue(any("face_pass_skipped" in w for w in items[stage]["warnings"]))  # type: ignore[union-attr]
++
++    def test_optional_continues_without_a_face(self) -> None:
++        self.face_error = "mask_empty"
++        payload, host = self.run_anal(face_pass="optional")
++        items = self.items(payload)
++        self.assertEqual([items[stage]["status"] for stage in ANAL_STAGES], ["ok", "ok", "ok"])
++        self.assertTrue(items["imminent"]["face_optional"])
++        self.assertEqual(self.face_calls, 3)
++        self.assertEqual(host.face_passes(), 0)
++        self.assertTrue(any("face_pass_skipped" in w for w in items["tip"]["warnings"]))  # type: ignore[union-attr]
++        self.assertEqual(list((self.root / "out").glob("*.face*.png")), [])
++
++    def test_optional_with_a_face_still_repaints_it(self) -> None:
++        payload, host = self.run_anal(face_pass="optional")
++        items = self.items(payload)
++        self.assertEqual([items[stage]["status"] for stage in ANAL_STAGES], ["ok", "ok", "ok"])
++        self.assertEqual(host.face_passes(), 3)
++        self.assertFalse(any("face_pass_skipped" in w for w in items["hilt"]["warnings"]))  # type: ignore[union-attr]
++
++    def test_optional_forgives_only_an_empty_detection(self) -> None:
++        self.face_error = "mask_model_missing"
++        payload, _host = self.run_anal(face_pass="optional")
++        items = self.items(payload)
++        self.assertEqual(
++            (items["imminent"]["status"], items["imminent"]["error_code"]), ("error", "mask_model_missing")
++        )
++
++    def test_a_bad_value_is_refused(self) -> None:
++        with self.assertRaises(DiffSetError) as caught:
++            self.run_anal(face_pass="maybe")
++        self.assertEqual(caught.exception.code, "bad_face_pass")
++
++
++class NoStagesTests(_Fixture):
++    def test_none_plans_no_pattern_stage_and_no_warning(self) -> None:
++        payload = run_job(
++            base_path=self.base,
++            preset_dir=PRESETS,
++            preset_ids=list(PATTERN_IDS),
++            output_dir=self.root / "plan",
++            adult_ok=True,
++            use_controlnet=False,
++            dry_run=True,
++            overwrite=False,
++            stages=("none",),
++        )
++        self.assertEqual(payload["status"], "ok")
++        self.assertEqual(payload["items"], [])
++        self.assertFalse(any("stage_filter" in str(w) for w in payload["warnings"]))  # type: ignore[union-attr]
++
++    def test_a_named_stage_still_filters_as_before(self) -> None:
++        payload = run_job(
++            base_path=self.base,
++            preset_dir=PRESETS,
++            preset_ids=["anal"],
++            output_dir=self.root / "plan",
++            adult_ok=True,
++            use_controlnet=False,
++            dry_run=True,
++            overwrite=False,
++            stages=("tip",),
++        )
++        items = self.items(payload)
++        self.assertEqual(list(items), ["tip"])
++        self.assertEqual(items["tip"]["status"], "blocked")
++
++
++def _settings(root: Path, **overrides: object) -> PipelineSettings:
++    values: dict[str, object] = {
++        "inbox": root / "inbox",
++        "sorted_dir": root / "sorted",
++        "output_dir": root / "diffs",
++        "preset_dir": PRESETS,
++        "adult_ok": True,
++        "dry_run": True,
++    }
++    values.update(overrides)
++    return PipelineSettings(**values)  # type: ignore[arg-type]
++
++
++def _planned(**_kwargs: object) -> dict[str, object]:
++    return {"status": "ok", "items": [{"status": "planned"}], "manifest_path": "m.json", "error_code": None}
++
++
++class PipelinePlumbingTests(unittest.TestCase):
++    def _line(self, root: Path, calls: list[dict[str, object]], **overrides: object) -> Pipeline:
++        def run(**kwargs: object) -> dict[str, object]:
++            calls.append(kwargs)
++            return _planned()
++
++        return Pipeline(_settings(root, **overrides), run_job=run)
++
++    def _accept(self, root: Path, line: Pipeline) -> dict[str, object]:
++        gen = root / "gen"
++        gen.mkdir(exist_ok=True)
++        write_rgb_png(gen / "x.png", 8, 8, parameters=_info("1girl, anal sex"))
++        row = line.accept(gen / "x.png")
++        assert row is not None
++        return row
++
++    def test_default_is_required(self) -> None:
++        with tempfile.TemporaryDirectory() as tmp:
++            calls: list[dict[str, object]] = []
++            line = self._line(Path(tmp), calls)
++            self._accept(Path(tmp), line)
++            line.paint_available(1)
++            main = [c for c in calls if c.get("preset_ids") == ["anal"]]
++            self.assertEqual(main[0]["face_pass"], "required")
++
++    def test_a_row_value_beats_the_setting(self) -> None:
++        with tempfile.TemporaryDirectory() as tmp:
++            calls: list[dict[str, object]] = []
++            line = self._line(Path(tmp), calls, face_pass="optional")
++            row = self._accept(Path(tmp), line)
++            line._merge(str(row["sha256"]), {"face_pass": "skip"})
++            line.paint_available(1)
++            self.assertEqual([c["face_pass"] for c in calls if c.get("preset_ids") == ["anal"]], ["skip"])
++
++    def test_the_setting_applies_without_a_row_value(self) -> None:
++        with tempfile.TemporaryDirectory() as tmp:
++            calls: list[dict[str, object]] = []
++            line = self._line(Path(tmp), calls, face_pass="optional")
++            self._accept(Path(tmp), line)
++            line.paint_available(1)
++            self.assertEqual([c["face_pass"] for c in calls if c.get("preset_ids") == ["anal"]], ["optional"])
++
++    def test_config_file_reads_and_validates_face_pass(self) -> None:
++        with tempfile.TemporaryDirectory() as tmp:
++            root = Path(tmp)
++            block = '"enabled": true, "inbox": "i", "sorted": "s", "output": "o"'
++            good = root / "good.json"
++            good.write_text('{"pipeline": {%s, "face_pass": "skip"}}' % block, encoding="utf-8")
++            settings = load_settings(good, PRESETS)
++            assert settings is not None
++            self.assertEqual(settings.face_pass, "skip")
++            plain = root / "plain.json"
++            plain.write_text('{"pipeline": {%s}}' % block, encoding="utf-8")
++            default = load_settings(plain, PRESETS)
++            assert default is not None
++            self.assertEqual(default.face_pass, "required")
++            bad = root / "bad.json"
++            bad.write_text('{"pipeline": {%s, "face_pass": "maybe"}}' % block, encoding="utf-8")
++            with self.assertRaises(DiffSetError):
++                load_settings(bad, PRESETS)
++
++
++class FactoryJobTests(unittest.TestCase):
++    @staticmethod
++    def _job(**extra: object) -> dict[str, object]:
++        job: dict[str, object] = {
++            "id": "stand",
++            "prompt": "1girl, solo, anal sex",
++            "negative_prompt": "lowres",
++            "sampler_name": "Euler a",
++            "steps": 28,
++            "cfg_scale": 6,
++            "width": 1024,
++            "height": 1344,
++            "model": "demoMix_v1",
++        }
++        job.update(extra)
++        return job
++
++    def _run(self, root: Path, job: dict[str, object], calls: list[dict[str, object]]) -> dict[str, object]:
++        image = root / "poster.png"
++        write_rgb_png(image, 8, 8)
++        raw = image.read_bytes()
++
++        def run(**kwargs: object) -> dict[str, object]:
++            calls.append(kwargs)
++            return _planned()
++
++        return run_factory(
++            settings=_settings(root, dry_run=False, limbs=False),
++            jobs=[job],
++            poster=lambda _api, _payload: raw,
++            dry_run=False,
++            once=True,
++            run_job=run,
++        )
++
++    def test_job_keys_reach_the_paint_call(self) -> None:
++        with tempfile.TemporaryDirectory() as tmp:
++            calls: list[dict[str, object]] = []
++            payload = self._run(Path(tmp), self._job(stages=["imminent", "tip"], face_pass="skip"), calls)
++            self.assertEqual(payload["jobs"][0]["status"], "ok")  # type: ignore[index]
++            self.assertEqual(calls[0]["face_pass"], "skip")
++            self.assertEqual(calls[0]["stages"], ("imminent", "tip"))
++            params = read_parameters(Path(tmp) / "inbox" / "stand.png")
++            self.assertIn("anal sex", str(params))
++
++    def test_none_reaches_the_paint_call_as_the_no_stage_sentinel(self) -> None:
++        with tempfile.TemporaryDirectory() as tmp:
++            calls: list[dict[str, object]] = []
++            self._run(Path(tmp), self._job(stages=["none"]), calls)
++            self.assertEqual(calls[0]["stages"], ("none",))
++            self.assertEqual(calls[0]["face_pass"], "required")
++
++    def test_a_bad_value_is_refused_before_posting(self) -> None:
++        with tempfile.TemporaryDirectory() as tmp:
++            calls: list[dict[str, object]] = []
++
++            def poster(_api: str, _payload: dict[str, object]) -> bytes:
++                raise AssertionError("must not post")
++
++            payload = run_factory(
++                settings=_settings(Path(tmp), dry_run=False),
++                jobs=[self._job(face_pass="maybe")],
++                poster=poster,
++                dry_run=False,
++                once=True,
++                run_job=lambda **kwargs: calls.append(kwargs) or _planned(),
++            )
++            row = payload["jobs"][0]  # type: ignore[index]
++            self.assertEqual((row["status"], row["error_code"]), ("error", "bad_face_pass"))
++            self.assertEqual(calls, [])
++
++
++if __name__ == "__main__":
++    unittest.main()

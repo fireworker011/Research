@@ -21,6 +21,7 @@ from typing import Mapping
 from scene_trials.backends.base import BackendOutput, ProducedFile, Role
 from scene_trials.errors import BackendError
 from scene_trials.plan import Job, TrialPlan
+from scene_trials.project import anchor_path
 
 _IMAGE_SUFFIXES = frozenset({".png", ".webp", ".jpg", ".jpeg"})
 _NAME = re.compile(
@@ -37,9 +38,9 @@ class ImportOnlyBackend:
         source = options.get("source_dir")
         if not source:
             raise BackendError("backend_option", "import_only needs backend.options.source_dir")
-        self.source_dir = _anchored(Path(str(source)), base_dir)
+        self.source_dir = anchor_path(Path(str(source)), base_dir)
         index = options.get("index_csv")
-        self.index_csv = _anchored(Path(str(index)), base_dir) if index else None
+        self.index_csv = anchor_path(Path(str(index)), base_dir) if index else None
 
     def produced_files(self, plan: TrialPlan) -> BackendOutput:
         if not self.source_dir.is_dir():
@@ -133,11 +134,6 @@ class ImportOnlyBackend:
             )
         )
 
-
-def _anchored(path: Path, base_dir: Path | None) -> Path:
-    if path.is_absolute() or base_dir is None:
-        return path
-    return base_dir / path
 
 
 def _stage_ok(job: Job, role: Role, stage: str | None) -> bool:

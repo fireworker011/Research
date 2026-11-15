@@ -5,9 +5,9 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from enum import Enum
 from pathlib import Path
-from typing import Protocol
+from typing import Mapping, Protocol, runtime_checkable
 
-from scene_trials.plan import TrialPlan
+from scene_trials.plan import Batch, TrialPlan
 
 
 class Role(Enum):
@@ -39,4 +39,19 @@ class Backend(Protocol):
 
     def produced_files(self, plan: TrialPlan) -> BackendOutput:
         """Return the files that exist for the plan's jobs. Never invent a file."""
+        ...
+
+
+@runtime_checkable
+class ExportingBackend(Protocol):
+    """A backend that can hand work to an external tool. It never runs that tool."""
+
+    name: str
+
+    def export_batch(self, plan: TrialPlan, batch: Batch, directory: Path) -> Path:
+        """Write the batch in the tool's own format and return the file."""
+        ...
+
+    def run_commands(self, plan: TrialPlan, flavor: str, batch_files: Mapping[str, Path]) -> list[str]:
+        """Command lines for ``ps1`` or ``sh`` that a person runs."""
         ...

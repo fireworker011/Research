@@ -4,9 +4,11 @@ Project-switchable scene trial runner. It plans N trials per scene, files the
 results as `{project}/{section}/{scene_id}/trial_N/`, builds contact sheets,
 records which trial wins, and writes cutout commands for the winners.
 
-Image generation is a pluggable backend and is optional. This release has the
-`import_only` backend (files that already exist). The `sd_diff_set` backend
-and a plain `webui_api` backend come next.
+Image generation is a pluggable backend and is optional. Backends:
+
+* `import_only`: files that already exist.
+* `sd_diff_set`: the sd-diff-set factory. See "sd_diff_set backend" below.
+* `webui_api`: a plain txt2img backend, planned.
 
 This package is independent of the sd-diff-set factory and of everything else
 in this repository.
@@ -69,6 +71,34 @@ bytes is reported as a conflict and kept unless `--overwrite` is given.
 `{scene_id}__t{N}.png` is the base, `{scene_id}__t{N}__{stage}.png` is a stage,
 `.transparent` or `.mask` goes before the extension. Or give an index CSV with
 `path,scene_id,trial,role,stage` and optional `ok,error_code`.
+
+## sd_diff_set backend
+
+scene-trials never imports or runs the factory. `export` writes, per batch, the factory's own `--jobs`
+JSON (`_meta/sd_diff_set/{batch}.json`) and a run script (`sd_diff_set_run.ps1` and `.sh`). A person runs
+the script inside the Python that hosts reForge. `collect` then reads the factory's ledger
+(`diffs/pipeline.json`), each image's `manifest.json`, the sorted base and the `.transparent.png` files.
+
+* The factory job `id` is the scene-trials job id. The factory names everything after it.
+* A chain job asks for `stages` up to the last needed stage. A solo scene asks for `["none"]`: it gets its
+  base, hands and feet, and no pattern stage.
+* The factory refuses a job without sampler, steps, CFG, model, so `backend.options.generation` is required.
+* `face_pass: skip` or `optional` is written only when `backend.options.factory_face_pass: true`. Otherwise
+  `export` refuses, because the unpatched factory would ignore the key. The patch is in `factory-patches/`.
+* The factory merges two images with identical bytes into one ledger row, so the second job of the pair shows
+  as `missing`. Real seeds make that rare.
+* A scene that the factory could not paint shows as `failed` with the factory's error code, for example
+  `mask_empty` or `cast_excluded`.
+
+Checks that use the real factory (they need its source, not this repository):
+
+```sh
+python integration/check_sd_diff_set.py <extensions/sd-diff-set>     # end to end, GPU parts faked
+python integration/preflight_routes.py <extensions/sd-diff-set> projects/pronant   # offline, per job
+```
+
+`preflight_routes.py` asks the factory's own router and planner what each job would do and lists any job
+whose category or stages differ from the chain.
 
 ## Safety (not switchable from a project file)
 

@@ -142,6 +142,8 @@ def _write_chain_copy(
     chain_dir: Path, job: Job, files: list[ProducedFile], overwrite: bool, report: CollectReport
 ) -> None:
     for produced in files:
+        if not produced.ok or not produced.path.is_file():
+            continue
         suffix = produced.path.suffix.lower()
         if produced.role is Role.BASE:
             name = f"base{suffix}"

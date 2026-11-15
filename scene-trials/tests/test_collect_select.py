@@ -121,7 +121,7 @@ class ImportCollectTests(Fixture):
 
     def test_backend_registry(self) -> None:
         with self.assertRaises(BackendError) as caught:
-            get_backend(BackendConfig(name="sd_diff_set"), self.project_dir)
+            get_backend(BackendConfig(name="webui_api"), self.project_dir)
         self.assertEqual(caught.exception.code, "backend_unavailable")
         with self.assertRaises(BackendError):
             get_backend(BackendConfig(name="import_only"), self.project_dir)

@@ -64,6 +64,18 @@ cutout:
     sh: 'python -m sd_diff_set.cli cutout --input {input}'
 
 backend:
-  name: import_only
+  name: sd_diff_set
   options:
-    source_dir: incoming
+    work_dir: C:/sd-out/auto       # inbox, sorted, diffs, generated live under it
+    factory_dir: C:/work/sd-diff-set/extensions/sd-diff-set
+    finish: game                   # game | album | both
+    # Set to true only after factory-patches/0001 is applied. Until then `export` refuses the two
+    # chains that use face_pass: skip, because the unpatched factory would ignore the key.
+    factory_face_pass: false
+    generation:                    # the factory refuses a job that lacks any of these (settings_missing)
+      sampler_name: Euler a
+      steps: 28
+      cfg_scale: 6
+      model: 2883731_waiIllustriousSDXL_v170.safetensors
+      clip_skip: 2
+    # colab_api: https://example.gradio.live   # optional; empty means the factory decides
