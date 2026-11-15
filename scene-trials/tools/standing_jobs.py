@@ -2,7 +2,8 @@
 
     python tools/standing_jobs.py --scenes pronant_all_scenes.csv --templates pronant_delusion_prompts_full.csv
 
-sora rows are skipped. The default output is
+sora rows are skipped. Character names stay trigger words. The only LoRA tag is
+caststyle_xl_epoch08, kept next to the caststyle_xl trigger. The default output is
 C:\\sd-out\\auto\\scenes\\pronant\\_meta\\sd_diff_set\\standing.json
 """
 

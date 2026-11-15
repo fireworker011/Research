@@ -54,9 +54,9 @@ class StandingJobTests(unittest.TestCase):
         self.assertEqual(skipped, 1)
         self.assertEqual([job["id"] for job in jobs], ["standing-irito-01", "standing-jueri-04", "standing-nieva-05", "standing-seraphina-01"])
         by_id = {job["id"]: job for job in jobs}
-        irito = by_id["standing-irito-01"]["prompt"]
-        self.assertIn("<lora:caststyle_xl_epoch08:0.9>", irito)
-        self.assertIn("<lora:irito_xl:0.8>", irito)
+        irito = str(by_id["standing-irito-01"]["prompt"])
+        self.assertIn("<lora:caststyle_xl_epoch08:0.9>, caststyle_xl, irito_xl", irito)
+        self.assertNotIn("<lora:irito_xl", irito)
         self.assertNotIn("{", irito)
         self.assertNotIn("landscape composition", irito)
         self.assertNotIn("horizontal framing", irito)
@@ -64,11 +64,15 @@ class StandingJobTests(unittest.TestCase):
         self.assertIn("neutral expression", irito)
         self.assertIn("child", by_id["standing-irito-01"]["negative_prompt"])
         self.assertEqual(by_id["standing-jueri-04"]["stages"], ["none"])
-        self.assertIn("<lora:jueri_xl:0.8>", by_id["standing-jueri-04"]["prompt"])
-        self.assertIn("blush", by_id["standing-jueri-04"]["prompt"])
-        self.assertNotIn("gentle smile", by_id["standing-jueri-04"]["prompt"])
-        self.assertIn("from behind", by_id["standing-nieva-05"]["prompt"])
-        self.assertIn("<lora:nieva_xl:0.8>", by_id["standing-nieva-05"]["prompt"])
+        jueri = str(by_id["standing-jueri-04"]["prompt"])
+        self.assertIn("<lora:caststyle_xl_epoch08:0.9>, caststyle_xl, jueri_xl", jueri)
+        self.assertNotIn("<lora:jueri_xl", jueri)
+        self.assertIn("blush", jueri)
+        self.assertNotIn("gentle smile", jueri)
+        nieva = str(by_id["standing-nieva-05"]["prompt"])
+        self.assertIn("from behind", nieva)
+        self.assertIn("<lora:caststyle_xl_epoch08:0.9>, caststyle_xl, nieva_xl", nieva)
+        self.assertNotIn("<lora:nieva_xl", nieva)
         self.assertEqual(by_id["standing-irito-01"]["sampler_name"], "Euler a")
         self.assertEqual(by_id["standing-irito-01"]["steps"], 28)
         self.assertEqual(by_id["standing-irito-01"]["cfg_scale"], 6)
@@ -87,7 +91,8 @@ class StandingJobTests(unittest.TestCase):
         self.assertIn("bent over", hip["prompt"])
         self.assertIn("from side", side["prompt"])
         self.assertNotIn("neutral expression", side["prompt"])
-        self.assertIn("<lora:seraphina_xl:0.8>", side["prompt"])
+        self.assertIn("<lora:caststyle_xl_epoch08:0.9>, caststyle_xl, seraphina_xl", side["prompt"])
+        self.assertNotIn("<lora:seraphina_xl", side["prompt"])
 
     def test_an_unknown_pose_or_character_is_refused(self) -> None:
         with self.assertRaises(ConfigError) as unknown_pose:

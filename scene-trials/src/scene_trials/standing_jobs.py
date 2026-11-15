@@ -3,6 +3,9 @@
 The scene table names the character and the pose. The prompt text comes from the
 standing templates in the delusion prompt CSV. A pose that CSV does not contain
 starts from one of those templates and only replaces the pose tags.
+
+``irito_xl`` and the other character names stay trigger words. The only LoRA tag
+is ``caststyle_xl_epoch08``, written beside the ``caststyle_xl`` trigger.
 """
 
 from __future__ import annotations
@@ -17,13 +20,13 @@ from typing import Mapping
 from scene_trials.backends.sd_diff_set import _check_id
 from scene_trials.errors import ConfigError
 from scene_trials.project import _DEFAULT_CONFLICTS, load_yaml_file
-from scene_trials.prompt import _apply_loras
 from scene_trials.resources import LoraEntry
 from scene_trials.safety import ensure_required_negatives
 from scene_trials.tags import join_tags, split_tags, tag_key
 
 STANDING = "立ち絵"
 SKIP_CHARS = frozenset({"sora"})
+STYLE_WORD = "caststyle_xl"
 CHAR_WORD = {
     "irito": "irito_xl",
     "jueri": "jueri_xl",
@@ -268,6 +271,7 @@ def _edit_tags(tags: list[str], edit: PoseEdit, subcategory: str) -> list[str]:
 
 
 def _with_character(positive: str, word: str, loras: Mapping[str, LoraEntry], settings: StandingSettings) -> str:
+    """Keep the character name as a trigger word. The only LoRA tag is caststyle."""
     tags = split_tags(positive)
     replaced = False
     rewritten: list[str] = []
@@ -284,13 +288,29 @@ def _with_character(positive: str, word: str, loras: Mapping[str, LoraEntry], se
         raise ConfigError("lora_brace", f"the standing template has no character brace for {word}")
     drop = {tag_key(item) for item in settings.drop_tags}
     rewritten = [tag for tag in rewritten if tag_key(tag) not in drop]
-    mapped, _files = _apply_loras(rewritten, loras, [])
+    style = _style_lora_tag(loras)
+    if not any(tag_key(tag) == tag_key(STYLE_WORD) for tag in rewritten):
+        raise ConfigError("style_missing", "the standing template has no caststyle_xl tag")
+    mapped: list[str] = []
+    placed = any(tag_key(tag) == tag_key(style) for tag in rewritten)
+    for tag in rewritten:
+        if not placed and tag_key(tag) == tag_key(STYLE_WORD):
+            mapped.append(style)
+            placed = True
+        mapped.append(tag)
+    if not any(tag_key(tag) == tag_key(word) for tag in mapped):
+        raise ConfigError("trigger_missing", f"the standing prompt lost the trigger word {word}")
     for anchor in settings.positive_anchor:
         if tag_key(anchor) not in {tag_key(tag) for tag in mapped}:
             mapped.append(anchor)
-    if word not in {entry.file for entry in loras.values()}:
-        raise ConfigError("lora_missing", f"loras.yaml has no file for {word}")
     return join_tags(mapped)
+
+
+def _style_lora_tag(loras: Mapping[str, LoraEntry]) -> str:
+    entry = loras.get(STYLE_WORD)
+    if entry is None:
+        raise ConfigError("lora_missing", "loras.yaml has no caststyle_xl")
+    return entry.tag
 
 
 def _brace_options(tag: str) -> tuple[str, ...] | None:

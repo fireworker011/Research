@@ -105,7 +105,9 @@ The WebUI drops a `<lora:name:...>` tag whose name it does not list, silently. F
 factory check this before posting.
 
 `python tools/standing_jobs.py --scenes pronant_all_scenes.csv --templates pronant_delusion_prompts_full.csv`
-writes only the 立ち絵 rows as factory `--jobs` JSON. sora is left out. The default file is
+writes only the 立ち絵 rows as factory `--jobs` JSON. sora is left out. Character names stay
+trigger words (`irito_xl` and the others). The only LoRA tag is `caststyle_xl_epoch08`, next to the
+`caststyle_xl` trigger. The default file is
 `C:\sd-out\auto\scenes\pronant\_meta\sd_diff_set\standing.json`.
 
 `preflight_routes.py` asks the factory's own router and planner what each job would do and lists any job
