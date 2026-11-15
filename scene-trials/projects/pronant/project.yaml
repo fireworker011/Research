@@ -1,0 +1,63 @@
+schema: 1
+project: pronant
+
+paths:
+  out_root: C:/sd-out/auto/scenes   # set SCENE_TRIALS_OUT_ROOT on Colab or any non-Windows machine
+  scenes_csv: scenes.csv            # not committed; copy pronant_delusion_prompts_full.csv here
+  chains: chains.yaml
+  loras: loras.yaml
+  negatives: negatives.yaml
+  # lora_dir: to be set once the LoRA files are placed
+
+columns:
+  section: category
+  positive: positive_prompt
+  negative: negative_prompt
+  id_columns: [pose, diff_stage]
+
+section_slugs:
+  立ち絵: standing
+  フェラ: oral
+  アナル: anal
+  マンコ: vaginal
+  放尿: urination
+  スカ: scat
+  ふたなり: futanari
+  複数人: multi
+  NPC: npc
+  キャラシート: sheet
+
+trials:
+  count: 3
+  order: trial_major
+
+batch:
+  max_jobs: 50
+
+size:                              # the factory default, portrait
+  width: 1024
+  height: 1344
+
+prompt:
+  expand_braces: true
+  char_policy: random_seeded
+  positive_anchor: ["(mature female:1.2)"]   # the factory adds the same tag to every stage
+  composition: warn
+
+face_visible_hints: [looking back, looking at viewer, looking up, looking down, head turned, face focus]
+
+safety:
+  adult_confirmed_by: ""           # filled by the owner before export or any run
+  adult_confirmed_on: ""
+  extra_blocked_words: []
+
+cutout:
+  skip_if_transparent: true
+  templates:
+    ps1: 'python -m sd_diff_set.cli cutout --input {input}'
+    sh: 'python -m sd_diff_set.cli cutout --input {input}'
+
+backend:
+  name: import_only
+  options:
+    source_dir: incoming

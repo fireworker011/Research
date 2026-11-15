@@ -1,0 +1,189 @@
+"""Command line: lint, plan, export, collect, sheet, pick, finalize, cutout-cmds."""
+
+from __future__ import annotations
+
+import argparse
+import json
+import sys
+from pathlib import Path
+from typing import Sequence
+
+from scene_trials.backends import get_backend
+from scene_trials.collector import collect
+from scene_trials.cutout_cmds import build_cutout_commands
+from scene_trials.errors import SceneTrialsError
+from scene_trials.layout import Layout
+from scene_trials.plan import TrialPlan, build_plan, write_scene_index
+from scene_trials.project import describe_order, load_project
+from scene_trials.safety import require_adult_confirmation
+from scene_trials.select import (
+    finalize,
+    make_index,
+    make_sheet,
+    read_selection,
+    set_pick,
+)
+
+
+def _load(args: argparse.Namespace) -> TrialPlan:
+    return build_plan(load_project(Path(args.project)))
+
+
+def _print_issues(plan: TrialPlan) -> None:
+    for issue in plan.issues:
+        print(f"[{issue.level.value}] {issue.code} {issue.subject}: {issue.message}", file=sys.stderr)
+
+
+def _require_clean(plan: TrialPlan) -> int:
+    _print_issues(plan)
+    return 2 if plan.errors else 0
+
+
+def cmd_lint(args: argparse.Namespace) -> int:
+    plan = _load(args)
+    _print_issues(plan)
+    print(f"{len(plan.errors)} errors, {len(plan.warnings)} warnings")
+    return 2 if plan.errors else 0
+
+
+def cmd_plan(args: argparse.Namespace) -> int:
+    plan = _load(args)
+    status = _require_clean(plan)
+    layout = Layout(plan.project)
+    write_scene_index(plan, layout.meta() / "scene_index.csv")
+    jobs_path = layout.meta() / "jobs.json"
+    jobs_path.write_text(
+        json.dumps([job.to_dict() for job in plan.jobs], ensure_ascii=False, indent=2), encoding="utf-8"
+    )
+    chain_jobs = sum(1 for job in plan.jobs if job.trial == 1 and job.stages)
+    solo_jobs = sum(1 for job in plan.jobs if job.trial == 1 and not job.stages)
+    stage_count = sum(len(job.stages) for job in plan.jobs if job.trial == 1)
+    print(
+        f"project {plan.project.name}: {len(plan.scenes)} scenes -> "
+        f"{chain_jobs + solo_jobs} bases per trial ({chain_jobs} chains, {solo_jobs} solo), "
+        f"{stage_count} stage passes per trial"
+    )
+    print(
+        f"{plan.project.trial_count} trials, order {describe_order(plan.project.trial_order)}, "
+        f"{len(plan.batches)} batches of up to {plan.project.batch_max_jobs} jobs"
+    )
+    print(f"wrote {layout.meta() / 'scene_index.csv'} and {jobs_path}")
+    return status
+
+
+def cmd_export(args: argparse.Namespace) -> int:
+    plan = _load(args)
+    status = _require_clean(plan)
+    if status:
+        return status
+    safety = plan.project.safety
+    require_adult_confirmation(safety.adult_confirmed_by, safety.adult_confirmed_on)
+    jobs = {job.job_id: job for job in plan.jobs}
+    directory = Layout(plan.project).meta() / "batches"
+    directory.mkdir(parents=True, exist_ok=True)
+    for batch in plan.batches:
+        payload = {
+            "schema": 1,
+            "project": plan.project.name,
+            "batch_id": batch.batch_id,
+            "trial": batch.trial,
+            "jobs": [jobs[job_id].to_dict() for job_id in batch.job_ids],
+        }
+        (directory / f"{batch.batch_id}.json").write_text(
+            json.dumps(payload, ensure_ascii=False, indent=2), encoding="utf-8"
+        )
+    print(f"wrote {len(plan.batches)} batch files to {directory}")
+    return 0
+
+
+def cmd_collect(args: argparse.Namespace) -> int:
+    plan = _load(args)
+    status = _require_clean(plan)
+    if status:
+        return status
+    config = plan.project.backend
+    if args.source:
+        config = type(config)(
+            name="import_only", options={**config.options, "source_dir": str(Path(args.source).resolve())}
+        )
+    backend = get_backend(config, plan.project.root)
+    report = collect(plan, backend.produced_files(plan), backend_name=backend.name, overwrite=args.overwrite)
+    counts = report.counts()
+    print(f"ok {counts['ok']}, failed {counts['failed']}, missing {counts['missing']}")
+    for line in (*report.conflicts, *report.notes):
+        print(f"  {line}", file=sys.stderr)
+    return 1 if report.conflicts else 0
+
+
+def cmd_sheet(args: argparse.Namespace) -> int:
+    plan = _load(args)
+    scene_ids = [args.scene] if args.scene else plan.planned_scene_ids()
+    sheets = [make_sheet(plan, scene_id) for scene_id in scene_ids]
+    index = make_index(plan, sheets)
+    print(f"wrote {len(sheets)} sheets and {index}")
+    return 0
+
+
+def cmd_pick(args: argparse.Namespace) -> int:
+    plan = _load(args)
+    pick = set_pick(plan, args.scene, args.trial, args.note or "")
+    print(f"picked {pick.scene_id} trial {pick.trial}")
+    return 0
+
+
+def cmd_finalize(args: argparse.Namespace) -> int:
+    plan = _load(args)
+    picks = read_selection(Layout(plan.project).selection_csv())
+    done = finalize(plan, picks)
+    print(f"copied {len(done)} picked images into selected/ folders")
+    return 0
+
+
+def cmd_cutout(args: argparse.Namespace) -> int:
+    plan = _load(args)
+    picks = read_selection(Layout(plan.project).selection_csv())
+    result = build_cutout_commands(plan, finalize(plan, picks))
+    for flavor, lines in result.commands.items():
+        print(f"{flavor}: {len(lines)} commands")
+    for line in result.skipped:
+        print(f"  skipped {line}")
+    for path in result.files:
+        print(f"wrote {path} (not executed)")
+    return 0
+
+
+def build_parser() -> argparse.ArgumentParser:
+    parser = argparse.ArgumentParser(prog="scene-trials")
+    commands = parser.add_subparsers(dest="command", required=True)
+
+    def add(name: str, handler: object, help_text: str) -> argparse.ArgumentParser:
+        sub = commands.add_parser(name, help=help_text)
+        sub.add_argument("--project", required=True, help="project folder that holds project.yaml")
+        sub.set_defaults(handler=handler)
+        return sub
+
+    add("lint", cmd_lint, "check scenes, chains and prompts")
+    add("plan", cmd_plan, "write scene_index.csv and jobs.json")
+    add("export", cmd_export, "write backend-neutral batch files (needs adult confirmation)")
+    collect_parser = add("collect", cmd_collect, "copy backend files into the project layout")
+    collect_parser.add_argument("--source", help="override import_only source_dir")
+    collect_parser.add_argument("--overwrite", action="store_true")
+    sheet_parser = add("sheet", cmd_sheet, "write contact sheets")
+    sheet_parser.add_argument("--scene")
+    pick_parser = add("pick", cmd_pick, "record which trial wins a scene")
+    pick_parser.add_argument("scene")
+    pick_parser.add_argument("trial", type=int)
+    pick_parser.add_argument("--note")
+    add("finalize", cmd_finalize, "copy picked results into selected/ folders")
+    add("cutout-cmds", cmd_cutout, "write cutout commands for the picks (not executed)")
+    return parser
+
+
+def main(argv: Sequence[str] | None = None) -> int:
+    args = build_parser().parse_args(argv)
+    try:
+        return int(args.handler(args))
+    except SceneTrialsError as exc:
+        print(f"error: {exc}", file=sys.stderr)
+        return 2
+

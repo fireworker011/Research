@@ -1,0 +1,65 @@
+# Chains for the sd-diff-set backend. Rows are CSV data rows (1 = first row under the header).
+# Stages after the last needed one are not requested. The scat `clean` copy is left out on purpose.
+chains:
+  oral_kneel:
+    category: fellatio
+    base: 5
+    route_tags: [blowjob]
+    stage_order: [hold, deepthroat, in_mouth, pulled]
+    scenes: {5: hold, 8: deepthroat, 6: in_mouth}
+    needs_face_visible: true
+  anal_standing_doggy:
+    category: anal
+    base: 10
+    route_tags: [anal sex]
+    stage_order: [imminent, tip, hilt, creampie, withdrawn]
+    scenes: {10: hilt, 11: creampie}
+    needs_face_visible: true
+  anal_all_fours:
+    category: anal
+    base: 13
+    route_tags: [anal sex]
+    stage_order: [imminent, tip, hilt, creampie, withdrawn]
+    scenes: {13: hilt}
+    needs_face_visible: true
+  anal_cowgirl:
+    category: anal
+    base: 15
+    route_tags: [anal sex]
+    stage_order: [imminent, tip, hilt, creampie, withdrawn]
+    scenes: {15: hilt}
+    needs_face_visible: true
+  anal_sitting:
+    category: anal
+    base: 16
+    route_tags: [anal sex]
+    stage_order: [imminent, tip, hilt, creampie, withdrawn]
+    scenes: {16: hilt}
+    needs_face_visible: true
+  vaginal_missionary:
+    category: vaginal
+    base: 18
+    route_tags: [sex]
+    stage_order: [imminent, tip, hilt, creampie, withdrawn]
+    scenes: {18: hilt, 19: creampie}
+    needs_face_visible: true
+  scat_squat:
+    category: scat
+    base: 25
+    route_tags: [scat]
+    stage_order: [before, slight, during, after]
+    scenes: {24: before, 25: during, 26: after}
+  npc_anal:
+    category: anal
+    base: 31
+    route_tags: [anal sex]
+    stage_order: [imminent, tip, hilt, creampie, withdrawn]
+    scenes: {31: hilt}
+    needs_face_visible: true
+  npc_oral:
+    category: fellatio
+    base: 32
+    route_tags: [blowjob]
+    stage_order: [hold, deepthroat, in_mouth, pulled]
+    scenes: {32: hold}
+    needs_face_visible: true

@@ -1,0 +1,16 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "scene-trials"
+version = "0.1.0"
+description = "Project-switchable scene trial runner: plan, collect, select, cutout commands. Image backends are pluggable and optional."
+requires-python = ">=3.10"
+dependencies = ["PyYAML>=6", "Pillow>=10"]
+
+[project.scripts]
+scene-trials = "scene_trials.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]

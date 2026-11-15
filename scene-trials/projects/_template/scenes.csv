@@ -1,0 +1,7 @@
+category,subcategory,pose,diff_stage,positive_prompt,negative_prompt
+sprite,idle,standing,01,"masterpiece, solo, 1girl, standing, {red hair|blue hair|green hair}, white background, simple background, portrait composition","low quality, text, watermark"
+sprite,wave,standing,02,"masterpiece, solo, 1girl, standing, waving, {red hair|blue hair|green hair}, white background, simple background, portrait composition","low quality, text, watermark"
+lantern,dim,holding,01,"masterpiece, solo, 1girl, holding lantern, looking at viewer, night, simple background, portrait composition","low quality, text, watermark"
+lantern,bright,holding,02,"masterpiece, solo, 1girl, holding lantern, looking at viewer, night, simple background, portrait composition","low quality, text, watermark"
+lantern,flare,holding,03,"masterpiece, solo, 1girl, holding lantern, looking at viewer, night, simple background, portrait composition","low quality, text, watermark"
+sprite,sheet,multi,sheet,"masterpiece, 1girl, character sheet, multiple views, white background, portrait composition","low quality, text, watermark"
