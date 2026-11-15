@@ -30,13 +30,14 @@ manifest item gains `face_optional`.
 
 ## How to apply
 
-Use `apply_patches.py`. It reads the two patch files and applies them by content: it ignores line numbers and
+Use `apply_patches.py`. It reads the patch files and applies them by content: it ignores line numbers and
 line endings, keeps each file's own line ending, skips a hunk that is already there, and writes nothing unless
-every file matched.
+every file matched. A one-line addition counts as already present only when the lines on both sides of it
+are there too, so the same line in another function is not mistaken for it.
 
 ```
 python apply_patches.py <path to extensions/sd-diff-set> --check     # report only
-python apply_patches.py <path to extensions/sd-diff-set>             # apply 0001 through 0005
+python apply_patches.py <path to extensions/sd-diff-set>             # apply 0001 through 0006
 python rebuild_bundle.py <path to extensions/sd-diff-set> --zip factory_extension.zip
 ```
 
@@ -161,6 +162,23 @@ The stage prompt, tags included, is the inpaint prompt. If the WebUI returns `Lo
 
 `tests/test_inpaint_lora.py`. With 0001 through 0005 the factory suite is 194 tests, all passing.
 
+## 0006-http-inpaint.patch (apply after 0005)
+
+`python -m sd_diff_set.cli factory --run` does not run inside reForge, so `WebuiHost.inpaint` raises
+`host_unavailable` (`modules.processing` cannot be imported). The base image was already posted to
+`/sdapi/v1/txt2img`. This patch posts each diff the same way, to `/sdapi/v1/img2img` on the API that
+`choose_host` picked (the Colab URL, or `http://127.0.0.1:7860`).
+
+The stage prompt, including `<lora:...>`, is the img2img prompt. Pixels outside the mask are copied back
+from the init image when the stage locks them. The reForge tab is unchanged: it still calls `process_images`,
+because an HTTP call from inside a Gradio request would wait on itself.
+
+`--run` is what switches inpaint to HTTP. A dry run does not. `--limbs` / `--no-limbs` controls the hands
+and feet pass. The factory CLI still paints them unless `--no-limbs` is given. `PipelineSettings.limbs`
+already skipped that pass when false; the CLI had been forcing it on.
+
+`tests/test_http_inpaint.py`. With 0001 through 0006 the factory suite is 201 tests, all passing.
+
 ## Rebuilding the Colab bundle
 
 `rebuild_bundle.py <extensions/sd-diff-set> [--zip out.zip]` writes `colab/factory_extension.b64` in the
@@ -169,8 +187,9 @@ and caches are left out). The Colab cell downloads that zip from Drive, so put `
 well.
 
 The bundle that shipped was already older than the working tree: it had 121 entries and lacked `cloth.yaml`,
-`fluid.yaml` and `cloth_detect.py`, and 22 code and preset files differed. The rebuilt one has 127 entries and
-carries the 11/13 remodel, 0001, 0002 and 0003. The two bundle tests in `tests/test_factory.py` pass against it.
+`fluid.yaml` and `cloth_detect.py`, and 22 code and preset files differed. Rebuild it after applying the
+patches when the factory runs from the Colab copy of the extension. A PC-side `cli factory` only needs the
+patched tree on that PC: `/sdapi/v1/img2img` is already part of reForge.
 
 ### What is not done
 

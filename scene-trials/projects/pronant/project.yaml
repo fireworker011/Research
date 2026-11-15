@@ -72,6 +72,8 @@ backend:
     # True means the factory has factory-patches/0001 applied. With false, `export` refuses the two chains
     # that use face_pass: skip, because an unpatched factory would ignore the key.
     factory_face_pass: true
+    # false writes --no-limbs. Hands and feet are skipped. The factory CLI paints them unless told not to.
+    limbs: false
     generation:                    # the factory refuses a job that lacks any of these (settings_missing)
       sampler_name: Euler a
       steps: 28

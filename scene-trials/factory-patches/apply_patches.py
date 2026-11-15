@@ -8,7 +8,7 @@ and line numbers), and replaces it. It keeps each file's own line ending, skips 
 and writes nothing unless every patch matched. A record of what it applied is kept in .sd-diff-set-patches.json, so
 a second run does not repeat a patch; --force ignores the record and relies on per-hunk detection. Run with --check first.
 
-By default it applies 0001 through 0005 from this folder, in that order.
+By default it applies 0001 through 0006 from this folder, in that order.
 """
 
 from __future__ import annotations
@@ -28,6 +28,7 @@ DEFAULT_PATCHES = (
     "0003-lora-check.patch",
     "0004-keep-base-lora-tags.patch",
     "0005-inpaint-keeps-lora.patch",
+    "0006-http-inpaint.patch",
 )
 MARKER = ".sd-diff-set-patches.json"
 HUNK = re.compile(r"^@@ -(\d+)(?:,\d+)? \+\d+(?:,\d+)? @@")
@@ -123,12 +124,23 @@ def anchored_runs(hunk: Hunk) -> list[tuple[list[str], list[str], list[str]]]:
 
 
 def run_applied(body: list[str], hunk: Hunk) -> bool:
-    """A hunk that only adds lines: each added block is where the hunk puts it, or is a distinct multi-line block."""
+    """A hunk that only adds lines: each added block is where the hunk puts it, or is a distinct multi-line block.
+
+    When the hunk has context on both sides, both sides have to match. One side is not enough: the same
+    added line can sit after the same three lines in a different function.
+    """
     runs = anchored_runs(hunk)
     if not runs:
         return False
     for before, run, after in runs:
-        placed = (bool(before) and contains_run(body, before + run)) or (bool(after) and contains_run(body, run + after))
+        if before and after:
+            placed = contains_run(body, before + run) and contains_run(body, run + after)
+        elif before:
+            placed = contains_run(body, before + run)
+        elif after:
+            placed = contains_run(body, run + after)
+        else:
+            placed = False
         distinct = len(run) >= 2 and contains_run(body, run)
         if not (placed or distinct):
             return False

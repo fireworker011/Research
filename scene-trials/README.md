@@ -76,12 +76,14 @@ bytes is reported as a conflict and kept unless `--overwrite` is given.
 
 scene-trials never imports or runs the factory. `export` writes, per batch, the factory's own `--jobs`
 JSON (`_meta/sd_diff_set/{batch}.json`) and a run script (`sd_diff_set_run.ps1` and `.sh`). A person runs
-the script inside the Python that hosts reForge. `collect` then reads the factory's ledger
+the script. With `--run`, both the base and the diffs are posted to the chosen WebUI API, so the script does
+not have to run inside the reForge process. `collect` then reads the factory's ledger
 (`diffs/pipeline.json`), each image's `manifest.json`, the sorted base and the `.transparent.png` files.
 
 * The factory job `id` is the scene-trials job id. The factory names everything after it.
 * A chain job asks for `stages` up to the last needed stage. A solo scene asks for `["none"]`: it gets its
-  base, hands and feet, and no pattern stage.
+  base and no pattern stage. Hands and feet are painted unless `backend.options.limbs: false`, which writes
+  `--no-limbs`.
 * The factory refuses a job without sampler, steps, CFG, model, so `backend.options.generation` is required.
 * `face_pass: skip` or `optional` is written only when `backend.options.factory_face_pass: true`. Otherwise
   `export` refuses, because the unpatched factory would ignore the key. The patch is in `factory-patches/`.

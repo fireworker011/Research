@@ -3,8 +3,9 @@
 This adapter never imports the factory and never runs it. It does three jobs:
 
 * write the factory's ``--jobs`` JSON for each batch (``export_batch``),
-* write the command lines a person runs inside the reForge process
-  (``run_commands``),
+* write the command lines a person runs (``run_commands``). With ``--run`` the
+  factory posts both txt2img and inpaint to the chosen WebUI API, so the
+  command does not have to sit inside the reForge process.
 * read what the factory left behind (``pipeline.json``, per-image
   ``manifest.json``, the sorted base and the ``.transparent.png`` files) and
   hand it to the collector (``produced_files``).
@@ -57,6 +58,10 @@ class SdDiffSetBackend:
         if check is not None and check not in _LORA_CHECK:
             raise BackendError("backend_option", f"lora_check must be one of {_LORA_CHECK}, got {check!r}")
         self.lora_check = None if check is None else str(check)
+        limbs = options.get("limbs", True)
+        if not isinstance(limbs, bool):
+            raise BackendError("backend_option", f"limbs must be true or false, got {limbs!r}")
+        self.limbs = limbs
         self.generation = _generation(options.get("generation"))
 
     @property
@@ -108,6 +113,8 @@ class SdDiffSetBackend:
                 args.extend(["--colab-api", quote(self.colab_api)])
             if self.lora_check:
                 args.extend(["--lora-check", self.lora_check])
+            if not self.limbs:
+                args.append("--no-limbs")
             lines.append(f"# batch {batch.batch_id}")
             lines.append(" ".join(args))
         return lines

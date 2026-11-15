@@ -121,6 +121,19 @@ class ExportTests(Fixture):
                 {"work_dir": "w", "lora_check": "maybe", "generation": {"sampler_name": "a", "steps": 1, "cfg_scale": 1, "model": "m"}}
             )
 
+    def test_limbs_off_is_the_only_way_the_script_skips_them(self) -> None:
+        plan = self.plan()
+        files = {batch.batch_id: self.root / f"{batch.batch_id}.json" for batch in plan.batches}
+        self.assertNotIn("--no-limbs", "\n".join(self.backend(plan).run_commands(plan, "sh", files)))
+        text = project_text().replace("factory_face_pass: true", "factory_face_pass: true\n    limbs: false")
+        project_dir = helpers.make_project(self.root / "limbs", project=text)
+        plan = build_plan(load_project(project_dir))
+        self.assertIn("--no-limbs", "\n".join(self.backend(plan).run_commands(plan, "sh", files)))
+        with self.assertRaises(BackendError):
+            SdDiffSetBackend(
+                {"work_dir": "w", "limbs": "no", "generation": {"sampler_name": "a", "steps": 1, "cfg_scale": 1, "model": "m"}}
+            )
+
     def test_run_commands_quote_per_shell_and_carry_the_declaration(self) -> None:
         plan = self.plan(colab="https://example.gradio.live")
         backend = self.backend(plan)
