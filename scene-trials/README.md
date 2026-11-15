@@ -95,6 +95,7 @@ Checks that use the real factory (they need its source, not this repository):
 ```sh
 python integration/check_sd_diff_set.py <extensions/sd-diff-set>     # end to end, GPU parts faked
 python integration/preflight_routes.py <extensions/sd-diff-set> projects/pronant   # offline, per job
+python integration/run_project.py <extensions/sd-diff-set> projects/pronant         # whole project, GPU faked
 ```
 
 `preflight_routes.py` asks the factory's own router and planner what each job would do and lists any job

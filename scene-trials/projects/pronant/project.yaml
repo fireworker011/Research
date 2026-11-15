@@ -69,9 +69,9 @@ backend:
     work_dir: C:/sd-out/auto       # inbox, sorted, diffs, generated live under it
     factory_dir: C:/work/sd-diff-set/extensions/sd-diff-set
     finish: game                   # game | album | both
-    # Set to true only after factory-patches/0001 is applied. Until then `export` refuses the two
-    # chains that use face_pass: skip, because the unpatched factory would ignore the key.
-    factory_face_pass: false
+    # True means the factory has factory-patches/0001 applied. With false, `export` refuses the two chains
+    # that use face_pass: skip, because an unpatched factory would ignore the key.
+    factory_face_pass: true
     generation:                    # the factory refuses a job that lacks any of these (settings_missing)
       sampler_name: Euler a
       steps: 28

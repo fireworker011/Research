@@ -11,26 +11,19 @@ and collects from the files the factory wrote.
 
 from __future__ import annotations
 
-import io
 import json
 import os
 import sys
 import tempfile
 from pathlib import Path
-from unittest import mock
-
-from PIL import Image
 
 HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE.parent / "src"))
 FACTORY = Path(sys.argv[1]).resolve()
 sys.path.insert(0, str(FACTORY))
+sys.path.insert(0, str(HERE))
 
-from sd_diff_set.executor import GenerationHost, InpaintJob  # noqa: E402
-from sd_diff_set.factory_line import load_jobs, run_factory  # noqa: E402
-from sd_diff_set.pipeline import PipelineSettings  # noqa: E402
-from sd_diff_set.png_text import upsert_parameters  # noqa: E402
-from sd_diff_set.service import run_job  # noqa: E402
+import fake_gpu  # noqa: E402  (needs the factory on sys.path)
 
 from scene_trials.backends import get_backend  # noqa: E402
 from scene_trials.cli import main as scene_main  # noqa: E402
@@ -39,7 +32,6 @@ from scene_trials.layout import Layout  # noqa: E402
 from scene_trials.plan import build_plan  # noqa: E402
 from scene_trials.project import load_project  # noqa: E402
 
-SIZE = 64
 SCENES = """category,subcategory,pose,diff_stage,positive_prompt,negative_prompt
 sprite,idle,standing,01,"solo, 1girl, standing, simple background","low quality"
 act,one,pose_a,01,"1girl, 1boy, solo focus, simple background","low quality"
@@ -88,74 +80,6 @@ def check(condition: bool, message: str) -> None:
 check.failed = 0
 
 
-_CALLS = {"n": 0}
-
-
-def png_bytes() -> bytes:
-    """A different picture per call, as real seeds give. The factory merges identical files."""
-    _CALLS["n"] += 1
-    image = Image.new("RGB", (SIZE, SIZE), (255, 255, 255))
-    for x in range(20, 44):
-        for y in range(10, 54):
-            image.putpixel((x, y), (200, 80, (_CALLS["n"] * 17) % 256))
-    buffer = io.BytesIO()
-    image.save(buffer, "PNG")
-    return buffer.getvalue()
-
-
-class Host(GenerationHost):
-    def inpaint(self, job: InpaintJob) -> None:
-        job.dest.write_bytes(job.init_path.read_bytes())
-        upsert_parameters(job.dest, job.parameters_text)
-
-
-def regions(_image: Path, _model: Path) -> list[tuple[str, tuple[float, float, float, float]]]:
-    return [("anus", (20, 30, 30, 40)), ("penis", (24, 20, 34, 32)), ("female face", (22, 4, 38, 18))]
-
-
-def run_factory_on(work: Path, batch_file: Path, face_pass_supported: bool) -> None:
-    weights = work / "weights"
-    weights.mkdir(parents=True, exist_ok=True)
-    for name in ("face_yolov8n.pt", "hand_yolov8n.pt", "foot_yolov8x_v2.pt", "nsfw-anime-medium-x1280.pt"):
-        (weights / name).write_bytes(b"")
-    state = {"face": 0}
-
-    def detect(_image: Path, model: str, dest: Path) -> Path:
-        if model == "face_yolov8n.pt":
-            state["face"] += 1
-        Image.new("L", (SIZE, SIZE), 255).save(dest)
-        return dest
-
-    def paint(**kwargs: object) -> dict[str, object]:
-        return run_job(**kwargs, host=Host())  # type: ignore[arg-type]
-
-    settings = PipelineSettings(
-        inbox=work / "inbox",
-        sorted_dir=work / "sorted",
-        output_dir=work / "diffs",
-        preset_dir=FACTORY / "presets",
-        adult_ok=True,
-        dry_run=False,
-        overwrite=False,
-        limbs=True,
-    )
-    with mock.patch.dict(os.environ, {"SD_DIFF_WEIGHTS_DIR": str(weights)}), mock.patch(
-        "sd_diff_set.regions._predict_regions", regions
-    ), mock.patch("sd_diff_set.executor.detect_mask", detect):
-        payload = run_factory(
-            settings=settings,
-            jobs=load_jobs(batch_file),
-            poster=lambda _api, _payload: png_bytes(),
-            dry_run=False,
-            once=True,
-            run_job=paint,
-        )
-    statuses = {row["id"]: row["status"] for row in payload["jobs"]}  # type: ignore[index]
-    print("factory jobs:", statuses)
-    print("face detector calls:", state["face"])
-    run_factory_on.face_calls = state["face"]  # type: ignore[attr-defined]
-
-
 def main() -> int:
     face_pass_supported = "face_pass" in (FACTORY / "sd_diff_set" / "planner.py").read_text(encoding="utf-8")
     print(f"factory: {FACTORY}  face_pass patch present: {face_pass_supported}")
@@ -193,8 +117,11 @@ def main() -> int:
         script = (meta / "sd_diff_set_run.sh").read_text(encoding="utf-8")
         check("--adult-ok" in script and "--jobs" in script and "--run" in script, "run script written")
 
+        face_calls: list[str] = []
         for trial in (1, 2):
-            run_factory_on(work, meta / "sd_diff_set" / f"t{trial}-b1.json", face_pass_supported)
+            result = fake_gpu.run_batch(FACTORY, work, meta / "sd_diff_set" / f"t{trial}-b1.json")
+            print(f"trial {trial} factory jobs:", {row["id"]: row["status"] for row in result["jobs"]})  # type: ignore[union-attr]
+            face_calls = result["face_calls"]  # type: ignore[assignment]
 
         plan = build_plan(load_project(project_dir))
         backend = get_backend(plan.project.backend, project_dir)
@@ -220,8 +147,8 @@ def main() -> int:
         check(creampie.stage == "creampie", "S03 is served by stage creampie")
         rear_result = by[("S04_pose_b_01", 1)]
         check(any("face_pass_skipped" in w for w in rear_result.warnings) == face_pass_supported, "rear chain face pass skipped only with the patch")
-        face_calls = getattr(run_factory_on, "face_calls", None)
-        print("last-run face detector calls:", face_calls)
+        rear_calls = [name for name in face_calls if "rear_chain" in name]
+        check(bool(rear_calls) != face_pass_supported, "the face detector ignores the rear chain only with the patch")
     print("FAILED" if check.failed else "ALL OK")
     return 1 if check.failed else 0
 
