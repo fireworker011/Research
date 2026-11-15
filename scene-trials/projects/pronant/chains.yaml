@@ -15,6 +15,7 @@ chains:
     stage_order: [imminent, tip, hilt, creampie, withdrawn]
     scenes: {10: hilt, 11: creampie}
     needs_face_visible: true
+    face_pass: skip          # rear view: no face to detect
   anal_all_fours:
     category: anal
     base: 13
@@ -22,6 +23,7 @@ chains:
     stage_order: [imminent, tip, hilt, creampie, withdrawn]
     scenes: {13: hilt}
     needs_face_visible: true
+    face_pass: skip          # rear view: no face to detect
   anal_cowgirl:
     category: anal
     base: 15
