@@ -5,21 +5,29 @@ Usage: python apply_patches.py <extensions/sd-diff-set> [--check] [--patch FILE 
 `git apply` fails on a Windows checkout when the files have CRLF line endings or have drifted a few lines.
 This tool reads the same patch files, finds each hunk's old text in the target file (ignoring line endings
 and line numbers), and replaces it. It keeps each file's own line ending, skips a hunk that is already applied,
-and writes nothing for a file unless every hunk of that file matched. Run with --check first.
+and writes nothing unless every patch matched. A record of what it applied is kept in .sd-diff-set-patches.json, so
+a second run does not repeat a patch; --force ignores the record and relies on per-hunk detection. Run with --check first.
 
-By default it applies 0001-face-pass-mode.patch and then 0002-limb-repairs-feed-the-diffs.patch from this folder.
+By default it applies 0001, 0002 and 0003 from this folder, in that order.
 """
 
 from __future__ import annotations
 
 import argparse
+import hashlib
+import json
 import re
 import sys
 from dataclasses import dataclass, field
 from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
-DEFAULT_PATCHES = ("0001-face-pass-mode.patch", "0002-limb-repairs-feed-the-diffs.patch")
+DEFAULT_PATCHES = (
+    "0001-face-pass-mode.patch",
+    "0002-limb-repairs-feed-the-diffs.patch",
+    "0003-lora-check.patch",
+)
+MARKER = ".sd-diff-set-patches.json"
 HUNK = re.compile(r"^@@ -(\d+)(?:,\d+)? \+\d+(?:,\d+)? @@")
 
 
@@ -28,6 +36,7 @@ class Hunk:
     start: int
     old: list[str] = field(default_factory=list)
     new: list[str] = field(default_factory=list)
+    seq: list[tuple[str, bool]] = field(default_factory=list)
 
 
 @dataclass
@@ -62,13 +71,15 @@ def parse(text: str) -> list[FilePatch]:
             if raw.startswith("\\"):
                 continue
             tag, body = raw[:1], raw[1:]
-            if tag == " ":
+            if tag == "+":
+                hunk.new.append(body)
+                hunk.seq.append((body, True))
+            elif tag == " ":
                 hunk.old.append(body)
                 hunk.new.append(body)
+                hunk.seq.append((body, False))
             elif tag == "-":
                 hunk.old.append(body)
-            elif tag == "+":
-                hunk.new.append(body)
     return patches
 
 
@@ -84,11 +95,51 @@ def find_block(text: str, lines: list[str], hint: int) -> list[int]:
     return sorted(hits, key=lambda i: abs(i + 1 - hint))
 
 
-def loosely_applied(text: str, old: list[str], new: list[str]) -> bool:
-    """Every added line is present and no removed line is: the hunk was applied and then touched nearby."""
-    present = set(text.split("\n"))
-    added = [line for line in new if line.strip() and line not in old]
-    removed = [line for line in old if line.strip() and line not in new]
+def contains_run(body: list[str], run: list[str]) -> bool:
+    size = len(run)
+    return any(body[i : i + size] == run for i in range(len(body) - size + 1))
+
+
+def anchored_runs(hunk: Hunk) -> list[tuple[list[str], list[str], list[str]]]:
+    """Each block of added lines with up to three lines of the new text before and after it."""
+    found: list[tuple[list[str], list[str], list[str]]] = []
+    seq = hunk.seq
+    index = 0
+    while index < len(seq):
+        if not seq[index][1]:
+            index += 1
+            continue
+        end = index
+        while end < len(seq) and seq[end][1]:
+            end += 1
+        run = [line for line, _ in seq[index:end]]
+        before = [line for line, _ in seq[max(0, index - 3) : index]]
+        after = [line for line, _ in seq[end : end + 3]]
+        found.append((before, run, after))
+        index = end
+    return [item for item in found if any(line.strip() for line in item[1])]
+
+
+def run_applied(body: list[str], hunk: Hunk) -> bool:
+    """A hunk that only adds lines: each added block is where the hunk puts it, or is a distinct multi-line block."""
+    runs = anchored_runs(hunk)
+    if not runs:
+        return False
+    for before, run, after in runs:
+        placed = (bool(before) and contains_run(body, before + run)) or (bool(after) and contains_run(body, run + after))
+        distinct = len(run) >= 2 and contains_run(body, run)
+        if not (placed or distinct):
+            return False
+    return True
+
+
+def replacement_applied(body: list[str], hunk: Hunk) -> bool:
+    """A hunk that removes lines: its added blocks sit where it put them, or its added lines are all there and none of the removed ones are."""
+    if run_applied(body, hunk):
+        return True
+    present = set(body)
+    added = [line for line in hunk.new if line.strip() and line not in hunk.old]
+    removed = [line for line in hunk.old if line.strip() and line not in hunk.new]
     return bool(added) and all(line in present for line in added) and not any(line in present for line in removed)
 
 
@@ -98,22 +149,25 @@ def apply_hunks(text: str, patch: FilePatch) -> tuple[str, list[str]]:
         old, new = list(hunk.old), list(hunk.new)
         if old == new:
             continue
+        context = sum(1 for _, added in hunk.seq if not added)
+        removes = len(old) != context
+        body = text.split("\n")
+        applied = replacement_applied(body, hunk) if removes else run_applied(body, hunk)
         hits = find_block(text, old, hunk.start) if old else []
+        if applied and (not removes or not hits):
+            notes.append(f"hunk {number}: already applied")
+            continue
         if hits:
             if len(hits) > 1:
                 notes.append(f"hunk {number}: {len(hits)} places match, took the one nearest line {hunk.start}")
-            body = text.split("\n")
-            index = hits[0]
-            body[index : index + len(old)] = new
+            body[hits[0] : hits[0] + len(old)] = new
             text = "\n".join(body)
             continue
-        if new and find_block(text, new, hunk.start):
-            notes.append(f"hunk {number}: already applied")
-            continue
-        if loosely_applied(text, old, new):
-            notes.append(f"hunk {number}: already applied (a later edit changed its surroundings)")
-            continue
-        raise ValueError(f"hunk {number} (near line {hunk.start}) does not match: first old line {old[0]!r}" if old else f"hunk {number} has nothing to anchor on")
+        raise ValueError(
+            f"hunk {number} (near line {hunk.start}) does not match: first old line {old[0]!r}"
+            if old
+            else f"hunk {number} has nothing to anchor on"
+        )
     return text, notes
 
 
@@ -121,6 +175,7 @@ def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("extension", type=Path, help="the sd-diff-set extension folder")
     parser.add_argument("--check", action="store_true", help="report only, write nothing")
+    parser.add_argument("--force", action="store_true", help="ignore the record of patches this tool already applied")
     parser.add_argument("--patch", action="append", type=Path, help="patch file (default: 0001 then 0002)")
     args = parser.parse_args()
     root = args.extension.resolve()
@@ -131,9 +186,19 @@ def main() -> int:
     failed = 0
     texts: dict[Path, str] = {}
     eols: dict[Path, str] = {}
+    marker = root / MARKER
+    recorded: dict[str, str] = {}
+    if marker.is_file() and not args.force:
+        recorded = json.loads(marker.read_text(encoding="utf-8"))
+    applied_now: dict[str, str] = dict(recorded)
     sample_eol = eol_of((root / "sd_diff_set" / "planner.py").read_bytes())
     for patch_file in patch_files:
+        digest = hashlib.sha256(patch_file.read_bytes()).hexdigest()
+        if recorded.get(patch_file.name) == digest:
+            print(f"== {patch_file.name}: recorded as applied by this tool (use --force to apply again)")
+            continue
         print(f"== {patch_file.name}")
+        before = failed
         for patch in parse(patch_file.read_text(encoding="utf-8")):
             relative = patch.path.split("/", 1)[1] if patch.path.startswith("sd-diff-set/") else patch.path
             target = root / relative
@@ -167,10 +232,13 @@ def main() -> int:
             texts[target] = updated
             label = "CRLF" if eols[target] == "\r\n" else "LF"
             print(f"  ok {relative} ({label}, {len(patch.hunks)} hunks){' ' + '; '.join(notes) if notes else ''}")
+        if failed == before:
+            applied_now[patch_file.name] = digest
     if not args.check and not failed:
         for target, text in texts.items():
             target.parent.mkdir(parents=True, exist_ok=True)
             target.write_bytes(text.replace("\n", eols[target]).encode("utf-8"))
+        marker.write_text(json.dumps(applied_now, indent=2), encoding="utf-8")
     elif not args.check:
         print("a patch failed, so nothing was written")
     print("nothing written (--check)" if args.check else ("done" if not failed else ""))

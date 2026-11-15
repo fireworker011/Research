@@ -32,6 +32,7 @@ _FACTORY_OWN = (".mask", "_diff-", ".clip", ".face", ".region", ".detect", ".tra
 _REQUIRED_GENERATION = ("sampler_name", "steps", "cfg_scale", "model")
 _OPTIONAL_GENERATION = ("scheduler", "clip_skip")
 _FINISH = ("game", "album", "both")
+_LORA_CHECK = ("error", "warn", "off")
 _ANCHORS = ("diffs", "sorted", "generated", "inbox")
 _SUFFIX = "[0-9a-f]{8}"
 
@@ -52,6 +53,10 @@ class SdDiffSetBackend:
         if self.finish not in _FINISH:
             raise BackendError("backend_option", f"finish must be one of {_FINISH}, got {self.finish!r}")
         self.supports_face_pass = bool(options.get("factory_face_pass", False))
+        check = options.get("lora_check")
+        if check is not None and check not in _LORA_CHECK:
+            raise BackendError("backend_option", f"lora_check must be one of {_LORA_CHECK}, got {check!r}")
+        self.lora_check = None if check is None else str(check)
         self.generation = _generation(options.get("generation"))
 
     @property
@@ -101,6 +106,8 @@ class SdDiffSetBackend:
             ]
             if self.colab_api:
                 args.extend(["--colab-api", quote(self.colab_api)])
+            if self.lora_check:
+                args.extend(["--lora-check", self.lora_check])
             lines.append(f"# batch {batch.batch_id}")
             lines.append(" ".join(args))
         return lines
@@ -151,6 +158,8 @@ class SdDiffSetBackend:
         warnings: list[str] = []
         if row_error:
             warnings.append(f"paint: {row_error}")
+        lora_notes = tuple(str(note) for note in row.get("lora_notes") or [])
+        warnings.extend(lora_notes)
         if category in ("refused", "error"):
             output.files.append(
                 ProducedFile(job.job_id, Role.BASE, None, base_path or Path(""), False, row_error or category)
@@ -176,7 +185,7 @@ class SdDiffSetBackend:
                 continue
             produced = self._resolve(item.get("path"))
             status = _text(item.get("status"))
-            item_warnings = tuple(str(w) for w in item.get("warnings") or [])
+            item_warnings = tuple(str(w) for w in item.get("warnings") or []) + lora_notes
             if status != "ok" or produced is None:
                 code = _text(item.get("error_code")) or status or "no_output"
                 output.files.append(

@@ -98,6 +98,10 @@ python integration/preflight_routes.py <extensions/sd-diff-set> projects/pronant
 python integration/run_project.py <extensions/sd-diff-set> projects/pronant         # whole project, GPU faked
 ```
 
+If LoRA tags seem to have no effect, run `python tools/diagnose_lora.py <WebUI api url> --jobs <batch.json> --generate`.
+The WebUI drops a `<lora:name:...>` tag whose name it does not list, silently. Factory patch 0003 makes the
+factory check this before posting.
+
 `preflight_routes.py` asks the factory's own router and planner what each job would do and lists any job
 whose category or stages differ from the chain.
 

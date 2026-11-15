@@ -108,6 +108,19 @@ class ExportTests(Fixture):
             self.backend(plan).export_batch(plan, plan.batches[0], self.root / "o")
         self.assertEqual(caught.exception.code, "job_id_reserved")
 
+    def test_lora_check_flag_is_written_only_when_asked(self) -> None:
+        plan = self.plan()
+        files = {batch.batch_id: self.root / f"{batch.batch_id}.json" for batch in plan.batches}
+        self.assertNotIn("--lora-check", "\n".join(self.backend(plan).run_commands(plan, "sh", files)))
+        text = project_text().replace("factory_face_pass: true", "factory_face_pass: true\n    lora_check: warn")
+        project_dir = helpers.make_project(self.root / "lc", project=text)
+        plan = build_plan(load_project(project_dir))
+        self.assertIn("--lora-check warn", "\n".join(self.backend(plan).run_commands(plan, "sh", files)))
+        with self.assertRaises(BackendError):
+            SdDiffSetBackend(
+                {"work_dir": "w", "lora_check": "maybe", "generation": {"sampler_name": "a", "steps": 1, "cfg_scale": 1, "model": "m"}}
+            )
+
     def test_run_commands_quote_per_shell_and_carry_the_declaration(self) -> None:
         plan = self.plan(colab="https://example.gradio.live")
         backend = self.backend(plan)
@@ -175,6 +188,7 @@ class ProducedFilesTests(Fixture):
                     "manifest": str(manifest),
                     "transparent": str(clear),
                     "working": str(sorted_png),
+                    "lora_notes": ["lora_missing: ghost"],
                 }
             },
         )
@@ -193,6 +207,7 @@ class ProducedFilesTests(Fixture):
         self.assertIn(Role.TRANSPARENT, {f.role for f in files})
         self.assertIn((Role.MASK, "bright"), by)
         self.assertTrue(any("face_pass_skipped" in w for w in by[(Role.STAGE, "dim")].warnings))
+        self.assertIn("lora_missing: ghost", by[(Role.STAGE, "bright")].warnings)
         self.assertTrue(any(w.startswith("paint:") for w in by[(Role.BASE, None)].warnings))
         self.assertEqual([f for f in output.files if f.job_id.endswith("-t2")], [])
 
@@ -216,6 +231,29 @@ class ProducedFilesTests(Fixture):
         output = self.backend(plan).produced_files(plan)
         base = next(f for f in output.files if f.role is Role.BASE)
         self.assertEqual(base.path, paths["sorted"])
+
+    def test_lora_notes_from_the_ledger_reach_the_scene_warnings(self) -> None:
+        plan = self.plan()
+        work = self.project_dir / "work"
+        stem = "demo-S01_standing_01-t1"
+        _ledger(
+            work,
+            {
+                "ccc": {
+                    "source": str(work / "generated" / f"{stem}.png"),
+                    "sorted": str(_write(work / "sorted" / "expr4" / f"{stem}.png")),
+                    "category": "expr4",
+                    "status": "ok",
+                    "lora_notes": ["lora_not_applied: the picture has no Lora hashes: nieva_xl"],
+                }
+            },
+        )
+        output = self.backend(plan).produced_files(plan)
+        base = next(f for f in output.files if f.role is Role.BASE)
+        self.assertIn("lora_not_applied", " ".join(base.warnings))
+        report = collect(plan, output, backend_name="sd_diff_set")
+        solo = next(r for r in report.results if r.scene_id == "S01_standing_01" and r.trial == 1)
+        self.assertTrue(any("lora_not_applied" in w for w in solo.warnings))
 
     def test_refused_row_is_a_failed_base(self) -> None:
         plan = self.plan()
