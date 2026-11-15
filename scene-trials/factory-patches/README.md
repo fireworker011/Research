@@ -36,7 +36,7 @@ every file matched.
 
 ```
 python apply_patches.py <path to extensions/sd-diff-set> --check     # report only
-python apply_patches.py <path to extensions/sd-diff-set>             # apply 0001, 0002 and 0003
+python apply_patches.py <path to extensions/sd-diff-set>             # apply 0001 through 0004
 python rebuild_bundle.py <path to extensions/sd-diff-set> --zip factory_extension.zip
 ```
 
@@ -49,7 +49,7 @@ the shared tree to CRLF: `git apply --check` fails in `cli.py`, `executor.py` an
 top and bottom of every patched file (so every line number moves). It was run repeatedly on each (a record in
 `.sd-diff-set-patches.json` skips a patch it already applied; `--force` ignores the record and relies on per-hunk
 detection), and on 16 random half-patched states of the kind `git apply --reject` leaves behind (some hunks already
-in, half of them CRLF). Every case ends with the same files as the verified tree and all 187 factory tests passing.
+in, half of them CRLF). Every case ends with the same files as the verified tree and all 190 factory tests passing.
 If a hunk really does not match, it names the file, the hunk, and the
 first line it looked for, and writes nothing. Send that file and I can regenerate the patch against your copy.
 
@@ -124,12 +124,29 @@ What 0003 adds, so the cause shows up instead of staying silent:
 * The result is kept in the ledger row (`lora`, `lora_notes`), printed by the `factory` command, and passed on to
   scene-trials, which shows it in each scene's `manifest.json` warnings.
 
-Adds `sd_diff_set/lora_check.py` and `tests/test_lora_check.py` (12 tests). The factory suite is 187 tests with the
-three patches, all passing. The check needs `--api` on the WebUI (the factory already needs it).
+Adds `sd_diff_set/lora_check.py` and `tests/test_lora_check.py` (12 tests). The factory suite is 187 tests with the three patches, and 190 with 0004, all passing. The check needs `--api` on the WebUI (the factory already needs it).
 
 `tools/diagnose_lora.py <api url> --jobs batch.json [--generate]` asks a running WebUI directly: which tag names it
 does not list, and, with `--generate`, whether a tiny picture made with the tags differs from one made without and
 lists them under `Lora hashes`. Run it against the Colab URL to answer question 3 for certain.
+
+## 0004-keep-base-lora-tags.patch (apply after 0003)
+
+Checked on the real planner before this patch: a base prompt carrying `<lora:caststyle_xl_epoch08:0.9>` and
+`<lyco:nieva_xl:0.8>` already kept both tags in all 23 stage prompts, body and face. `edit_prompt` removes tags by
+exact text, and no stage's remove list names a LoRA tag, so nothing was dropping them. reForge then parses
+`<lora:...>` out of that prompt inside `process_images` and activates the LoRA for the inpaint. The empty script
+list the factory uses (to keep ADetailer off) does not turn that off.
+
+0004 makes the keeping explicit. After each stage's prompt is built, every `<lora>` and `<lyco>` tag from the base
+is put back, so a stage whose `prompt_remove` names the tag cannot drop it. A tag already present is not copied a
+second time. The face prompt is left empty when that stage has no face pass.
+
+`tests/test_lora_prompt.py` checks all 23 stages and a stage that tries to remove the tag.
+
+The diff PNG's parameters are the factory's own text, not the WebUI infotext, so they contain the `<lora:...>` tag
+in the first line and do not contain a `Lora hashes` line. Only the masked region is regenerated. The rest stays
+the base image.
 
 ## Rebuilding the Colab bundle
 
