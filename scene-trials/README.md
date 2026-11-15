@@ -104,6 +104,10 @@ If LoRA tags seem to have no effect, run `python tools/diagnose_lora.py <WebUI a
 The WebUI drops a `<lora:name:...>` tag whose name it does not list, silently. Factory patch 0003 makes the
 factory check this before posting.
 
+`python tools/standing_jobs.py --scenes pronant_all_scenes.csv --templates pronant_delusion_prompts_full.csv`
+writes only the 立ち絵 rows as factory `--jobs` JSON. sora is left out. The default file is
+`C:\sd-out\auto\scenes\pronant\_meta\sd_diff_set\standing.json`.
+
 `preflight_routes.py` asks the factory's own router and planner what each job would do and lists any job
 whose category or stages differ from the chain.
 
