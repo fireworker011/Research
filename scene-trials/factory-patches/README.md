@@ -28,16 +28,32 @@ Where the value can be set, from the most specific:
 It reaches `Pipeline._paint` through the ledger row, then `route_file`, `run_job` and `build_plan`. The
 manifest item gains `face_optional`.
 
-Apply from the `extensions/` folder (the folder that contains `sd-diff-set/`):
+## How to apply
+
+Use `apply_patches.py`. It reads the two patch files and applies them by content: it ignores line numbers and
+line endings, keeps each file's own line ending, skips a hunk that is already there, and writes nothing unless
+every file matched.
 
 ```
-git apply --check -p1 0001-face-pass-mode.patch
-git apply -p1 0001-face-pass-mode.patch
+python apply_patches.py <path to extensions/sd-diff-set> --check     # report only
+python apply_patches.py <path to extensions/sd-diff-set>             # apply 0001, then 0002
+python rebuild_bundle.py <path to extensions/sd-diff-set> --zip factory_extension.zip
 ```
+
+Why `git apply` failed on `C:\work\sd-diff-set`: the patches have LF line endings. A Windows checkout with
+`core.autocrlf` turns the files into CRLF, so every context line differs. This was reproduced here by converting
+the shared tree to CRLF: `git apply --check` fails in `cli.py`, `executor.py` and the others, while
+`apply_patches.py` applies cleanly and leaves every file CRLF.
+
+`apply_patches.py` was also tried on a tree with unrelated lines added at the top and bottom of every patched
+file (so every line number moves), and on an already patched tree (a second run reports "already applied"). All
+three end with the 175 factory tests passing. If a hunk really does not match, it names the file, the hunk, and the
+first line it looked for, and writes nothing. Send that file and I can regenerate the patch against your copy.
 
 ### What is verified
 
-* The patch applies to the shared tree and the factory's 156 existing tests still pass.
+* The patch applies to the shared tree (`git apply` on LF, `apply_patches.py` on LF and CRLF) and the factory's
+  156 existing tests still pass.
 * It adds `tests/test_face_pass.py` with 16 tests. On the unpatched tree 14 of those 16 fail, so they do
   exercise the change.
 * `integration/check_sd_diff_set.py` and `integration/run_project.py` run the real factory with only the GPU
