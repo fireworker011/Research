@@ -110,6 +110,11 @@ trigger words (`irito_xl` and the others). The only LoRA tag is `caststyle_xl_ep
 `caststyle_xl` trigger. The default file is
 `C:\sd-out\auto\scenes\pronant\_meta\sd_diff_set\standing.json`.
 
+`colab/factory_cli.py` is the cell that runs that factory CLI inside the Colab notebook
+`最新の工場.ipynb`, against `http://127.0.0.1:7860`. It does not change factory stages or LoRA checks.
+Jobs live in Drive `sd-diff-set/jobs/`, outputs in `sd-diff-set/outputs/`, and a finished PNG recorded
+in `outputs/job_state.json` is not sent again. Logs append to `sd-diff-set/logs/`.
+
 `preflight_routes.py` asks the factory's own router and planner what each job would do and lists any job
 whose category or stages differ from the chain.
 
