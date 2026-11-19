@@ -1,0 +1,47 @@
+{
+  "work_no": 24,
+  "title": "【添い寝ASMR・本番あり】同棲3年目。29歳の彼女と、ローションの夜～なかは、聞いてから～【合成音声】",
+  "price_jpy": 880,
+  "price_note": "PR #186 の企画で置いた表示価格。この作品の販売本数は測っていない。",
+  "publish": false,
+  "original": true,
+  "all_characters_adult": true,
+  "real_people": false,
+  "penetration": true,
+  "heroine": {
+    "name": "白石茜",
+    "reading": "しらいし あかね",
+    "age": 29,
+    "job": "同棲3年目の彼女。社会人の成人"
+  },
+  "listener": "同棲3年目の成人のパートナー。台本では年齢を下に置かない",
+  "voice": {
+    "engine": "COEIROINK",
+    "speaker": "つくよみちゃん",
+    "style_hint": "ささやき。作品22より近く、息を多めに"
+  },
+  "booth": {
+    "category": "ささやき・癒し系",
+    "adult": true,
+    "tags": ["ASMR", "ASMR男性向け", "ASMR音声", "音声作品", "添い寝", "ささやき", "恋人同士", "中出し", "癒し"]
+  },
+  "dlsite": {
+    "age": "R-18",
+    "ai_option": "AI一部利用",
+    "ai_option_note": "表紙が画像生成AIのため。声は市販のCOEIROINK。",
+    "genres": ["ASMR", "恋人同士", "ラブラブ/あまあま", "中出し", "ささやき", "巨乳/爆乳", "バイノーラル/ダミヘ", "癒し"]
+  },
+  "planned_tracks": [
+    {"file": "part01", "title": "ただいま", "planned_minutes": 6},
+    {"file": "part02", "title": "風呂あがりに座る", "planned_minutes": 8},
+    {"file": "part03", "title": "ローションを出す前の確認", "planned_minutes": 8},
+    {"file": "part04", "title": "密着", "planned_minutes": 18},
+    {"file": "part05", "title": "いちばん近く", "planned_minutes": 18},
+    {"file": "part06", "title": "タオルと、明日の弁当", "planned_minutes": 12}
+  ],
+  "planned_minutes_note": "配分は企画の長さ。ファイルを測った時間ではない。",
+  "export": {
+    "wav": ["part01.wav", "part02.wav", "part03.wav", "part04.wav", "part05.wav", "part06.wav"],
+    "mp3": ["part01.mp3", "part02.mp3", "part03.mp3", "part04.mp3", "part05.mp3", "part06.mp3", "full.mp3"]
+  }
+}

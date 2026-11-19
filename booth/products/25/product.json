@@ -1,0 +1,46 @@
+{
+  "work_no": 25,
+  "title": "【甘サド・本番なし】閉店後。27歳のコンカフェ店員が、ご奉仕を数えて終わる～注文は、言葉だけ～【合成音声】",
+  "price_jpy": 1320,
+  "price_note": "PR #186 の企画で置いた表示価格。この作品の販売本数は測っていない。",
+  "publish": false,
+  "original": true,
+  "all_characters_adult": true,
+  "real_people": false,
+  "penetration": false,
+  "heroine": {
+    "name": "黒川澪",
+    "reading": "くろかわ みお",
+    "age": 27,
+    "job": "成人向けコンカフェの店員。この店で3年目の成人"
+  },
+  "listener": "常連の成人の客。台本では年齢を下に置かない",
+  "voice": {
+    "engine": "COEIROINK",
+    "speaker": "アンジーさん",
+    "style_hint": "甘く、カウントのときだけはっきり"
+  },
+  "booth": {
+    "category": "ボイス",
+    "adult": true,
+    "tags": ["ASMR", "ASMR男性向け", "ASMR音声", "音声作品", "言葉責め", "ささやき", "お姉さん", "本番なし", "手コキ"]
+  },
+  "dlsite": {
+    "age": "R-18",
+    "ai_option": "AI一部利用",
+    "ai_option_note": "表紙が画像生成AIのため。声は市販のCOEIROINK。",
+    "genres": ["女性優位", "言葉責め", "ささやき", "乳首責め", "手コキ", "本番なし", "淫語", "ラブラブ/あまあま"]
+  },
+  "planned_tracks": [
+    {"file": "part01", "title": "閉店の鍵", "planned_minutes": 5},
+    {"file": "part02", "title": "カウンターの内側に座らせる", "planned_minutes": 8},
+    {"file": "part03", "title": "注文を言葉で数える", "planned_minutes": 12},
+    {"file": "part04", "title": "手と、乳首の言葉", "planned_minutes": 15},
+    {"file": "part05", "title": "会計と、また来週", "planned_minutes": 10}
+  ],
+  "planned_minutes_note": "配分は企画の長さ。ファイルを測った時間ではない。",
+  "export": {
+    "wav": ["part01.wav", "part02.wav", "part03.wav", "part04.wav", "part05.wav"],
+    "mp3": ["part01.mp3", "part02.mp3", "part03.mp3", "part04.mp3", "part05.mp3", "full.mp3"]
+  }
+}
