@@ -10,8 +10,8 @@
  *
  * 収集するもの:
  * - Threads Insights API: フォロワー数、投稿ごとの views/likes/replies/reposts
- * - data/conversions.csv: ASP 管理画面から手動エクスポートした成果データ
- *   （date,genre,amount_jpy,status[approved|pending|rejected]）
+ * - data/conversions.csv: 売上の正本。列は 日付,媒体,プログラム,クリック,成果,確定円,出典
+ *   （旧名 date,source,program,clicks,cv,approved_yen,note も読む。amount_jpy は円にしない）
  *
  * 出力:
  * - output/reports/report_YYYY-MM-DD.md   日次レポート
@@ -85,31 +85,43 @@ async function collectAccountMetrics(account) {
   return result;
 }
 
-/** ASP 成果 CSV（手動エクスポート）を月次集計 */
+function cell(row, keys) {
+  for (const key of keys) {
+    if (Object.prototype.hasOwnProperty.call(row, key) && row[key] !== undefined && row[key] !== '') {
+      return String(row[key]);
+    }
+  }
+  return '';
+}
+
+/** 売上台帳。確定円（または approved_yen）だけを足す。空欄と amount_jpy は円にしない。 */
 function loadConversions() {
   const csvPath = path.join(OUTPUT_DIR, '..', 'data', 'conversions.csv');
   if (!fs.existsSync(csvPath)) return null;
 
   const rows = parseCSV(fs.readFileSync(csvPath, 'utf-8'));
   const thisMonth = todayJST().slice(0, 7); // YYYY-MM
-  const monthly = rows.filter((r) => (r.date || '').startsWith(thisMonth));
-
   const byGenre = {};
   let approvedTotal = 0;
-  let pendingTotal = 0;
-  for (const r of monthly) {
-    const amount = parseInt(r.amount_jpy || '0', 10);
-    byGenre[r.genre] = byGenre[r.genre] || { approved: 0, pending: 0, count: 0 };
-    byGenre[r.genre].count++;
-    if (r.status === 'approved') {
-      byGenre[r.genre].approved += amount;
-      approvedTotal += amount;
-    } else if (r.status === 'pending') {
-      byGenre[r.genre].pending += amount;
-      pendingTotal += amount;
-    }
+  let count = 0;
+  for (const r of rows) {
+    const date = cell(r, ['日付', 'date']);
+    if (!date || date.startsWith('#')) continue;
+    if (!date.startsWith(thisMonth)) continue;
+    const yenRaw = cell(r, ['確定円', 'approved_yen']);
+    if (yenRaw === '') continue;
+    const amount = parseInt(yenRaw, 10);
+    if (!Number.isFinite(amount)) continue;
+    const note = cell(r, ['出典', 'note']);
+    if (/カタログ/.test(note) && amount > 0) continue;
+    const key = cell(r, ['プログラム', 'program', '媒体', 'source']) || 'all';
+    byGenre[key] = byGenre[key] || { approved: 0, pending: 0, count: 0 };
+    byGenre[key].count++;
+    byGenre[key].approved += amount;
+    approvedTotal += amount;
+    count++;
   }
-  return { approvedTotal, pendingTotal, byGenre, count: monthly.length };
+  return { approvedTotal, pendingTotal: 0, byGenre, count };
 }
 
 /** 目標との差分から必要アクションを逆算 */
@@ -151,6 +163,7 @@ function renderReport(date, accountMetrics, conversions, gap) {
   lines.push(`## 収益（目標: ¥${TARGET_MONTHLY_JPY.toLocaleString()}/月）`);
   lines.push('');
   if (conversions) {
+    lines.push('- 台帳: `data/conversions.csv`');
     lines.push(`- 今月の確定報酬: **¥${conversions.approvedTotal.toLocaleString()}**`);
     lines.push(`- 今月の未確定報酬: ¥${conversions.pendingTotal.toLocaleString()}`);
     lines.push(`- 月末着地予測（現在ペース）: **¥${gap.projectedMonthly.toLocaleString()}**`);
@@ -164,8 +177,8 @@ function renderReport(date, accountMetrics, conversions, gap) {
       lines.push(`| ${genre} | ${v.count} | ¥${v.approved.toLocaleString()} | ¥${v.pending.toLocaleString()} |`);
     }
   } else {
-    lines.push('- ⚠️ `data/conversions.csv` がありません。ASP 管理画面から成果をエクスポートして配置してください');
-    lines.push('  （フォーマット: `date,genre,amount_jpy,status`、status は approved/pending/rejected）');
+    lines.push('- ⚠️ `data/conversions.csv` がありません。売上の正本は `affiliate-engine/data/conversions.csv` です');
+    lines.push('  （列: `日付,媒体,プログラム,クリック,成果,確定円,出典`。空欄は0にしない。カタログ円は足すな）');
   }
   lines.push('');
   lines.push('## 必要ファネル（目標達成に必要な月間数値）');
@@ -266,7 +279,11 @@ async function main() {
   console.log(`   月末着地予測: ¥${gap.projectedMonthly.toLocaleString()} / 目標 ¥${TARGET_MONTHLY_JPY.toLocaleString()}`);
 }
 
-main().catch((err) => {
-  console.error('\n🔴 エラー:', err.message);
-  process.exit(1);
-});
+module.exports = { loadConversions, cell };
+
+if (require.main === module) {
+  main().catch((err) => {
+    console.error('\n🔴 エラー:', err.message);
+    process.exit(1);
+  });
+}
