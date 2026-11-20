@@ -1,0 +1,104 @@
+{
+  "slug": "kougaku-hayamihyo",
+  "durationSec": 15,
+  "fps": 24,
+  "callout": {
+    "fromSec": 0,
+    "toSec": 3,
+    "lines": ["100万円 → ", "92,940円"]
+  },
+  "heading": {
+    "fromSec": 3,
+    "toSec": 15,
+    "text": "70歳未満・年収約370万〜約510万円（3割負担）"
+  },
+  "columns": ["医療費", "自己負担の上限"],
+  "rows": [
+    {
+      "fromSec": 3.5,
+      "label": "100万円",
+      "amount": "92,940円",
+      "faintLabel": "窓口の3割",
+      "faintAmount": "30万円",
+      "highlight": [
+        { "fromSec": 3.5, "toSec": 5.5 },
+        { "fromSec": 6.4, "toSec": 9.4 }
+      ]
+    },
+    {
+      "fromSec": 5.5,
+      "label": "200万円",
+      "amount": "102,940円",
+      "faintLabel": "窓口の3割",
+      "faintAmount": "60万円",
+      "highlight": [{ "fromSec": 5.5, "toSec": 6.4 }]
+    },
+    {
+      "fromSec": 7.5,
+      "label": "300万円",
+      "amount": "112,940円",
+      "faintLabel": "窓口の3割",
+      "faintAmount": "90万円",
+      "highlight": [{ "fromSec": 7.5, "toSec": 8.2 }]
+    }
+  ],
+  "notes": [
+    {
+      "fromSec": 3.5,
+      "toSec": 15,
+      "emphasize": { "fromSec": 9.8, "toSec": 12.4 },
+      "lines": [
+        "上限＝85,800円＋（医療費－286,000円）×1%",
+        "令和8年8月診療分から"
+      ]
+    }
+  ],
+  "source": {
+    "fromSec": 10,
+    "toSec": 15,
+    "text": "令和8年8月診療分から／出典：厚生労働省"
+  },
+  "credit": {
+    "fromSec": 0,
+    "toSec": 15,
+    "text": "VOICEVOX:冥鳴ひまり"
+  },
+  "subtitles": [
+    {
+      "fromSec": 0,
+      "toSec": 2.5,
+      "pos": "top",
+      "lines": ["医療費100万円、いくら払う？", "高額療養費の早見表"]
+    },
+    {
+      "fromSec": 0.3,
+      "toSec": 2.7,
+      "pos": "bottom",
+      "lines": ["医療費100万円、窓口でいくら払う？"]
+    },
+    {
+      "fromSec": 3.1,
+      "toSec": 6,
+      "pos": "bottom",
+      "lines": ["70歳未満、年収約370万から", "510万円なら、"]
+    },
+    {
+      "fromSec": 6.4,
+      "toSec": 9.4,
+      "pos": "bottom",
+      "lines": ["上限は、9万2,940円まで。"]
+    },
+    {
+      "fromSec": 9.8,
+      "toSec": 12.4,
+      "pos": "bottom",
+      "lines": ["医療費が増えても、", "足されるのは1%ずつ。"]
+    },
+    {
+      "fromSec": 12.8,
+      "toSec": 14.8,
+      "pos": "bottom",
+      "lines": ["8月から、この金額に変わりました。"]
+    }
+  ]
+}

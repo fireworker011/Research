@@ -1,0 +1,105 @@
+{
+  "slug": "nenkin-kurisage",
+  "durationSec": 15,
+  "fps": 24,
+  "callout": {
+    "fromSec": 0,
+    "toSec": 3,
+    "lines": ["75歳 → ", "1,559,032円"],
+    "sub": "計算額"
+  },
+  "heading": {
+    "fromSec": 3,
+    "toSec": 15,
+    "text": "老齢基礎年金の満額のみ（厚生年金は含まない）／昭和31年4月2日以後生まれ・令和8年度"
+  },
+  "columns": ["請求", "年額"],
+  "rows": [
+    {
+      "fromSec": 3.5,
+      "label": "65歳（繰下げなし）",
+      "amount": "847,300円",
+      "tag": "公式の満額",
+      "highlight": [{ "fromSec": 6, "toSec": 9 }]
+    },
+    {
+      "fromSec": 5.5,
+      "label": "70歳0ヶ月（42.0%上乗せ）",
+      "amount": "1,203,166円",
+      "detailLead": "847,300円×1.42＝",
+      "tag": "計算額"
+    },
+    {
+      "fromSec": 7.5,
+      "label": "75歳（84.0%上乗せ・\n以降同じ）",
+      "amount": "1,559,032円",
+      "detailLead": "847,300円×1.84＝",
+      "tag": "計算額",
+      "highlight": [{ "fromSec": 9, "toSec": 12.8 }]
+    }
+  ],
+  "notes": [
+    {
+      "fromSec": 3.5,
+      "toSec": 15,
+      "lines": [
+        "増額率は日本年金機構の早見表。70歳の42.0%は、70歳0ヶ月の行。月が遅れると0.7%ずつ増える。75歳以降は84%で頭打ち",
+        "昭和27年4月1日以前生まれは、繰下げの上限が70歳（最大42%）"
+      ]
+    },
+    {
+      "fromSec": 12.8,
+      "toSec": 15,
+      "emphasize": { "fromSec": 12.8, "toSec": 15 },
+      "lines": ["待っている間、その年金は出ません"]
+    }
+  ],
+  "source": {
+    "fromSec": 10,
+    "toSec": 15,
+    "text": "出典：日本年金機構"
+  },
+  "credit": {
+    "fromSec": 0,
+    "toSec": 15,
+    "text": "VOICEVOX:冥鳴ひまり"
+  },
+  "subtitles": [
+    {
+      "fromSec": 0,
+      "toSec": 2.5,
+      "pos": "top",
+      "lines": ["75歳まで待つと、年額は？", "老齢基礎年金の繰下げ"]
+    },
+    {
+      "fromSec": 0.3,
+      "toSec": 2.6,
+      "pos": "bottom",
+      "lines": ["年金、75歳まで待つといくら？"]
+    },
+    {
+      "fromSec": 3,
+      "toSec": 5.6,
+      "pos": "bottom",
+      "lines": ["基礎年金を40年納めた満額なら、"]
+    },
+    {
+      "fromSec": 6,
+      "toSec": 8.6,
+      "pos": "bottom",
+      "lines": ["65歳は、年84万7,300円。"]
+    },
+    {
+      "fromSec": 9,
+      "toSec": 12.4,
+      "pos": "bottom",
+      "lines": ["75歳の計算額は、", "年155万9,032円。"]
+    },
+    {
+      "fromSec": 12.8,
+      "toSec": 14.8,
+      "pos": "bottom",
+      "lines": ["待つ間は、出ません。"]
+    }
+  ]
+}
