@@ -1,0 +1,56 @@
+20_MP3_その1.zip	89222166
+  20_MP3_その1/bonus.mp3	8876452
+  20_MP3_その1/env.mp3	72002917
+  20_MP3_その1/part01.mp3	8328925
+  20_MP3_その1/readme.txt	1672
+  20_MP3_その1/台本.txt	11556
+20_MP3_その2.zip	79495201
+  20_MP3_その2/part02.mp3	12834525
+  20_MP3_その2/part03.mp3	19146754
+  20_MP3_その2/part04.mp3	21554199
+  20_MP3_その2/part05.mp3	25957399
+  20_MP3_その2/readme.txt	1672
+20_MP3_その3.zip	45979759
+  20_MP3_その3/part06.mp3	22134117
+  20_MP3_その3/part07.mp3	23843570
+  20_MP3_その3/readme.txt	1672
+20_WAV_その1.zip	39135366
+  20_WAV_その1/bonus.wav	39133422
+  20_WAV_その1/readme.txt	1672
+20_WAV_その2.zip	84674536
+  20_WAV_その2/env_00.wav	84672590
+  20_WAV_その2/readme.txt	1672
+20_WAV_その3.zip	84674536
+  20_WAV_その3/env_01.wav	84672590
+  20_WAV_その3/readme.txt	1672
+20_WAV_その4.zip	84674536
+  20_WAV_その4/env_02.wav	84672590
+  20_WAV_その4/readme.txt	1672
+20_WAV_その5.zip	63504488
+  20_WAV_その5/env_03.wav	63502542
+  20_WAV_その5/readme.txt	1672
+20_WAV_その6.zip	93312248
+  20_WAV_その6/part01.wav	36720798
+  20_WAV_その6/part02.wav	56589378
+  20_WAV_その6/readme.txt	1672
+20_WAV_その7.zip	84429388
+  20_WAV_その7/part03.wav	84427442
+  20_WAV_その7/readme.txt	1672
+20_WAV_その8.zip	95043820
+  20_WAV_その8/part04.wav	95041874
+  20_WAV_その8/readme.txt	1672
+20_WAV_その9.zip	84674542
+  20_WAV_その9/part05_00.wav	84672590
+  20_WAV_その9/readme.txt	1672
+20_WAV_その10.zip	29791326
+  20_WAV_その10/part05_01.wav	29789370
+  20_WAV_その10/readme.txt	1672
+20_WAV_その11.zip	97602468
+  20_WAV_その11/part06.wav	97600518
+  20_WAV_その11/readme.txt	1672
+20_WAV_その12.zip	84674546
+  20_WAV_その12/part07_00.wav	84672590
+  20_WAV_その12/readme.txt	1672
+20_WAV_その13.zip	20470082
+  20_WAV_その13/part07_01.wav	20468126
+  20_WAV_その13/readme.txt	1672
