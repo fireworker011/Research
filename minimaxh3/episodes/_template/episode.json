@@ -1,0 +1,182 @@
+{
+  "schema": "h3-episode/v1",
+  "slug": "my-episode",
+  "title": "作品タイトル",
+  "subtitle": "架空ゲーム 予告",
+  "canvas": "16:9",
+  "clip_seconds": 10,
+  "tone": "mundane",
+  "render": {
+    "preset": "daily",
+    "fallback_preset": "fast",
+    "seed": 42
+  },
+  "style": "Third-person open-world game cutscene look, live-action cinematic photorealism, no anime, no illustration",
+  "violence": "none",
+  "world": {
+    "name": "Fictional place name",
+    "lock": "English description of the fictional setting that every beat shares (streets, light, materials). Do not name real places or brands",
+    "no_text_on_signs": true
+  },
+  "cast": {
+    "hero": {
+      "name_ja": "主人公の名前",
+      "name_en": "Hero",
+      "age": 27,
+      "ref_still": "stills/00-face.jpg",
+      "lock": "English identity lock: age, hair, face, clothing, shoes. Adults only",
+      "voice": "clear adult voice"
+    }
+  },
+  "props": {
+    "item": "English description of a prop. Attach it per beat with beats[].props; it is never injected into every shot"
+  },
+  "homage": {
+    "borrowed": ["third-person game camera", "mission subtitle grammar", "HUD hidden in dialogue cutscenes", "a mission-failed ending"],
+    "never": ["words from the referenced work that must not appear in any prompt"]
+  },
+  "hud": {
+    "theme": "bandai",
+    "district_label": "地区名",
+    "icons": ["一", "二", "三"],
+    "complete_text": "ミッション完了",
+    "subtitles": true,
+    "font": ""
+  },
+  "cards": {
+    "title": false,
+    "title_image": "stills/00-face.jpg",
+    "kicker": "舞台・人物・物語はオリジナル",
+    "end": true,
+    "end_seconds": 3.0,
+    "end_image": "stills/04-end.jpg",
+    "end_title": "作品タイトル",
+    "disclaimer": "架空のゲームのコンセプト映像です。実在の製品ではありません。",
+    "end_lines": [
+      "架空のゲームのコンセプト映像です。実在の製品ではありません。",
+      "舞台・人物・物語はオリジナル"
+    ],
+    "fail": {
+      "text": "ミッション失敗",
+      "reason": "失敗理由を一行（30字まで、淡々と）",
+      "seconds": 2.8,
+      "image": "last-frame"
+    }
+  },
+  "stitch": {
+    "transition": "xfade",
+    "xfade_s": 0.35,
+    "output_height": 720,
+    "loudnorm": true
+  },
+  "beats": [
+    {
+      "id": "01-open",
+      "source": "still",
+      "still": "stills/01-open.jpg",
+      "trim": {"start": 0, "seconds": 4.0},
+      "cast": ["hero"],
+      "face_visible": false,
+      "props": ["item"],
+      "place": "Where this beat happens (English). One location per beat; the prompt adds a continuous-take lock",
+      "camera": "Over-the-shoulder third-person camera behind the hero",
+      "action": "One place, one ordinary action (English). tone mundane rejects set-piece words (see ACTION_TOKENS_RE in h3_episode.py) even when negated",
+      "sfx": "Diegetic sounds (English)",
+      "music": "Music direction (English)",
+      "hud": {
+        "mission": "最初のミッション",
+        "mission_keyword": "ミッション",
+        "hint": "",
+        "health": 0.9,
+        "stamina": 0.8,
+        "money": "¥1,000",
+        "heat": 0,
+        "objective_bearing": 30,
+        "objective_distance": 0.7,
+        "icons_active": ["一"],
+        "complete": false
+      }
+    },
+    {
+      "id": "02-talk",
+      "source": "still",
+      "still": "stills/02-talk.jpg",
+      "trim": {"start": 0, "seconds": 6.0},
+      "cast": ["hero"],
+      "face_visible": true,
+      "props": [],
+      "place": "Where this beat happens (English)",
+      "camera": "Medium shot, eye level, slow push-in",
+      "action": "The hero speaks to camera-left (English)",
+      "speech": [
+        {"who": "hero", "line": "かなだけの みじかい せりふ", "text": "字幕に出す表記（漢字可）"}
+      ],
+      "sfx": "Room tone (English)",
+      "music": "Soft pad",
+      "hud": {
+        "visible": false,
+        "mission": "最初のミッション",
+        "mission_keyword": "ミッション",
+        "hint": "",
+        "health": 0.9,
+        "stamina": 0.8,
+        "money": "¥1,000",
+        "heat": 0,
+        "objective_bearing": 0,
+        "objective_distance": 0.15,
+        "icons_active": ["一"],
+        "complete": true
+      }
+    },
+    {
+      "id": "03-menu",
+      "source": "ui",
+      "seconds": 2.0,
+      "cast": ["hero"],
+      "menu": {
+        "title": "持ち物",
+        "items": ["一つ目", "二つ目", "三つ目"],
+        "selected": 1
+      },
+      "hud": {
+        "mission": "次のミッション",
+        "mission_keyword": "次",
+        "hint": "Tab 持ち物",
+        "health": 0.9,
+        "stamina": 0.8,
+        "money": "¥1,000",
+        "heat": 0,
+        "objective_bearing": 180,
+        "objective_distance": 0.6,
+        "icons_active": [],
+        "complete": false
+      }
+    },
+    {
+      "id": "04-end",
+      "source": "chain",
+      "trim": {"start": 0, "seconds": 4.0},
+      "cast": ["hero"],
+      "face_visible": false,
+      "props": [],
+      "place": "Same place, continuing the previous footage",
+      "camera": "Camera pulls back slowly",
+      "action": "The hero walks away from camera (English). source chain starts from the frame where the previous footage was cut, so no still is needed. reuse: \"other-slug/01-beat\" copies a finished take from a sibling episode instead of rendering",
+      "sfx": "Footsteps, wind",
+      "music": "One warm note, then silence",
+      "hud": {
+        "mission": "次のミッション",
+        "mission_keyword": "次",
+        "hint": "",
+        "health": 0.9,
+        "stamina": 0.7,
+        "money": "¥1,000",
+        "heat": 0,
+        "objective_bearing": 180,
+        "objective_distance": 0.6,
+        "icons_active": [],
+        "complete": false
+      }
+    }
+  ]
+}
