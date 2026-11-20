@@ -1,0 +1,15 @@
+export const INK = "#3A2A22";
+export const RED = "#E23B3B";
+export const CREAM = "#FFF3DC";
+export const PAPER = "#FFFDF8";
+export const SKIN = "#F7C6AE";
+export const BLUSH = "#F4A7A3";
+export const HAIR = "#4A3328";
+export const HAIR_GRAY = "#8E8882";
+export const SHIRT = "#79B7E8";
+export const CARDIGAN = "#E08962";
+export const COIN = "#F0C14A";
+export const COIN_EDGE = "#C48A12";
+export const MINT = "#C6E6CF";
+export const BLUE = "#D7EEFB";
+export const YELLOW = "#FFE08A";
