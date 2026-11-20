@@ -1,0 +1,21 @@
+{
+  "name": "code-video",
+  "private": true,
+  "version": "0.1.0",
+  "description": "Short motion graphic rendered from Remotion code",
+  "scripts": {
+    "studio": "remotion studio src/index.ts",
+    "still": "remotion still src/index.ts CodeVideo out/still.png",
+    "render": "remotion render src/index.ts CodeVideo out/code-video.mp4"
+  },
+  "dependencies": {
+    "@remotion/cli": "4.0.535",
+    "react": "19.2.3",
+    "react-dom": "19.2.3",
+    "remotion": "4.0.535"
+  },
+  "devDependencies": {
+    "@types/react": "19.2.7",
+    "typescript": "5.9.3"
+  }
+}
