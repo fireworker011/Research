@@ -1,0 +1,5 @@
+{
+  "client_key": "",
+  "client_secret": "",
+  "note": "コピー先は secrets/tiktok-client.json。このexampleへ本物は書かない。"
+}
