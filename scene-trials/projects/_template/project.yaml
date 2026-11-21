@@ -1,0 +1,58 @@
+# Copy this folder to projects/<name>/ and edit. Every project switch lives here.
+schema: 1
+project: template
+
+paths:
+  out_root: out               # relative to this folder; set SCENE_TRIALS_OUT_ROOT to override per machine
+  scenes_csv: scenes.csv
+  chains: chains.yaml         # optional
+  loras: loras.yaml           # optional
+  negatives: negatives.yaml   # optional
+  # lora_dir: /path/to/models/Lora   # optional: plan fails when a mapped LoRA file is missing
+
+columns:                      # CSV column names
+  section: category
+  positive: positive_prompt
+  negative: negative_prompt
+  id_columns: [pose, diff_stage]   # appended to S{row} to build the scene id
+
+section_slugs:                # ASCII folder names for non-ASCII section labels
+  sprite: sprite
+  lantern: lantern
+
+trials:
+  count: 3
+  order: trial_major          # trial_major | scene_major
+
+batch:
+  max_jobs: 50
+
+size:
+  width: 1024
+  height: 1344
+
+prompt:
+  expand_braces: true
+  char_policy: random_seeded  # random_seeded | rotate | fixed
+  positive_anchor: []
+  composition: warn           # warn | drop | off
+
+face_visible_hints: [looking at viewer, looking back, looking up]
+face_pass: auto             # auto | required | skip | optional (per chain override in chains.yaml)
+rear_view_hints: [from behind, rear view]
+
+safety:
+  adult_confirmed_by: ""      # a person fills these two before export or any run
+  adult_confirmed_on: ""
+  extra_blocked_words: []
+
+cutout:
+  skip_if_transparent: true
+  templates:
+    ps1: 'python -m your_cutout_tool --input {input}'
+    sh: 'python -m your_cutout_tool --input {input}'
+
+backend:
+  name: import_only
+  options:
+    source_dir: incoming

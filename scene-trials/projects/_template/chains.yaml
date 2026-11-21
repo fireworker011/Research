@@ -1,0 +1,14 @@
+# One base image, then dependent stages. `stage_order` is the dependency order.
+# A job asks the backend for the stages up to the last one any scene needs.
+chains:
+  lantern_light:
+    category: lantern         # opaque label handed to the backend
+    base: 4                   # row number or scene id; must also be listed in scenes
+    route_tags: []            # tags added to the base prompt when missing
+    stage_order: [dim, bright, flare]
+    scenes:
+      3: dim
+      4: bright
+      5: flare
+    needs_face_visible: true
+    # face_pass: skip       # optional override: required | skip | optional

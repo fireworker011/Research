@@ -1,0 +1,180 @@
+diff --git a/sd-diff-set/sd_diff_set/planner.py b/sd-diff-set/sd_diff_set/planner.py
+index a27f3e8..a6f0f0b 100644
+--- a/sd-diff-set/sd_diff_set/planner.py
++++ b/sd-diff-set/sd_diff_set/planner.py
+@@ -31,7 +31,7 @@ _FACE_MODEL = "face_yolov8n.pt"
+ FACE_PASS_MODES = ("required", "skip", "optional")
+ NO_STAGES = ("none",)
+ from sd_diff_set.never import never
+-from sd_diff_set.prompt_edit import dynamic_prompt_warning, edit_prompt
++from sd_diff_set.prompt_edit import dynamic_prompt_warning, edit_prompt, extra_network_tags, restore_extra_networks
+ 
+ 
+ @dataclass
+@@ -236,6 +236,10 @@ def _draft_variant(
+         )
+         face_denoise = face_denoise_for(preset.id, variant.id)
+         warnings.append("表情は顔だけを別に塗ります。性器や精液のマスクには顔を入れません。")
++    networks = extra_network_tags(prompt)
++    edited_prompt = restore_extra_networks(edited_prompt, networks)
++    if face_prompt:
++        face_prompt = restore_extra_networks(face_prompt, networks)
+     if variant.strategy is Strategy.INPAINT and not variant.prompt_add.strip():
+         warnings.append(
+             "empty_prompt_add: inpaint variant has an empty prompt_add. "
+diff --git a/sd-diff-set/sd_diff_set/prompt_edit.py b/sd-diff-set/sd_diff_set/prompt_edit.py
+index 3609247..f00689c 100644
+--- a/sd-diff-set/sd_diff_set/prompt_edit.py
++++ b/sd-diff-set/sd_diff_set/prompt_edit.py
+@@ -11,6 +11,33 @@ from __future__ import annotations
+ 
+ import re
+ 
++_EXTRA_NETWORK = re.compile(r"<(?:lora|lyco):[^>]+>", re.IGNORECASE)
++
++
++def extra_network_tags(prompt: str) -> list[str]:
++    """``<lora:...>`` and ``<lyco:...>`` tags, in order, keeping the first spelling of each."""
++    found: list[str] = []
++    seen: set[str] = set()
++    for match in _EXTRA_NETWORK.finditer(prompt):
++        tag = match.group(0)
++        if tag.casefold() in seen:
++            continue
++        seen.add(tag.casefold())
++        found.append(tag)
++    return found
++
++
++def restore_extra_networks(prompt: str, tags: list[str]) -> str:
++    """Put base LoRA and LyCO tags back. A stage's prompt_remove cannot drop them."""
++    present = {tag.casefold() for tag in extra_network_tags(prompt)}
++    missing = [tag for tag in tags if tag.casefold() not in present]
++    if not missing:
++        return prompt
++    body = prompt.strip()
++    return ", ".join([body, *missing]) if body else ", ".join(missing)
++
++
++
+ _DYNAMIC = re.compile(r"(__[^\s_]+__|\{[^{}]*\|[^{}]*\})")
+ 
+ 
+diff --git a/sd-diff-set/tests/test_lora_prompt.py b/sd-diff-set/tests/test_lora_prompt.py
+new file mode 100644
+index 0000000..23ba8ea
+--- /dev/null
++++ b/sd-diff-set/tests/test_lora_prompt.py
+@@ -0,0 +1,112 @@
++"""Base ``<lora>`` and ``<lyco>`` tags stay in every stage prompt. No GPU and no WebUI."""
++
++from __future__ import annotations
++
++import os
++import sys
++import tempfile
++import unittest
++from dataclasses import replace
++from pathlib import Path
++
++sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
++
++from sd_diff_set.planner import build_plan
++from sd_diff_set.png_text import write_rgb_png
++from sd_diff_set.preset import load_preset_dir
++from sd_diff_set.prompt_edit import extra_network_tags, restore_extra_networks, split_tags
++from sd_diff_set.service import run_job
++
++PRESETS = Path(__file__).resolve().parents[1] / "presets"
++LORA = "<lora:caststyle_xl_epoch08:0.9>"
++LYCO = "<lyco:nieva_xl:0.8>"
++BASE = f"masterpiece, {LORA}, 1girl, anal sex, {LYCO}"
++INFO = "\n".join(
++    [
++        BASE,
++        "Negative prompt: lowres",
++        "Steps: 20, Sampler: Euler a, CFG scale: 7, Seed: 1, Size: 64x64, Model hash: abcd, Model: demo",
++    ]
++)
++
++
++class RestoreTests(unittest.TestCase):
++    def test_tags_are_read_once_and_put_back_without_a_second_copy(self) -> None:
++        self.assertEqual(extra_network_tags(f"a, {LORA}, b, {LORA.lower()}"), [LORA])
++        self.assertEqual(restore_extra_networks(f"1girl, {LORA}", [LORA]), f"1girl, {LORA}")
++        self.assertEqual(restore_extra_networks("1girl", [LORA, LYCO]), f"1girl, {LORA}, {LYCO}")
++        self.assertEqual(restore_extra_networks("", [LORA]), LORA)
++
++
++class StagePromptTests(unittest.TestCase):
++    def setUp(self) -> None:
++        weights = Path(tempfile.mkdtemp())
++        for name in ("face_yolov8n.pt", "hand_yolov8n.pt", "foot_yolov8x_v2.pt", "nsfw-anime-medium-x1280.pt"):
++            (weights / name).write_bytes(b"")
++        self._env = os.environ.get("SD_DIFF_WEIGHTS_DIR")
++        os.environ["SD_DIFF_WEIGHTS_DIR"] = str(weights)
++        self.addCleanup(self._restore_env)
++
++    def _restore_env(self) -> None:
++        if self._env is None:
++            os.environ.pop("SD_DIFF_WEIGHTS_DIR", None)
++        else:
++            os.environ["SD_DIFF_WEIGHTS_DIR"] = self._env
++
++    def test_every_pattern_stage_keeps_the_base_tags_in_body_and_face(self) -> None:
++        with tempfile.TemporaryDirectory() as tmp:
++            root = Path(tmp)
++            base = root / "stand.png"
++            write_rgb_png(base, 64, 64, parameters=INFO)
++            payload = run_job(
++                base_path=base,
++                preset_dir=PRESETS,
++                preset_ids=["expr4", "fellatio", "scat", "anal", "vaginal"],
++                output_dir=root / "out",
++                adult_ok=True,
++                use_controlnet=False,
++                dry_run=True,
++                overwrite=False,
++            )
++        self.assertEqual(payload["status"], "ok")
++        items = [item for item in payload["items"] if isinstance(item, dict)]
++        self.assertEqual(len(items), 23)
++        for item in items:
++            for key in ("prompt", "face_prompt"):
++                text = str(item.get(key) or "")
++                if not text:
++                    continue
++                tags = split_tags(text)
++                self.assertIn(LORA, tags, f"{item['category']}/{item['variant']} {key}")
++                self.assertIn(LYCO, tags, f"{item['category']}/{item['variant']} {key}")
++                self.assertEqual(tags.count(LORA), 1)
++
++    def test_a_stage_that_tries_to_remove_the_tag_still_keeps_it(self) -> None:
++        presets = {preset.id: preset for preset in load_preset_dir(PRESETS)}
++        preset = presets["sfw_expression"]
++        first = preset.variants[0]
++        hostile = replace(
++            first,
++            prompt_remove=first.prompt_remove + (LORA,),
++            face_prompt_add="blush",
++            face_prompt_remove=(LORA,),
++        )
++        preset = replace(preset, variants=(hostile,) + preset.variants[1:])
++        plan = build_plan(
++            base_stem="stand",
++            presets=[preset],
++            prompt=BASE,
++            negative_prompt="lowres",
++            seed=1,
++            base_path=None,
++            adult_ok=False,
++            use_controlnet=False,
++        )
++        item = next(item for item in plan.items if item.variant == first.id)
++        self.assertIn(LORA, split_tags(item.prompt))
++        self.assertIn(LORA, split_tags(item.face_prompt))
++        self.assertIn(LYCO, split_tags(item.face_prompt))
++
++
++if __name__ == "__main__":
++    unittest.main()

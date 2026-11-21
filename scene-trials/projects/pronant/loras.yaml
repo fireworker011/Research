@@ -1,0 +1,7 @@
+loras:
+  # Weight 0.8 follows the owner's example. Adjust per character.
+  irito_xl: {file: irito_xl, weight: 0.8}
+  jueri_xl: {file: jueri_xl, weight: 0.8}
+  nieva_xl: {file: nieva_xl, weight: 0.8}
+  seraphina_xl: {file: seraphina_xl, weight: 0.8}
+  caststyle_xl: {file: caststyle_xl_epoch08, weight: 0.9}
