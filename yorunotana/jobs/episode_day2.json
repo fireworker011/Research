@@ -1,0 +1,337 @@
+{
+  "job_id": "yorunotana_14f_day2",
+  "series_title": "14階",
+  "day": 2,
+  "floor_label": "14階",
+  "pr_badge": false,
+  "target_duration_sec": 88.0,
+  "bgm_track": "dark_ambient_drone.wav",
+  "segments": [
+    {
+      "id": 1,
+      "clock": "6:05 AM",
+      "scene": "door_view",
+      "scene_params": { "shadow_visible": true, "shake": false },
+      "top_card": null,
+      "subtitle": "ドアは開けなかった。",
+      "text_color": "white",
+      "se": null,
+      "pause_after_ms": 350
+    },
+    {
+      "id": 2,
+      "clock": "6:05 AM",
+      "scene": "door_view",
+      "scene_params": { "shadow_visible": true, "shake": false },
+      "top_card": null,
+      "subtitle": "朝には、原田さんの声も",
+      "text_color": "white",
+      "se": null,
+      "pause_after_ms": 200
+    },
+    {
+      "id": 3,
+      "clock": "6:05 AM",
+      "scene": "door_view",
+      "scene_params": { "shadow_visible": false, "shake": false },
+      "top_card": null,
+      "subtitle": "しなくなった。",
+      "text_color": "yellow",
+      "se": "low_pulse",
+      "pause_after_ms": 500
+    },
+    {
+      "id": 4,
+      "clock": "9:12 PM",
+      "scene": "room_stickman",
+      "scene_params": { "phone_glow": true },
+      "top_card": null,
+      "subtitle": "2日目の夜。",
+      "text_color": "white",
+      "se": null,
+      "pause_after_ms": 300
+    },
+    {
+      "id": 5,
+      "clock": "9:12 PM",
+      "scene": "room_stickman",
+      "scene_params": { "phone_glow": true },
+      "top_card": null,
+      "subtitle": "電気はまだ戻らない。",
+      "text_color": "yellow",
+      "se": null,
+      "pause_after_ms": 400
+    },
+    {
+      "id": 6,
+      "clock": "9:13 PM",
+      "scene": "phone_tap",
+      "scene_params": { "action": "tap_sns_icon", "locked": false },
+      "top_card": null,
+      "subtitle": "静かすぎて、",
+      "text_color": "white",
+      "se": null,
+      "pause_after_ms": 200
+    },
+    {
+      "id": 7,
+      "clock": "9:13 PM",
+      "scene": "phone_tap",
+      "scene_params": { "action": "tap_sns_icon", "locked": false },
+      "top_card": null,
+      "subtitle": "SNSを開いた。",
+      "text_color": "yellow",
+      "se": "tap_glow",
+      "pause_after_ms": 400
+    },
+    {
+      "id": 8,
+      "clock": "9:14 PM",
+      "scene": "window_grid",
+      "scene_params": { "mode": "all_lit" },
+      "top_card": null,
+      "subtitle": "向かいのマンションも、",
+      "text_color": "white",
+      "se": null,
+      "pause_after_ms": 250
+    },
+    {
+      "id": 9,
+      "clock": "9:14 PM",
+      "scene": "window_grid",
+      "scene_params": { "mode": "all_lit" },
+      "top_card": null,
+      "subtitle": "スマホの光だらけ。",
+      "text_color": "yellow",
+      "se": null,
+      "pause_after_ms": 400
+    },
+    {
+      "id": 10,
+      "clock": "9:15 PM",
+      "scene": "window_grid",
+      "scene_params": { "mode": "sequential_blackout" },
+      "top_card": null,
+      "subtitle": "でも、光ってる窓から",
+      "text_color": "white",
+      "se": null,
+      "pause_after_ms": 200
+    },
+    {
+      "id": 11,
+      "clock": "9:15 PM",
+      "scene": "window_grid",
+      "scene_params": { "mode": "sequential_blackout" },
+      "top_card": null,
+      "subtitle": "順番に、",
+      "text_color": "white",
+      "se": "light_off_tick",
+      "pause_after_ms": 200
+    },
+    {
+      "id": 12,
+      "clock": "9:15 PM",
+      "scene": "window_grid",
+      "scene_params": { "mode": "all_dark" },
+      "top_card": null,
+      "subtitle": "真っ暗になっていく。",
+      "text_color": "yellow",
+      "se": "low_boom",
+      "pause_after_ms": 450
+    },
+    {
+      "id": 13,
+      "clock": "9:16 PM",
+      "scene": "door_view",
+      "scene_params": { "shadow_visible": true, "shake": false },
+      "top_card": null,
+      "subtitle": "最後の窓が消えた時、",
+      "text_color": "white",
+      "se": null,
+      "pause_after_ms": 250
+    },
+    {
+      "id": 14,
+      "clock": "9:16 PM",
+      "scene": "door_view",
+      "scene_params": { "shadow_visible": true, "shake": false },
+      "top_card": null,
+      "subtitle": "廊下で足音がした。",
+      "text_color": "yellow",
+      "se": "footsteps_slow",
+      "pause_after_ms": 450
+    },
+    {
+      "id": 15,
+      "clock": "9:16 PM",
+      "scene": "room_stickman",
+      "scene_params": { "phone_glow": true },
+      "top_card": null,
+      "subtitle": "分かった。あいつは、",
+      "text_color": "white",
+      "se": null,
+      "pause_after_ms": 200
+    },
+    {
+      "id": 16,
+      "clock": "9:16 PM",
+      "scene": "room_stickman",
+      "scene_params": { "phone_glow": true },
+      "top_card": null,
+      "subtitle": "SNSを開いた人の",
+      "text_color": "yellow",
+      "se": null,
+      "pause_after_ms": 200
+    },
+    {
+      "id": 17,
+      "clock": "9:16 PM",
+      "scene": "room_stickman",
+      "scene_params": { "phone_glow": true },
+      "top_card": null,
+      "subtitle": "ところに来る。",
+      "text_color": "white",
+      "se": "low_pulse",
+      "pause_after_ms": 400
+    },
+    {
+      "id": 18,
+      "clock": "9:16 PM",
+      "scene": "room_stickman",
+      "scene_params": { "phone_glow": true },
+      "top_card": { "badge": "ルール5", "title": "SNSを開くな" },
+      "subtitle": "ルール5。SNSを開くな。",
+      "text_color": "yellow",
+      "se": "rule_hit",
+      "pause_after_ms": 450
+    },
+    {
+      "id": 19,
+      "clock": "9:17 PM",
+      "scene": "room_stickman",
+      "scene_params": { "phone_glow": false },
+      "top_card": null,
+      "subtitle": "すぐ閉じた。",
+      "text_color": "white",
+      "se": "screen_lock",
+      "pause_after_ms": 250
+    },
+    {
+      "id": 20,
+      "clock": "9:17 PM",
+      "scene": "room_stickman",
+      "scene_params": { "phone_glow": false },
+      "top_card": null,
+      "subtitle": "足音が止まった。",
+      "text_color": "yellow",
+      "se": null,
+      "pause_after_ms": 450
+    },
+    {
+      "id": 21,
+      "clock": "10:41 PM",
+      "scene": "phone_message",
+      "scene_params": { "sender": "不明", "body_white": "", "body_red": "見えてるよ。" },
+      "top_card": null,
+      "subtitle": "知らない番号からメッセージ。「見えてるよ」",
+      "text_color": "yellow",
+      "se": "msg_vibrate",
+      "pause_after_ms": 500
+    },
+    {
+      "id": 22,
+      "clock": "10:42 PM",
+      "scene": "phone_tap",
+      "scene_params": { "action": "tap_sns_icon", "locked": false },
+      "top_card": null,
+      "subtitle": "もう開かないって決めたのに、",
+      "text_color": "white",
+      "se": null,
+      "pause_after_ms": 200
+    },
+    {
+      "id": 23,
+      "clock": "10:42 PM",
+      "scene": "phone_tap",
+      "scene_params": { "action": "tap_sns_icon", "locked": false },
+      "top_card": null,
+      "subtitle": "指が勝手にSNSを押してる。",
+      "text_color": "yellow",
+      "se": "tap_glow",
+      "pause_after_ms": 350
+    },
+    {
+      "id": 24,
+      "clock": "10:42 PM",
+      "scene": "door_view",
+      "scene_params": { "shadow_visible": true, "shake": true },
+      "top_card": null,
+      "subtitle": "開いた瞬間、足音。さっきより近い。",
+      "text_color": "yellow",
+      "se": "footsteps_fast",
+      "pause_after_ms": 350
+    },
+    {
+      "id": 25,
+      "clock": "10:43 PM",
+      "scene": "room_stickman",
+      "scene_params": { "phone_glow": false },
+      "top_card": null,
+      "subtitle": "あわてて閉じる。足音が止まる。",
+      "text_color": "yellow",
+      "se": "screen_lock",
+      "pause_after_ms": 400
+    },
+    {
+      "id": 26,
+      "clock": "10:43 PM",
+      "scene": "room_stickman",
+      "scene_params": { "phone_glow": true },
+      "top_card": { "badge": "ルール6", "title": "自分の指を信じるな" },
+      "subtitle": "ルール6。自分の指を信じるな。",
+      "text_color": "yellow",
+      "se": "rule_hit",
+      "pause_after_ms": 450
+    },
+    {
+      "id": 27,
+      "clock": "11:30 PM",
+      "scene": "peephole_stickman",
+      "scene_params": { "red_glow": true, "holding_phone": true },
+      "top_card": null,
+      "subtitle": "のぞき穴を見た。スマホを持った誰かが立ってる。",
+      "text_color": "yellow",
+      "se": "low_boom",
+      "pause_after_ms": 400
+    },
+    {
+      "id": 28,
+      "clock": "11:31 PM",
+      "scene": "peephole_stickman",
+      "scene_params": { "red_glow": true, "speaker_tag": "原田さん・ドアの向こう" },
+      "top_card": null,
+      "subtitle": "原田さんの声がした。「もう1回、開いて」",
+      "text_color": "yellow",
+      "se": "eerie_whisper",
+      "pause_after_ms": 500
+    }
+  ],
+  "choice_card": {
+    "clock": "11:31 PM",
+    "question": "開く？",
+    "left_option": { "text": "開く", "color": "green" },
+    "right_option": { "text": "閉じたまま", "color": "red" },
+    "subtext": "コメントで教えて ↓",
+    "narration": "あなたなら開く？閉じたまま？"
+  },
+  "day_end_card": {
+    "title": "14階",
+    "subtitle": "DAY 2",
+    "status": "午後11時31分",
+    "button_text": "フォローで3日目へ。",
+    "narration": "フォローで、3日目へ。"
+  },
+  "promo_outro": {
+    "enabled": false
+  }
+}
