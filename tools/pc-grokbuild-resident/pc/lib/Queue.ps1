@@ -391,15 +391,142 @@ function Complete-ResidentJob {
     Clear-JobSlot -State $State -Job $Job
 }
 
+function Get-JsonNoteValue {
+    param($Object, [string]$Name)
+    if ($null -eq $Object) { return $null }
+    $prop = $Object.PSObject.Properties[$Name]
+    if ($null -eq $prop) { return $null }
+    return $prop.Value
+}
+
+function Test-JsonNotePresent {
+    param($Object, [string]$Name)
+    if ($null -eq $Object) { return $false }
+    return $null -ne $Object.PSObject.Properties[$Name]
+}
+
+function ConvertTo-JsonItemList {
+    param($Value)
+    $list = New-Object System.Collections.Generic.List[object]
+    if ($null -eq $Value) {
+        Write-Output -NoEnumerate $list
+        return
+    }
+    if ($Value -is [System.Array]) {
+        foreach ($item in $Value) { [void]$list.Add($item) }
+    }
+    else {
+        [void]$list.Add($Value)
+    }
+    Write-Output -NoEnumerate $list
+}
+
+function Test-ConfirmChangeList {
+    param($Changes)
+    $items = ConvertTo-JsonItemList $Changes
+    if ($items.Count -lt 1) { return $false }
+    foreach ($change in $items) {
+        $field = Get-JsonNoteValue $change 'field'
+        if ([string]::IsNullOrWhiteSpace([string]$field)) { return $false }
+    }
+    return $true
+}
+
+function Test-ConfirmStepObject {
+    param($Step)
+    $stepId = Get-JsonNoteValue $Step 'step_id'
+    $kind = Get-JsonNoteValue $Step 'kind'
+    if ([string]::IsNullOrWhiteSpace([string]$stepId)) { return $false }
+    if ([string]::IsNullOrWhiteSpace([string]$kind)) { return $false }
+    $kindText = ([string]$kind).ToLowerInvariant()
+    $allowed = @('save', 'send', 'post', 'delete', 'publish', 'payment')
+    $known = $false
+    foreach ($name in $allowed) {
+        if ($name -eq $kindText) { $known = $true }
+    }
+    if (-not $known) { return $false }
+    if (-not (Test-JsonNotePresent $Step 'changes')) { return $false }
+    return (Test-ConfirmChangeList (Get-JsonNoteValue $Step 'changes'))
+}
+
+function New-ConfirmReadResult {
+    param([bool]$Valid, [string]$Shape, [string]$ErrorText)
+    return [pscustomobject]@{
+        Valid = $Valid
+        Shape = $Shape
+        Error = $ErrorText
+    }
+}
+
+function Test-ConfirmJsonText {
+    param(
+        [AllowNull()][AllowEmptyString()][string]$Text,
+        [string]$ExpectedJobId
+    )
+    if ([string]::IsNullOrWhiteSpace($Text)) {
+        return (New-ConfirmReadResult -Valid $false -Shape '' -ErrorText 'confirm json is empty')
+    }
+    $obj = $null
+    try {
+        $obj = $Text | ConvertFrom-Json
+    }
+    catch {
+        return (New-ConfirmReadResult -Valid $false -Shape '' -ErrorText 'confirm json is not valid JSON')
+    }
+    if ($null -eq $obj -or $obj -is [System.Array]) {
+        return (New-ConfirmReadResult -Valid $false -Shape '' -ErrorText 'confirm json must be an object')
+    }
+    $jobId = [string](Get-JsonNoteValue $obj 'job_id')
+    if ([string]::IsNullOrWhiteSpace($jobId)) {
+        return (New-ConfirmReadResult -Valid $false -Shape '' -ErrorText 'confirm json needs job_id')
+    }
+    if (-not [string]::IsNullOrWhiteSpace($ExpectedJobId) -and $jobId -ne $ExpectedJobId) {
+        return (New-ConfirmReadResult -Valid $false -Shape '' -ErrorText 'confirm json job_id does not match the order')
+    }
+    if (Test-JsonNotePresent $obj 'steps') {
+        $steps = ConvertTo-JsonItemList (Get-JsonNoteValue $obj 'steps')
+        if ($steps.Count -lt 1) {
+            return (New-ConfirmReadResult -Valid $false -Shape '' -ErrorText 'confirm json steps is empty')
+        }
+        foreach ($step in $steps) {
+            if (-not (Test-ConfirmStepObject $step)) {
+                return (New-ConfirmReadResult -Valid $false -Shape '' -ErrorText 'confirm step needs step_id, kind, and changes')
+            }
+        }
+        return (New-ConfirmReadResult -Valid $true -Shape 'steps' -ErrorText '')
+    }
+    if (-not (Test-ConfirmStepObject $obj)) {
+        return (New-ConfirmReadResult -Valid $false -Shape '' -ErrorText 'confirm json needs steps, or a flat step_id, kind, and changes')
+    }
+    return (New-ConfirmReadResult -Valid $true -Shape 'flat' -ErrorText '')
+}
+
 function Get-ConfirmSignal {
     param(
         [string]$ConfirmDir,
         [string]$JobId
     )
+    $jsonPath = Join-Path $ConfirmDir ($JobId + '.json')
+    $valid = $false
+    $shape = ''
+    $errorText = ''
+    if ([System.IO.File]::Exists($jsonPath)) {
+        try {
+            $parsed = Test-ConfirmJsonText -Text (Read-TextFile $jsonPath) -ExpectedJobId $JobId
+            $valid = [bool]$parsed.Valid
+            $shape = [string]$parsed.Shape
+            $errorText = [string]$parsed.Error
+        }
+        catch {
+            $errorText = 'confirm json could not be read'
+        }
+    }
     return [pscustomobject]@{
-        Json = [System.IO.File]::Exists((Join-Path $ConfirmDir ($JobId + '.json')))
-        Ok   = [System.IO.File]::Exists((Join-Path $ConfirmDir ($JobId + '.ok')))
-        Ng   = [System.IO.File]::Exists((Join-Path $ConfirmDir ($JobId + '.ng')))
+        Json  = $valid
+        Shape = $shape
+        Error = $errorText
+        Ok    = [System.IO.File]::Exists((Join-Path $ConfirmDir ($JobId + '.ok')))
+        Ng    = [System.IO.File]::Exists((Join-Path $ConfirmDir ($JobId + '.ng')))
     }
 }
 
@@ -468,8 +595,9 @@ function Start-ResidentJob {
             Proc             = $null
             StartedAt        = $Now
             ConfirmSince     = $null
-            ConfirmDecision  = $null
-            Reasoning        = $doc.Reasoning
+        ConfirmDecision  = $null
+        ConfirmParseError = $null
+        Reasoning        = $doc.Reasoning
         }
         Complete-ResidentJob -State $State -Job $failJob -StateName 'failed' -ExitCode 12 -ErrorText $_.Exception.Message -Now $Now
         return
@@ -485,6 +613,7 @@ function Start-ResidentJob {
         StartedAt         = $Now
         ConfirmSince      = $null
         ConfirmDecision   = $null
+        ConfirmParseError = $null
         DenySince         = $null
         TimeoutSec        = [int]$doc.TimeoutSec
         Reasoning         = $doc.Reasoning
@@ -505,6 +634,12 @@ function Update-RunningJob {
     param($State, $Job, [datetime]$Now)
     $paths = Get-ResidentPaths $State.Root
     $signal = Get-ConfirmSignal -ConfirmDir $paths.Confirm -JobId $Job.Id
+    if (-not $signal.Json -and -not [string]::IsNullOrWhiteSpace([string]$signal.Error)) {
+        if ([string]$Job.ConfirmParseError -ne [string]$signal.Error) {
+            $Job.ConfirmParseError = [string]$signal.Error
+            Write-ResidentLog -Root $State.Root -Message ("confirm " + $Job.Id + " " + $signal.Error)
+        }
+    }
     $decision = $null
     if ($signal.Ng) {
         $decision = 'ng'

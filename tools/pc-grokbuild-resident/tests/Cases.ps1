@@ -239,6 +239,7 @@ function Invoke-ResidentCases {
         Assert-True ($prompt -match '2FA') 'preamble 2fa'
         Assert-True ($prompt -match 'login') 'preamble login'
         Assert-True ($prompt -match 'save, send, post, delete, publish, payment') 'kinds'
+        Assert-True ($prompt -match '"steps":\[') 'preamble writes steps array'
         Assert-True ($prompt -match 'hi-job') 'job id'
         Assert-True ($prompt -notmatch '«redacted»') 'preamble not redacted'
         Assert-True ($prompt -notmatch '(?i)(^|\s)--fast(\s|$)') 'prompt has no fast flag'
@@ -281,7 +282,7 @@ function Invoke-ResidentCases {
         Put-Inbox $root 'c.md' (New-OrderText -Id 'conf-job' -Timeout 10 -Steps @(New-SaveStep))
         Invoke-ResidentTick -State $state -Now $utc | Out-Null
         $json = Join-Path (Join-Path (Join-Path $root 'queue') 'confirm') 'conf-job.json'
-        Write-Utf8File -Path $json -Text '{"job_id":"conf-job","changes":[]}'
+        Write-Utf8File -Path $json -Text '{"job_id":"conf-job","steps":[{"step_id":"save","kind":"save","target_url":"https://example.com/item","changes":[{"field":"title","before":"old","after":"new"}]}]}'
         Invoke-ResidentTick -State $state -Now $utc | Out-Null
         $st = Read-Status $root 'conf-job'
         Assert-Eq $st.state 'awaiting_confirm' 'waiting'
@@ -292,6 +293,37 @@ function Invoke-ResidentCases {
         $handle = (Get-FakeGrokHandles)[0]
         Assert-True ([int]$handle.KillCount -ge 1) 'killed'
         Assert-True (Test-Path (Join-Path (Join-Path (Join-Path $root 'queue') 'failed') 'c.md')) 'failed file'
+    }
+
+    Invoke-Case 'confirm reader accepts steps and flat shapes' {
+        $steps = '{"job_id":"shape-job","steps":[{"step_id":"save-a","kind":"save","target_url":"https://example.com/a","changes":[{"field":"title","before":"old","after":"new"}]},{"step_id":"post-b","kind":"POST","target_url":"https://example.com/b","changes":[{"field":"pin","before":"","after":"note"}]}]}'
+        $readSteps = Test-ConfirmJsonText -Text $steps -ExpectedJobId 'shape-job'
+        Assert-True $readSteps.Valid 'steps valid'
+        Assert-Eq $readSteps.Shape 'steps' 'steps shape'
+        $flat = '{"job_id":"shape-job","step_id":"save-a","kind":"save","target_url":"https://example.com/a","changes":[{"field":"title","before":"old","after":"new"}]}'
+        $readFlat = Test-ConfirmJsonText -Text $flat -ExpectedJobId 'shape-job'
+        Assert-True $readFlat.Valid 'flat valid'
+        Assert-Eq $readFlat.Shape 'flat' 'flat shape'
+        $wrong = Test-ConfirmJsonText -Text $flat -ExpectedJobId 'other-job'
+        Assert-True (-not $wrong.Valid) 'job id mismatch'
+        $emptySteps = Test-ConfirmJsonText -Text '{"job_id":"shape-job","steps":[]}' -ExpectedJobId 'shape-job'
+        Assert-True (-not $emptySteps.Valid) 'empty steps'
+        $garbage = Test-ConfirmJsonText -Text '{"job_id":"shape-job","changes":[]}' -ExpectedJobId 'shape-job'
+        Assert-True (-not $garbage.Valid) 'missing step fields'
+
+        $root = New-TempRoot
+        $state = New-TickState $root
+        Put-Inbox $root 'bad.md' (New-OrderText -Id 'bad-shape' -Steps @(New-SaveStep))
+        Invoke-ResidentTick -State $state -Now $utc | Out-Null
+        $dir = Join-Path (Join-Path $root 'queue') 'confirm'
+        Write-Utf8File -Path (Join-Path $dir 'bad-shape.json') -Text '{"job_id":"bad-shape","note":"not a step"}'
+        Write-Utf8File -Path (Join-Path $dir 'bad-shape.ok') -Text 'ok'
+        Invoke-ResidentTick -State $state -Now $utc.AddSeconds(2) | Out-Null
+        $st = Read-Status $root 'bad-shape'
+        Assert-Eq $st.state 'running' 'bad shape stays running'
+        Assert-True ([string]::IsNullOrWhiteSpace([string]$st.confirm_decision)) 'bad shape is not approval'
+        $log = [System.IO.File]::ReadAllText((Join-Path (Join-Path (Join-Path $root 'queue') 'logs') 'resident.log'))
+        Assert-True ($log -match 'confirm json needs steps') 'parse error logged'
     }
 
     Invoke-Case 'approve file without json does not count' {
@@ -313,7 +345,7 @@ function Invoke-ResidentCases {
         Put-Inbox $root 'c.md' (New-OrderText -Id 'ok-conf' -Steps @(New-SaveStep))
         Invoke-ResidentTick -State $state -Now $utc | Out-Null
         $dir = Join-Path (Join-Path $root 'queue') 'confirm'
-        Write-Utf8File -Path (Join-Path $dir 'ok-conf.json') -Text '{"job_id":"ok-conf"}'
+        Write-Utf8File -Path (Join-Path $dir 'ok-conf.json') -Text '{"job_id":"ok-conf","step_id":"save","kind":"save","target_url":"https://example.com/item","changes":[{"field":"title","before":"old","after":"new"}]}'
         Write-Utf8File -Path (Join-Path $dir 'ok-conf.ok') -Text '{"decision":"ok"}'
         Invoke-ResidentTick -State $state -Now $utc.AddSeconds(3) | Out-Null
         $st = Read-Status $root 'ok-conf'
@@ -451,6 +483,9 @@ function Invoke-ResidentCases {
             Assert-True ($text -notmatch '&&') ($file.Name + ' has &&')
             Assert-True ($text -notmatch '\?\?') ($file.Name + ' has ??')
             Assert-True ($text -notmatch '-AsHashtable') ($file.Name + ' has AsHashtable')
+            Assert-True ($text -notmatch 'Join-String') ($file.Name + ' has Join-String')
+            Assert-True ($text -notmatch '-Parallel') ($file.Name + ' has Parallel')
+            Assert-True ($text -notmatch 'LeafBase') ($file.Name + ' has LeafBase')
         }
     }
 

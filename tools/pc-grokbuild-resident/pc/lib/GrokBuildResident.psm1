@@ -26,6 +26,7 @@ Export-ModuleMember -Function @(
     'Get-ResidentModelName',
     'Get-GrokArgumentLine',
     'New-SafetyPreamble',
+    'Test-ConfirmJsonText',
     'Get-ResidentTaskName',
     'Get-ResidentPaths',
     'Initialize-ResidentTree',

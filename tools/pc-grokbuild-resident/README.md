@@ -109,13 +109,33 @@ steps:
 常駐は注文の前に固定の英文前置きを足します。内容は次のとおりです。
 
 - read-only はすぐにやる
-- 不可逆の前に、必ず `queue\confirm\<job-id>.json` を 1 本書く。中身は何が変わるか（`job_id`、`step_id`、`kind`、`target_url`、`changes` の `field` / `before` / `after`）。この 1 ファイルで、その注文の不可逆ステップを全部書く
+- 不可逆の前に、必ず `queue\confirm\<job-id>.json` を 1 本書く。書く形は `steps` 配列です。不可逆ステップが複数なら、その件数を並べます。
+
+```json
+{
+  "job_id": "example-confirm",
+  "steps": [
+    {
+      "step_id": "save-value",
+      "kind": "save",
+      "target_url": "https://example.com/page",
+      "changes": [
+        {"field": "title", "before": "old", "after": "new"}
+      ]
+    }
+  ]
+}
+```
+
+`kind` は `save` `send` `post` `delete` `publish` `payment` です。常駐が読むときは、この `steps` 配列と、古い平らな形（直下に `job_id`、`step_id`、`kind`、`target_url`、`changes`）の両方を受けます。どちらでもない中身は確認ファイルとして扱いません。待ち時間も `.ok` も始まりません。
 - `.ok` か `.ng` が出るまで待つ。時間切れなら常駐がプロセスを止める
 - 秘密、パスワード、トークン、cookie を JSON にもログにも出さない
 - ログイン、パスワード欄、2FA が出たら入力せず URL を報告して止まる
 - 注文にない不可逆操作を足さない
 
-`.ok` は、JSON が既にあるときだけ有効です。JSON なしの `.ok` では進みません。`.ng` は JSON がなくても拒否です。両方あるときは拒否が勝ちます。
+`.ok` は、上のどちらかの形の JSON があるときだけ有効です。JSON がない、または形が違う `.ok` では進みません。`.ng` は JSON がなくても拒否です。両方あるときは拒否が勝ちます。
+
+スクリプトは Windows PowerShell 5.1 向けです。5.1 には `Join-String` がありません。このフォルダの PowerShell は `Join-String`、`&&`、`??`、`-AsHashtable` を使いません。
 
 ## ひな型
 

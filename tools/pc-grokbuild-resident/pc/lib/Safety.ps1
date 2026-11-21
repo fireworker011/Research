@@ -89,7 +89,9 @@ Confirm timeout seconds: $TimeoutSec
 
 Rules:
 1. Run read-only steps immediately. Do not wait for a confirm file before read-only work.
-2. Before any irreversible step (save, send, post, delete, publish, payment), stop and write one UTF-8 JSON file to the Confirm JSON path. The file must describe exactly what will change: job_id, step_id, kind, target_url, and changes with field, before, and after. One file covers every irreversible step in this order. Do not perform those steps yet.
+2. Before any irreversible step (save, send, post, delete, publish, payment), stop and write one UTF-8 JSON file to the Confirm JSON path. Write this shape. Put one object in steps for every irreversible step in this order. Do not perform those steps yet.
+{"job_id":"<job id>","steps":[{"step_id":"<step id>","kind":"save","target_url":"<url>","changes":[{"field":"<name>","before":"<current>","after":"<new>"}]}]}
+kind is one of save, send, post, delete, publish, payment. The runner also accepts an older flat object (job_id, step_id, kind, target_url, changes at the top) when it reads the file. Write the steps array.
 3. Wait until the Approve file or the Deny file appears. Check about every 2 seconds. The runner kills this process when the timeout expires, which aborts the job. If the Approve file appears, do only the changes written in the JSON. If the Deny file appears, do not perform them, write a short note, and exit.
 4. Never print secrets, passwords, tokens, cookies, or session values in the JSON, the log, or the chat.
 5. If a login page, a password form, or a 2FA challenge appears, stop immediately and report the page URL. Do not type credentials. Do not guess a code.
