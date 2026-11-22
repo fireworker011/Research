@@ -94,3 +94,9 @@
 - [ai-affi/ai-affi-tiktokshop-plan-20261107.md](ai-affi/ai-affi-tiktokshop-plan-20261107.md) | TikTok Shop プラン全文
 
 <!-- ai-affi 2026-11-08 end -->
+
+## 2026-11-09 AI枠のCGオマージュ3本
+
+本文: `research/ai-cg-homage-2026-11/three-models.md`
+
+e-hentai のお気に入り（PR #295）と、AI生成だけの DLsite / FANZA（PR #318、2026-11-08）の交差で、モデルCGを3本選んだ。年少の語とキャラ名の二次作品は、期間販売数がより大きくても外した。オマージュの題は「西棟の午後」「給仕は夜も続く」「木曜の夜の会」。円と次作の販売数は予測していない。
