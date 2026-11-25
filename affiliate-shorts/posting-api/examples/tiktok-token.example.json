@@ -1,0 +1,7 @@
+{
+  "refresh_token": "",
+  "open_id": "",
+  "scope": "user.info.basic,video.list,video.publish,video.upload",
+  "display_name": "",
+  "note": "実体は tokens/tiktok/<key>.json。auth_tiktok.py が書く。コミットしない。"
+}
