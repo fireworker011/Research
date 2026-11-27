@@ -131,8 +131,8 @@ PRESET_CANON: dict[str, dict[str, Any]] = {
     "speed": {
         "label_ja": "スピード",
         "choice_ja": "スピード（最速）",
-        "when_ja": "試し打ち。turbo 4step。格闘 LoRA なし",
-        "hint_ja": "最速。turbo 4step。格闘 LoRA は積まない。",
+        "when_ja": "試し打ち。Eros Max v1.0 は LCM/Simple 8。ほかの UNet は turbo 4step",
+        "hint_ja": "最速。Eros Max v1.0 は LCM/Simple 8。ほかの UNet は turbo 4step。格闘 LoRA は積まない。",
         "stack": [("turbo4", 1.0, False)],
         "steps": 4,
         "trigger": "",
@@ -142,8 +142,8 @@ PRESET_CANON: dict[str, dict[str, Any]] = {
     "balance": {
         "label_ja": "バランス",
         "choice_ja": "バランス（迷ったらこれ）",
-        "when_ja": "普段使い。この UNet では LoRA なし euler 8",
-        "hint_ja": "迷ったらこれ。LoRA なし euler 8。Larry は積まない。",
+        "when_ja": "普段使い。Eros Max v1.0 は LCM/Simple 8。ほかの UNet は euler 8",
+        "hint_ja": "迷ったらこれ。Eros Max v1.0 は LCM/Simple 8。ほかの UNet は euler 8。Larry は積まない。",
         "recommend": True,
         "stack": [("larry", 1.0, False)],
         "steps": 8,
@@ -154,8 +154,8 @@ PRESET_CANON: dict[str, dict[str, Any]] = {
     "quality": {
         "label_ja": "質",
         "choice_ja": "質（きれい・時間かかる）",
-        "when_ja": "きれい優先。この UNet では LoRA なし euler 12",
-        "hint_ja": "きれい優先。LoRA なし euler 12。時間はかかる。",
+        "when_ja": "きれい優先。Eros Max v1.0 は LCM/Simple 12。ほかの UNet は euler 12",
+        "hint_ja": "きれい優先。Eros Max v1.0 は LCM/Simple 12。ほかの UNet は euler+beta 12。時間はかかる。",
         "stack": [("larry", 1.0, False)],
         "steps": 12,
         "trigger": "",

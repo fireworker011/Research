@@ -5873,6 +5873,13 @@ def _surface_env(spec: dict[str, Any], original: str) -> str:
             seen.append(line)
     parts = [base.rstrip(".") + "."] if base else []
     parts.extend(seen)
+    light = str(spec.get("light") or "").strip()
+    ambience = str(spec.get("ambience") or "").strip()
+    # v1.0 shifts toward blue light and a wandering camera when the place is unnamed.
+    if light:
+        parts.append(f"The light in this place stays {light} for the whole clip.")
+    if ambience:
+        parts.append(f"The sound of this place is {ambience}.")
     parts.append(_SURFACE_ENV_TAIL)
     return " ".join(parts)
 
@@ -5923,6 +5930,15 @@ def apply_prompt_surface(ep: dict[str, Any], text: str) -> str:
         if found:
             out = out[: found.start(2)] + _surface_env(spec, found.group(2)) + out[found.end(2):]
         out = _rewrite_surface_residue(spec, out, night=night)
+    elif not night:
+        # Day on the ward keeps the rooms. Night-only tubes and a dark far end fight the daylight sentence.
+        def _day_ward_env(match: re.Match[str]) -> str:
+            block = match.group(2)
+            block = block.replace("flickering broken fluorescent tubes", "daylight from the windows")
+            block = block.replace("a dark far end", "the far end")
+            return match.group(1) + block + match.group(3)
+
+        out = _SURFACE_ENV_RE.sub(_day_ward_env, out, count=1)
     if not night:
         out = re.sub(r"\s+at night\b", "", out)
     bits: list[str] = []
@@ -7073,7 +7089,11 @@ def _hospital_i2v_lines(beat: dict[str, Any]) -> list[str]:
     """Opening-frame motion for chain. Empty when this beat has no chain note."""
     bid = str(beat.get("id") or "")
     low = str(beat.get("action") or "").lower()
-    lines = ["This I2V clip starts on the opening frame."]
+    # Name the continuation. The letters I2V in the prompt are the style that wanders the camera.
+    lines = [
+        "The clip starts on the opening frame and continues in one linear take. "
+        "The light stays the color of that opening frame."
+    ]
     if bid.endswith("-in") and "forward and back in short presses" in low:
         lines.append(
             "The shaft travels inward until the root meets the buttocks. "
@@ -7463,6 +7483,7 @@ def build_beat_prompt(
     if vis:
         desc.append(vis)
     if str(ep.get("slug") or "") == "hospital-exit-adult":
+        desc.append("Motion stays in one linear time flow from the first frame to the last.")
         desc.append("Identity and the subject_definitions look stay locked for the whole clip.")
     else:
         desc.append("Identity, costume, and props stay locked for the whole clip.")
@@ -8674,7 +8695,12 @@ def apply_unet_preset_rules(preset: dict[str, Any], unet: str) -> dict[str, Any]
         kept.append((fname, float(strength)))
     steps = int(preset.get("steps") or 0)
     lcm = eros_v1_uses_lcm(unet)
-    if not dropped and steps >= 8 and not (lcm and str(preset.get("sampler") or "") != "lcm"):
+    sampler_now = str(preset.get("sampler") or "")
+    scheduler_now = str(preset.get("scheduler") or "")
+    # v1.0 publishes LCM/Simple at 8-12. Quality's beta scheduler stays off that UNet.
+    needs_lcm = lcm and sampler_now != "lcm"
+    needs_simple = lcm and scheduler_now != "simple"
+    if not dropped and steps >= 8 and not needs_lcm and not needs_simple:
         return preset
     out = dict(preset)
     out["stack"] = kept
@@ -8684,9 +8710,12 @@ def apply_unet_preset_rules(preset: dict[str, Any], unet: str) -> dict[str, Any]
     if steps < 8:
         out["steps"] = 8
         notes.append("steps raised to 8 on TURBO-hybrid. The 4-step LoRA is not stacked, and 4 steps melts the body.")
-    if lcm and str(out.get("sampler") or "") != "lcm":
+    if needs_lcm:
         out["sampler"] = "lcm"
         notes.append("sampler set to lcm on Eros Max v1.0. Published samples are LCM.")
+    if needs_simple:
+        out["scheduler"] = "simple"
+        notes.append("scheduler set to simple on Eros Max v1.0. Published setup is LCM/Simple, 8-12 steps.")
     out["notes"] = notes
     return out
 

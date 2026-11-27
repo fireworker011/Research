@@ -955,7 +955,14 @@ def test_resolve_preset_fallbacks(tmp_path):
     balance_on_hybrid = apply_unet_preset_rules(balance, EROS_MAX_UNET)
     assert balance_on_hybrid["stack"] == []
     assert balance_on_hybrid["steps"] == 8 and balance_on_hybrid["sampler"] == "lcm"
+    assert balance_on_hybrid["scheduler"] == "simple"
     assert not any("steps raised to 8" in n for n in balance_on_hybrid["notes"])
+    quality_on_hybrid = apply_unet_preset_rules(quality, EROS_MAX_UNET)
+    assert quality_on_hybrid["steps"] == 12
+    assert quality_on_hybrid["sampler"] == "lcm"
+    assert quality_on_hybrid["scheduler"] == "simple"
+    assert any("scheduler set to simple" in n for n in quality_on_hybrid["notes"])
+    assert apply_unet_preset_rules(quality, "fl2va.safetensors")["scheduler"] == "beta"
 
 
 def test_kasumi_late_desk_validates_and_stills_are_clean():
@@ -7655,6 +7662,8 @@ def test_filth_places_keep_sun_and_feces_and_omit_sign_nouns():
         assert "mattress" not in bed.lower()
         assert "everything stays brightly lit" not in bed.lower()
         assert "high daylight lights the place" in bed.lower()
+        assert "the sound of this place is" in bed.lower()
+        assert "the light in this place stays" in bed.lower()
         _assert_no_sign_nouns(bed, label)
         assert "everything stays brightly lit" not in low
     bog = copy.deepcopy(base)
