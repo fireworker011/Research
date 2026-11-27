@@ -503,11 +503,13 @@ STOCK_ONLY_SLUGS = frozenset({"kasumi-late-desk", "bandai-district", "bandai-dis
 EROTIC_SLUG_SUFFIX = "-adult"
 EROTIC_MODELS_SUBDIR = "erotic"
 # Drive copy (Naomiichi): MyDrive/minimax-h3-comfyui/models/diffusion_models/
-# H3 Eros Max beta7 bf16. AIR civitai:2851079@3429412+3330999.
-# 40,222,934,448 bytes. The int8 files on this version stay unused. beta6 does not count.
-EROS_MAX_UNET = "h3ErosMax_beta7_3330999.safetensors"
+# H3 Eros Max v1.0 bf16. AIR civitai:2851079@3481735+3388651.
+# 40,222,982,712 bytes. The int8 file on this version (fileId 3388588) stays unused.
+# beta7 and beta6 do not count. Old files stay on Drive.
+EROS_MAX_UNET = "10Eros_Max_8stepTurbo_v1.0_hybrid.safetensors"
 EROS_MAX_ALIASES = (
     EROS_MAX_UNET,
+    "h3ErosMax_beta7_3330999.safetensors",
     "10Eros_Max_h3_TURBO-hybrid_beta5_int8.safetensors",
     "10Eros_Max_H3_FL2VA-INT8-ConvRot.safetensors",
 )
@@ -525,10 +527,10 @@ CHECKPOINTS: dict[str, dict[str, Any]] = {
         "file": EROS_MAX_UNET,
         "aliases": EROS_MAX_ALIASES,
         "erotic": True,
-        "url": "https://civitai.com/api/download/models/3429412?fileId=3330999",
-        # beta7 bf16 fileId 3330999 is 40,222,934,448 bytes. A truncated file must not count as ready.
+        "url": "https://civitai.com/api/download/models/3481735?fileId=3388651",
+        # v1.0 bf16 fileId 3388651 is 40,222,982,712 bytes. A truncated file must not count as ready.
         "min_bytes": 15_000_000_000,
-        "expected_bytes": 40_222_934_448,
+        "expected_bytes": 40_222_982_712,
     },
     # DaSiWa Hybrid v2 int8. Civitai 2877206 version 3314675 fileId 3203130. ~20GB.
     "dasiwa": {
@@ -1726,12 +1728,18 @@ def _best_erotic_weight(paths: list[Path], want: str, spec: dict[str, Any]) -> P
 
 
 def is_turbo_hybrid_unet(name: str) -> bool:
-    """True when turbo is already baked in. Beta6 fuses the 8+4 turbo the way TURBO-hybrid did."""
+    """True when turbo is already baked in. Eros Max fuses the 8-step turbo the way TURBO-hybrid did."""
     low = str(name or "").lower()
     if "turbo-hybrid" in low or "turbo_hybrid" in low:
         return True
     compact = low.replace("_", "").replace("-", "").replace(" ", "")
-    return "h3erosmax" in compact or compact.startswith("erosmax")
+    return "erosmax" in compact
+
+
+def eros_v1_uses_lcm(name: str) -> bool:
+    """v1.0 8-step turbo publishes LCM. Older Eros Max names keep the preset sampler."""
+    compact = str(name or "").lower().replace("_", "").replace("-", "").replace(" ", "")
+    return "erosmax" in compact and "8stepturbo" in compact
 
 
 def locate_erotic_checkpoint(models_root: Path | str, spec: dict[str, Any] | None = None) -> Path | None:
@@ -8599,7 +8607,7 @@ def apply_unet_preset_rules(preset: dict[str, Any], unet: str) -> dict[str, Any]
     """TURBO-hybrid already has turbo baked in. LoRA patches requantize INT8 and OOM A100 40GB.
 
     The 4-step turbo LoRA cannot stack on this UNet. Four steps without it melts the body,
-    so a speed plan rises to the baked-in euler 8. An authored beat.steps still wins later.
+    so a speed plan rises to 8. v1.0 publishes LCM. An authored beat.steps still wins later.
     """
     if not is_turbo_hybrid_unet(unet):
         return preset
@@ -8613,7 +8621,8 @@ def apply_unet_preset_rules(preset: dict[str, Any], unet: str) -> dict[str, Any]
             continue
         kept.append((fname, float(strength)))
     steps = int(preset.get("steps") or 0)
-    if not dropped and steps >= 8:
+    lcm = eros_v1_uses_lcm(unet)
+    if not dropped and steps >= 8 and not (lcm and str(preset.get("sampler") or "") != "lcm"):
         return preset
     out = dict(preset)
     out["stack"] = kept
@@ -8623,6 +8632,9 @@ def apply_unet_preset_rules(preset: dict[str, Any], unet: str) -> dict[str, Any]
     if steps < 8:
         out["steps"] = 8
         notes.append("steps raised to 8 on TURBO-hybrid. The 4-step LoRA is not stacked, and 4 steps melts the body.")
+    if lcm and str(out.get("sampler") or "") != "lcm":
+        out["sampler"] = "lcm"
+        notes.append("sampler set to lcm on Eros Max v1.0. Published samples are LCM.")
     out["notes"] = notes
     return out
 

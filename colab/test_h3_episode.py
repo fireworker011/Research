@@ -567,8 +567,9 @@ def test_notebook_is_one_cell_and_isolated():
     assert "cursor/h3-lora-cards-d736" in md
     assert "kasumi-late-desk-adult" in md
     assert "10Eros Max は Drive" in md
-    assert "h3ErosMax_beta7_3330999.safetensors" in md
-    assert "3429412" in md
+    assert "10Eros_Max_8stepTurbo_v1.0_hybrid.safetensors" in md
+    assert "3481735" in md
+    assert "3388651" in md
     assert "迷ったら" in md
     assert "5. 構成" in md
     assert "6. 誘うポーズ" in md
@@ -944,12 +945,15 @@ def test_resolve_preset_fallbacks(tmp_path):
     speed_on_hybrid = apply_unet_preset_rules(speed, EROS_MAX_UNET)
     assert speed_on_hybrid["stack"] == []
     assert speed_on_hybrid["steps"] == 8
+    assert speed_on_hybrid["sampler"] == "lcm"
     assert any("TURBO-hybrid" in n for n in speed_on_hybrid["notes"])
     assert any("steps raised to 8" in n for n in speed_on_hybrid["notes"])
+    assert any("sampler set to lcm" in n for n in speed_on_hybrid["notes"])
     assert apply_unet_preset_rules(speed, "fl2va.safetensors")["steps"] == 4
+    assert apply_unet_preset_rules(speed, "h3ErosMax_beta7_3330999.safetensors")["sampler"] == "euler"
     balance_on_hybrid = apply_unet_preset_rules(balance, EROS_MAX_UNET)
     assert balance_on_hybrid["stack"] == []
-    assert balance_on_hybrid["steps"] == 8 and balance_on_hybrid["sampler"] == "euler"
+    assert balance_on_hybrid["steps"] == 8 and balance_on_hybrid["sampler"] == "lcm"
     assert not any("steps raised to 8" in n for n in balance_on_hybrid["notes"])
 
 
@@ -1015,11 +1019,13 @@ def test_kasumi_adult_is_erotic_eros_max_and_stock_kasumi_cannot_use_it():
     assert episode_checkpoint(adult) == "eros-max"
     assert CHECKPOINTS["eros-max"]["erotic"] is True
     assert CHECKPOINTS["eros-max"]["file"] == EROS_MAX_UNET
-    assert EROS_MAX_UNET == "h3ErosMax_beta7_3330999.safetensors"
-    assert "3429412" in CHECKPOINTS["eros-max"]["url"]
-    assert "fileId=3330999" in CHECKPOINTS["eros-max"]["url"]
-    assert CHECKPOINTS["eros-max"]["expected_bytes"] == 40_222_934_448
+    assert EROS_MAX_UNET == "10Eros_Max_8stepTurbo_v1.0_hybrid.safetensors"
+    assert "3481735" in CHECKPOINTS["eros-max"]["url"]
+    assert "fileId=3388651" in CHECKPOINTS["eros-max"]["url"]
+    assert "3388588" not in CHECKPOINTS["eros-max"]["url"]
+    assert CHECKPOINTS["eros-max"]["expected_bytes"] == 40_222_982_712
     assert is_turbo_hybrid_unet(EROS_MAX_UNET)
+    assert is_turbo_hybrid_unet("h3ErosMax_beta7_3330999.safetensors")
     assert is_erotic_unet_name(EROS_MAX_UNET)
     assert episode_lane(stock) == "stock"
     assert episode_checkpoint(stock) == "stock"
@@ -4626,7 +4632,7 @@ def test_eros_alias_does_not_block_beta6(tmp_path, monkeypatch):
     payload = _sparse_eros(tmp_path / "diffusion_models" / "Eros Max.safetensors")
 
     def fake_resume(url: str, dest_path: Path, *, min_bytes: int, expected_bytes: int = 0, tries: int = 4) -> bool:
-        assert "3429412" in url and "fileId=3330999" in url
+        assert "3481735" in url and "fileId=3388651" in url
         assert dest_path.name == EROS_MAX_UNET
         _sparse_eros(dest_path)
         return True
@@ -4637,6 +4643,26 @@ def test_eros_alias_does_not_block_beta6(tmp_path, monkeypatch):
     assert payload.is_file()
     assert (tmp_path / "erotic" / EROS_MAX_UNET).stat().st_size > 15_000_000_000
     assert pick_stock_fl2va(tmp_path / "diffusion_models") != payload.name
+
+
+def test_old_eros_files_do_not_block_v1(tmp_path, monkeypatch):
+    adult = load_episode(KASUMI_ADULT_DIR / "episode.json")
+    beta7 = _sparse_eros(tmp_path / "diffusion_models" / "h3ErosMax_beta7_3330999.safetensors")
+    int8 = _sparse_eros(tmp_path / "diffusion_models" / "10Eros_Max_8stepTurbo_v1.0_hybrid-int8_HQ.safetensors")
+
+    def fake_resume(url: str, dest_path: Path, *, min_bytes: int, expected_bytes: int = 0, tries: int = 4) -> bool:
+        assert "3481735" in url and "fileId=3388651" in url
+        assert "3388588" not in url
+        assert dest_path.name == EROS_MAX_UNET
+        assert expected_bytes == 40_222_982_712
+        _sparse_eros(dest_path)
+        return True
+
+    monkeypatch.setattr("h3_episode.fetch_resumable", fake_resume)
+    notes = ensure_episode_checkpoint(adult, tmp_path)
+    assert any(f"fetched {EROS_MAX_UNET}" in n for n in notes)
+    assert beta7.is_file() and int8.is_file()
+    assert (tmp_path / "erotic" / EROS_MAX_UNET).is_file()
 
 
 def test_eros_reuses_drive_root_and_hf_cache(tmp_path, monkeypatch):
@@ -5493,7 +5519,7 @@ def test_graph_chains_loras_and_passes_studio_assert():
     )
     assert "2" not in t2v_bare
     assert t2v_bare["1"]["inputs"]["unet_name"] == EROS_MAX_UNET
-    assert t2v_bare["22"]["inputs"]["sampler_name"] == "euler"
+    assert t2v_bare["22"]["inputs"]["sampler_name"] == "lcm"
     assert t2v_bare["23"]["inputs"]["steps"] == 8
     assert t2v_bare["23"]["inputs"]["scheduler"] == "simple"
 
