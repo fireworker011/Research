@@ -32,9 +32,9 @@ LoRA スタジオのスキルは病棟の指アナルに使わない。指アナ
 pytest は 129 通過。開いたときのフォームは変えていない。生成ボタンは人間。ランタイムを再起動して Run all。同じカーネルは古いエンジンのまま。
 
 - チェックポイントは Eros Max v1.0 bf16。AIR `civitai:2851079@3481735+3388651`。ファイル `10Eros_Max_8stepTurbo_v1.0_hybrid.safetensors`。40,222,982,712 bytes。同じ版の int8（fileId 3388588、`10Eros_Max_8stepTurbo_v1.0_hybrid-int8_HQ.safetensors`）は取らない。beta7（`h3ErosMax_beta7_3330999.safetensors`）と beta6 もこのファイルの代わりにならない。古いファイルは消さない。Civitai が署名 URL ではなく本体を 200 で返すときは、その応答を Bearer のまま続ける。公開サンプルは LCM、steps は 8 が4枚、10 が2枚。CFG は書いていない。CFG は BasicGuider のまま。質の未指定拍は 12 のまま。作者は、attn は base ではなく、base の LoRA は効きが約2倍になって過負荷になる、と書いている。強度は変えていない。
-- `MM-H3_Blowjob_v3.safetensors` と `cxy_kiss_lora_h3_v02_step1200.safetensors` の公開 URL は 404。URL は変えていない。チェックポイントを先に着地させる。キスか blowjob が、この並びの描く拍に付いていて Drive に無いときは、着地のあと Comfy の前で止まる。その拍は描かない。fullnelson と analfist は有料で 403。トイレ触手、角は横になって挿入、のこの並びでは描く拍に乗らない。403 では止まらない。
+- `MM-H3_Blowjob_v3.safetensors` と `cxy_kiss_lora_h3_v02_step1200.safetensors` の公開 URL は 404。URL は変えていない。チェックポイントを先に着地させる。キスか blowjob が、この並びの描く拍に付いていて Drive に無いときは、着地のあと Comfy の前で止まる。その拍は描かない。analfist は fileId 3328774。fullnelson は Anal MiniMax。トイレ触手、角は横になって挿入、のこの並びでは描く拍に乗らない。その取得が失敗しても止まらない。
 - v1.0 も TURBO-hybrid。スピードの 4step LoRA は積めない。4 step のまま描くと体が溶ける。スピードで steps の無い拍は 8 に上がる。サンプラーは LCM。バランスは元から 8。質は 12。拍に書いた steps は優先する。格闘が乗った拍は euler+beta 12 のまま。`03-kiss-peak` と `03-kiss-close` は 8 のまま。`04-gin-lick`、`04-gin-jupo`、`04-gin-wait` は steps が無かったので、スピードだと 4 だった。今は 8。
-- トイレに「トイレ・アナルディルド」を足した。便座に座り、膝は曲げ、太ももは閉じたまま。極太のピンクの円筒ディルドは金属の棒に付き、肛門へ入る。トリガーは `zy_3dcg`。ファイル `H3_anal_dildo_ref2va_v01.safetensors`。Civitai 3028491、version 3439849、fileId 3337550。強度 1.0。`anuspussy` 0.40 も積む。膣の「トイレ・ディルド」は残す。開いたときの選択はトイレ触手のまま。
+- トイレ・アナルディルドは廃止。欄の「トイレ・アナルディルド」はアナルフィストになる。ファイル `H3_anal_dildo_ref2va_v01.safetensors` は取らない。古いファイルは消さない。膣の「トイレ・ディルド」は残す。開いたときの選択はトイレ触手のまま。
 - 角の横は Spooning Sex - Leg Up に差し替えた。ファイル `spooning-sex-mh3-e34-az420.safetensors`。Civitai 1803312、version 3444113、fileId 3342746。Cuddle Cup `SPOONLG_CUDDLECUP_v1.safetensors` はもう取らない。学習文はトリガーに残す。その文には a man がある。動作文は角のまま。あやは左を下にして横になり、右足を曲げて上げ、角の右手がその足を持つ。頭はフレームの右。円を描く腰は外した。
 - ギンに「灰色・触手オナホ」を足した。ギン一人。直立の 24cm へ円筒のオナホを通し、半分まで上下してから亀頭へ戻す。ファイル `alizevert20.safetensors`。Civitai 3020417、version 3429399、fileId 3324978。強度 1.0。竿は `penis` 0.45。既定の騎乗は変えていない。
 - 二人の病棟拍から `nothing new enters` を外した。その文は三人目を描く。代わりに同じ二人。犬の拍は変えていない。
@@ -49,10 +49,10 @@ pytest は 129 通過。開いたときのフォームは変えていない。�
 - 昼の文は `High daylight lights the place.`。`Everything stays brightly lit` は付けない。場所の env にある影は残る。
 - 場所の env には置換を掛けない。`porcelain`、`water stains`、`tiles`、`crumbling` を屋外の Look にそのまま足していない。病棟の便器文では、porcelain の便器句を場所の fixture に替えてから、残った語を落とす。城下町の `dark roof tiles` は残る。
 - 晴れは地面を乾かさない。本文に乾きが無い場所は、晴れだけでは乾かない。
-- フルネルソンの学習文は `man's arms` を含む。消すと LoRA が動かない。横挿入に he や daddy を足すと、角が男になる。ステップの上限は 16。見本の 20 は使えない。
+- フルネルソンの LoRA は Anal MiniMax。ファイル `analMinimax_v1.safetensors`。Civitai 3031553、version 3443995、fileId 3342621。見本のプロンプトは `Anal`。古い学習文の `man's arms` は外した。姿勢の文は残す。横挿入に he や daddy を足すと、角が男になる。ステップの上限は 16。見本の 20 は使えない。sampler は `res_multistep` のまま。強度は 1.0。
 - 開いたままの Colab は古い欄を保持する。LoRA 更新セルは、まだ Drive に無いファイルを取らない。analfist、fullnelson、beta6 は描くセルが取る。beta5 は beta6 の代わりにならない。古いファイルは消さない。開いたときのフォームは変えていない。汚泥の干潟、昼、晴れ、トイレ触手、角は横になって挿入。
 - beta6 の wget は、Civitai の URL をトークン無しで叩いて exit 6 になっていた。0 バイト。今は最初のホップだけ Bearer を付け、署名 URL を wget か curl に渡す。署名先には Authorization を付けない。署名は失効するので、試し打ちのたびに取り直す。`*.part` は残す。0 バイトの再実行は、同じカーネルに残った古いエンジンでは直らない。ランタイムを再起動して Run all。ノートは `cursor/h3-lora-cards-d736` の helper をそのとき取り直す。
-- fullnelson（version 3422679、fileId 3317916）と analfist（version 3424713、fileId 3319392）の file id は公開メタデータと一致している。両方 `hasActivePaidAccess`。ログイン済みのトークンでも Civitai は 403 を返す。触手と後ろアナルのこの並びでは、その2つは描く拍に乗らない。403 では止まらない。URL は変えていない。
+- analfist の現行 fileId は 3328774。ファイル名は `h3-selfanalfisting-k3nk-step00015400.safetensors`。version 3424713。古い fileId 3319392 は取らない。fullnelson の現行は Anal MiniMax、version 3443995、fileId 3342621。古い hash 名は取らない。触手と横挿入のこの並びでは、その2つは描く拍に乗らない。取得が失敗しても止まらない。
 - 別枝 `cursor/pose-ref-gaps-d736`、`cursor/human-cast-anatomy-d736`、`cursor/hospital-anal-dildo-face-d736`、`cursor/rehearsal-room-adult-d736` をこの枝へ混ぜない。draft PR #122 はマージしない。
 
 ## いま（2026-10-23）残りの姿勢
@@ -65,7 +65,7 @@ pytest は 129 通過。開いたときのフォームは変えていない。�
 - 最初にマンコへ入る拍は、着座の瞬間にあやが新しい快楽で口を開く。絶頂の顔は本文のまま。
 - チェーンの押し当ては、開始の姿勢を保ったまま竿役だけ少し右へ回す。しのの遭遇も見つめ合い。
 - 指アナルは `04-toilet-in` → `04-toilet-afin` → `04-toilet-afast` → `04-toilet-out`。afin は `analfinger` 1.0、トリガー `anal_finger`。ファイル `af_h3_vids512_imgs1024_000011750.safetensors`。Civitai 2988249、version 3388162、fileId 3277184。afast は絶頂のあと指が抜け、肛門は開いた輪、指先と輪の周りに糞。out は指先を舐めて歩く。10秒。名前アナル指、指、指アナルはこの行。ディルドはトイレ・ディルドのまま膣。
-- アナルフィストは `04-toilet-in` → `04-toilet-afist` → `04-toilet-afpull` → `04-toilet-afsmear` → `04-toilet-out`。afist と afpull は `analfist` 1.0、トリガー `4n4lfi5tin6`。ファイル `h3-selfanalfisting-k3nk-step00015400.safetensors`。Civitai 3016789、version 3424713、fileId 3319392。afpull は絶頂のあと手が抜け、その手は糞の塊をつかみ、手全体が糞でべったり。afsmear は笑顔で胸と腹に塗る。out は手を舐めてから歩く。名前アナルフィスト、フィストはこの行。指アナルとは別。
+- アナルフィストは `04-toilet-in` → `04-toilet-afist` → `04-toilet-afpull` → `04-toilet-afsmear` → `04-toilet-out`。並びは指アナルと同じ前かがみ。afist と afpull は `analfist` 0.9、トリガー `4n4lfi5tin6`。ファイル `h3-selfanalfisting-k3nk-step00015400.safetensors`。Civitai 3016789、version 3424713、fileId 3328774。見本のこのファイルは 0.9。afist は右手を肛門へ出し入れ。マンコは下の閉じた割れ目のまま。afpull は手が肛門の中にあるうちに糞の塊を握り、その塊を持って抜く。抜いたとき肛門は開いた輪。手全体は糞でべったり。afsmear は笑顔で胸と腹に塗る。out は手を舐めてから歩く。駅と英語の見本文は使わない。名前アナルフィスト、フィスト、アナルディルドはこの行。指アナルとは別。
 
 生成はしていない。
 
@@ -101,7 +101,7 @@ pytest は 129 通過。開いたときのフォームは変えていない。�
 
 積んだもの。
 
-- `anuspussy` を Eros 版に差し替えた。ファイル `anus_pussy_eros_v2.safetensors`。Civitai 2974434、version 3397856、fileId 3288079。作者は、前の版が公式チェックポイントでは動くが EROS v5 では弱い、と書いている。2026-10-15 当時のチェックポイントは H3 Eros Max beta6 int8。現行は残課題の先頭。当時のファイルは `h3ErosMax_beta6_3283276.safetensors`。Civitai 2851079、version 3393047、fileId 3283276。今は beta6 も beta7 も取り直さない。古いファイルは消さない。強度は 0.40 のまま。トリガーは `zxqanus` と `zxqvagina`。`zxqmei` は足さない。今まで `anuspussy` が付いていた拍は、このファイルになる。
+- 当時 `anuspussy` を Eros 版にした。ファイル `anus_pussy_eros_v2.safetensors`。Civitai 2974434、version 3397856、fileId 3288079。作者は、前の版が公式チェックポイントでは動くが EROS v5 では弱い、と書いている。2026-10-15 当時のチェックポイントは H3 Eros Max beta6 int8。現行は残課題の先頭。当時のファイルは `h3ErosMax_beta6_3283276.safetensors`。Civitai 2851079、version 3393047、fileId 3283276。今は beta6 も beta7 も取り直さない。古いファイルは消さない。今のファイルは HMPussy V2。`HMPussyV2.safetensors`。Civitai 2846342、version 3436891、fileId 3334021。強度は 0.40 のまま。トリガーは `Pussy`、`vagina`、`anus`。`zxqanus` と `zxqvagina` と `zxqmei` は足さない。Eros 版のファイルは残っても、このファイルが無ければ取り直す。古いファイルは消さない。今まで `anuspussy` が付いていた拍は、このファイルになる。
 - 触手の行為 `04-toilet` だけ `tentacles101` 0.9。ファイル `Tentacles_H3_101_.safetensors`。Civitai 2971784、version 3367732、fileId 3255755。トリガー語はカードに無い。サンプルは mystic と積むとき 0.9、単体は 0.95。2D-General（3293041）は登録しない。fill の蔦は `tentacles3d` 0.45 のまま。4本の HOLD の文は残す。サンプル動画は抜き差しとカットが多い。文が HOLD のままなので、絵が前後し始めたら 0.9 を下げる。
 
 上の2枚は毎回このファイル。ドロップダウンにはしない。
@@ -362,7 +362,7 @@ action に jacko、doggy、hug、wraps は書かない。doggy LoRA は同時に
 
 ## 正常位と後背位の挿入
 
-四つん這いと壁立ちバック、角の立ちバック（肛門の in と peak）は `siderear` 0.8 の次に `anuspussy` 0.40。灰色の誘う後背は膣のまま、同じ並び。`siderear` は `MMH3_NSFW_Doggystyle_Sex_3354622_epoch_20.safetensors`。Civitai 2967815、version 3362792、fileId 3250615。トリガー語は無い。`anuspussy` は `anus_pussy_eros_v2.safetensors`。Civitai 2974434、version 3397856、fileId 3288079。前の版 3371009 は外した。病棟の写真調では 0.40。トリガーは `zxqanus` と `zxqvagina`。`zxqmei` はキャラトークンなので足さない。`doggy` は足さない。
+四つん這いと壁立ちバック、角の立ちバック（肛門の in と peak）は `siderear` 0.8 の次に `anuspussy` 0.40。灰色の誘う後背は膣のまま、同じ並び。`siderear` は `MMH3_NSFW_Doggystyle_Sex_3354622_epoch_20.safetensors`。Civitai 2967815、version 3362792、fileId 3250615。トリガー語は無い。`anuspussy` は `HMPussyV2.safetensors`。Civitai 2846342、version 3436891、fileId 3334021。病棟の写真調では 0.40。トリガーは `Pussy`、`vagina`、`anus`。`zxqmei` は足さない。`doggy` は足さない。
 
 四つん這いの in / peak と、壁立ちバックの in / peak（角の立ちバックも含む）だけ、カメラを差し替えた。横の `SIDE-REAR` は頬が穴を隠す。四つん這いは開いた太もものあいだ、低い、少し見上げる。肛門とマンコの両方が画面に残る。立ちは脹脛のあいだ、低い、少し見上げる。肛門はマンコの上の閉じた輪。結合部は画面中央。竿の線が見える。距離は固定。参照の後背位（Drive `1JXFwfFM0mghDbtFYMBzTv6vGZSDhGeyz`）は肛門。受けは胸と頬を床に置いたまま、顔を左肩越しに竿役へ戻す。竿役は画面左から一歩ずつ入り、右手で亀頭を肛門へ運び、手を離してから腰を一度前へ。根元で HOLD。peak は右手を竿から離したまま短い前後。亀頭は肛門の中。マンコは肛門の下の閉じた割れ目。中出しは肛門。参照の立ちバック（Drive `16V50kQYP5XmGLxVAmTtyKYeAQPh4lApV`）の映像は膣。台本の壁立ちは肛門。あやは壁へ一歩、爪先で止まり、胴を倒し、両掌は壁。胸は床へ下がる。竿役の左手は腰、右手は亀頭を肛門へ置いて離す。一度前へ入れて根元 HOLD。peak は左手を腰に置いたまま速い前後。胸が揺れ、尻が揺れる。足は爪先。肛門は埋まったまま。マンコは下の閉じた割れ目。角の竿は `erect ashen-gray 24cm`。あやに竿は生やさない。connect 欄は変えていない。灰色の誘う後背は膣のまま。右手で亀頭をマンコへ置き、肛門は上の閉じた輪。
 
@@ -459,8 +459,8 @@ id は `03-kiss-jo` `06-doggy-jo` `09-join-jo` `12-exit-jo` に `-set` `-behind`
 - 広げる: `minimax_h3_pussy_spread_v0.2.safetensors` 強度 0.50。fileId は置かない
 - クンニ: https://civarchive.com/models/1971266?modelVersionId=3318405 ファイル `cunny-mh3-e62-az420.safetensors`
 - 指アナル: Self Anal Finger 1.0。ファイル `af_h3_vids512_imgs1024_000011750.safetensors`。version 3388162、fileId 3277184。トリガー `anal_finger`。ThumbInButt は和式排出に残る。ファイル `MiniMax H3 - ThumbInButt.safetensors` fileId 3168734。ページ URL は重みにしない
-- アナルフィスト: Self Anal Fisting 1.0。ファイル `h3-selfanalfisting-k3nk-step00015400.safetensors`。version 3424713、fileId 3319392。トリガー `4n4lfi5tin6`
-- フルネルソン: ファイル `5VR5YKXR0BFRBWJ17K3HEG5KT0.D8qyBosp.safetensors`。Civitai 3015275、version 3422679、fileId 3317916。強度 1.0。トリガーは学習文そのもの。steps は 16、sampler は `res_multistep`。見本の 20 は、このエピソードの上限が 16 なので使わない
+- アナルフィスト: Self Anal Fisting。ファイル `h3-selfanalfisting-k3nk-step00015400.safetensors`。version 3424713、fileId 3328774。トリガー `4n4lfi5tin6`。強度 0.9
+- フルネルソン: Anal MiniMax。ファイル `analMinimax_v1.safetensors`。Civitai 3031553、version 3443995、fileId 3342621。強度 1.0。トリガーは `Anal`。steps は 16、sampler は `res_multistep`。見本の 20 は、このエピソードの上限が 16 なので使わない
 
 ## 禁止語
 

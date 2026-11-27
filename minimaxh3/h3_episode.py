@@ -314,9 +314,6 @@ LORA_FILES = {
     # Spooning Sex - Leg Up. Trained sentence stays on the beat trigger, not in the action.
     # Model 1803312 version 3444113 fileId 3342746. Cuddle Cup is no longer fetched.
     "spoonlg": "spooning-sex-mh3-e34-az420.safetensors",
-    # Anal dildo on a rod. Trigger zy_3dcg. Toilet sit, thighs together, anus only.
-    # Model 3028491 version 3439849 fileId 3337550.
-    "analdildo": "H3_anal_dildo_ref2va_v01.safetensors",
     # Cylindrical onahole on an upright shaft. No trained word. Gin-only row.
     # Model 3020417 version 3429399 fileId 3324978.
     "alizevert": "alizevert20.safetensors",
@@ -328,11 +325,9 @@ LORA_FILES = {
     # Side/rear view so the shaft stays readable where it meets the pussy.
     # Civitai 2967815 version 3362792 fileId 3250615. No trigger word.
     "siderear": "MMH3_NSFW_Doggystyle_Sex_3354622_epoch_20.safetensors",
-    # Anus and vagina as two holes. Eros retrain of the same card.
-    # Author: the first file is weaker on EROS v5. This file is for EROS v5 INT8.
-    # Ward photoreal stays 0.40. Triggers zxqanus and zxqvagina. zxqmei stays off (character token).
-    # Civitai 2974434 version 3397856 fileId 3288079.
-    "anuspussy": "anus_pussy_eros_v2.safetensors",
+    # HMPussy V2. One file. Trained words Pussy, vagina, anus. Ward photoreal stays 0.40.
+    # Model 2846342 version 3436891 fileId 3334021. The Eros file does not count.
+    "anuspussy": "HMPussyV2.safetensors",
     # Missionary grind augmenter. Trigger MISSIONLG. Card strength 1.0.
     # Trained as him on top, rolling grind, she lifts her hips. Not on the ward M-shape
     # (kneel, pelvis stays down, full-body PROFILE). Registered only.
@@ -354,12 +349,12 @@ LORA_FILES = {
     # Self Anal Finger (Civitai 2988249). Card workflow: 1.0, prompt opens with anal_finger.
     # Version 3388162 fileId 3277184. Western toilet row only. Not ThumbInButt.
     "analfinger": "af_h3_vids512_imgs1024_000011750.safetensors",
-    # Self Anal Fisting (Civitai 3016789). Trigger 4n4lfi5tin6. Version 3424713 fileId 3319392.
-    # Western toilet row only. Strength 1.0. Not the finger row and not ThumbInButt.
+    # Self Anal Fisting (Civitai 3016789). Trigger 4n4lfi5tin6. Version 3424713 fileId 3328774.
+    # Published samples of this file use 0.9. Western toilet row only. Not the finger row.
     "analfist": "h3-selfanalfisting-k3nk-step00015400.safetensors",
-    # Full nelson anal. Trained sentence is the whole trigger. Version 3422679 fileId 3317916.
-    # Model 3015275. The published filename is the Civitai hash name.
-    "fullnelson": "5VR5YKXR0BFRBWJ17K3HEG5KT0.D8qyBosp.safetensors",
+    # Anal MiniMax. Sample prompt is Anal. No trained sentence. Version 3443995 fileId 3342621.
+    # Model 3031553. The full-nelson pose stays in the action. The old hash file does not count.
+    "fullnelson": "analMinimax_v1.safetensors",
     # Ref2VA UNet only. Registered only. No trigger. Do not add this key to a ward beat extra.
     "charswap": "h3_character_swap_pro4500_1000.safetensors",
     # Ref2VA UNet only. Registered only. Trigger LumiReal merges when this key is in extra.
@@ -390,20 +385,19 @@ LORA_URLS = {
     "cmst": "https://civitai.com/api/download/models/3290895?fileId=3175377",
     "jacko": "https://civitai.com/api/download/models/3355328?fileId=3244536",
     "spoonlg": "https://civitai.com/api/download/models/3444113?fileId=3342746",
-    "analdildo": "https://civitai.com/api/download/models/3439849?fileId=3337550",
     "alizevert": "https://civitai.com/api/download/models/3429399?fileId=3324978",
     "jpnmoans": "https://civitai.com/api/download/models/3282509?fileId=3166743",
     "doggy": "https://civitai.com/api/download/models/3317042?fileId=3202556",
     "siderear": "https://civitai.com/api/download/models/3362792?fileId=3250615",
-    "anuspussy": "https://civitai.com/api/download/models/3397856?fileId=3288079",
+    "anuspussy": "https://civitai.com/api/download/models/3436891?fileId=3334021",
     "missionlg": "https://civitai.com/api/download/models/3403761?fileId=3294817",
     "messyblow": "https://civitai.com/api/download/models/3399472?fileId=3289886",
     "closeup": "https://civitai.com/api/download/models/3399711?fileId=3290118",
     "cumfacial": "https://civitai.com/api/download/models/3290895?fileId=3175377",
     "solodildo": "https://civitai.com/api/download/models/3282820?fileId=3167066",
     "analfinger": "https://civitai.com/api/download/models/3388162?fileId=3277184",
-    "analfist": "https://civitai.com/api/download/models/3424713?fileId=3319392",
-    "fullnelson": "https://civitai.com/api/download/models/3422679?fileId=3317916",
+    "analfist": "https://civitai.com/api/download/models/3424713?fileId=3328774",
+    "fullnelson": "https://civitai.com/api/download/models/3443995?fileId=3342621",
     "charswap": "https://huggingface.co/akatz-ai/MiniMax-H3-Character-Swap-LoRA/resolve/main/h3_character_swap_pro4500_1000.safetensors",
     "anime2real": "https://huggingface.co/LiseTY/Minimax-H3-ref2v_Anime_2_Realism/resolve/main/Anime2Realsim__H3.safetensors",
 }
@@ -431,7 +425,6 @@ LORA_STRENGTHS = {
     "cmst": 0.65,
     "jacko": 0.8,
     "spoonlg": 1.0,
-    "analdildo": 1.0,
     "alizevert": 1.0,
     "jpnmoans": 0.55,
     "doggy": 0.5,
@@ -446,9 +439,9 @@ LORA_STRENGTHS = {
     "solodildo": 0.7,
     # Self Anal Finger card workflow is 1.0.
     "analfinger": 1.0,
-    # Self Anal Fisting card has no separate strength. The insertion beats use 1.0.
-    "analfist": 1.0,
-    # Full nelson sample is the pose LoRA at 1.0. Steps on those beats stay at the episode cap.
+    # Published samples of this filename use 0.9.
+    "analfist": 0.9,
+    # Anal MiniMax. The pose beats stay at 1.0. Steps stay at the episode cap.
     "fullnelson": 1.0,
     "charswap": 1.0,
     "anime2real": 1.0,
@@ -459,11 +452,8 @@ DILDO_TRIGGER = "pumping a dildo insider her vagina"
 SPOON_TRIGGER = (
     "lying on her left side while a man lying behind her is thrusting into her vagina from behind"
 )
-ANALDILDO_TRIGGER = "Anal, dildo, deep penetration, sex machine, anus, thrusting, zy_3dcg"
-# Civitai 3015275 version 3422679. The trained word is this whole sentence.
-FULLNELSON_TRIGGER = (
-    "Full nelson anal, low POV, woman's legs held high behind her head by man's arms, looking down, deep penetration"
-)
+# Anal MiniMax samples use this word. The pose stays in the action, not in a trained sentence.
+FULLNELSON_TRIGGER = "Anal"
 JPNMOANS_TRIGGER = "jpnMoans"
 DOGGY_TRIGGER = "Doggy style"
 ANIME2REAL_TRIGGER = "LumiReal"
@@ -7515,7 +7505,6 @@ _LORA_TRIGGER_TOKENS = (
     ("cumouf", "CUMOUF"),
     ("penis", "PENISLORA"),
     ("spoonlg", SPOON_TRIGGER),
-    ("analdildo", "zy_3dcg"),
     ("jpnmoans", "jpnMoans"),
     ("blowjob", "bl0w_j0b"),
     ("messyblow", "ME$$Y."),
@@ -7527,8 +7516,9 @@ _LORA_TRIGGER_TOKENS = (
     ("analfist", "4n4lfi5tin6"),
     ("fullnelson", FULLNELSON_TRIGGER),
     ("cumfacial", "cmst"),
-    ("anuspussy", "zxqanus"),
-    ("anuspussy", "zxqvagina"),
+    ("anuspussy", "Pussy"),
+    ("anuspussy", "vagina"),
+    ("anuspussy", "anus"),
 )
 # Final Thrust fires on this caption. It does not say male, and it does not say a thrust verb.
 _THRUST_CAPTION = (
@@ -8120,7 +8110,8 @@ def _civitai_token() -> str:
 # Drive names this key used before the current file. The update cell fetches the
 # current name when one of these is already on Drive. The old file stays.
 _LORA_REPLACED_FILES: dict[str, tuple[str, ...]] = {
-    "anuspussy": ("anus_pussy_v2.safetensors",),
+    "anuspussy": ("anus_pussy_v2.safetensors", "anus_pussy_eros_v2.safetensors"),
+    "fullnelson": ("5VR5YKXR0BFRBWJ17K3HEG5KT0.D8qyBosp.safetensors",),
     "solodildo": ("h3_base_dildo_v1.0_9250.safetensors",),
     "kiss": ("cxy_kiss_lora_h3_v01_step1750.safetensors",),
     "cumfacial": ("face_cum_000001000.safetensors",),

@@ -551,6 +551,7 @@ def test_notebook_is_one_cell_and_isolated():
     assert "ベロチュー→じゅぼ→騎乗位" not in src
     assert 'TOILET = "トイレ・触手"' in src
     assert "トイレ・アナルフィスト" in src
+    assert "トイレ・アナルディルド" not in src
     assert "トイレに行かない（迷ったらこれ）" in src
     assert 'GIN = "灰色・騎乗・最初から膝曲げ"' in src
     assert "灰色・出ない（迷ったらこれ）" in src
@@ -2687,10 +2688,11 @@ def test_hospital_finger_pose_and_squat_toilet_modes():
     assert "models/3362792" in LORA_URLS["siderear"]
     assert "fileId=3250615" in LORA_URLS["siderear"]
     assert LORA_STRENGTHS["siderear"] == 0.8
-    assert LORA_FILES["anuspussy"] == "anus_pussy_eros_v2.safetensors"
-    assert "models/3397856" in LORA_URLS["anuspussy"]
-    assert "fileId=3288079" in LORA_URLS["anuspussy"]
-    assert "3371009" not in LORA_URLS["anuspussy"]
+    assert LORA_FILES["anuspussy"] == "HMPussyV2.safetensors"
+    assert "models/3436891" in LORA_URLS["anuspussy"]
+    assert "fileId=3334021" in LORA_URLS["anuspussy"]
+    assert "3397856" not in LORA_URLS["anuspussy"]
+    assert "3288079" not in LORA_URLS["anuspussy"]
     assert LORA_STRENGTHS["anuspussy"] == 0.4
     assert LORA_FILES["tentacles101"] == "Tentacles_H3_101_.safetensors"
     assert "models/3367732" in LORA_URLS["tentacles101"]
@@ -2722,7 +2724,8 @@ def test_hospital_finger_pose_and_squat_toilet_modes():
             dog = next(b for b in held["beats"] if b["id"] == "06-doggy-in")
             assert "anuspussy" in extra_keys(dog)
             prompt = build_beat_prompt(held, dog, trigger=merge_trigger("", dog))
-            assert "zxqanus" in prompt and "zxqvagina" in prompt
+            assert "Pussy" in prompt and "vagina" in prompt and "anus" in prompt
+            assert "zxqanus" not in prompt and "zxqvagina" not in prompt
             assert "zxqmei" not in prompt
     off = prepare_episode(raw, story_override="accept")
     assert off["render"]["toilet"] == "off"
@@ -2886,11 +2889,12 @@ def test_hospital_anal_fist_grabs_feces_then_smears_and_licks():
     pull = next(b for b in ep["beats"] if b["id"] == "04-toilet-afpull")
     smear = next(b for b in ep["beats"] if b["id"] == "04-toilet-afsmear")
     out = next(b for b in ep["beats"] if b["id"] == "04-toilet-out")
-    assert extra_lora_entries(fist)[0] == ("analfist", 1.0)
+    assert extra_lora_entries(fist)[0] == ("analfist", 0.9)
     assert LORA_FILES["analfist"] == "h3-selfanalfisting-k3nk-step00015400.safetensors"
     assert "3424713" in LORA_URLS["analfist"]
-    assert "fileId=3319392" in LORA_URLS["analfist"]
-    assert LORA_STRENGTHS["analfist"] == 1.0
+    assert "fileId=3328774" in LORA_URLS["analfist"]
+    assert "3319392" not in LORA_URLS["analfist"]
+    assert LORA_STRENGTHS["analfist"] == 0.9
     prompt = build_beat_prompt(ep, fist, trigger=merge_trigger("", fist))
     assert prompt.startswith("4n4lfi5tin6")
     assert "pushes that hand into her anus" in prompt
@@ -2901,6 +2905,8 @@ def test_hospital_anal_fist_grabs_feces_then_smears_and_licks():
     assert "analfinger" not in extra_keys(fist)
     assert "solodildo" not in extra_keys(fist)
     assert pull.get("source") == "chain"
+    assert "while the right hand is still inside the anus" in pull["action"].lower()
+    assert "pulls that mass out of the anus" in pull["action"].lower()
     assert "closed around a mass of thick brown feces" in pull["action"].lower()
     assert "whole hand is coated thick with brown feces" in pull["action"].lower()
     assert "wide open ring" in pull["action"].lower()
@@ -3795,9 +3801,10 @@ def test_hospital_gin_tsuno_optional_events():
     assert nel_in.get("connect") == "cut"
     assert "wide blissful smile" in nel_in["action"].lower()
     assert extra_lora_entries(nel_in)[0] == ("fullnelson", 1.0)
-    assert LORA_FILES["fullnelson"] == "5VR5YKXR0BFRBWJ17K3HEG5KT0.D8qyBosp.safetensors"
-    assert "3422679" in LORA_URLS["fullnelson"]
-    assert "fileId=3317916" in LORA_URLS["fullnelson"]
+    assert LORA_FILES["fullnelson"] == "analMinimax_v1.safetensors"
+    assert "3443995" in LORA_URLS["fullnelson"]
+    assert "fileId=3342621" in LORA_URLS["fullnelson"]
+    assert "3317916" not in LORA_URLS["fullnelson"]
     assert nel_in.get("steps") == 16
     assert nel_in.get("sampler") == "res_multistep"
     assert "held high behind her head" in nel_in["action"].lower()
@@ -4325,6 +4332,9 @@ def test_form_opens_on_the_ward_exit_invite_run():
     assert canonical_toilet("アナルフィスト") == "anal_fist"
     assert canonical_toilet("フィスト") == "anal_fist"
     assert canonical_toilet("fisting") == "anal_fist"
+    assert canonical_toilet("アナルディルド") == "anal_fist"
+    assert canonical_toilet("トイレ・アナルディルド") == "anal_fist"
+    assert "anal_dildo" not in TOILET_MODES
     assert canonical_toilet("ディルド") == "finger"
     assert canonical_toilet("トイレ・ディルド") == "finger"
     assert "マット" not in TSUNO_MODES["invite_jacko"]["hint_ja"]
@@ -7243,29 +7253,26 @@ def test_hospital_anal_drip_stays_on_the_rim_and_the_pair_stays_two():
     assert "nothing new enters" not in build_beat_prompt(ride, ride_peak).lower()
 
 
-def test_hospital_anal_dildo_sit_and_gin_onahole_and_spoon_leg():
+def test_hospital_retired_anal_dildo_selects_fist_and_gin_onahole_and_spoon_leg():
     raw = load_episode(HOSPITAL_DIR / "episode.json")
     assert LORA_FILES["spoonlg"] == "spooning-sex-mh3-e34-az420.safetensors"
     assert "3444113" in LORA_URLS["spoonlg"]
     assert "SPOONLG_CUDDLECUP" not in LORA_FILES["spoonlg"]
+    assert "analdildo" not in LORA_FILES
     stall = prepare_episode(raw, story_override="受け入れる", toilet_override="トイレ・アナルディルド")
     ids = [b["id"] for b in stall["beats"] if str(b["id"]).startswith("04-toilet")]
-    assert ids == ["04-toilet-toy", "04-toilet", "04-toilet-pump", "04-toilet-out"]
-    toy = next(b for b in stall["beats"] if b["id"] == "04-toilet-toy")
-    entered = next(b for b in stall["beats"] if b["id"] == "04-toilet")
-    pumped = next(b for b in stall["beats"] if b["id"] == "04-toilet-pump")
-    assert extra_lora_entries(entered)[0] == ("analdildo", 1.0)
-    assert ("anuspussy", 0.4) in extra_lora_entries(entered)
-    assert "solodildo" not in extra_keys(entered)
-    assert "penis" not in extra_keys(entered)
-    assert toy.get("steps") == 8 and entered.get("steps") == 8 and pumped.get("steps") == 8
-    assert "thighs pressed together" in entered["action"].lower()
-    assert "sits on the porcelain seat" in toy["action"].lower()
-    assert "into the anus" in entered["action"].lower() or "inside the anus" in entered["action"].lower()
-    assert "vagina" not in entered["action"].lower()
+    assert ids == [
+        "04-toilet-in",
+        "04-toilet-afist",
+        "04-toilet-afpull",
+        "04-toilet-afsmear",
+        "04-toilet-out",
+    ]
+    entered = next(b for b in stall["beats"] if b["id"] == "04-toilet-afist")
+    assert extra_lora_entries(entered)[0] == ("analfist", 0.9)
     prompt = build_beat_prompt(stall, entered, trigger=merge_trigger("", entered))
-    assert "zy_3dcg" in prompt
-    assert "sex machine" in prompt.lower()
+    assert "zy_3dcg" not in prompt
+    assert "4n4lfi5tin6" in prompt
     gin = prepare_episode(raw, gin_override="灰色・触手オナホ")
     ona = next(b for b in gin["beats"] if b["id"] == "04-gin-ona")
     assert ona["cast"] == ["gin"]

@@ -411,7 +411,7 @@ INVITE_POSE_MODES: dict[str, dict[str, Any]] = {
         "label_ja": "フルネルソン",
         "choice_ja": "フルネルソンアナル",
         "when_ja": "あやが正面。竿役は背後。両脚は頭の後ろまで上がる。低視点で肛門だけ。顔と体は入れ替えない",
-        "hint_ja": "あやの顔が正面。脚は頭の後ろ。Full nelson LoRA 1.0。竿は肛門だけ。終わりはあや一人歩き",
+        "hint_ja": "あやの顔が正面。脚は頭の後ろ。Anal MiniMax 1.0。竿は肛門だけ。終わりはあや一人歩き",
     },
     "sit": {
         "label_ja": "対面座位",
@@ -513,12 +513,6 @@ TOILET_MODES: dict[str, dict[str, Any]] = {
         "when_ja": "洋式汚物まみれ。座って右手の極太ディルドを膣へ。根元、出し入れ、抜いて開く。触手はこの便器に出ない",
         "hint_ja": "汚れた白い洋式。便座の横のディルドを右手で膣へ",
     },
-    "anal_dildo": {
-        "label_ja": "アナルディルド",
-        "choice_ja": "トイレ・アナルディルド",
-        "when_ja": "洋式汚物まみれ。座って膝を曲げ、太ももを閉じたまま、棒に付いた極太ディルドを肛門へ。膣のディルド行とは別。触手はこの便器に出ない",
-        "hint_ja": "便座に座る。太ももは閉じたまま。ディルドは肛門。zy_3dcg",
-    },
     "anal_finger": {
         "label_ja": "指アナル",
         "choice_ja": "トイレ・指アナル",
@@ -528,8 +522,8 @@ TOILET_MODES: dict[str, dict[str, Any]] = {
     "anal_fist": {
         "label_ja": "アナルフィスト",
         "choice_ja": "トイレ・アナルフィスト",
-        "when_ja": "洋式汚物まみれ。便器に前かがみ→右手を肛門へ出し入れ→抜いた手が糞をつかむ→笑顔で胸と腹に塗る→手を舐めて歩く。Self Anal Fisting 1.0。触手はこの便器に出ない",
-        "hint_ja": "カメラに背を向けて前かがみ。左手はタンク。右手を肛門へ。抜いた手は糞でべったり。胸と腹に塗ってから舐める",
+        "when_ja": "洋式汚物まみれ。便器に前かがみ→右手を肛門へ出し入れ→肛門の中で糞を握って抜く→尻穴は開いた輪→胸と腹に塗る→手を舐めて歩く。Self Anal Fisting。触手はこの便器に出ない",
+        "hint_ja": "指アナルと同じ前かがみ。抜くとき手は糞を握る。抜いた尻穴は開いた輪",
     },
     "wash": {
         "label_ja": "和式排出",
@@ -550,7 +544,6 @@ TOILET_OVERLAY_KEYS: dict[str, str] = {
     "masturbate": "on_toilet_masturbate",
     "tentacle": "on_toilet_tentacle",
     "finger": "on_toilet_finger",
-    "anal_dildo": "on_toilet_anal_dildo",
     "anal_finger": "on_toilet_anal_finger",
     "anal_fist": "on_toilet_anal_fist",
     "wash": "on_toilet_wash",
@@ -582,8 +575,9 @@ TOILET_ALIASES: dict[str, str] = _label_aliases(
         "anal fisting": "anal_fist",
         "finger": "finger",
         "ディルド": "finger",
-        "アナルディルド": "anal_dildo",
-        "anal dildo": "anal_dildo",
+        "アナルディルド": "anal_fist",
+        "トイレ・アナルディルド": "anal_fist",
+        "anal dildo": "anal_fist",
         "和式": "wash",
         "和式排出": "wash",
         "wash": "wash",
@@ -704,7 +698,7 @@ TSUNO_MODES: dict[str, dict[str, Any]] = {
         "label_ja": "フルネルソンアナル",
         "choice_ja": "角・フルネルソンアナル",
         "when_ja": "胸を掴んだ密着から、両脚を頭の後ろへ抱えてアナルだけ。低視点。膣には入れない",
-        "hint_ja": "胸を鷲掴み。脚は頭の後ろ。Full nelson LoRA 1.0。竿は肛門だけ",
+        "hint_ja": "胸を鷲掴み。脚は頭の後ろ。Anal MiniMax 1.0。竿は肛門だけ",
     },
     "invite_ride": {
         "label_ja": "病室で横になって挿入",
