@@ -317,8 +317,15 @@ LORA_FILES = {
     # Cylindrical onahole on an upright shaft. No trained word. Gin-only row.
     # Model 3020417 version 3429399 fileId 3324978.
     "alizevert": "alizevert20.safetensors",
-    # Audio-only moans. Trigger jpnMoans stays on the beat, not in the action.
+    # Old audio-only moan file. Still registered. apply_cast_voices does not stack it.
+    # Trigger jpnMoans stays off the action. The erotic slot is aerith.
     "jpnmoans": "minimax-jav-voice.safetensors",
+    # Japanese speech, audio only. No trained word. The name stays out of the prompt.
+    # Model 3062191 version 3485380 fileId 3393205. Page sets no strength.
+    "aerith": "minimax-FF7aerith-voice-jp.safetensors",
+    # Enemy women. Audio only. Lines stay kana. The name stays out of the prompt.
+    # Model 3040101 version 3485342 fileId 3393141. Page sets no strength.
+    "yuffie": "minimax-FF7yuffie-voice-en-v2.safetensors",
     # Registered only. Do not add this key to a current beat extra, the dog overlays, or Jack-O push.
     # Trigger "Doggy style" stays off the action.
     "doggy": "MM-H3 - Doggy Style v1.safetensors",
@@ -387,6 +394,8 @@ LORA_URLS = {
     "spoonlg": "https://civitai.com/api/download/models/3444113?fileId=3342746",
     "alizevert": "https://civitai.com/api/download/models/3429399?fileId=3324978",
     "jpnmoans": "https://civitai.com/api/download/models/3282509?fileId=3166743",
+    "aerith": "https://civitai.com/api/download/models/3485380?fileId=3393205",
+    "yuffie": "https://civitai.com/api/download/models/3485342?fileId=3393141",
     "doggy": "https://civitai.com/api/download/models/3317042?fileId=3202556",
     "siderear": "https://civitai.com/api/download/models/3362792?fileId=3250615",
     "anuspussy": "https://civitai.com/api/download/models/3436891?fileId=3334021",
@@ -427,6 +436,9 @@ LORA_STRENGTHS = {
     "spoonlg": 1.0,
     "alizevert": 1.0,
     "jpnmoans": 0.55,
+    # Page sets no strength. 0.8 keeps the timbre without the old moan file.
+    "aerith": 0.8,
+    "yuffie": 0.8,
     "doggy": 0.5,
     "siderear": 0.8,
     "anuspussy": 0.4,
@@ -2672,8 +2684,8 @@ def embrace_sequence(base: str, enc: str) -> list[dict[str, Any]]:
                 "peak",
                 who,
                 peak,
-                loras=[["kiss", 0.5], ["mystic", 0.5], ["thrust", 0.55], ["jpnmoans", 0.55]],
-                trigger="jpnMoans",
+                loras=[["kiss", 0.5], ["mystic", 0.5], ["thrust", 0.55], ["aerith", 0.8]],
+                trigger="",
                 voices=[{"who": "aya", "line": "あ、いく"}],
             ),
             _embrace_beat(base, "walk", who, walk, loras=kiss),
@@ -4892,6 +4904,55 @@ def _missionlg_beat(beat: dict[str, Any]) -> bool:
     return not str(beat.get("id") or "").endswith("-walk")
 
 
+_ENEMY_WOMEN = frozenset({"miki", "rei", "kana", "shino", "gin", "tsuno", "slime", "anthro"})
+
+
+def _strip_jpn_trigger(trigger: str) -> str:
+    lines: list[str] = []
+    for line in str(trigger or "").split("\n"):
+        tokens = [tok for tok in line.split(" ") if tok and tok != JPNMOANS_TRIGGER]
+        if tokens:
+            lines.append(" ".join(tokens))
+    return "\n".join(lines).strip()
+
+
+def apply_cast_voices(ep: dict[str, Any]) -> dict[str, Any]:
+    """Aya's erotic-voice slot is Aerith. An enemy woman's line loads Yuffie.
+
+    The old moan file stays registered and is not stacked. Names stay out of the prompt.
+    A beat where both speak loads both files. One clip still has one audio track.
+    Ward only. Other episodes keep their own voice files.
+    """
+    if str(ep.get("slug") or "") != "hospital-exit-adult":
+        return ep
+    for beat in ep.get("beats") or []:
+        if not isinstance(beat, dict) or is_ui_beat(beat):
+            continue
+        whos = {str(item.get("who") or "") for item in beat_vocals(beat)}
+        aya = "aya" in whos
+        enemy = bool(whos & _ENEMY_WOMEN)
+        entries = extra_lora_entries(beat)
+        keys = {key for key, _strength in entries}
+        changed = False
+        if "jpnmoans" in keys:
+            repl = "aerith" if aya or not enemy else "yuffie"
+            entries = [
+                (repl, float(LORA_STRENGTHS[repl])) if key == "jpnmoans" else (key, strength)
+                for key, strength in entries
+            ]
+            keys = {key for key, _strength in entries}
+            changed = True
+        if enemy and "yuffie" not in keys:
+            entries.append(("yuffie", float(LORA_STRENGTHS["yuffie"])))
+            changed = True
+        if not changed:
+            continue
+        beat["extra_loras"] = [[key, strength] for key, strength in entries]
+        if JPNMOANS_TRIGGER in str(beat.get("trigger") or ""):
+            beat["trigger"] = _strip_jpn_trigger(str(beat.get("trigger") or ""))
+    return ep
+
+
 def apply_card_loras(ep: dict[str, Any]) -> dict[str, Any]:
     """Form choices. Off leaves the beat extras alone."""
     render = ep.get("render") or {}
@@ -5507,7 +5568,7 @@ def prepare_episode(
     out = apply_appearance(out)
     if canonical_enemy_kind(str((out.get("render") or {}).get("enemy_kind") or "")) == "human":
         out = apply_human_skin(out)
-    return apply_card_loras(apply_pose_notes(out))
+    return apply_cast_voices(apply_card_loras(apply_pose_notes(out)))
 
 
 def gpu_index_map(ep: dict[str, Any]) -> dict[str, int]:
