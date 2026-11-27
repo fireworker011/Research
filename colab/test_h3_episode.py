@@ -317,7 +317,7 @@ def test_cpu_runtime_downloads_weights_and_does_not_start_comfy(tmp_path, monkey
     raw = load_episode(HOSPITAL_DIR / "episode.json")
     with pytest.raises(WeightsReady):
         run_episode(raw, tmp_path, models_root=tmp_path / "models", dry_run=False)
-    assert calls == ["lora", "ckpt", "base"]
+    assert calls == ["ckpt", "lora", "base"]
 
 
 def test_gpu_run_downloads_before_comfy_starts(tmp_path, monkeypatch):
@@ -342,7 +342,105 @@ def test_gpu_run_downloads_before_comfy_starts(tmp_path, monkeypatch):
     raw = load_episode(HOSPITAL_DIR / "episode.json")
     with pytest.raises(RuntimeError, match="stop after start"):
         run_episode(raw, tmp_path, models_root=tmp_path / "models", dry_run=False)
-    assert calls.index("lora") < calls.index("ckpt") < calls.index("base")
+    assert calls.index("ckpt") < calls.index("lora") < calls.index("base")
+    assert calls.index("base") < calls.index("comfy") < calls.index("start")
+
+
+def _open_ward_form():
+    return {
+        "story_override": form_initial("story"),
+        "preset_override": form_initial("preset"),
+        "connect_override": form_initial("connect"),
+        "toilet_override": form_initial("toilet"),
+        "gin_override": form_initial("gin"),
+        "tsuno_override": form_initial("tsuno"),
+        "place_override": form_initial("place"),
+        "time_override": form_initial("time"),
+        "weather_override": form_initial("weather"),
+        "enemy_kind_override": form_initial("enemy_kind"),
+        "scenes_override": ",".join(
+            f"{name}={form_initial('scene_' + name)}"
+            for name in ("miki", "rei", "kana", "shino")
+        ),
+    }
+
+
+def test_open_form_does_not_draw_paid_rows_and_stops_when_kiss_is_missing(tmp_path, monkeypatch, capsys):
+    raw = load_episode(HOSPITAL_DIR / "episode.json")
+    opened = prepare_episode(raw, **_open_ward_form())
+    drawn = {key for beat in opened["beats"] for key, _strength in extra_lora_entries(beat)}
+    assert "kiss" in drawn
+    assert "blowjob" in drawn
+    assert "analfist" not in drawn
+    assert "fullnelson" not in drawn
+    calls: list[str] = []
+
+    def _loras(*_a, **_k):
+        calls.append("lora")
+        return [
+            f"fetch failed {LORA_FILES['kiss']}",
+            f"fetch failed {LORA_FILES['blowjob']}",
+            f"fetch failed {LORA_FILES['analfist']}",
+            f"fetch failed {LORA_FILES['fullnelson']}",
+        ]
+
+    def _refuse_comfy(*_a, **_k):
+        raise AssertionError("comfy")
+
+    monkeypatch.setattr("h3_episode.preflight", lambda *_a, **_k: [])
+    monkeypatch.setattr("h3_episode.cuda_available", lambda: True)
+    monkeypatch.setattr(
+        "h3_episode.ensure_episode_checkpoint",
+        lambda *_a, **_k: calls.append("ckpt") or ["fetched checkpoint"],
+    )
+    monkeypatch.setattr("h3_episode.ensure_episode_loras", _loras)
+    monkeypatch.setattr("h3_episode.download_base_weights", lambda *_a, **_k: calls.append("base") or [])
+    monkeypatch.setattr("h3_episode.ensure_comfy", _refuse_comfy)
+    monkeypatch.setenv("H3_WEIGHTS_ONLY", "0")
+    with pytest.raises(EpisodeError, match="LoRA の取得が止まりました") as caught:
+        run_episode(raw, tmp_path, models_root=tmp_path / "models", dry_run=False, **_open_ward_form())
+    message = str(caught.value)
+    assert LORA_FILES["kiss"] in message
+    assert LORA_FILES["blowjob"] in message
+    assert "404" in message
+    assert "着地済み" in message
+    assert LORA_FILES["analfist"] not in message
+    assert LORA_FILES["fullnelson"] not in message
+    assert calls == ["ckpt", "lora", "base"]
+    printed = capsys.readouterr().out
+    assert "この並びでは使わないので止めていません" in printed
+    assert LORA_FILES["analfist"] in printed
+    assert LORA_FILES["fullnelson"] in printed
+
+
+def test_open_form_keeps_going_when_only_paid_loras_403(tmp_path, monkeypatch):
+    calls: list[str] = []
+
+    def _paid(*_a, **_k):
+        calls.append("lora")
+        return [
+            f"fetch failed {LORA_FILES['analfist']}",
+            f"fetch failed {LORA_FILES['fullnelson']}",
+        ]
+
+    def _start(*_a, **_k):
+        calls.append("start")
+        raise RuntimeError("stop after start")
+
+    monkeypatch.setattr("h3_episode.preflight", lambda *_a, **_k: [])
+    monkeypatch.setattr("h3_episode.cuda_available", lambda: True)
+    monkeypatch.setattr("h3_episode.ensure_episode_checkpoint", lambda *_a, **_k: calls.append("ckpt") or [])
+    monkeypatch.setattr("h3_episode.ensure_episode_loras", _paid)
+    monkeypatch.setattr("h3_episode.download_base_weights", lambda *_a, **_k: calls.append("base") or [])
+    monkeypatch.setattr("h3_episode.ensure_comfy", lambda *_a, **_k: calls.append("comfy"))
+    monkeypatch.setattr("h3_episode.comfy_up", lambda *_a, **_k: False)
+    monkeypatch.setattr("h3_episode.stage_erotic_unet", lambda *_a, **_k: calls.append("stage") or "unet.safetensors")
+    monkeypatch.setattr("h3_episode.start_comfy", _start)
+    monkeypatch.setenv("H3_WEIGHTS_ONLY", "0")
+    raw = load_episode(HOSPITAL_DIR / "episode.json")
+    with pytest.raises(RuntimeError, match="stop after start"):
+        run_episode(raw, tmp_path, models_root=tmp_path / "models", dry_run=False, **_open_ward_form())
+    assert calls.index("ckpt") < calls.index("lora") < calls.index("base")
     assert calls.index("base") < calls.index("comfy") < calls.index("start")
 
 

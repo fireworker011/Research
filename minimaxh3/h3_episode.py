@@ -7782,14 +7782,18 @@ def download_base_weights(models_root: Path | str) -> list[str]:
 
 
 def download_episode_weights(ep: dict[str, Any], models_root: Path | str) -> list[str]:
-    """Checkpoint and LoRAs onto Drive. No Comfy process and no GPU."""
+    """Checkpoint first, then LoRAs, then the base weights. No Comfy process and no GPU.
+
+    A 404 on kiss or blowjob, and a 403 on a paid LoRA, must not start until the
+    checkpoint file has landed. The caller stops a rendered beat after that.
+    """
     models = Path(models_root)
     notes: list[str] = []
-    for note in ensure_episode_loras(ep, models / "loras"):
-        print("lora:", note)
-        notes.append(note)
     for note in ensure_episode_checkpoint(ep, models):
         print("checkpoint:", note)
+        notes.append(note)
+    for note in ensure_episode_loras(ep, models / "loras"):
+        print("lora:", note)
         notes.append(note)
     for note in download_base_weights(models):
         print("weight:", note)
@@ -9375,23 +9379,28 @@ def run_episode(
         models = Path(models_root or os.environ.get("H3_MODELS_ROOT") or (Path(os.environ.get("H3_DRIVE_ROOT") or DRIVE_ROOT_DEFAULT) / "models"))
         loras_dir = models / "loras"
         weight_notes = download_episode_weights(ep, models)
+        needed = _rendered_lora_filenames(ep)
+        failed = [
+            note
+            for note in weight_notes
+            if note.startswith("fetch failed ") and note[len("fetch failed ") :] in needed
+        ]
+        unused = [
+            note
+            for note in weight_notes
+            if note.startswith("fetch failed ") and note not in failed
+        ]
+        if unused:
+            print("この並びでは使わないので止めていません:", ", ".join(unused))
+        if failed:
+            dead = {LORA_FILES["kiss"], LORA_FILES["blowjob"]}
+            public_404 = any(note[len("fetch failed ") :] in dead for note in failed)
+            tail = "チェックポイントは着地済み。このファイルが Drive に無い拍は描かない。"
+            if public_404:
+                tail = "公開 URL は 404。" + tail
+            raise EpisodeError("LoRA の取得が止まりました: " + ", ".join(failed) + "。" + tail)
         weights_only = os.environ.get("H3_WEIGHTS_ONLY") == "1" or not cuda_available()
         if weights_only:
-            needed = _rendered_lora_filenames(ep)
-            failed = [
-                note
-                for note in weight_notes
-                if note.startswith("fetch failed ") and note[len("fetch failed ") :] in needed
-            ]
-            unused = [
-                note
-                for note in weight_notes
-                if note.startswith("fetch failed ") and note not in failed
-            ]
-            if unused:
-                print("この並びでは使わないので止めていません:", ", ".join(unused))
-            if failed:
-                raise EpisodeError("LoRA の取得が止まりました: " + ", ".join(failed))
             raise WeightsReady(
                 "取得だけ終わりました。チェックポイントと LoRA は Drive にあります。"
                 "動画はランタイムを A100 にして、もう一度 Run all。"
