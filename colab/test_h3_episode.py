@@ -4896,6 +4896,20 @@ def test_refresh_updates_a_downloaded_lora_and_keeps_the_old_file_on_failure(tmp
     assert eros.is_file() and eros.stat().st_size > 1_000_000
     assert old.read_bytes() == b"old-anus"
 
+    kiss = tmp_path / LORA_FILES["kiss"]
+    blow = tmp_path / LORA_FILES["blowjob"]
+    kiss.write_bytes(b"k" * 1_000_001)
+    blow.write_bytes(b"b" * 1_000_001)
+    calls: list[str] = []
+    monkeypatch.setattr(mod, "fetch_text", lambda url, *_a, **_k: calls.append(url) or False)
+    dead = refresh_downloaded_loras(tmp_path)
+    assert f"skip 404 {LORA_FILES['kiss']}" in dead
+    assert f"skip 404 {LORA_FILES['blowjob']}" in dead
+    assert LORA_URLS["kiss"] not in calls
+    assert LORA_URLS["blowjob"] not in calls
+    assert kiss.read_bytes().startswith(b"k")
+    assert blow.read_bytes().startswith(b"b")
+
 
 def test_ensure_records_the_url_it_fetched_and_still_skips_a_large_file(tmp_path, monkeypatch):
     import h3_episode as mod

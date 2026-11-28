@@ -8199,6 +8199,9 @@ _LORA_REPLACED_FILES: dict[str, tuple[str, ...]] = {
     "cumfacial": ("face_cum_000001000.safetensors",),
 }
 
+# These published file ids return 404. The URL stays. A Drive copy is not replaced.
+_PUBLIC_404_LORA_KEYS = frozenset({"kiss", "blowjob"})
+
 
 def _lora_url_record(dest: Path) -> Path:
     return dest.with_name(dest.name + ".url")
@@ -8249,6 +8252,11 @@ def refresh_downloaded_loras(loras_dir: Path | str) -> list[str]:
         retired = any((root / old).is_file() for old in _LORA_REPLACED_FILES.get(key, ()))
         if not dest.is_file() and not retired:
             notes.append(f"skip absent {fname}")
+            continue
+        if key in _PUBLIC_404_LORA_KEYS and (
+            not dest.is_file() or (dest.stat().st_size > 1_000_000 and _lora_file_loadable(dest))
+        ):
+            notes.append(f"skip 404 {fname}")
             continue
         if _lora_weight_current(dest, url):
             notes.append(f"skip current {fname}")

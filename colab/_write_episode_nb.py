@@ -381,7 +381,7 @@ HUD・タイトル・免責エンドカードを載せて `final/<slug>-<日時>
 REFRESH_CELL = r'''#@title LoRA 更新：Drive に既にあるファイルを今の URL へ（このセルだけ。CPU で足りる）
 #@markdown 動画セルは、1MB を超える同名ファイルを取り直さない。取り直すときはこのセル。
 #@markdown 開いたときは更新しない。欄を切り替えて、このセルだけ実行する。GPU は要らない。Comfy は起動しない。チェックポイントは取らない。
-#@markdown 同名が既にあっても、URL の記録が無いか違うときは取り直す。失敗しても前のファイルは残る。まだ Drive に無いファイルは取らない。ファイル名が替わった LoRA は、古い名前が Drive にあるとき新しい名前を取る。古いファイルは消さない。
+#@markdown 同名が既にあっても、URL の記録が無いか違うときは取り直す。失敗しても前のファイルは残る。まだ Drive に無いファイルは取らない。ファイル名が替わった LoRA は、古い名前が Drive にあるとき新しい名前を取る。古いファイルは消さない。キスとフェラの公開 URL は 404。Drive にあるその2つは残して、更新は止まらない。
 #@markdown **CivitaiのAPIキー** — 空なら Colab のシークレット `CIVITAI_API_TOKEN`。値は表示しない。空のまま保存する。
 LORA_REFRESH = "更新しない（迷ったらこれ）"  #@param ["更新しない（迷ったらこれ）", "すでにある LoRA を更新する"]
 CivitaiのAPIキー = ""  #@param {type:"string"}
@@ -427,8 +427,11 @@ else:
     from h3_episode import refresh_downloaded_loras
     notes = refresh_downloaded_loras(Path(DRIVE_ROOT) / "models" / "loras")
     failed = [note for note in notes if note.startswith("refresh failed ") or note.startswith("fetch failed ")]
+    kept_404 = [note for note in notes if note.startswith("skip 404 ")]
     for note in notes:
         print("lora:", note)
+    if kept_404:
+        print("公開 URL は 404。Drive のファイルは残した。更新は止まらない:", ", ".join(kept_404))
     if failed:
         raise SystemExit("LoRA の更新が止まりました: " + ", ".join(failed))
     print("LoRA の更新が終わりました。動画は描いていません。描くときは上のセルを A100 で実行。")
