@@ -7,6 +7,7 @@ description: One-click MiniMax H3 episode trailers (episode.json → all beats �
 
 質問しない。入力は `minimaxh3/episodes/<slug>/episode.json` とクリーンなスチールだけ。説明書は `minimaxh3/episodes/README.md`。
 霞東アダルト（`kasumi-late-desk-adult`）は ③ / Qwen と別チャット。続きは `episodes/kasumi-late-desk-adult/HANDOVER.md`。
+病棟出口（`hospital-exit-adult`）は番台の mundane 文法を使わない。枝は `cursor/h3-lora-cards-d736`。正本は `episodes/hospital-exit-adult/HANDOFF.md`。指アナルは Self Anal Finger。ThumbInButt は和式排出だけ。LoRA スタジオの積みを病棟へ移さない。下の「本家の文法」（3〜6秒、`tone: mundane`、新しいネタはコードを触るな）は番台向け。病棟のエンジンと場所欄は、HANDOFF の残課題に沿って直してよい。両コピーを `cmp` し、ノートは `python3 colab/_write_episode_nb.py`、テストは `python3 -m pytest colab/test_h3_episode.py -q`。生成は人間。描くときは skill `h3-episode-grokbot` を1回、枝は lora-cards。
 
 ## やること
 
