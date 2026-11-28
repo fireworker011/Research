@@ -1,0 +1,83 @@
+schema: 1
+project: pronant
+
+paths:
+  out_root: C:/sd-out/auto/scenes   # set SCENE_TRIALS_OUT_ROOT on Colab or any non-Windows machine
+  scenes_csv: scenes.csv            # not committed; copy pronant_delusion_prompts_full.csv here
+  chains: chains.yaml
+  loras: loras.yaml
+  negatives: negatives.yaml
+  # lora_dir: to be set once the LoRA files are placed
+
+columns:
+  section: category
+  positive: positive_prompt
+  negative: negative_prompt
+  id_columns: [pose, diff_stage]
+
+section_slugs:
+  立ち絵: standing
+  フェラ: oral
+  アナル: anal
+  マンコ: vaginal
+  放尿: urination
+  スカ: scat
+  ふたなり: futanari
+  複数人: multi
+  NPC: npc
+  キャラシート: sheet
+
+trials:
+  count: 3
+  order: trial_major
+
+batch:
+  max_jobs: 50
+
+size:                              # the factory default, portrait
+  width: 1024
+  height: 1344
+
+prompt:
+  expand_braces: true
+  char_policy: random_seeded
+  positive_anchor: ["(mature female:1.2)"]   # the factory adds the same tag to every stage
+  composition: drop                # removes landscape composition and horizontal framing on the portrait canvas
+
+face_visible_hints: [looking back, looking at viewer, looking up, looking down, head turned, face focus]
+
+# A rear-view base image has no face to detect. With `auto`, a chain whose base prompt names one of
+# these words and none of face_visible_hints gets face_pass: skip. A chain can override with its own
+# `face_pass: required | skip | optional` in chains.yaml.
+face_pass: auto
+rear_view_hints: [from behind, ass focus, rear view]
+
+safety:
+  adult_confirmed_by: ""           # filled by the owner before export or any run
+  adult_confirmed_on: ""
+  extra_blocked_words: []
+
+cutout:
+  skip_if_transparent: true
+  templates:
+    ps1: 'python -m sd_diff_set.cli cutout --input {input}'
+    sh: 'python -m sd_diff_set.cli cutout --input {input}'
+
+backend:
+  name: sd_diff_set
+  options:
+    work_dir: C:/sd-out/auto       # inbox, sorted, diffs, generated live under it
+    factory_dir: C:/work/sd-diff-set/extensions/sd-diff-set
+    finish: game                   # game | album | both
+    # True means the factory has factory-patches/0001 applied. With false, `export` refuses the two chains
+    # that use face_pass: skip, because an unpatched factory would ignore the key.
+    factory_face_pass: true
+    # false writes --no-limbs. Hands and feet are skipped. The factory CLI paints them unless told not to.
+    limbs: false
+    generation:                    # the factory refuses a job that lacks any of these (settings_missing)
+      sampler_name: Euler a
+      steps: 28
+      cfg_scale: 6
+      model: 2883731_waiIllustriousSDXL_v170.safetensors
+      clip_skip: 2
+    # colab_api: https://example.gradio.live   # optional; empty means the factory decides

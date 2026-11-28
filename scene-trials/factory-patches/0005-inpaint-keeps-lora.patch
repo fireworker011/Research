@@ -1,0 +1,371 @@
+diff --git a/sd-diff-set/sd_diff_set/api_payload.py b/sd-diff-set/sd_diff_set/api_payload.py
+index 31180e4..fe5a38c 100644
+--- a/sd-diff-set/sd_diff_set/api_payload.py
++++ b/sd-diff-set/sd_diff_set/api_payload.py
+@@ -2,6 +2,11 @@
+ 
+ Not called in v1. The in-process host is the path that ships. Use this only
+ after AT-CN-1 shows that Forge's script_args layout cannot take unit dicts.
++
++``prompt`` is copied through, including ``<lora:...>``. ``alwayson_scripts``
++only carries ControlNet and Soft Inpainting. On the HTTP API a script that is
++not listed keeps its default arguments and still runs, so this does not turn
++LoRA off. The in-process path is ``host.py``.
+ """
+ 
+ from __future__ import annotations
+diff --git a/sd-diff-set/sd_diff_set/host.py b/sd-diff-set/sd_diff_set/host.py
+index ca0f71a..075cd60 100644
+--- a/sd-diff-set/sd_diff_set/host.py
++++ b/sd-diff-set/sd_diff_set/host.py
+@@ -9,6 +9,7 @@ from __future__ import annotations
+ 
+ import copy
+ import inspect
++import re
+ from pathlib import Path
+ from typing import Any
+ 
+@@ -23,6 +24,7 @@ from sd_diff_set.errors import DiffSetError
+ from sd_diff_set.executor import GenerationHost, InpaintJob
+ from sd_diff_set.infotext import Infotext, parse_infotext
+ from sd_diff_set.png_text import read_parameters, upsert_parameters
++from sd_diff_set.prompt_edit import extra_network_tags
+ 
+ 
+ def lock_unmasked_rgb(init_rgb: bytes, result_rgb: bytes, mask: bytes) -> bytes:
+@@ -154,38 +156,9 @@ class WebuiHost(GenerationHost):
+         units = _bind_units(job, init, base) if job.use_controlnet else []
+         runner, script_args = _script_runner(job, units)
+         processing_cls = webui_processing.StableDiffusionProcessingImg2Img
+-        candidate: dict[str, Any] = {
+-            "init_images": [init],
+-            "resize_mode": 0,
+-            "denoising_strength": job.denoise,
+-            "mask_blur": job.mask_blur,
+-            "inpainting_fill": job.inpainting_fill,
+-            "inpaint_full_res": job.inpaint_full_res,
+-            "inpaint_full_res_padding": job.padding,
+-            "inpainting_mask_invert": 0,
+-            "prompt": job.prompt,
+-            "negative_prompt": job.negative_prompt,
+-            "seed": job.seed,
+-            "subseed": -1,
+-            "subseed_strength": 0,
+-            "seed_resize_from_h": -1,
+-            "seed_resize_from_w": -1,
+-            "sampler_name": job.sampler,
+-            "batch_size": 1,
+-            "n_iter": 1,
+-            "steps": job.steps,
+-            "cfg_scale": job.cfg_scale,
+-            "width": job.width,
+-            "height": job.height,
+-            "restore_faces": False,
+-            "tiling": False,
+-            "do_not_save_samples": True,
+-            "do_not_save_grid": True,
+-            "outpath_samples": str(job.dest.parent),
+-            "override_settings": _override_settings(job),
+-        }
+-        if job.scheduler:
+-            candidate["scheduler"] = job.scheduler
++        candidate = inpaint_processing_fields(job)
++        candidate["init_images"] = [init]
++        candidate["outpath_samples"] = str(job.dest.parent)
+         signature = inspect.signature(processing_cls)
+         accepted = {
+             key: value
+@@ -203,6 +176,10 @@ class WebuiHost(GenerationHost):
+         processing.script_args = script_args
+         if hasattr(processing, "override_settings_restore_afterwards"):
+             processing.override_settings_restore_afterwards = False
++        if hasattr(processing, "disable_extra_networks"):
++            processing.disable_extra_networks = False
++        if extra_network_tags(job.prompt):
++            _force_lora_reload()
+         processed = webui_processing.process_images(processing)
+         images = list(getattr(processed, "images", []) or [])
+         if not images:
+@@ -221,7 +198,107 @@ class WebuiHost(GenerationHost):
+             Image.frombytes("RGB", init.size, locked).save(job.dest)
+         else:
+             result.save(job.dest)
+-        upsert_parameters(job.dest, job.parameters_text)
++        hashes = _lora_hashes(getattr(processed, "infotexts", None))
++        if extra_network_tags(job.prompt) and not hashes:
++            print(
++                "LoRA タグは inpaint のプロンプトに入れましたが、返った画像に Lora hashes がありません: "
++                + ", ".join(extra_network_tags(job.prompt))
++            )
++        upsert_parameters(job.dest, _append_lora_hashes(job.parameters_text, hashes))
++
++
++
++_DROPPED_SCRIPT_MARKS = (
++    "adetailer",
++    "regional prompter",
++    "regionalprompter",
++    "dynamic prompts",
++    "dynamicprompts",
++)
++_LORA_HASHES = re.compile(r'Lora hashes:\s*"([^"]*)"')
++
++
++def script_kept(title: str, filename: str = "", *, controlnet: bool, soft: bool) -> bool:
++    """Which always-on scripts an inpaint may run.
++
++    ADetailer, Regional Prompter and Dynamic Prompts would run a second time on
++    top of the factory's own mask, so they stay off. ControlNet and Soft
++    Inpainting run only when the job asked for them. A script that applies
++    LoRA or extra networks stays, which is what a manual inpaint runs.
++    """
++    text = f"{title}\n{filename}".casefold()
++    if any(mark in text for mark in _DROPPED_SCRIPT_MARKS):
++        return False
++    if "controlnet" in text or "control net" in text:
++        return controlnet
++    if "soft inpaint" in text:
++        return soft
++    return any(mark in text for mark in ("lora", "lyco", "extra network", "extra_network"))
++
++
++def inpaint_processing_fields(job: InpaintJob) -> dict[str, Any]:
++    """The values handed to the inpaint call. The prompt is the stage prompt, unchanged."""
++    fields: dict[str, Any] = {
++        "resize_mode": 0,
++        "denoising_strength": job.denoise,
++        "mask_blur": job.mask_blur,
++        "inpainting_fill": job.inpainting_fill,
++        "inpaint_full_res": job.inpaint_full_res,
++        "inpaint_full_res_padding": job.padding,
++        "inpainting_mask_invert": 0,
++        "prompt": job.prompt,
++        "negative_prompt": job.negative_prompt,
++        "seed": job.seed,
++        "subseed": -1,
++        "subseed_strength": 0,
++        "seed_resize_from_h": -1,
++        "seed_resize_from_w": -1,
++        "sampler_name": job.sampler,
++        "batch_size": 1,
++        "n_iter": 1,
++        "steps": job.steps,
++        "cfg_scale": job.cfg_scale,
++        "width": job.width,
++        "height": job.height,
++        "restore_faces": False,
++        "tiling": False,
++        "do_not_save_samples": True,
++        "do_not_save_grid": True,
++        "override_settings": _override_settings(job),
++    }
++    if job.scheduler:
++        fields["scheduler"] = job.scheduler
++    return fields
++
++
++def _force_lora_reload() -> None:
++    """Make reForge load the prompt's LoRA instead of reusing the previous one.
++
++    load_networks returns immediately when the name list matches the last call, and
++    img2img then samples from forge_objects_after_applying_lora. Clearing the hash
++    makes this inpaint build that object from the prompt again.
++    """
++    if webui_shared is None:
++        return
++    model = getattr(webui_shared, "sd_model", None)
++    if model is not None and hasattr(model, "current_lora_hash"):
++        model.current_lora_hash = None
++
++
++def _lora_hashes(infotexts: object) -> str:
++    if not isinstance(infotexts, list):
++        return ""
++    for item in infotexts:
++        match = _LORA_HASHES.search(str(item))
++        if match:
++            return match.group(1).strip()
++    return ""
++
++
++def _append_lora_hashes(parameters: str, hashes: str) -> str:
++    if not hashes or "Lora hashes:" in parameters:
++        return parameters
++    return parameters + f', Lora hashes: "{hashes}"'
+ 
+ 
+ def dump_script_layout() -> list[dict[str, object]]:
+@@ -299,28 +376,24 @@ def _script_runner(
+ ) -> tuple[Any, list[object] | None]:
+     wants_cn = job.use_controlnet and bool(units)
+     wants_soft = job.soft_inpainting
+-    if not wants_cn and not wants_soft:
+-        # Installed reForge (processing.py) reads p.scripts.alwayson_scripts
+-        # with no None check. An empty copy keeps ADetailer off. A private
+-        # callback_map keeps that cache off the live img2img runner.
+-        if webui_scripts is None:
+-            return None, None
+-        source = webui_scripts.scripts_img2img
+-        runner = copy.copy(source)
+-        runner.alwayson_scripts = []
+-        runner.callback_map = {}
+-        return runner, []
+     if webui_scripts is None:
+-        raise DiffSetError("host_unavailable", "modules.scripts is not importable")
++        if wants_cn or wants_soft:
++            raise DiffSetError("host_unavailable", "modules.scripts is not importable")
++        return None, None
++    # reForge reads p.scripts.alwayson_scripts with no None check. A private
++    # callback_map keeps that cache off the live img2img runner.
+     source = webui_scripts.scripts_img2img
+     runner = copy.copy(source)
+-    keep = set()
+-    if wants_cn:
+-        keep.add("ControlNet")
+-    if wants_soft:
+-        keep.add("Soft Inpainting")
++    runner.callback_map = {}
+     runner.alwayson_scripts = [
+-        script for script in source.alwayson_scripts if _title(script) in keep
++        script
++        for script in source.alwayson_scripts
++        if script_kept(
++            _title(script),
++            str(getattr(script, "filename", "") or ""),
++            controlnet=wants_cn,
++            soft=wants_soft,
++        )
+     ]
+     length = 0
+     for script in source.alwayson_scripts:
+diff --git a/sd-diff-set/tests/test_inpaint_lora.py b/sd-diff-set/tests/test_inpaint_lora.py
+new file mode 100644
+index 0000000..8ce5d3b
+--- /dev/null
++++ b/sd-diff-set/tests/test_inpaint_lora.py
+@@ -0,0 +1,124 @@
++"""Inpaint keeps the prompt's LoRA tags and does not switch extra networks off. No GPU."""
++
++from __future__ import annotations
++
++import sys
++import unittest
++from pathlib import Path
++
++sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
++
++from sd_diff_set.api_payload import build_img2img_payload
++from sd_diff_set.executor import InpaintJob
++from sd_diff_set.host import (
++    _append_lora_hashes,
++    _lora_hashes,
++    inpaint_processing_fields,
++    script_kept,
++)
++from sd_diff_set.infotext import Infotext
++
++LORA = "<lora:caststyle_xl_epoch08:0.9>"
++
++
++def _job() -> InpaintJob:
++    return InpaintJob(
++        init_path=Path("init.png"),
++        mask_path=Path("mask.png"),
++        dest=Path("out.png"),
++        prompt=f"1girl, {LORA}, simple background",
++        negative_prompt="lowres",
++        seed=3,
++        sampler="Euler a",
++        scheduler=None,
++        steps=28,
++        cfg_scale=6.0,
++        width=1024,
++        height=1344,
++        denoise=0.55,
++        mask_blur=0,
++        inpainting_fill=1,
++        inpaint_full_res=True,
++        padding=32,
++        model="demo.safetensors",
++        model_hash=None,
++        vae=None,
++        clip_skip=2,
++        parameters_text="prompt",
++        controlnet=[],
++        soft_inpainting=False,
++        use_controlnet=False,
++        base_path=Path("base.png"),
++    )
++
++
++class ScriptFilterTests(unittest.TestCase):
++    def test_lora_scripts_stay_and_the_double_painters_go(self) -> None:
++        self.assertTrue(script_kept("LoRA", "extensions-builtin/Lora/scripts/lora_script.py", controlnet=False, soft=False))
++        self.assertTrue(script_kept("Extra networks", "", controlnet=False, soft=False))
++        self.assertFalse(script_kept("ADetailer", "extensions/adetailer/scripts/adetailer.py", controlnet=True, soft=True))
++        self.assertFalse(script_kept("Regional Prompter", "", controlnet=False, soft=False))
++        self.assertFalse(script_kept("Dynamic Prompts", "", controlnet=False, soft=False))
++        self.assertFalse(script_kept("ControlNet", "", controlnet=False, soft=False))
++        self.assertTrue(script_kept("ControlNet", "", controlnet=True, soft=False))
++        self.assertFalse(script_kept("Soft Inpainting", "", controlnet=False, soft=False))
++        self.assertTrue(script_kept("Soft Inpainting", "", controlnet=False, soft=True))
++        self.assertFalse(script_kept("advanced model sampling for reforge", "", controlnet=False, soft=False))
++
++
++class InpaintFieldsTests(unittest.TestCase):
++    def test_the_stage_prompt_is_the_inpaint_prompt(self) -> None:
++        fields = inpaint_processing_fields(_job())
++        self.assertIn(LORA, fields["prompt"])
++        self.assertEqual(
++            set(fields["override_settings"]),
++            {"sd_model_checkpoint", "CLIP_stop_at_last_layers"},
++        )
++        self.assertNotIn("sd_lora", fields["override_settings"])
++        self.assertNotIn("disable_extra_networks", fields)
++
++    def test_hashes_from_the_webui_are_kept_on_the_saved_text(self) -> None:
++        found = _lora_hashes(['1girl\nSteps: 20, Lora hashes: "caststyle_xl_epoch08: ab12cd"'])
++        self.assertEqual(found, "caststyle_xl_epoch08: ab12cd")
++        self.assertEqual(_lora_hashes(["Steps: 20"]), "")
++        saved = _append_lora_hashes("1girl", found)
++        self.assertIn('Lora hashes: "caststyle_xl_epoch08: ab12cd"', saved)
++        self.assertEqual(_append_lora_hashes(saved, found), saved)
++
++    def test_http_payload_also_keeps_the_tag(self) -> None:
++        info = Infotext(
++            prompt="1girl",
++            negative_prompt="lowres",
++            seed=1,
++            sampler="Euler a",
++            scheduler=None,
++            steps=20,
++            cfg_scale=7.0,
++            width=64,
++            height=64,
++            model="demo",
++            model_hash=None,
++            vae=None,
++            clip_skip=2,
++            raw="",
++        )
++        payload = build_img2img_payload(
++            info=info,
++            prompt=f"1girl, {LORA}",
++            negative_prompt="lowres",
++            init_image_base64="a",
++            mask_base64="b",
++            denoise=0.5,
++            mask_blur=0,
++            inpainting_fill=1,
++            inpaint_full_res=True,
++            padding=32,
++            width=64,
++            height=64,
++        )
++        self.assertIn(LORA, payload["prompt"])
++        self.assertNotIn("sd_lora", payload["override_settings"])
++
++
++if __name__ == "__main__":
++    unittest.main()

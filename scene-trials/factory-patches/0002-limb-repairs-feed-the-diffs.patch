@@ -1,0 +1,179 @@
+diff --git a/sd-diff-set/sd_diff_set/pipeline.py b/sd-diff-set/sd_diff_set/pipeline.py
+index 3a26ffb..fec3d28 100644
+--- a/sd-diff-set/sd_diff_set/pipeline.py
++++ b/sd-diff-set/sd_diff_set/pipeline.py
+@@ -22,6 +22,7 @@ from sd_diff_set.infotext import parse_infotext
+ from sd_diff_set.progress import note_stage, set_progress
+ from sd_diff_set.prompt_edit import split_tags
+ from sd_diff_set.planner import FACE_PASS_MODES, parse_stages
++from sd_diff_set.png_text import read_parameters, upsert_parameters
+ from sd_diff_set.router import (
+     blocked_token,
+     ignored_categories,
+@@ -510,8 +511,26 @@ class Pipeline:
+                 continue
+             current = produced
+             self._cut_file(produced)
++        if current != placed:
++            current = self._working_copy(placed, current, category)
+         return current, notes
+ 
++    def _working_copy(self, placed: Path, repaired: Path, category: str) -> Path:
++        """Carry the repaired pixels to the diffs under the base's own name.
++
++        The repaired file keeps its limb mask and its limb prompt next to it. Using it directly would
++        rename the diff folder, add hand and foot tags to every stage prompt, and let the limb mask pass
++        for a hand-drawn mask. The copy has the base's name and parameters, and the base's hand-drawn masks.
++        """
++        folder = self.settings.output_dir / "limbs" / category / "work"
++        folder.mkdir(parents=True, exist_ok=True)
++        working = folder / placed.name
++        shutil.copyfile(repaired, working)
++        upsert_parameters(working, read_parameters(placed) or "")
++        self._copy_masks(placed, working)
++        self._cut_file(working)
++        return working
++
+     def _cut_file(self, path: Path) -> None:
+         from sd_diff_set.cutout import write_transparent
+ 
+@@ -668,7 +687,7 @@ def _produced_image(payload: dict[str, object]) -> Path | None:
+     for item in items:
+         if not isinstance(item, dict) or item.get("status") != "ok":
+             continue
+-        raw = item.get("output_path")
++        raw = item.get("path") or item.get("output_path")
+         if not raw:
+             continue
+         path = Path(str(raw))
+diff --git a/sd-diff-set/tests/test_limbs_chain.py b/sd-diff-set/tests/test_limbs_chain.py
+new file mode 100644
+index 0000000..c935909
+--- /dev/null
++++ b/sd-diff-set/tests/test_limbs_chain.py
+@@ -0,0 +1,125 @@
++"""Hands and feet repairs feed the next step. No GPU and no WebUI."""
++
++from __future__ import annotations
++
++import sys
++import tempfile
++import unittest
++from pathlib import Path
++
++sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
++
++from sd_diff_set.pipeline import Pipeline, PipelineSettings
++from sd_diff_set.png_text import read_parameters, write_rgb_png
++
++PRESETS = Path(__file__).resolve().parents[1] / "presets"
++INFO = "\n".join(
++    [
++        "1girl, anal sex",
++        "Negative prompt: lowres",
++        "Steps: 20, Sampler: Euler a, CFG scale: 7, Seed: 1, Size: 8x8, Model: demoMix_v1",
++    ]
++)
++
++
++def _settings(root: Path) -> PipelineSettings:
++    return PipelineSettings(
++        inbox=root / "inbox",
++        sorted_dir=root / "sorted",
++        output_dir=root / "diffs",
++        preset_dir=PRESETS,
++        adult_ok=True,
++        dry_run=False,
++        limbs=True,
++    )
++
++
++class LimbChainTests(unittest.TestCase):
++    def _run(self, hand_ok: bool, feet_ok: bool) -> tuple[list[dict[str, object]], dict[str, object], Path]:
++        calls: list[dict[str, object]] = []
++
++        def run_job(**kwargs: object) -> dict[str, object]:
++            calls.append(kwargs)
++            preset = list(kwargs["preset_ids"])[0]  # type: ignore[call-overload]
++            base = Path(str(kwargs["base_path"]))
++            folder = Path(str(kwargs["output_dir"]))
++            folder.mkdir(parents=True, exist_ok=True)
++            if preset in ("hands", "feet"):
++                good = hand_ok if preset == "hands" else feet_ok
++                if not good:
++                    return {"status": "ok", "dry_run": False, "items": [{"status": "error", "path": None}]}
++                out = folder / f"{base.stem}_001_diff-{preset}-x.png"
++                out.write_bytes(base.read_bytes())
++                return {"status": "ok", "dry_run": False, "items": [{"status": "ok", "path": str(out)}]}
++            return {"status": "ok", "dry_run": False, "items": [], "manifest_path": "m.json"}
++
++        with tempfile.TemporaryDirectory() as tmp:
++            root = Path(tmp)
++            gen = root / "gen"
++            gen.mkdir()
++            write_rgb_png(gen / "pic.png", 8, 8, parameters=INFO)
++            line = Pipeline(_settings(root), run_job=run_job)
++            row = line.accept(gen / "pic.png")
++            assert row is not None
++            line.paint_available(1)
++            ledger = line._snapshot(str(row["sha256"]))
++            sorted_png = Path(str(ledger["sorted"]))
++            return calls, ledger, sorted_png
++
++    def test_feet_start_from_the_hands_result_and_the_diff_from_a_copy_named_like_the_base(self) -> None:
++        calls, ledger, sorted_png = self._run(True, True)
++        hands, feet, main = calls
++        self.assertEqual(Path(str(hands["base_path"])).name, sorted_png.name)
++        self.assertIn("diff-hands", Path(str(feet["base_path"])).name)
++        working = Path(str(main["base_path"]))
++        self.assertEqual(working.name, sorted_png.name)
++        self.assertEqual(working.parent.name, "work")
++        self.assertEqual(str(working), str(ledger["working"]))
++        self.assertNotEqual(ledger["working"], ledger["sorted"])
++
++    def test_the_copy_keeps_the_base_prompt_and_drops_the_limb_masks(self) -> None:
++        with tempfile.TemporaryDirectory() as tmp:
++            root = Path(tmp)
++            seen: dict[str, object] = {}
++
++            def run_job(**kwargs: object) -> dict[str, object]:
++                preset = list(kwargs["preset_ids"])[0]  # type: ignore[call-overload]
++                base = Path(str(kwargs["base_path"]))
++                folder = Path(str(kwargs["output_dir"]))
++                folder.mkdir(parents=True, exist_ok=True)
++                if preset in ("hands", "feet"):
++                    out = folder / f"{base.stem}_001_diff-{preset}-x.png"
++                    write_rgb_png(out, 8, 8, parameters=INFO + ", limb tag")
++                    write_rgb_png(out.with_suffix(".mask.png"), 8, 8, rgb=(255, 255, 255))
++                    return {"status": "ok", "dry_run": False, "items": [{"status": "ok", "path": str(out)}]}
++                work = Path(str(kwargs["base_path"]))
++                seen["names"] = sorted(p.name for p in work.parent.iterdir())
++                seen["parameters"] = read_parameters(work)
++                return {"status": "ok", "dry_run": False, "items": [], "manifest_path": "m.json"}
++
++            gen = root / "gen"
++            gen.mkdir()
++            write_rgb_png(gen / "pic.png", 8, 8, parameters=INFO)
++            write_rgb_png(gen / "pic.mask-anal-hilt.png", 8, 8, rgb=(255, 255, 255))
++            line = Pipeline(_settings(root), run_job=run_job)
++            line.accept(gen / "pic.png")
++            line.paint_available(1)
++            self.assertEqual(seen["parameters"], INFO)
++            names = seen["names"]
++            assert isinstance(names, list)
++            self.assertIn("pic.mask-anal-hilt.png", names)
++            self.assertNotIn("pic.mask.png", names)
++            self.assertFalse(any("limb" in name or "diff-" in name for name in names if name.endswith(".mask.png")))
++
++    def test_a_failed_repair_leaves_the_base_for_the_next_step(self) -> None:
++        calls, ledger, sorted_png = self._run(False, True)
++        hands, feet, main = calls
++        self.assertEqual(Path(str(feet["base_path"])).name, sorted_png.name)
++        self.assertEqual(Path(str(main["base_path"])).parent.name, "work")
++        calls, ledger, sorted_png = self._run(False, False)
++        self.assertEqual(Path(str(calls[2]["base_path"])).name, sorted_png.name)
++        self.assertEqual(ledger["working"], ledger["sorted"])
++
++
++if __name__ == "__main__":
++    unittest.main()

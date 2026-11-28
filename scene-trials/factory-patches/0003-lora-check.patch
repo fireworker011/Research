@@ -1,0 +1,474 @@
+diff --git a/sd-diff-set/sd_diff_set/cli.py b/sd-diff-set/sd_diff_set/cli.py
+index 5a667e8..b8f49a4 100644
+--- a/sd-diff-set/sd_diff_set/cli.py
++++ b/sd-diff-set/sd_diff_set/cli.py
+@@ -17,6 +17,7 @@ from sd_diff_set.eagle import DEFAULT_LIBRARY, EagleClient
+ from sd_diff_set.errors import DiffSetError
+ from sd_diff_set.factory_line import http_poster, load_jobs, probe_colab_memory, probe_local_models, run_factory
+ from sd_diff_set.finish import plan_finish
++from sd_diff_set.lora_check import LORA_CHECK_MODES, probe_loras
+ from sd_diff_set.settings import ai_cutout_enabled, factory_config, pipeline_config
+ from sd_diff_set.game_fit import GAME_HEIGHT, GAME_WIDTH
+ from sd_diff_set.pattern_set import PATTERN_IDS, pattern_roster
+@@ -162,6 +163,12 @@ def main(argv: list[str] | None = None) -> int:
+         default=ai_cutout_enabled(),
+         help="when the border is patterned, use a local isnet-anime model",
+     )
++    factory.add_argument(
++        "--lora-check",
++        choices=LORA_CHECK_MODES,
++        default="error",
++        help="プロンプトの <lora:名前> を WebUI の一覧と照らす。error: 知らない名前なら送らず止める。warn: 警告だけ。off: 照らさない。",
++    )
+     factory.add_argument(
+         "--stages",
+         action="append",
+@@ -306,6 +313,8 @@ def _factory(args: argparse.Namespace) -> int:
+         dry_run=not args.run,
+         once=args.once,
+         local_probe=probe_local_models if args.run else None,
++        loras_probe=probe_loras if args.run else None,
++        lora_check=args.lora_check,
+     )
+     print(destination_line(str(payload.get("host") or ""), str(payload.get("reason") or ""), link_note))
+     print(f"finish: {planned.mode}")
+@@ -319,6 +328,8 @@ def _factory(args: argparse.Namespace) -> int:
+         )
+         if job.get("error_code"):
+             print(f"  {job.get('error_code')}: {job.get('error')}")
++        for note in job.get("warnings") or []:
++            print(f"  warning: {note}")
+     pipeline = payload.get("pipeline")
+     if not args.once and isinstance(pipeline, Pipeline):
+         print(f"watch: {args.inbox}")
+diff --git a/sd-diff-set/sd_diff_set/factory_line.py b/sd-diff-set/sd_diff_set/factory_line.py
+index f142d67..f7d44ce 100644
+--- a/sd-diff-set/sd_diff_set/factory_line.py
++++ b/sd-diff-set/sd_diff_set/factory_line.py
+@@ -14,9 +14,16 @@ from pathlib import Path
+ 
+ from sd_diff_set.errors import DiffSetError
+ from sd_diff_set.job_state import mark_done
++from sd_diff_set.lora_check import (
++    LORA_CHECK_MODES,
++    applied_loras,
++    lora_names,
++    missing_loras,
++    not_applied,
++)
+ from sd_diff_set.pipeline import Pipeline, PipelineSettings
+ from sd_diff_set.planner import FACE_PASS_MODES, parse_stages
+-from sd_diff_set.png_text import upsert_parameters
++from sd_diff_set.png_text import read_parameters, upsert_parameters
+ from sd_diff_set.progress import set_progress
+ from sd_diff_set.router import blocked_token
+ from sd_diff_set.settings import DEFAULT_HEIGHT, DEFAULT_WIDTH, snap_side
+@@ -273,8 +280,16 @@ def run_factory(
+     once: bool = True,
+     run_job=None,
+     local_probe=None,
++    loras_probe=None,
++    lora_check: str = "error",
+ ) -> dict[str, object]:
+-    """Plan or run the batch. ``poster`` is called only for a real generate."""
++    """Plan or run the batch. ``poster`` is called only for a real generate.
++
++    ``loras_probe(api)`` lists the LoRAs the chosen host knows. With ``lora_check`` ``error`` a job whose prompt
++    names an unknown LoRA stops before posting, because the WebUI would drop the tag without a word.
++    """
++    if lora_check not in LORA_CHECK_MODES:
++        raise DiffSetError("bad_lora_check", f"lora_check は {', '.join(LORA_CHECK_MODES)} のどれかです: {lora_check!r}")
+     batch = list(jobs or [])
+     model_name = ""
+     for job in batch:
+@@ -310,6 +325,9 @@ def run_factory(
+             "rows": [],
+             "pipeline": line,
+         }
++    available: list[dict[str, object]] | None = None
++    if not dry_run and poster is not None and loras_probe is not None and lora_check != "off":
++        available = loras_probe(choice.api)
+     job_rows: list[dict[str, object]] = []
+     for index, job in enumerate(batch):
+         job_rows.append(
+@@ -321,6 +339,8 @@ def run_factory(
+                 total=len(batch),
+                 dry_run=dry_run,
+                 poster=poster,
++                available_loras=available,
++                lora_check=lora_check,
+             )
+         )
+     rows: list[dict[str, object]] = []
+@@ -377,6 +397,8 @@ def _one_job(
+     total: int,
+     dry_run: bool,
+     poster,
++    available_loras: list[dict[str, object]] | None = None,
++    lora_check: str = "error",
+ ) -> dict[str, object]:
+     name = str(job.get("id") or f"job-{index + 1}")
+     set_progress("txt2img", index + 1, total)
+@@ -429,9 +451,27 @@ def _one_job(
+             "host": choice.kind,
+             "reason": choice.reason,
+         }
++    asked = lora_names(str(prompt))
++    notes: list[str] = []
++    if asked and available_loras is not None:
++        missing = missing_loras(asked, available_loras)
++        if missing and lora_check == "error":
++            return {
++                "id": name,
++                "status": "error",
++                "error_code": "lora_missing",
++                "error": (
++                    "WebUI が知らない LoRA があります。名前かファイルを直してください。"
++                    "このまま生成すると WebUI は黙ってタグを捨てます: " + ", ".join(missing)
++                ),
++                "host": choice.kind,
++                "reason": choice.reason,
++            }
++        notes.extend(f"lora_missing: {item}" for item in missing)
++    returned: dict[str, str] = {}
+     try:
+         raw = poster(choice.api, txt2img_payload(job))
+-        saved = _write_generated(line.settings, name, raw, parameters_text(job))
++        saved = _write_generated(line.settings, name, raw, parameters_text(job), returned)
+     except DiffSetError as exc:
+         return {
+             "id": name,
+@@ -441,6 +481,17 @@ def _one_job(
+             "host": choice.kind,
+             "reason": choice.reason,
+         }
++    lora_report: dict[str, object] | None = None
++    if asked and lora_check != "off":
++        applied = applied_loras(returned.get("parameters"))
++        lost = not_applied(asked, applied)
++        if lost:
++            notes.append("lora_not_applied: WebUI が返した絵に Lora hashes がありません: " + ", ".join(lost))
++        lora_report = {
++            "asked": asked,
++            "applied": None if applied is None else sorted(applied),
++            "not_applied": lost,
++        }
+     accepted = line.accept(saved)
+     if isinstance(accepted, dict):
+         digest = accepted.get("sha256")
+@@ -450,6 +501,10 @@ def _one_job(
+             fields["stages"] = list(job_stages)
+         if face_pass is not None:
+             fields["face_pass"] = face_pass
++        if lora_report is not None:
++            fields["lora"] = lora_report
++            if notes:
++                fields["lora_notes"] = notes
+         if isinstance(digest, str) and fields:
+             line._merge(digest, fields)
+     line.paint_available(1)
+@@ -463,6 +518,7 @@ def _one_job(
+         "reason": choice.reason,
+         "saved": str(saved),
+         "sorted": None if accepted is None else accepted.get("sorted"),
++        "warnings": notes,
+     }
+ 
+ 
+@@ -471,10 +527,13 @@ def _write_generated(
+     name: str,
+     raw: bytes,
+     parameters: str,
++    returned: dict[str, str] | None = None,
+ ) -> Path:
+     folder = settings.inbox.parent / "generated"
+     folder.mkdir(parents=True, exist_ok=True)
+     path = folder / f"{name}.png"
+     path.write_bytes(raw)
++    if returned is not None:
++        returned["parameters"] = read_parameters(path) or ""
+     upsert_parameters(path, parameters)
+     return path
+diff --git a/sd-diff-set/sd_diff_set/lora_check.py b/sd-diff-set/sd_diff_set/lora_check.py
+new file mode 100644
+index 0000000..23d3850
+--- /dev/null
++++ b/sd-diff-set/sd_diff_set/lora_check.py
+@@ -0,0 +1,85 @@
++"""Find out whether the LoRA tags in a job prompt can work, and whether they did.
++
++The factory sends the job prompt to the WebUI unchanged. The WebUI drops a ``<lora:name:weight>`` tag whose
++name it does not know, without an error, so a missing file looks like "the LoRA has no effect". Two checks
++make that visible: the names the WebUI lists at ``/sdapi/v1/loras``, and the ``Lora hashes`` the WebUI writes
++into the picture it returns.
++"""
++
++from __future__ import annotations
++
++import json
++import re
++import urllib.request
++
++LORA_CHECK_MODES = ("error", "warn", "off")
++_TAG = re.compile(r"<(?:lora|lyco):([^:>]+)(?::[^>]*)?>", re.IGNORECASE)
++_HASHES = re.compile(r'Lora hashes:\s*"([^"]*)"')
++_INFOTEXT_MARK = re.compile(r"\bSteps:\s*\d+")
++
++
++def lora_names(prompt: str) -> list[str]:
++    """Names in ``<lora:...>`` and ``<lyco:...>`` tags, in order, without repeats."""
++    seen: list[str] = []
++    for match in _TAG.finditer(prompt):
++        name = match.group(1).strip()
++        if name and name not in seen:
++            seen.append(name)
++    return seen
++
++
++def listed_names(rows: list[dict[str, object]]) -> set[str]:
++    """Every name and alias a ``/sdapi/v1/loras`` answer offers."""
++    found: set[str] = set()
++    for row in rows:
++        for key in ("name", "alias"):
++            value = row.get(key)
++            if isinstance(value, str) and value.strip():
++                found.add(value.strip())
++    return found
++
++
++def missing_loras(names: list[str], rows: list[dict[str, object]]) -> list[str]:
++    """Tag names the WebUI does not list. A name that differs only in case is still missing, with a hint."""
++    available = listed_names(rows)
++    folded = {name.casefold(): name for name in available}
++    missing: list[str] = []
++    for name in names:
++        if name in available:
++            continue
++        near = folded.get(name.casefold())
++        missing.append(f"{name} (the WebUI has {near!r}; the case differs)" if near else name)
++    return missing
++
++
++def applied_loras(parameters: str | None) -> set[str] | None:
++    """Names the WebUI says it applied, read from the returned picture's infotext.
++
++    None means the picture carries no usable infotext, so nothing can be said.
++    """
++    if not parameters or not _INFOTEXT_MARK.search(parameters):
++        return None
++    match = _HASHES.search(parameters)
++    if match is None:
++        return set()
++    return {part.split(":", 1)[0].strip() for part in match.group(1).split(",") if part.strip()}
++
++
++def not_applied(asked: list[str], applied: set[str] | None) -> list[str]:
++    if applied is None:
++        return []
++    have = {name.casefold() for name in applied}
++    return [name for name in asked if name.casefold() not in have]
++
++
++def probe_loras(api_base: str, timeout: float = 5.0) -> list[dict[str, object]] | None:
++    """GET ``/sdapi/v1/loras``. None when the host cannot answer, so the check is skipped."""
++    request = urllib.request.Request(api_base.rstrip("/") + "/sdapi/v1/loras")
++    try:
++        with urllib.request.urlopen(request, timeout=timeout) as response:
++            payload = json.loads(response.read().decode("utf-8"))
++    except Exception:
++        return None
++    if not isinstance(payload, list):
++        return None
++    return [row for row in payload if isinstance(row, dict)]
+diff --git a/sd-diff-set/tests/test_lora_check.py b/sd-diff-set/tests/test_lora_check.py
+new file mode 100644
+index 0000000..2980a64
+--- /dev/null
++++ b/sd-diff-set/tests/test_lora_check.py
+@@ -0,0 +1,186 @@
++"""LoRA tag checks before and after txt2img. No GPU, no WebUI, no network."""
++
++from __future__ import annotations
++
++import json
++import sys
++import tempfile
++import unittest
++from pathlib import Path
++
++sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
++
++from sd_diff_set.errors import DiffSetError
++from sd_diff_set.factory_line import run_factory
++from sd_diff_set.lora_check import applied_loras, listed_names, lora_names, missing_loras, not_applied
++from sd_diff_set.pipeline import PipelineSettings
++from sd_diff_set.png_text import write_rgb_png
++
++PRESETS = Path(__file__).resolve().parents[1] / "presets"
++PROMPT = "1girl, <lora:caststyle_xl_epoch08:0.9>, <lora:nieva_xl:0.8>, <lyco:extra:1>, simple background"
++INFOTEXT = "1girl\nNegative prompt: lowres\nSteps: 20, Sampler: Euler a, CFG scale: 7, Seed: 1, Size: 8x8, Model: m"
++KNOWN = [{"name": "caststyle_xl_epoch08", "alias": "caststyle"}, {"name": "nieva_xl"}, {"name": "extra"}]
++
++
++class HelperTests(unittest.TestCase):
++    def test_names_in_order_without_repeats(self) -> None:
++        text = "<lora:a:0.5>, x, <LORA:b>, <lora:a:0.9>, <lyco:c:1.0>, <lora: d :1>"
++        self.assertEqual(lora_names(text), ["a", "b", "c", "d"])
++        self.assertEqual(lora_names("no tags, (lora:1.2)"), [])
++
++    def test_missing_uses_names_and_aliases_and_hints_a_case_mismatch(self) -> None:
++        rows = [{"name": "nieva_xl", "alias": "nieva"}, {"name": "Case_Only"}, {"name": None}]
++        self.assertEqual(listed_names(rows), {"nieva_xl", "nieva", "Case_Only"})
++        self.assertEqual(missing_loras(["nieva_xl", "nieva"], rows), [])
++        got = missing_loras(["case_only", "gone"], rows)
++        self.assertIn("gone", got)
++        self.assertTrue(any(item.startswith("case_only (the WebUI has 'Case_Only'") for item in got))
++
++    def test_applied_reads_the_hashes_of_the_returned_picture(self) -> None:
++        self.assertIsNone(applied_loras(None))
++        self.assertIsNone(applied_loras("no infotext here"))
++        self.assertEqual(applied_loras(INFOTEXT), set())
++        with_hashes = INFOTEXT + ', Lora hashes: "caststyle_xl_epoch08: 1a2b3c, nieva_xl: 4d5e6f", Version: x'
++        self.assertEqual(applied_loras(with_hashes), {"caststyle_xl_epoch08", "nieva_xl"})
++        self.assertEqual(not_applied(["nieva_xl", "Extra"], {"nieva_xl"}), ["Extra"])
++        self.assertEqual(not_applied(["nieva_xl"], None), [])
++
++
++def _settings(root: Path) -> PipelineSettings:
++    return PipelineSettings(
++        inbox=root / "inbox",
++        sorted_dir=root / "sorted",
++        output_dir=root / "diffs",
++        preset_dir=PRESETS,
++        adult_ok=True,
++        dry_run=False,
++        limbs=False,
++    )
++
++
++def _job(**extra: object) -> dict[str, object]:
++    job: dict[str, object] = {
++        "id": "pic",
++        "prompt": PROMPT,
++        "negative_prompt": "lowres",
++        "sampler_name": "Euler a",
++        "steps": 28,
++        "cfg_scale": 6,
++        "width": 1024,
++        "height": 1344,
++        "model": "m",
++        "stages": ["none"],
++    }
++    job.update(extra)
++    return job
++
++
++class FactoryLoraTests(unittest.TestCase):
++    def _run(self, root: Path, *, rows, mode: str = "error", job=None, dry_run: bool = False, parameters: str | None = None):
++        posted: list[dict[str, object]] = []
++        probed: list[str] = []
++        image = root / "ret.png"
++        write_rgb_png(image, 8, 8, parameters=parameters)
++        data = image.read_bytes()
++
++        def poster(_api: str, payload: dict[str, object]) -> bytes:
++            posted.append(payload)
++            return data
++
++        def probe(api: str):
++            probed.append(api)
++            return rows
++
++        painted: list[object] = []
++        result = run_factory(
++            settings=_settings(root),
++            jobs=[job or _job()],
++            poster=poster,
++            dry_run=dry_run,
++            once=True,
++            run_job=lambda **kwargs: painted.append(1) or {"status": "ok", "items": [], "dry_run": False},
++            loras_probe=probe,
++            lora_check=mode,
++        )
++        return result, posted, probed, painted
++
++    def test_an_unknown_lora_stops_the_job_before_posting(self) -> None:
++        with tempfile.TemporaryDirectory() as tmp:
++            result, posted, probed, painted = self._run(Path(tmp), rows=[{"name": "nieva_xl"}])
++            row = result["jobs"][0]  # type: ignore[index]
++            self.assertEqual((row["status"], row["error_code"]), ("error", "lora_missing"))
++            self.assertIn("caststyle_xl_epoch08", row["error"])
++            self.assertIn("extra", row["error"])
++            self.assertNotIn("nieva_xl", row["error"].split("ます: ")[-1])
++            self.assertEqual((posted, painted), ([], []))
++            self.assertEqual(len(probed), 1)
++
++    def test_known_loras_by_name_or_alias_are_posted_unchanged(self) -> None:
++        with tempfile.TemporaryDirectory() as tmp:
++            rows = [{"name": "caststyle", "alias": "caststyle_xl_epoch08"}, {"name": "nieva_xl"}, {"alias": "extra"}]
++            result, posted, _probed, _painted = self._run(Path(tmp), rows=rows, parameters=INFOTEXT)
++            self.assertEqual(result["jobs"][0]["status"], "ok")  # type: ignore[index]
++            self.assertEqual(posted[0]["prompt"], PROMPT)
++
++    def test_warn_posts_and_reports(self) -> None:
++        with tempfile.TemporaryDirectory() as tmp:
++            result, posted, _probed, _painted = self._run(Path(tmp), rows=[], mode="warn")
++            row = result["jobs"][0]  # type: ignore[index]
++            self.assertEqual(row["status"], "ok")
++            self.assertEqual(len(posted), 1)
++            self.assertEqual(sum(note.startswith("lora_missing") for note in row["warnings"]), 3)
++
++    def test_off_and_dry_run_do_not_probe(self) -> None:
++        with tempfile.TemporaryDirectory() as tmp:
++            _result, posted, probed, _painted = self._run(Path(tmp), rows=[], mode="off")
++            self.assertEqual((len(posted), probed), (1, []))
++        with tempfile.TemporaryDirectory() as tmp:
++            result, posted, probed, _painted = self._run(Path(tmp), rows=[], dry_run=True)
++            self.assertEqual((posted, probed), ([], []))
++            self.assertEqual(result["jobs"][0]["status"], "planned")  # type: ignore[index]
++
++    def test_a_host_that_cannot_list_loras_is_not_blocked(self) -> None:
++        with tempfile.TemporaryDirectory() as tmp:
++            result, posted, _probed, _painted = self._run(Path(tmp), rows=None)
++            self.assertEqual(result["jobs"][0]["status"], "ok")  # type: ignore[index]
++            self.assertEqual(len(posted), 1)
++
++    def test_a_job_without_lora_tags_is_never_blocked(self) -> None:
++        with tempfile.TemporaryDirectory() as tmp:
++            result, posted, _probed, _painted = self._run(Path(tmp), rows=[], job=_job(prompt="1girl, solo"))
++            self.assertEqual(result["jobs"][0]["status"], "ok")  # type: ignore[index]
++            self.assertEqual(len(posted), 1)
++
++    def test_the_returned_picture_is_checked_for_applied_loras(self) -> None:
++        known = [{"name": "caststyle_xl_epoch08"}, {"name": "nieva_xl"}, {"name": "extra"}]
++        with tempfile.TemporaryDirectory() as tmp:
++            result, _posted, _probed, _painted = self._run(Path(tmp), rows=known, parameters=INFOTEXT)
++            row = result["jobs"][0]  # type: ignore[index]
++            self.assertTrue(any(note.startswith("lora_not_applied") for note in row["warnings"]))
++        hashes = INFOTEXT + ', Lora hashes: "caststyle_xl_epoch08: 1, nieva_xl: 2, extra: 3"'
++        with tempfile.TemporaryDirectory() as tmp:
++            result, _posted, _probed, _painted = self._run(Path(tmp), rows=known, parameters=hashes)
++            self.assertEqual(result["jobs"][0]["warnings"], [])  # type: ignore[index]
++        with tempfile.TemporaryDirectory() as tmp:
++            result, _posted, _probed, _painted = self._run(Path(tmp), rows=known, parameters=None)
++            self.assertEqual(result["jobs"][0]["warnings"], [])  # type: ignore[index]
++
++    def test_the_ledger_keeps_what_was_asked_and_what_came_back(self) -> None:
++        known = [{"name": "caststyle_xl_epoch08"}, {"name": "nieva_xl"}, {"name": "extra"}]
++        with tempfile.TemporaryDirectory() as tmp:
++            root = Path(tmp)
++            self._run(root, rows=known, parameters=INFOTEXT)
++            ledger = json.loads((root / "diffs" / "pipeline.json").read_text(encoding="utf-8"))["items"]
++            row = next(iter(ledger.values()))
++            self.assertEqual(row["lora"]["asked"], ["caststyle_xl_epoch08", "nieva_xl", "extra"])
++            self.assertEqual(row["lora"]["applied"], [])
++            self.assertEqual(len(row["lora"]["not_applied"]), 3)
++
++    def test_a_bad_mode_is_refused(self) -> None:
++        with tempfile.TemporaryDirectory() as tmp:
++            with self.assertRaises(DiffSetError):
++                self._run(Path(tmp), rows=[], mode="maybe")
++
++
++if __name__ == "__main__":
++    unittest.main()

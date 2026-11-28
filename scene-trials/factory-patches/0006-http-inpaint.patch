@@ -1,0 +1,664 @@
+diff --git a/sd-diff-set/sd_diff_set/api_payload.py b/sd-diff-set/sd_diff_set/api_payload.py
+index fe5a38c..c75554c 100644
+--- a/sd-diff-set/sd_diff_set/api_payload.py
++++ b/sd-diff-set/sd_diff_set/api_payload.py
+@@ -1,12 +1,10 @@
+-"""Pure /sdapi/v1/img2img body for the fallback in build-plan step AT-CN-3.
++"""Body for ``POST /sdapi/v1/img2img``.
+ 
+-Not called in v1. The in-process host is the path that ships. Use this only
+-after AT-CN-1 shows that Forge's script_args layout cannot take unit dicts.
+-
+-``prompt`` is copied through, including ``<lora:...>``. ``alwayson_scripts``
+-only carries ControlNet and Soft Inpainting. On the HTTP API a script that is
+-not listed keeps its default arguments and still runs, so this does not turn
+-LoRA off. The in-process path is ``host.py``.
++``HttpInpaintHost`` posts this when the external CLI paints a diff. The reForge
++tab still calls ``process_images`` and does not use this body. ``prompt`` is
++copied through, including ``<lora:...>``. ``alwayson_scripts`` lists ControlNet
++only when the job asks, plus Soft Inpainting. A script that is not listed keeps
++its default arguments and still runs, so LoRA stays on.
+ """
+ 
+ from __future__ import annotations
+diff --git a/sd-diff-set/sd_diff_set/cli.py b/sd-diff-set/sd_diff_set/cli.py
+index b8f49a4..df93249 100644
+--- a/sd-diff-set/sd_diff_set/cli.py
++++ b/sd-diff-set/sd_diff_set/cli.py
+@@ -163,6 +163,12 @@ def main(argv: list[str] | None = None) -> int:
+         default=ai_cutout_enabled(),
+         help="when the border is patterned, use a local isnet-anime model",
+     )
++    factory.add_argument(
++        "--limbs",
++        action=argparse.BooleanOptionalAction,
++        default=True,
++        help="手と足を塗ってから差分に進む。--no-limbs で手足は飛ばす。",
++    )
+     factory.add_argument(
+         "--lora-check",
+         choices=LORA_CHECK_MODES,
+@@ -288,7 +294,7 @@ def _factory(args: argparse.Namespace) -> int:
+         overwrite=args.overwrite,
+         use_controlnet=args.controlnet,
+         poll_seconds=args.poll if args.poll >= 0.2 else 0.2,
+-        limbs=True,
++        limbs=bool(args.limbs),
+         game_width=planned.game_width,
+         game_height=planned.game_height,
+         prepared=args.prepared,
+@@ -315,6 +321,7 @@ def _factory(args: argparse.Namespace) -> int:
+         local_probe=probe_local_models if args.run else None,
+         loras_probe=probe_loras if args.run else None,
+         lora_check=args.lora_check,
++        use_http_inpaint=bool(args.run),
+     )
+     print(destination_line(str(payload.get("host") or ""), str(payload.get("reason") or ""), link_note))
+     print(f"finish: {planned.mode}")
+diff --git a/sd-diff-set/sd_diff_set/factory_line.py b/sd-diff-set/sd_diff_set/factory_line.py
+index f7d44ce..7945b52 100644
+--- a/sd-diff-set/sd_diff_set/factory_line.py
++++ b/sd-diff-set/sd_diff_set/factory_line.py
+@@ -9,7 +9,7 @@ and the later stages stay one base image at a time.
+ from __future__ import annotations
+ 
+ import json
+-from dataclasses import dataclass
++from dataclasses import dataclass, replace
+ from pathlib import Path
+ 
+ from sd_diff_set.errors import DiffSetError
+@@ -282,6 +282,7 @@ def run_factory(
+     local_probe=None,
+     loras_probe=None,
+     lora_check: str = "error",
++    use_http_inpaint: bool = False,
+ ) -> dict[str, object]:
+     """Plan or run the batch. ``poster`` is called only for a real generate.
+ 
+@@ -304,6 +305,8 @@ def run_factory(
+         local_probe=local_probe,
+         model_name=model_name,
+     )
++    if use_http_inpaint and choice.kind != "wait":
++        settings = replace(settings, inpaint_api=choice.api.rstrip("/"))
+     line = Pipeline(settings, run_job=run_job)
+     if choice.kind == "wait":
+         waiting = [
+diff --git a/sd-diff-set/sd_diff_set/http_inpaint.py b/sd-diff-set/sd_diff_set/http_inpaint.py
+new file mode 100644
+index 0000000..5e03c62
+--- /dev/null
++++ b/sd-diff-set/sd_diff_set/http_inpaint.py
+@@ -0,0 +1,160 @@
++"""Inpaint through the WebUI HTTP API.
++
++The external CLI does not run inside reForge, so ``modules.processing`` cannot
++be imported there. This host posts one ``/sdapi/v1/img2img`` per stage to the
++same API base the txt2img jobs use. The prompt, including ``<lora:...>``, is
++the body. Scripts that are not listed keep their defaults and still run.
++"""
++
++from __future__ import annotations
++
++import base64
++import io
++import json
++import urllib.error
++import urllib.request
++from pathlib import Path
++
++from PIL import Image
++
++from sd_diff_set.api_payload import build_img2img_payload
++from sd_diff_set.errors import DiffSetError
++from sd_diff_set.executor import GenerationHost, InpaintJob
++from sd_diff_set.host import _append_lora_hashes, _lora_hashes, lock_unmasked_rgb
++from sd_diff_set.infotext import Infotext
++from sd_diff_set.png_text import upsert_parameters
++from sd_diff_set.prompt_edit import extra_network_tags
++
++
++class HttpInpaintHost(GenerationHost):
++    """One inpaint is one POST. The masked pixels come back; the rest stay the init image."""
++
++    def __init__(self, api_base: str, timeout: float = 600) -> None:
++        text = api_base.strip()
++        if not text:
++            raise DiffSetError("inpaint_http", "inpaint の API アドレスが空です。")
++        self.api_base = text.rstrip("/")
++        self.timeout = timeout
++
++    def inpaint(self, job: InpaintJob) -> None:
++        if job.use_controlnet and any(unit.get("enabled") for unit in job.controlnet):
++            raise DiffSetError(
++                "controlnet_http_unsupported",
++                "HTTP の inpaint は ControlNet を送りません。ControlNet を切って実行してください。",
++            )
++        payload = _payload(job)
++        image, info = _post_img2img(self.api_base, payload, self.timeout)
++        _write(job, image, info)
++
++
++def _payload(job: InpaintJob) -> dict[str, object]:
++    info = Infotext(
++        prompt=job.prompt,
++        negative_prompt=job.negative_prompt,
++        seed=job.seed,
++        sampler=job.sampler,
++        scheduler=job.scheduler,
++        steps=job.steps,
++        cfg_scale=job.cfg_scale,
++        width=job.width,
++        height=job.height,
++        model=job.model,
++        model_hash=job.model_hash,
++        vae=job.vae,
++        clip_skip=job.clip_skip,
++        raw="",
++    )
++    body = build_img2img_payload(
++        info=info,
++        prompt=job.prompt,
++        negative_prompt=job.negative_prompt,
++        init_image_base64=_png_b64(job.init_path),
++        mask_base64=_png_b64(job.mask_path),
++        denoise=job.denoise,
++        mask_blur=job.mask_blur,
++        inpainting_fill=job.inpainting_fill,
++        inpaint_full_res=job.inpaint_full_res,
++        padding=job.padding,
++        width=job.width,
++        height=job.height,
++        soft_inpainting=job.soft_inpainting,
++    )
++    if job.scheduler is None:
++        body.pop("scheduler", None)
++    return body
++
++
++def _png_b64(path: Path) -> str:
++    return base64.b64encode(path.read_bytes()).decode("ascii")
++
++
++def _post_img2img(api_base: str, payload: dict[str, object], timeout: float) -> tuple[bytes, str]:
++    url = api_base.rstrip("/") + "/sdapi/v1/img2img"
++    request = urllib.request.Request(
++        url,
++        data=json.dumps(payload).encode("utf-8"),
++        headers={"Content-Type": "application/json"},
++    )
++    try:
++        with urllib.request.urlopen(request, timeout=timeout) as response:
++            data = json.loads(response.read().decode("utf-8"))
++    except urllib.error.HTTPError as exc:
++        detail = exc.read()[:300].decode("utf-8", "replace")
++        raise DiffSetError("inpaint_http", f"img2img が {exc.code} を返しました。{detail}") from exc
++    except urllib.error.URLError as exc:
++        raise DiffSetError("inpaint_http", f"img2img に届きません。{exc.reason}") from exc
++    except (TimeoutError, json.JSONDecodeError) as exc:
++        raise DiffSetError("inpaint_http", f"img2img の応答を読めません。{exc}") from exc
++    images = data.get("images") if isinstance(data, dict) else None
++    if not isinstance(images, list) or not images:
++        raise DiffSetError("output_missing", "img2img が画像を返しませんでした。")
++    encoded = str(images[0])
++    if encoded.startswith("data:") and "," in encoded:
++        encoded = encoded.split(",", 1)[1]
++    return base64.b64decode(encoded), _info_text(data.get("info") if isinstance(data, dict) else None)
++
++
++def _info_text(info: object) -> str:
++    if isinstance(info, str):
++        try:
++            info = json.loads(info)
++        except json.JSONDecodeError:
++            return info
++    if isinstance(info, dict):
++        texts = info.get("infotexts")
++        if isinstance(texts, list) and texts:
++            return str(texts[0])
++    return ""
++
++
++def _write(job: InpaintJob, raw: bytes, info: str) -> None:
++    try:
++        with Image.open(io.BytesIO(raw)) as image:
++            result = image.convert("RGB")
++    except OSError as exc:
++        raise DiffSetError("inpaint_http", f"img2img の画像を開けません。{exc}") from exc
++    with Image.open(job.init_path) as image:
++        init = image.convert("RGB")
++    if job.lock_unmasked:
++        if result.size != init.size:
++            raise DiffSetError(
++                "output_missing",
++                f"img2img のサイズが元画像と違います。返却 {result.size[0]}x{result.size[1]}、"
++                f"元 {init.size[0]}x{init.size[1]}。",
++            )
++        with Image.open(job.mask_path) as image:
++            mask = image.convert("L")
++        if mask.size != init.size:
++            resample = getattr(Image, "Resampling", Image).NEAREST
++            mask = mask.resize(init.size, resample)
++        locked = lock_unmasked_rgb(init.tobytes(), result.tobytes(), mask.tobytes())
++        result = Image.frombytes("RGB", init.size, locked)
++    job.dest.parent.mkdir(parents=True, exist_ok=True)
++    result.save(job.dest)
++    hashes = _lora_hashes([info])
++    if extra_network_tags(job.prompt) and not hashes:
++        print(
++            "LoRA タグは inpaint のプロンプトに入れましたが、返った画像に Lora hashes がありません: "
++            + ", ".join(extra_network_tags(job.prompt))
++        )
++    upsert_parameters(job.dest, _append_lora_hashes(job.parameters_text, hashes))
+diff --git a/sd-diff-set/sd_diff_set/pipeline.py b/sd-diff-set/sd_diff_set/pipeline.py
+index fec3d28..3cc9079 100644
+--- a/sd-diff-set/sd_diff_set/pipeline.py
++++ b/sd-diff-set/sd_diff_set/pipeline.py
+@@ -18,6 +18,7 @@ from dataclasses import dataclass
+ from pathlib import Path
+ 
+ from sd_diff_set.errors import DiffSetError
++from sd_diff_set.http_inpaint import HttpInpaintHost
+ from sd_diff_set.infotext import parse_infotext
+ from sd_diff_set.progress import note_stage, set_progress
+ from sd_diff_set.prompt_edit import split_tags
+@@ -80,6 +81,7 @@ class PipelineSettings:
+     stages: tuple[str, ...] | None = None
+     cloth_detect: bool | None = None
+     face_pass: str = "required"
++    inpaint_api: str = ""
+ 
+ 
+ def load_settings(config_path: Path, preset_dir: Path) -> PipelineSettings | None:
+@@ -450,6 +452,7 @@ class Pipeline:
+                 stages=parse_stages(row.get("stages")) or self.settings.stages,
+                 cloth_detect=self.settings.cloth_detect,
+                 face_pass=str(row.get("face_pass") or self.settings.face_pass),
++                host=self._inpaint_host(),
+             )
+         except DiffSetError as exc:
+             painted = {"status": "error", "error_code": exc.code, "error": exc.message}
+@@ -468,6 +471,12 @@ class Pipeline:
+         )
+         return self._snapshot(digest)
+ 
++    def _inpaint_host(self) -> HttpInpaintHost | None:
++        api = self.settings.inpaint_api.strip()
++        if not api:
++            return None
++        return HttpInpaintHost(api)
++
+     def _note(self, stage: str) -> None:
+         note_stage(stage)
+ 
+@@ -490,6 +499,7 @@ class Pipeline:
+                     use_controlnet=False,
+                     dry_run=self.settings.dry_run,
+                     overwrite=self.settings.overwrite,
++                    host=self._inpaint_host(),
+                 )
+             except DiffSetError as exc:
+                 notes[preset_id] = {
+diff --git a/sd-diff-set/sd_diff_set/router.py b/sd-diff-set/sd_diff_set/router.py
+index af5f7ed..d31121a 100644
+--- a/sd-diff-set/sd_diff_set/router.py
++++ b/sd-diff-set/sd_diff_set/router.py
+@@ -159,6 +159,7 @@ def route_folder(
+     stages: tuple[str, ...] | None = None,
+     cloth_detect: bool | None = None,
+     face_pass: str = "required",
++    host=None,
+ ) -> dict[str, object]:
+     """Plan one pattern per PNG. Dry-run writes manifests and does not paint."""
+     from sd_diff_set.service import run_job
+@@ -179,6 +180,7 @@ def route_folder(
+                 stages=stages,
+                 cloth_detect=cloth_detect,
+                 face_pass=face_pass,
++                host=host,
+             )
+         )
+     failed = [
+@@ -213,6 +215,7 @@ def route_file(
+     stages: tuple[str, ...] | None = None,
+     cloth_detect: bool | None = None,
+     face_pass: str = "required",
++    host=None,
+ ) -> dict[str, object]:
+     row: dict[str, object] = {"file": path.name, "path": str(path)}
+     try:
+@@ -262,6 +265,7 @@ def route_file(
+             stages=stages,
+             cloth_detect=cloth_detect,
+             face_pass=face_pass,
++            host=host,
+         )
+     except DiffSetError as exc:
+         row.update(status="error", error_code=exc.code, error=exc.message)
+diff --git a/sd-diff-set/tests/test_http_inpaint.py b/sd-diff-set/tests/test_http_inpaint.py
+new file mode 100644
+index 0000000..3c1f317
+--- /dev/null
++++ b/sd-diff-set/tests/test_http_inpaint.py
+@@ -0,0 +1,320 @@
++"""External inpaint goes through /sdapi/v1/img2img. No GPU and no reForge process."""
++
++from __future__ import annotations
++
++import base64
++import json
++import sys
++import tempfile
++import threading
++import unittest
++from dataclasses import replace
++from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
++from pathlib import Path
++from unittest import mock
++
++sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
++
++from PIL import Image
++
++from sd_diff_set.cli import main
++from sd_diff_set.errors import DiffSetError
++from sd_diff_set.executor import InpaintJob
++from sd_diff_set.factory_line import run_factory
++from sd_diff_set.http_inpaint import HttpInpaintHost
++from sd_diff_set.pipeline import Pipeline, PipelineSettings
++from sd_diff_set.png_text import read_parameters, write_l_png, write_rgb_png
++from sd_diff_set.router import route_file
++
++PRESETS = Path(__file__).resolve().parents[1] / "presets"
++LORA = "<lora:caststyle_xl_epoch08:0.9>"
++
++
++def _settings(root: Path, **overrides: object) -> PipelineSettings:
++    values: dict[str, object] = {
++        "inbox": root / "inbox",
++        "sorted_dir": root / "sorted",
++        "output_dir": root / "diffs",
++        "preset_dir": PRESETS,
++        "adult_ok": True,
++        "dry_run": True,
++        "limbs": False,
++    }
++    values.update(overrides)
++    return PipelineSettings(**values)  # type: ignore[arg-type]
++
++
++def _job(root: Path, **overrides: object) -> InpaintJob:
++    init = root / "init.png"
++    mask = root / "mask.png"
++    write_rgb_png(init, 4, 2, (255, 0, 0))
++    write_l_png(mask, 4, 2, bytes([255, 255, 0, 0, 255, 255, 0, 0]))
++    job = InpaintJob(
++        init_path=init,
++        mask_path=mask,
++        dest=root / "out.png",
++        prompt=f"1girl, {LORA}, simple background",
++        negative_prompt="lowres",
++        seed=3,
++        sampler="Euler a",
++        scheduler=None,
++        steps=28,
++        cfg_scale=6.0,
++        width=4,
++        height=2,
++        denoise=0.55,
++        mask_blur=0,
++        inpainting_fill=1,
++        inpaint_full_res=True,
++        padding=32,
++        model="demo.safetensors",
++        model_hash=None,
++        vae=None,
++        clip_skip=2,
++        parameters_text="1girl, kept",
++        controlnet=[],
++        soft_inpainting=False,
++        use_controlnet=False,
++        base_path=init,
++        lock_unmasked=True,
++    )
++    return replace(job, **overrides) if overrides else job
++
++
++class _Handler(BaseHTTPRequestHandler):
++    def do_POST(self) -> None:  # noqa: N802
++        length = int(self.headers.get("Content-Length") or 0)
++        body = json.loads(self.rfile.read(length).decode("utf-8"))
++        server = self.server
++        assert isinstance(server, _Server)
++        server.captured.append((self.path, body))
++        if server.status != 200:
++            raw = b"nope"
++            self.send_response(server.status)
++            self.send_header("Content-Length", str(len(raw)))
++            self.end_headers()
++            self.wfile.write(raw)
++            return
++        payload = json.dumps({"images": server.images, "info": json.dumps({"infotexts": [server.info]})}).encode()
++        self.send_response(200)
++        self.send_header("Content-Type", "application/json")
++        self.send_header("Content-Length", str(len(payload)))
++        self.end_headers()
++        self.wfile.write(payload)
++
++    def log_message(self, format: str, *args: object) -> None:
++        return
++
++
++class _Server(ThreadingHTTPServer):
++    def __init__(self) -> None:
++        super().__init__(("127.0.0.1", 0), _Handler)
++        self.captured: list[tuple[str, dict[str, object]]] = []
++        self.images: list[str] = []
++        self.info = ""
++        self.status = 200
++
++
++class Server:
++    def __init__(self) -> None:
++        self.httpd = _Server()
++        self.thread = threading.Thread(target=self.httpd.serve_forever, daemon=True)
++
++    def __enter__(self) -> _Server:
++        self.thread.start()
++        return self.httpd
++
++    def __exit__(self, *exc: object) -> None:
++        self.httpd.shutdown()
++        self.thread.join(3)
++        self.httpd.server_close()
++
++
++def _png_b64(path: Path) -> str:
++    return base64.b64encode(path.read_bytes()).decode("ascii")
++
++
++class HttpInpaintTests(unittest.TestCase):
++    def test_img2img_keeps_the_lora_tag_and_the_unmasked_pixels(self) -> None:
++        with tempfile.TemporaryDirectory() as tmp:
++            root = Path(tmp)
++            blue = root / "blue.png"
++            write_rgb_png(blue, 4, 2, (0, 0, 255))
++            job = _job(root)
++            with Server() as server:
++                server.images = ["data:image/png;base64," + _png_b64(blue)]
++                server.info = '1girl\nSteps: 28, Lora hashes: "caststyle_xl_epoch08: ab12cd"'
++                api = f"http://{server.server_address[0]}:{server.server_address[1]}"
++                HttpInpaintHost(api).inpaint(job)
++            path, body = server.captured[0]
++            self.assertEqual(path, "/sdapi/v1/img2img")
++            self.assertIn(LORA, str(body["prompt"]))
++            self.assertNotIn("scheduler", body)
++            self.assertIn("Soft Inpainting", body["alwayson_scripts"])  # type: ignore[index]
++            with Image.open(job.dest) as image:
++                pixels = list(image.convert("RGB").get_flattened_data())
++            self.assertEqual(pixels[0], (0, 0, 255))
++            self.assertEqual(pixels[2], (255, 0, 0))
++            saved = read_parameters(job.dest) or ""
++            self.assertIn("1girl, kept", saved)
++            self.assertIn("caststyle_xl_epoch08: ab12cd", saved)
++
++    def test_a_failed_post_and_an_empty_reply_are_errors(self) -> None:
++        with tempfile.TemporaryDirectory() as tmp:
++            root = Path(tmp)
++            job = _job(root)
++            with Server() as server:
++                api = f"http://{server.server_address[0]}:{server.server_address[1]}"
++                server.status = 500
++                with self.assertRaises(DiffSetError) as failed:
++                    HttpInpaintHost(api).inpaint(job)
++                self.assertEqual(failed.exception.code, "inpaint_http")
++                server.status = 200
++                server.images = []
++                with self.assertRaises(DiffSetError) as empty:
++                    HttpInpaintHost(api).inpaint(job)
++                self.assertEqual(empty.exception.code, "output_missing")
++
++    def test_controlnet_is_refused_instead_of_dropped(self) -> None:
++        with tempfile.TemporaryDirectory() as tmp:
++            job = _job(Path(tmp), use_controlnet=True, controlnet=[{"enabled": True}])
++            with self.assertRaises(DiffSetError) as caught:
++                HttpInpaintHost("http://127.0.0.1:9").inpaint(job)
++            self.assertEqual(caught.exception.code, "controlnet_http_unsupported")
++
++
++class WiringTests(unittest.TestCase):
++    def test_a_real_run_points_inpaint_at_the_chosen_api(self) -> None:
++        with tempfile.TemporaryDirectory() as tmp:
++            root = Path(tmp)
++            image = root / "ret.png"
++            write_rgb_png(image, 8, 8)
++            data = image.read_bytes()
++
++            def paint(**_kwargs: object) -> dict[str, object]:
++                return {"status": "ok", "items": [], "dry_run": False}
++
++            local = run_factory(
++                settings=_settings(root, dry_run=False),
++                jobs=[{"id": "pic", "prompt": "1girl", "negative_prompt": "lowres", "sampler_name": "Euler a", "steps": 1, "cfg_scale": 1, "width": 8, "height": 8, "model": "m", "stages": ["none"]}],
++                poster=lambda _api, _payload: data,
++                dry_run=False,
++                once=True,
++                run_job=paint,
++                lora_check="off",
++                use_http_inpaint=True,
++            )
++            self.assertEqual(local["pipeline"].settings.inpaint_api, "http://127.0.0.1:7860")  # type: ignore[index]
++            colab = run_factory(
++                settings=_settings(root, dry_run=False),
++                jobs=[{"id": "pic", "prompt": "1girl", "negative_prompt": "lowres", "sampler_name": "Euler a", "steps": 1, "cfg_scale": 1, "width": 8, "height": 8, "model": "m", "stages": ["none"]}],
++                colab_api="https://example.gradio.live/",
++                probe=lambda _api: {"status": 200, "free_mib": 20000, "busy": False},
++                poster=lambda _api, _payload: data,
++                dry_run=False,
++                once=True,
++                run_job=paint,
++                lora_check="off",
++                use_http_inpaint=True,
++            )
++            self.assertEqual(colab["pipeline"].settings.inpaint_api, "https://example.gradio.live")  # type: ignore[index]
++            waiting = run_factory(
++                settings=_settings(root),
++                jobs=[{"id": "pic", "prompt": "1girl", "model": "m"}],
++                colab_api="https://gone.example",
++                probe=lambda _api: (_ for _ in ()).throw(OSError("down")),
++                local_probe=lambda _api: {"reachable": False},
++                use_http_inpaint=True,
++            )
++            self.assertEqual(waiting["host"], "wait")
++            self.assertEqual(waiting["pipeline"].settings.inpaint_api, "")  # type: ignore[index]
++
++    def test_paint_passes_the_http_host_and_skips_limbs(self) -> None:
++        with tempfile.TemporaryDirectory() as tmp:
++            root = Path(tmp)
++            src = root / "gen"
++            src.mkdir()
++            write_rgb_png(
++                src / "stand.png",
++                8,
++                8,
++                parameters="1girl, smile\nNegative prompt: lowres\nSteps: 20, Sampler: Euler a, CFG scale: 7, Seed: 1, Size: 8x8, Model: demo",
++            )
++            seen: list[object] = []
++
++            def paint(**kwargs: object) -> dict[str, object]:
++                seen.append(kwargs.get("host"))
++                seen.append(kwargs.get("preset_ids"))
++                return {"status": "ok", "dry_run": True, "items": [{"status": "planned"}]}
++
++            line = Pipeline(_settings(root, inpaint_api="http://colab.example"), run_job=paint)
++            self.assertEqual(line.accept(src / "stand.png")["status"], "queued")  # type: ignore[index]
++            line.paint_available(1)
++            self.assertIsInstance(seen[0], HttpInpaintHost)
++            self.assertEqual(seen[0].api_base, "http://colab.example")  # type: ignore[attr-defined]
++            self.assertNotIn(["hands"], seen)
++            self.assertNotIn(["feet"], seen)
++
++    def test_route_file_forwards_the_host(self) -> None:
++        with tempfile.TemporaryDirectory() as tmp:
++            root = Path(tmp)
++            image = root / "stand.png"
++            write_rgb_png(
++                image,
++                8,
++                8,
++                parameters="1girl, smile\nNegative prompt: lowres\nSteps: 20, Sampler: Euler a, CFG scale: 7, Seed: 1, Size: 8x8, Model: demo",
++            )
++            seen: dict[str, object] = {}
++
++            def paint(**kwargs: object) -> dict[str, object]:
++                seen["host"] = kwargs.get("host")
++                return {"status": "ok", "items": []}
++
++            marker = object()
++            route_file(
++                image,
++                preset_dir=PRESETS,
++                output_dir=root / "out",
++                adult_ok=True,
++                dry_run=True,
++                overwrite=False,
++                use_controlnet=False,
++                run_job=paint,
++                host=marker,
++            )
++            self.assertIs(seen["host"], marker)
++
++    def test_the_factory_cli_can_skip_limbs_and_uses_http_only_when_running(self) -> None:
++        captured: dict[str, object] = {}
++
++        def fake(**kwargs: object) -> dict[str, object]:
++            captured.update(kwargs)
++            return {"status": "ok", "host": "local", "reason": "colab_unset", "jobs": []}
++
++        with tempfile.TemporaryDirectory() as tmp:
++            root = Path(tmp)
++            base = [
++                "factory",
++                "--inbox",
++                str(root),
++                "--sorted",
++                str(root),
++                "--output",
++                str(root),
++                "--preset-dir",
++                str(PRESETS),
++                "--colab-api",
++                "http://example.test",
++            ]
++            with mock.patch("sd_diff_set.cli.run_factory", fake):
++                self.assertEqual(main(base), 0)
++                self.assertTrue(captured["settings"].limbs)  # type: ignore[attr-defined]
++                self.assertFalse(captured["use_http_inpaint"])
++                captured.clear()
++                self.assertEqual(main(base + ["--no-limbs"]), 0)
++                self.assertFalse(captured["settings"].limbs)  # type: ignore[attr-defined]
++                captured.clear()
++                self.assertEqual(main(base + ["--run", "--no-limbs"]), 0)
++                self.assertTrue(captured["use_http_inpaint"])
++                self.assertFalse(captured["settings"].limbs)  # type: ignore[attr-defined]
