@@ -1,0 +1,424 @@
+{
+  "job_id": "yorunotana_hijolight_day2",
+  "series_title": "非常灯",
+  "day": 2,
+  "floor_label": "7階",
+  "pr_badge": false,
+  "target_duration_sec": 65.0,
+  "bgm_track": "dark_ambient_drone.wav",
+  "segments": [
+    {
+      "id": 1,
+      "clock": "5:48 AM",
+      "scene": "door_handle",
+      "scene_params": {
+        "hand_on_knob": false,
+        "shake": false,
+        "locked": true
+      },
+      "top_card": null,
+      "subtitle": "昨夜は、ドアに鍵をかけたまま眠った。",
+      "text_color": "white",
+      "se": null,
+      "pause_after_ms": 350
+    },
+    {
+      "id": 2,
+      "clock": "5:48 AM",
+      "scene": "door_note",
+      "scene_params": {
+        "note_visible": true,
+        "note_text": "705へ",
+        "under_gap": true
+      },
+      "top_card": null,
+      "subtitle": "朝、隙間に紙が一枚。",
+      "text_color": "white",
+      "se": null,
+      "pause_after_ms": 250
+    },
+    {
+      "id": 3,
+      "clock": "5:48 AM",
+      "scene": "door_note",
+      "scene_params": {
+        "note_visible": true,
+        "note_text": "705へ",
+        "under_gap": true
+      },
+      "top_card": null,
+      "subtitle": "村上さんの字じゃない。",
+      "text_color": "yellow",
+      "se": "low_pulse",
+      "pause_after_ms": 450
+    },
+    {
+      "id": 4,
+      "clock": "8:55 PM",
+      "scene": "room_stickman",
+      "scene_params": {
+        "phone_glow": false,
+        "lamp_dim": true,
+        "facing": "door"
+      },
+      "top_card": null,
+      "subtitle": "二晩目の闇が落ちる。",
+      "text_color": "white",
+      "se": null,
+      "pause_after_ms": 350
+    },
+    {
+      "id": 5,
+      "clock": "8:55 PM",
+      "scene": "corridor_blink",
+      "scene_params": {
+        "mode": "far_blink",
+        "direction": "toward_705",
+        "count_on": 2
+      },
+      "top_card": null,
+      "subtitle": "廊下の非常灯が、また点滅を始めた。",
+      "text_color": "yellow",
+      "se": "light_off_tick",
+      "pause_after_ms": 400
+    },
+    {
+      "id": 6,
+      "clock": "8:56 PM",
+      "scene": "corridor_blink",
+      "scene_params": {
+        "mode": "advance",
+        "direction": "toward_705",
+        "count_on": 4
+      },
+      "top_card": null,
+      "subtitle": "奥から、一灯ずつ手前へ。",
+      "text_color": "white",
+      "se": null,
+      "pause_after_ms": 250
+    },
+    {
+      "id": 7,
+      "clock": "8:56 PM",
+      "scene": "corridor_blink",
+      "scene_params": {
+        "mode": "advance",
+        "direction": "toward_705",
+        "count_on": 6
+      },
+      "top_card": null,
+      "subtitle": "自分の扉の前まで来る。",
+      "text_color": "yellow",
+      "se": "low_boom",
+      "pause_after_ms": 400
+    },
+    {
+      "id": 8,
+      "clock": "8:57 PM",
+      "scene": "elevator_display",
+      "scene_params": {
+        "floor": "7",
+        "flicker": true,
+        "stuck": true
+      },
+      "top_card": null,
+      "subtitle": "エレベーター表示は、",
+      "text_color": "white",
+      "se": null,
+      "pause_after_ms": 200
+    },
+    {
+      "id": 9,
+      "clock": "8:57 PM",
+      "scene": "elevator_display",
+      "scene_params": {
+        "floor": "7",
+        "flicker": true,
+        "stuck": true
+      },
+      "top_card": null,
+      "subtitle": "ずっと「7」のまま動かない。",
+      "text_color": "yellow",
+      "se": "low_pulse",
+      "pause_after_ms": 400
+    },
+    {
+      "id": 10,
+      "clock": "8:58 PM",
+      "scene": "breaker_panel",
+      "scene_params": {
+        "door_ajar": false,
+        "hum": true,
+        "hand_reaching": false,
+        "location": "down_hall",
+        "heard_only": true
+      },
+      "top_card": null,
+      "subtitle": "廊下の奥で配電箱が低く唸る。",
+      "text_color": "white",
+      "se": "low_pulse",
+      "pause_after_ms": 350
+    },
+    {
+      "id": 11,
+      "clock": "8:58 PM",
+      "scene": "thin_wall",
+      "scene_params": {
+        "ear_to_wall": true,
+        "silhouette": "faint",
+        "rhythm_marks": true
+      },
+      "top_card": null,
+      "subtitle": "壁越しに、点滅と同じリズムの息がした。",
+      "text_color": "yellow",
+      "se": "eerie_whisper",
+      "pause_after_ms": 450
+    },
+    {
+      "id": 12,
+      "clock": "8:59 PM",
+      "scene": "room_stickman",
+      "scene_params": {
+        "phone_glow": false,
+        "lamp_dim": true,
+        "facing": "wall"
+      },
+      "top_card": null,
+      "subtitle": "理解した。対象は、",
+      "text_color": "white",
+      "se": null,
+      "pause_after_ms": 200
+    },
+    {
+      "id": 13,
+      "clock": "8:59 PM",
+      "scene": "corridor_blink",
+      "scene_params": {
+        "mode": "stare_risk",
+        "direction": "toward_705",
+        "count_on": 6
+      },
+      "top_card": null,
+      "subtitle": "点滅を見つめた人の部屋へ寄る。",
+      "text_color": "yellow",
+      "se": "low_pulse",
+      "pause_after_ms": 400
+    },
+    {
+      "id": 14,
+      "clock": "8:59 PM",
+      "scene": "room_stickman",
+      "scene_params": {
+        "phone_glow": false,
+        "lamp_dim": true,
+        "eyes_closed": true
+      },
+      "top_card": {
+        "badge": "ルール3",
+        "title": "非常灯を直視するな"
+      },
+      "subtitle": "ルール3。非常灯を直視するな。",
+      "text_color": "yellow",
+      "se": "rule_hit",
+      "pause_after_ms": 450
+    },
+    {
+      "id": 15,
+      "clock": "9:00 PM",
+      "scene": "room_stickman",
+      "scene_params": {
+        "phone_glow": false,
+        "lamp_dim": true,
+        "curtain_drawn": true
+      },
+      "top_card": null,
+      "subtitle": "カーテンを閉め、目を閉じた。",
+      "text_color": "white",
+      "se": "screen_lock",
+      "pause_after_ms": 300
+    },
+    {
+      "id": 16,
+      "clock": "9:00 PM",
+      "scene": "corridor_blink",
+      "scene_params": {
+        "mode": "retreat",
+        "direction": "toward_705",
+        "count_on": 3
+      },
+      "top_card": null,
+      "subtitle": "点滅が、少し遠ざかった。",
+      "text_color": "yellow",
+      "se": null,
+      "pause_after_ms": 400
+    },
+    {
+      "id": 17,
+      "clock": "10:22 PM",
+      "scene": "door_note",
+      "scene_params": {
+        "note_visible": true,
+        "note_text": "次は705",
+        "under_gap": true,
+        "fresh": true
+      },
+      "top_card": null,
+      "subtitle": "また紙が滑り込む。「次は705」",
+      "text_color": "yellow",
+      "se": "msg_vibrate",
+      "pause_after_ms": 500
+    },
+    {
+      "id": 18,
+      "clock": "10:23 PM",
+      "scene": "door_handle",
+      "scene_params": {
+        "hand_on_knob": true,
+        "shake": false,
+        "locked": true
+      },
+      "top_card": null,
+      "subtitle": "紙を置いた相手を怒鳴ってやろうと、",
+      "text_color": "white",
+      "se": null,
+      "pause_after_ms": 200
+    },
+    {
+      "id": 19,
+      "clock": "10:23 PM",
+      "scene": "door_handle",
+      "scene_params": {
+        "hand_on_knob": true,
+        "shake": true,
+        "locked": true
+      },
+      "top_card": null,
+      "subtitle": "意思と別に、ノブへ指が滑る。",
+      "text_color": "yellow",
+      "se": "key_rattle",
+      "pause_after_ms": 350
+    },
+    {
+      "id": 20,
+      "clock": "10:23 PM",
+      "scene": "corridor_blink",
+      "scene_params": {
+        "mode": "surge",
+        "direction": "toward_705",
+        "count_on": 8,
+        "intensity": "high"
+      },
+      "top_card": null,
+      "subtitle": "ノブに触れた瞬間、点滅が一気に寄った。",
+      "text_color": "yellow",
+      "se": "footsteps_fast",
+      "pause_after_ms": 350
+    },
+    {
+      "id": 21,
+      "clock": "10:24 PM",
+      "scene": "door_handle",
+      "scene_params": {
+        "hand_on_knob": false,
+        "shake": false,
+        "locked": true,
+        "backed_away": true
+      },
+      "top_card": null,
+      "subtitle": "手を離すと、点滅が一息ついた。",
+      "text_color": "yellow",
+      "se": "screen_lock",
+      "pause_after_ms": 400
+    },
+    {
+      "id": 22,
+      "clock": "10:24 PM",
+      "scene": "room_stickman",
+      "scene_params": {
+        "phone_glow": false,
+        "lamp_dim": true,
+        "facing": "door"
+      },
+      "top_card": {
+        "badge": "ルール4",
+        "title": "廊下に出るな"
+      },
+      "subtitle": "ルール4。廊下に出るな。",
+      "text_color": "yellow",
+      "se": "rule_hit",
+      "pause_after_ms": 450
+    },
+    {
+      "id": 23,
+      "clock": "11:05 PM",
+      "scene": "elevator_display",
+      "scene_params": {
+        "floor": "7",
+        "flicker": true,
+        "stuck": true,
+        "ding": false
+      },
+      "top_card": null,
+      "subtitle": "表示板は「7」で凍ったまま。",
+      "text_color": "yellow",
+      "se": "low_boom",
+      "pause_after_ms": 350
+    },
+    {
+      "id": 24,
+      "clock": "11:18 PM",
+      "scene": "thin_wall",
+      "scene_params": {
+        "ear_to_wall": true,
+        "silhouette": "closer",
+        "rhythm_marks": true,
+        "whisper": true
+      },
+      "top_card": null,
+      "subtitle": "壁の向こうから、村上さんが呼ぶ。",
+      "text_color": "white",
+      "se": null,
+      "pause_after_ms": 250
+    },
+    {
+      "id": 25,
+      "clock": "11:18 PM",
+      "scene": "thin_wall",
+      "scene_params": {
+        "ear_to_wall": true,
+        "silhouette": "closer",
+        "rhythm_marks": true,
+        "whisper": true
+      },
+      "top_card": null,
+      "subtitle": "「一緒に、灯りを見よう」",
+      "text_color": "yellow",
+      "se": "eerie_whisper",
+      "pause_after_ms": 500
+    }
+  ],
+  "choice_card": {
+    "clock": "11:18 PM",
+    "question": "選ぶなら？",
+    "left_option": {
+      "text": "壁を叩く",
+      "color": "green"
+    },
+    "right_option": {
+      "text": "黙って耐える",
+      "color": "red"
+    },
+    "subtext": "答えはコメントへ ↓",
+    "narration": "壁を叩く？それとも沈黙？"
+  },
+  "day_end_card": {
+    "title": "非常灯",
+    "subtitle": "DAY 2",
+    "status": "23時18分・室内待機",
+    "button_text": "フォローして3日目を待つ。",
+    "narration": "フォローして、3日目を待つ。"
+  },
+  "promo_outro": {
+    "enabled": false
+  }
+}

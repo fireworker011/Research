@@ -1,0 +1,8 @@
+out/
+__pycache__/
+*.pyc
+.pytest_cache/
+assets/bgm/*.wav
+assets/se/*.wav
+REPORT.md
+LAST_RESULT.txt

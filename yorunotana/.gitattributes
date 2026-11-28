@@ -1,0 +1,5 @@
+ORDER-20261109-0634.md -text
+jobs/*.json -text
+jobs-v2/*.json -text
+jobs-v2/DIFF-CHECK.md -text
+build-yorunotana.ps1 -text

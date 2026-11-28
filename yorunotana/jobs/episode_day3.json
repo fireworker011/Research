@@ -1,0 +1,322 @@
+{
+  "job_id": "yorunotana_14f_day3_audible",
+  "series_title": "14階",
+  "day": 3,
+  "floor_label": "14階",
+  "pr_badge": true,
+  "a8_program_id": "s00000027126001",
+  "target_duration_sec": 87.0,
+  "bgm_track": "dark_ambient_drone.wav",
+  "segments": [
+    {
+      "id": 1,
+      "clock": "4:30 AM",
+      "scene": "door_view",
+      "scene_params": { "shadow_visible": true, "shake": false },
+      "top_card": null,
+      "subtitle": "3日目の朝4時半。",
+      "text_color": "white",
+      "se": null,
+      "pause_after_ms": 300
+    },
+    {
+      "id": 2,
+      "clock": "4:30 AM",
+      "scene": "door_view",
+      "scene_params": { "shadow_visible": true, "shake": false },
+      "top_card": null,
+      "subtitle": "あいつはまだ、",
+      "text_color": "white",
+      "se": null,
+      "pause_after_ms": 200
+    },
+    {
+      "id": 3,
+      "clock": "4:30 AM",
+      "scene": "door_view",
+      "scene_params": { "shadow_visible": true, "shake": false },
+      "top_card": null,
+      "subtitle": "ドアの前にいる。",
+      "text_color": "yellow",
+      "se": "low_pulse",
+      "pause_after_ms": 400
+    },
+    {
+      "id": 4,
+      "clock": "4:30 AM",
+      "scene": "room_stickman",
+      "scene_params": { "phone_glow": true },
+      "top_card": null,
+      "subtitle": "あいつは、画面を光らせた人の",
+      "text_color": "yellow",
+      "se": null,
+      "pause_after_ms": 200
+    },
+    {
+      "id": 5,
+      "clock": "4:30 AM",
+      "scene": "room_stickman",
+      "scene_params": { "phone_glow": true },
+      "top_card": null,
+      "subtitle": "ところに来る。",
+      "text_color": "white",
+      "se": null,
+      "pause_after_ms": 350
+    },
+    {
+      "id": 6,
+      "clock": "4:31 AM",
+      "scene": "room_stickman",
+      "scene_params": { "phone_glow": true },
+      "top_card": { "badge": "ルール5", "title": "SNSを開くな" },
+      "subtitle": "だから、SNSは開いちゃダメ。",
+      "text_color": "yellow",
+      "se": "rule_hit",
+      "pause_after_ms": 400
+    },
+    {
+      "id": 7,
+      "clock": "4:31 AM",
+      "scene": "phone_tap",
+      "scene_params": { "action": "tap_sns_icon", "locked": false },
+      "top_card": null,
+      "subtitle": "でも、開いちゃう。",
+      "text_color": "yellow",
+      "se": "tap_glow",
+      "pause_after_ms": 300
+    },
+    {
+      "id": 8,
+      "clock": "4:31 AM",
+      "scene": "door_view",
+      "scene_params": { "shadow_visible": true, "shake": true },
+      "top_card": null,
+      "subtitle": "開いたら、ドアの鍵が",
+      "text_color": "white",
+      "se": null,
+      "pause_after_ms": 150
+    },
+    {
+      "id": 9,
+      "clock": "4:31 AM",
+      "scene": "door_view",
+      "scene_params": { "shadow_visible": true, "shake": true },
+      "top_card": null,
+      "subtitle": "ガチャガチャ回り出した。",
+      "text_color": "yellow",
+      "se": "key_rattle",
+      "pause_after_ms": 400
+    },
+    {
+      "id": 10,
+      "clock": "4:32 AM",
+      "scene": "room_stickman",
+      "scene_params": { "phone_glow": false },
+      "top_card": null,
+      "subtitle": "あわてて閉じる。音が止まる。",
+      "text_color": "yellow",
+      "se": "screen_lock",
+      "pause_after_ms": 400
+    },
+    {
+      "id": 11,
+      "clock": "4:32 AM",
+      "scene": "phone_tap",
+      "scene_params": { "action": "tap_sns_icon", "locked": false },
+      "top_card": null,
+      "subtitle": "分かってるのに、やめられない。",
+      "text_color": "yellow",
+      "se": "tap_glow",
+      "pause_after_ms": 350
+    },
+    {
+      "id": 12,
+      "clock": "4:32 AM",
+      "scene": "room_stickman",
+      "scene_params": { "phone_glow": true },
+      "top_card": { "badge": "正体", "title": "ドーパミン中毒" },
+      "subtitle": "これが、ドーパミン中毒。",
+      "text_color": "white",
+      "se": "rule_hit",
+      "pause_after_ms": 400
+    },
+    {
+      "id": 13,
+      "clock": "4:33 AM",
+      "scene": "room_stickman",
+      "scene_params": { "phone_glow": true },
+      "top_card": null,
+      "subtitle": "無音の暗闇じゃ、",
+      "text_color": "white",
+      "se": null,
+      "pause_after_ms": 200
+    },
+    {
+      "id": 14,
+      "clock": "4:33 AM",
+      "scene": "room_stickman",
+      "scene_params": { "phone_glow": true },
+      "top_card": null,
+      "subtitle": "もう指を止められない。",
+      "text_color": "yellow",
+      "se": null,
+      "pause_after_ms": 400
+    },
+    {
+      "id": 15,
+      "clock": "4:33 AM",
+      "scene": "app_demo_screen",
+      "scene_params": { "app": "audible", "state": "select_horror_book" },
+      "top_card": null,
+      "subtitle": "だから、Audibleで耳を塞いだ。",
+      "text_color": "yellow",
+      "se": "tap_glow",
+      "pause_after_ms": 350
+    },
+    {
+      "id": 16,
+      "clock": "4:33 AM",
+      "scene": "app_demo_screen",
+      "scene_params": { "app": "audible", "state": "press_play_and_lock" },
+      "top_card": null,
+      "subtitle": "怖い話を再生して、",
+      "text_color": "white",
+      "se": null,
+      "pause_after_ms": 200
+    },
+    {
+      "id": 17,
+      "clock": "4:33 AM",
+      "scene": "app_demo_screen",
+      "scene_params": { "app": "audible", "state": "press_play_and_lock" },
+      "top_card": null,
+      "subtitle": "画面を真っ暗にして伏せる。",
+      "text_color": "yellow",
+      "se": "screen_lock",
+      "pause_after_ms": 350
+    },
+    {
+      "id": 18,
+      "clock": "4:34 AM",
+      "scene": "app_demo_screen",
+      "scene_params": { "app": "audible", "state": "dark_waveform_only" },
+      "top_card": null,
+      "subtitle": "光は一切漏れないまま、",
+      "text_color": "white",
+      "se": null,
+      "pause_after_ms": 200
+    },
+    {
+      "id": 19,
+      "clock": "4:34 AM",
+      "scene": "app_demo_screen",
+      "scene_params": { "app": "audible", "state": "dark_waveform_only" },
+      "top_card": null,
+      "subtitle": "耳だけに朗読が入ってくる。",
+      "text_color": "yellow",
+      "se": null,
+      "pause_after_ms": 400
+    },
+    {
+      "id": 20,
+      "clock": "4:40 AM",
+      "scene": "room_stickman",
+      "scene_params": { "phone_glow": false, "earphones_on": true },
+      "top_card": null,
+      "subtitle": "声があるから、SNSも開かない。",
+      "text_color": "yellow",
+      "se": null,
+      "pause_after_ms": 400
+    },
+    {
+      "id": 21,
+      "clock": "4:52 AM",
+      "scene": "door_view",
+      "scene_params": { "shadow_visible": false, "shake": false },
+      "top_card": null,
+      "subtitle": "足音が、遠くに行った。",
+      "text_color": "yellow",
+      "se": "footsteps_fade",
+      "pause_after_ms": 450
+    },
+    {
+      "id": 22,
+      "clock": "6:01 AM",
+      "scene": "morning_window",
+      "scene_params": { "stickman_standing": true },
+      "top_card": null,
+      "subtitle": "朝になった。",
+      "text_color": "yellow",
+      "se": null,
+      "pause_after_ms": 400
+    },
+    {
+      "id": 23,
+      "clock": "6:02 AM",
+      "scene": "phone_message",
+      "scene_params": { "sender": "不明", "body_white": "その朗読が終わるの、", "body_red": "ドアの前で待ってるね。" },
+      "top_card": null,
+      "subtitle": "知らない番号からメッセージ。",
+      "text_color": "white",
+      "se": "msg_vibrate",
+      "pause_after_ms": 250
+    },
+    {
+      "id": 24,
+      "clock": "6:02 AM",
+      "scene": "phone_message",
+      "scene_params": { "sender": "不明", "body_white": "その朗読が終わるの、", "body_red": "ドアの前で待ってるね。" },
+      "top_card": null,
+      "subtitle": "「その朗読が終わるの、",
+      "text_color": "white",
+      "se": null,
+      "pause_after_ms": 200
+    },
+    {
+      "id": 25,
+      "clock": "6:02 AM",
+      "scene": "phone_message",
+      "scene_params": { "sender": "不明", "body_white": "その朗読が終わるの、", "body_red": "ドアの前で待ってるね。" },
+      "top_card": null,
+      "subtitle": "ドアの前で待ってるね」",
+      "text_color": "yellow",
+      "se": "low_boom",
+      "pause_after_ms": 500
+    }
+  ],
+  "choice_card": {
+    "clock": "6:02 AM",
+    "question": "どうする？",
+    "left_option": { "text": "次の話を再生する", "color": "green" },
+    "right_option": { "text": "イヤホンを外す", "color": "red" },
+    "subtext": "コメントで教えて ↓",
+    "narration": "あなたなら、次の話を再生する？それともイヤホンを外す？"
+  },
+  "day_end_card": {
+    "title": "14階",
+    "subtitle": "DAY 3",
+    "status": "生き延びた",
+    "button_text": "フォローで4日目へ。",
+    "narration": "フォローで、4日目へ。"
+  },
+  "promo_outro": {
+    "enabled": true,
+    "headline": "暗闇で、\nスマホの画面を光らせない。",
+    "narration": "深夜に画面を光らせないなら、Audible。",
+    "steps": [
+      {
+        "step_num": 1,
+        "text": "画面を消したまま、耳だけで物語を再生",
+        "duration_sec": 4.0
+      },
+      {
+        "step_num": 2,
+        "text": "初回30日間は0円で聴き放題",
+        "duration_sec": 4.0
+      }
+    ],
+    "app_name": "Audible（オーディブル）",
+    "sub_copy": "3日目の夜に聴いていた怪談は",
+    "cta_button_text": "プロフィールのリンクから0円で再生"
+  }
+}

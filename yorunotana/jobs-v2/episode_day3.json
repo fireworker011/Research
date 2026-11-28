@@ -1,0 +1,435 @@
+{
+  "job_id": "yorunotana_hijolight_day3_audible",
+  "series_title": "非常灯",
+  "day": 3,
+  "floor_label": "7階",
+  "pr_badge": true,
+  "a8_program_id": "s00000027126001",
+  "target_duration_sec": 65.0,
+  "bgm_track": "dark_ambient_drone.wav",
+  "segments": [
+    {
+      "id": 1,
+      "clock": "3:50 AM",
+      "scene": "corridor_blink",
+      "scene_params": {
+        "mode": "steady_near",
+        "direction": "toward_705",
+        "count_on": 5
+      },
+      "top_card": null,
+      "subtitle": "3日目、午前3時50分。",
+      "text_color": "white",
+      "se": null,
+      "pause_after_ms": 300
+    },
+    {
+      "id": 2,
+      "clock": "3:50 AM",
+      "scene": "corridor_blink",
+      "scene_params": {
+        "mode": "steady_near",
+        "direction": "toward_705",
+        "count_on": 5
+      },
+      "top_card": null,
+      "subtitle": "点滅は、まだ扉の前にある。",
+      "text_color": "yellow",
+      "se": "low_pulse",
+      "pause_after_ms": 400
+    },
+    {
+      "id": 3,
+      "clock": "3:51 AM",
+      "scene": "room_stickman",
+      "scene_params": {
+        "phone_glow": false,
+        "lamp_dim": true,
+        "facing": "door"
+      },
+      "top_card": null,
+      "subtitle": "あれは、灯りを直視した部屋へ寄る。",
+      "text_color": "yellow",
+      "se": null,
+      "pause_after_ms": 350
+    },
+    {
+      "id": 4,
+      "clock": "3:51 AM",
+      "scene": "room_stickman",
+      "scene_params": {
+        "phone_glow": false,
+        "lamp_dim": true,
+        "eyes_closed": true
+      },
+      "top_card": {
+        "badge": "ルール3",
+        "title": "非常灯を直視するな"
+      },
+      "subtitle": "だから、非常灯は見てはいけない。",
+      "text_color": "yellow",
+      "se": "rule_hit",
+      "pause_after_ms": 400
+    },
+    {
+      "id": 5,
+      "clock": "3:52 AM",
+      "scene": "breaker_panel",
+      "scene_params": {
+        "door_ajar": true,
+        "hum": true,
+        "hand_reaching": false,
+        "location": "utility_closet"
+      },
+      "top_card": null,
+      "subtitle": "でも、直したくなる。",
+      "text_color": "yellow",
+      "se": null,
+      "pause_after_ms": 300
+    },
+    {
+      "id": 6,
+      "clock": "3:52 AM",
+      "scene": "breaker_panel",
+      "scene_params": {
+        "door_ajar": true,
+        "hum": true,
+        "hand_reaching": true,
+        "location": "utility_closet"
+      },
+      "top_card": null,
+      "subtitle": "共用のブレーカー箱が、頭から離れない。",
+      "text_color": "white",
+      "se": "key_rattle",
+      "pause_after_ms": 400
+    },
+    {
+      "id": 7,
+      "clock": "3:52 AM",
+      "scene": "door_handle",
+      "scene_params": {
+        "hand_on_knob": true,
+        "shake": true,
+        "locked": true
+      },
+      "top_card": null,
+      "subtitle": "廊下へ出ようと、ノブに手がかかる。",
+      "text_color": "yellow",
+      "se": "key_rattle",
+      "pause_after_ms": 350
+    },
+    {
+      "id": 8,
+      "clock": "3:53 AM",
+      "scene": "corridor_blink",
+      "scene_params": {
+        "mode": "surge",
+        "direction": "toward_705",
+        "count_on": 8,
+        "intensity": "high"
+      },
+      "top_card": null,
+      "subtitle": "触れた瞬間、点滅が暴れた。",
+      "text_color": "yellow",
+      "se": "footsteps_fast",
+      "pause_after_ms": 350
+    },
+    {
+      "id": 9,
+      "clock": "3:53 AM",
+      "scene": "door_handle",
+      "scene_params": {
+        "hand_on_knob": false,
+        "shake": false,
+        "locked": true,
+        "backed_away": true
+      },
+      "top_card": null,
+      "subtitle": "離すと、静かになる。",
+      "text_color": "white",
+      "se": "screen_lock",
+      "pause_after_ms": 350
+    },
+    {
+      "id": 10,
+      "clock": "3:54 AM",
+      "scene": "breaker_panel",
+      "scene_params": {
+        "door_ajar": false,
+        "hum": true,
+        "hand_reaching": true,
+        "location": "utility_closet"
+      },
+      "top_card": null,
+      "subtitle": "分かっていても、確かめに行きたくなる。",
+      "text_color": "yellow",
+      "se": null,
+      "pause_after_ms": 350
+    },
+    {
+      "id": 11,
+      "clock": "3:54 AM",
+      "scene": "room_stickman",
+      "scene_params": {
+        "phone_glow": false,
+        "lamp_dim": true
+      },
+      "top_card": {
+        "badge": "正体",
+        "title": "確認衝動"
+      },
+      "subtitle": "これが、確認衝動。",
+      "text_color": "white",
+      "se": "rule_hit",
+      "pause_after_ms": 400
+    },
+    {
+      "id": 12,
+      "clock": "3:55 AM",
+      "scene": "room_stickman",
+      "scene_params": {
+        "phone_glow": false,
+        "lamp_dim": true
+      },
+      "top_card": {
+        "badge": "第五則",
+        "title": "配電箱へ触れるな"
+      },
+      "subtitle": "第五則。配電箱へ触れるな。",
+      "text_color": "yellow",
+      "se": "rule_hit",
+      "pause_after_ms": 400
+    },
+    {
+      "id": 13,
+      "clock": "3:55 AM",
+      "scene": "room_stickman",
+      "scene_params": {
+        "phone_glow": false,
+        "lamp_dim": true
+      },
+      "top_card": null,
+      "subtitle": "無音の部屋だと、",
+      "text_color": "white",
+      "se": null,
+      "pause_after_ms": 200
+    },
+    {
+      "id": 14,
+      "clock": "3:55 AM",
+      "scene": "room_stickman",
+      "scene_params": {
+        "phone_glow": false,
+        "lamp_dim": true
+      },
+      "top_card": null,
+      "subtitle": "点滅のリズムが頭の中で鳴る。",
+      "text_color": "yellow",
+      "se": null,
+      "pause_after_ms": 400
+    },
+    {
+      "id": 15,
+      "clock": "3:56 AM",
+      "scene": "app_demo_screen",
+      "scene_params": {
+        "app": "audible",
+        "state": "select_horror_book"
+      },
+      "top_card": null,
+      "subtitle": "対策はAudible。物語で耳を満たす。",
+      "text_color": "yellow",
+      "se": "tap_glow",
+      "pause_after_ms": 350
+    },
+    {
+      "id": 16,
+      "clock": "3:56 AM",
+      "scene": "app_demo_screen",
+      "scene_params": {
+        "app": "audible",
+        "state": "press_play_and_lock"
+      },
+      "top_card": null,
+      "subtitle": "怖い朗読を選んで、",
+      "text_color": "white",
+      "se": null,
+      "pause_after_ms": 200
+    },
+    {
+      "id": 17,
+      "clock": "3:56 AM",
+      "scene": "app_demo_screen",
+      "scene_params": {
+        "app": "audible",
+        "state": "press_play_and_lock"
+      },
+      "top_card": null,
+      "subtitle": "端末は裏返しにして置く。",
+      "text_color": "yellow",
+      "se": "screen_lock",
+      "pause_after_ms": 350
+    },
+    {
+      "id": 18,
+      "clock": "3:57 AM",
+      "scene": "app_demo_screen",
+      "scene_params": {
+        "app": "audible",
+        "state": "dark_waveform_only"
+      },
+      "top_card": null,
+      "subtitle": "光量はゼロのまま、",
+      "text_color": "white",
+      "se": null,
+      "pause_after_ms": 200
+    },
+    {
+      "id": 19,
+      "clock": "3:57 AM",
+      "scene": "app_demo_screen",
+      "scene_params": {
+        "app": "audible",
+        "state": "dark_waveform_only"
+      },
+      "top_card": null,
+      "subtitle": "読み上げだけが点滅を追い出す。",
+      "text_color": "yellow",
+      "se": null,
+      "pause_after_ms": 400
+    },
+    {
+      "id": 20,
+      "clock": "4:10 AM",
+      "scene": "room_stickman",
+      "scene_params": {
+        "phone_glow": false,
+        "earphones_on": true,
+        "lamp_dim": true
+      },
+      "top_card": null,
+      "subtitle": "物語が続く限り、扉へは寄らない。",
+      "text_color": "yellow",
+      "se": null,
+      "pause_after_ms": 400
+    },
+    {
+      "id": 21,
+      "clock": "4:28 AM",
+      "scene": "corridor_blink",
+      "scene_params": {
+        "mode": "retreat",
+        "direction": "toward_705",
+        "count_on": 1
+      },
+      "top_card": null,
+      "subtitle": "点滅が、階の端まで退いた。",
+      "text_color": "yellow",
+      "se": "footsteps_fade",
+      "pause_after_ms": 450
+    },
+    {
+      "id": 22,
+      "clock": "6:05 AM",
+      "scene": "morning_window",
+      "scene_params": {
+        "stickman_standing": true,
+        "skyline": "low_rise"
+      },
+      "top_card": null,
+      "subtitle": "朝が来た。",
+      "text_color": "yellow",
+      "se": null,
+      "pause_after_ms": 400
+    },
+    {
+      "id": 23,
+      "clock": "6:06 AM",
+      "scene": "door_note",
+      "scene_params": {
+        "note_visible": true,
+        "note_text_white": "その声が止んだら",
+        "note_text_red": "階の端で待つ",
+        "under_gap": true
+      },
+      "top_card": null,
+      "subtitle": "隙間に、また紙。",
+      "text_color": "white",
+      "se": "msg_vibrate",
+      "pause_after_ms": 250
+    },
+    {
+      "id": 24,
+      "clock": "6:06 AM",
+      "scene": "door_note",
+      "scene_params": {
+        "note_visible": true,
+        "note_text_white": "その声が止んだら",
+        "note_text_red": "階の端で待つ",
+        "under_gap": true
+      },
+      "top_card": null,
+      "subtitle": "「その声が止んだら、",
+      "text_color": "white",
+      "se": null,
+      "pause_after_ms": 200
+    },
+    {
+      "id": 25,
+      "clock": "6:06 AM",
+      "scene": "door_note",
+      "scene_params": {
+        "note_visible": true,
+        "note_text_white": "その声が止んだら",
+        "note_text_red": "階の端で待つ",
+        "under_gap": true
+      },
+      "top_card": null,
+      "subtitle": "階の端で待つ」",
+      "text_color": "yellow",
+      "se": "low_boom",
+      "pause_after_ms": 500
+    }
+  ],
+  "choice_card": {
+    "clock": "6:06 AM",
+    "question": "選ぶなら？",
+    "left_option": {
+      "text": "続きを流す",
+      "color": "green"
+    },
+    "right_option": {
+      "text": "耳を開ける",
+      "color": "red"
+    },
+    "subtext": "答えはコメントへ ↓",
+    "narration": "続きを流す？耳を開ける？"
+  },
+  "day_end_card": {
+    "title": "非常灯",
+    "subtitle": "DAY 3",
+    "status": "朝まで耐えた",
+    "button_text": "フォローして4日目を待つ。",
+    "narration": "フォローして、4日目を待つ。"
+  },
+  "promo_outro": {
+    "enabled": true,
+    "headline": "未明に、\n確認の手を止める。",
+    "narration": "夜中の確認癖を断つなら Audible。",
+    "steps": [
+      {
+        "step_num": 1,
+        "text": "画面オフで、耳だけ物語を進める",
+        "duration_sec": 4.0
+      },
+      {
+        "step_num": 2,
+        "text": "はじめのひと月はゼロ円で聞き放題",
+        "duration_sec": 4.0
+      }
+    ],
+    "app_name": "Audible（オーディブル）",
+    "sub_copy": "三日目の未明に流した怪談は",
+    "cta_button_text": "プロフのURLからゼロ円で聴く"
+  }
+}
